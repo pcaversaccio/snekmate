@@ -41,12 +41,11 @@ def _recover_vrs(hash: bytes32, v: uint256, r: uint256, s: uint256) -> address:
     @dev Recover the signer address from a message digest `hash`
          and the secp256k1 signature parameters `v`, `r`, and `s`.
     @param hash The message digest that was signed.
-    @param v secp256k1 signature parameter `v`
-    @param r secp256k1 signature parameter `r`
-    @param s secp256k1 signature parameter `s`
+    @param v secp256k1 signature parameter `v`.
+    @param r secp256k1 signature parameter `r`.
+    @param s secp256k1 signature parameter `s`.
     """
-    signer: address = self._try_recover_vrs(hash, v, r, s)
-    return signer
+    return self._try_recover_vrs(hash, v, r, s)
 
 
 @internal
