@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.15;
 
-import {Test} from "../../lib/forge-std/src/test.sol";
+import {Test} from "../../forge-std/Test.sol";
 import {VyperDeployer} from "../../lib/utils/VyperDeployer.sol";
 
 contract SimpleStoreTest is Test {
