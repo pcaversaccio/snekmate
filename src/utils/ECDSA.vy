@@ -83,7 +83,7 @@ def _try_recover_vrs(hash: bytes32, v: uint256, r: uint256, s: uint256) -> addre
     @param s The secp256k1 signature parameter `s`.
     """
     if (s > convert(MALLEABILITY_THRESHOLD, uint256)):
-        raise "ECDSA: invalid signature 's' value"
+        raise "ECDSA: invalid signature \'s\' value"
 
     signer: address = ecrecover(hash, v, r, s)
     if (signer == empty(address)):
