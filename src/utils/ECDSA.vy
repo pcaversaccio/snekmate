@@ -29,7 +29,7 @@ def _recover_sig(hash: bytes32, signature: Bytes[65]) -> address:
     elif (len(signature) == 64):
         r: uint256 = extract32(signature, 0, output_type=uint256)
         vs: uint256 = extract32(signature, 32, output_type=uint256)
-        return self._try_recover_vs(hash, r, vs)
+        return self._try_recover_r_vs(hash, r, vs)
     else:
         return empty(address)
 
@@ -51,7 +51,7 @@ def _recover_vrs(hash: bytes32, v: uint256, r: uint256, s: uint256) -> address:
 
 @internal
 @pure
-def _try_recover_vs(hash: bytes32, r: uint256, vs: uint256) -> address:
+def _try_recover_r_vs(hash: bytes32, r: uint256, vs: uint256) -> address:
     """
     @dev Recover the signer address from a message digest `hash`
          and the secp256k1 short signature fields `r` and `vs`.
