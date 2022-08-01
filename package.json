@@ -1,0 +1,36 @@
+{
+  "name": "snekmate",
+  "version": "0.0.1",
+  "description": "State-of-the-art, highly opinionated, hyper-optimised, and secure Vyper smart contract building blocks.",
+  "keywords": [
+    "security",
+    "library",
+    "ethereum",
+    "smart-contracts",
+    "evm",
+    "vyper",
+    "vyper-contracts"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pcaversaccio/snekmate.git"
+  },
+  "homepage": "https://github.com/pcaversaccio/snekmate#readme",
+  "bugs": {
+    "url": "https://github.com/pcaversaccio/snekmate/issues"
+  },
+  "author": "Pascal Marco Caversaccio <pascal.caversaccio@hotmail.ch>",
+  "license": "AGPL-3.0",
+  "scripts": {
+    "prettier:check": "prettier -c **/*.{md,sol,json,yml}",
+    "prettier:fix": "prettier -w **/*.{md,sol,json,yml}",
+    "solhint:check": "npx solhint '**/*.sol'",
+    "solhint:fix": "npx solhint '**/*.sol' --fix",
+    "lint:check": "yarn prettier:check && yarn solhint:check",
+    "lint:fix": "yarn prettier:fix && yarn solhint:fix"
+  },
+  "devDependencies": {
+    "prettier": "^2.7.1",
+    "prettier-plugin-solidity": "^1.0.0-dev.23"
+  }
+}
