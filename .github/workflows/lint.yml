@@ -40,5 +40,5 @@ jobs:
       - name: Install Yarn project with a clean slate
         run: yarn install --prefer-offline --frozen-lockfile
 
-      - name: Lint
+      - name: Prettier and lint
         run: yarn lint:check
