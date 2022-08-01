@@ -21,13 +21,13 @@ def _recover_sig(hash: bytes32, signature: Bytes[65]) -> address:
     @param hash The 32-bytes message digest that was signed.
     @param signature The secp256k1 64/65-bytes signature of `hash`.
     """
-    # 65-bytes case: r,s,v standard signature
+    # 65-bytes case: r,s,v standard signature.
     if (len(signature) == 65):
         r: uint256 = extract32(signature, 0, output_type=uint256)
         s: uint256 = extract32(signature, 32, output_type=uint256)
         v: uint256 = convert(slice(signature, 64, 1), uint256)
         return self._try_recover_vrs(hash, v, r, s)
-    # 64-bytes case: r,vs signature; see: https://eips.ethereum.org/EIPS/eip-2098
+    # 64-bytes case: r,vs signature; see: https://eips.ethereum.org/EIPS/eip-2098.
     elif (len(signature) == 64):
         r: uint256 = extract32(signature, 0, output_type=uint256)
         vs: uint256 = extract32(signature, 32, output_type=uint256)
@@ -63,7 +63,10 @@ def _try_recover_r_vs(hash: bytes32, r: uint256, vs: uint256) -> address:
     @param vs The secp256k1 32-bytes short signature field of `v` and `s`.
     """
     s: uint256 = vs & convert(_SIGNATURE_INCREMENT, uint256)
-    v: uint256 = shift(vs, -255) + 27
+    # We do not check for an overflow here since the shift operation
+    # `shift(vs, -255)` results essentially in a uint8 type (0 or 1)
+    # and we use uint256 as result type.
+    v: uint256 = unsafe_add(shift(vs, -255), 27)
     return self._try_recover_vrs(hash, v, r, s)
 
 
@@ -84,7 +87,7 @@ def _try_recover_vrs(hash: bytes32, v: uint256, r: uint256, s: uint256) -> addre
     @param s The secp256k1 32-bytes signature parameter `s`.
     """
     if (s > convert(_MALLEABILITY_THRESHOLD, uint256)):
-        raise "ECDSA: invalid signature \'s\' value"
+        raise "ECDSA: invalid signature 's' value"
 
     signer: address = ecrecover(hash, v, r, s)
     if (signer == empty(address)):
