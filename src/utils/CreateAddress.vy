@@ -45,22 +45,22 @@ def _compute_address_rlp(deployer: address, nonce: uint256) -> address:
     length: bytes1 = 0x94
 
     if (nonce == convert(0x00, uint256)):
-        return self._convert_keccak256_2_address(keccak256(concat(convert(0xd6, bytes32), convert(length, bytes32), convert(deployer, bytes32), convert(0x80, bytes32))))
+        return self._convert_keccak256_2_address(keccak256(concat(0xd6, length, convert(deployer, bytes20), 0x80)))
     elif (nonce <= convert(0x7f, uint256)):
-        return self._convert_keccak256_2_address(keccak256(concat(convert(0xd6, bytes32), convert(length, bytes32), convert(deployer, bytes32), convert(nonce, bytes32))))
+        return self._convert_keccak256_2_address(keccak256(concat(0xd6, length, convert(deployer, bytes20), convert(nonce, bytes32))))
     elif (nonce <= convert(max_value(uint8), uint256)):
-        return self._convert_keccak256_2_address(keccak256(concat(convert(0xd7, bytes32), convert(length, bytes32), convert(deployer, bytes32), convert(0x81, bytes32), convert(nonce, bytes32))))
+        return self._convert_keccak256_2_address(keccak256(concat(0xd7, length, convert(deployer, bytes20), 0x81, convert(nonce, bytes32))))
     elif (nonce <= convert(max_value(uint16), uint256)):
-        return self._convert_keccak256_2_address(keccak256(concat(convert(0xd8, bytes32), convert(length, bytes32), convert(deployer, bytes32), convert(0x82, bytes32), convert(nonce, bytes32))))
+        return self._convert_keccak256_2_address(keccak256(concat(0xd8, length, convert(deployer, bytes20), 0x82, convert(nonce, bytes32))))
     elif (nonce <= convert(max_value(uint24), uint256)):
-        return self._convert_keccak256_2_address(keccak256(concat(convert(0xd9, bytes32), convert(length, bytes32), convert(deployer, bytes32), convert(0x83, bytes32), convert(nonce, bytes32))))
+        return self._convert_keccak256_2_address(keccak256(concat(0xd9, length, convert(deployer, bytes20), 0x83, convert(nonce, bytes32))))
     else:
     # @dev In the case of `nonce > convert(max_value(uint24), uint256)`,
     # we have the following encoding scheme:
     # 0xda = 0xc0 (short RLP prefix) + 0x16 (length of: 0x94 ++ address ++ 0x84 ++ nonce)
     # 0x94 = 0x80 + 0x14 (0x14 = the length of an address, 20 bytes, in hex)
     # 0x84 = 0x80 + 0x04 (0x04 = the bytes length of the nonce, 4 bytes, in hex)
-        return self._convert_keccak256_2_address(keccak256(concat(convert(0xda, bytes32), convert(length, bytes32), convert(deployer, bytes32), convert(0x84, bytes32), convert(nonce, bytes32))))
+        return self._convert_keccak256_2_address(keccak256(concat(0xda, length, convert(deployer, bytes20), 0x84, convert(nonce, bytes32))))
 
 
 @internal
