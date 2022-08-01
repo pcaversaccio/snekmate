@@ -1,0 +1,26 @@
+name: Feature request
+description: Suggest an idea for snekmate.
+title: "[Feature-Request]: "
+labels:
+  - "enhancement"
+assignees:
+  - pcaversaccio
+body:
+  - attributes:
+      value: |
+        Please check the [issues tab](https://github.com/pcaversaccio/snekmate/issues) to avoid duplicates.
+        Thanks for taking the time to provide feedback on snekmate!
+    type: markdown
+  - attributes:
+      label: Describe the desired feature
+      description: Explain what the feature solves/improves.
+    id: feature-request
+    type: textarea
+    validations:
+      required: true
+  - attributes:
+      description: "It can be a GitHub repository/gist or a simple code snippet."
+      label: "Code example that solves the feature:"
+      placeholder: "```vy\n@external\ndef\n```"
+    id: reproduce
+    type: textarea

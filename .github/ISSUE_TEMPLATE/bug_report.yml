@@ -1,5 +1,5 @@
 name: "Bug Report"
-description: "File a bug report"
+description: "Report a bug for snekmate."
 title: "[Bug-Candidate]: "
 labels:
   - bug
@@ -20,7 +20,7 @@ body:
   - attributes:
       description: "It can be a GitHub repository/gist or a simple code snippet."
       label: "Code example to reproduce the issue:"
-      placeholder: "`@external\ndef`\n"
+      placeholder: "```vy\n@external\ndef\n```"
     id: reproduce
     type: textarea
     validations:

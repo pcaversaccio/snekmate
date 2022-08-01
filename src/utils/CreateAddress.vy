@@ -1,3 +1,4 @@
+# @version ^0.3.4
 """
 @title `CREATE` EVM Opcode Utility Function for Address Calculation
 @license GNU Affero General Public License v3.0
