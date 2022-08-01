@@ -8,3 +8,5 @@ updates:
     target-branch: "main"
     labels:
       - "dependencies"
+    assignees:
+      - "pcaversaccio"
