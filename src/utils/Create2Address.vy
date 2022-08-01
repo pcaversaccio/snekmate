@@ -40,7 +40,7 @@ def _compute_address(salt: bytes32, bytecode_hash: bytes32, deployer: address) -
     @param bytecode_hash The 32-bytes bytecode digest of the contract creation bytecode.
     @param deployer The 20-bytes deployer address.
     """
-    data: bytes32 = keccak256(concat(convert(_COLLISION_OFFSET, bytes32), convert(deployer, bytes32), salt, bytecode_hash))
+    data: bytes32 = keccak256(concat(_COLLISION_OFFSET, convert(deployer, bytes20), salt, bytecode_hash))
     return self._convert_keccak256_2_address(data)
 
 
