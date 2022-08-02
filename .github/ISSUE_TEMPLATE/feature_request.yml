@@ -12,7 +12,7 @@ body:
         Thanks for taking the time to provide feedback on snekmate!
     type: markdown
   - attributes:
-      label: Describe the desired feature
+      label: "Describe the desired feature:"
       description: Explain what the feature solves/improves.
     id: feature-request
     type: textarea
