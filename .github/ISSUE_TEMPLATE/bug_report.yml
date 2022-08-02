@@ -18,26 +18,26 @@ body:
     validations:
       required: true
   - attributes:
-      description: "It can be a GitHub repository/gist or a simple code snippet."
       label: "Code example to reproduce the issue:"
+      description: "It can be a GitHub repository/gist or a simple code snippet."
       placeholder: "```vy\n@external\ndef\n```"
     id: reproduce
     type: textarea
     validations:
       required: true
   - attributes:
+      label: "Version:"
       description: |
         What version of Vyper are you running? 
-        Run `vyper --version`
-      label: "Version:"
+        Run `vyper --version`.
     id: version
     type: textarea
     validations:
       required: true
   - attributes:
+      label: "Relevant log output:"
       description: |
         Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
       render: shell
-      label: "Relevant log output:"
     id: logs
     type: textarea

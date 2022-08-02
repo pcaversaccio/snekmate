@@ -19,8 +19,8 @@ body:
     validations:
       required: true
   - attributes:
-      description: "It can be a GitHub repository/gist or a simple code snippet."
       label: "Code example that solves the feature:"
+      description: "It can be a GitHub repository/gist or a simple code snippet."
       placeholder: "```vy\n@external\ndef\n```"
     id: reproduce
     type: textarea
