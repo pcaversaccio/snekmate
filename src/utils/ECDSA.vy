@@ -14,7 +14,7 @@ _MALLEABILITY_THRESHOLD: constant(bytes32) = 0x7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF5
 _SIGNATURE_INCREMENT: constant(bytes32) = 0X7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
 
 
-@internal
+@external
 @pure
 def _recover_sig(hash: bytes32, signature: Bytes[65]) -> address:
     """

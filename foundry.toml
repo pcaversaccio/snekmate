@@ -4,10 +4,7 @@ src = 'src'                                  # the source directory
 test = 'test'                                # the test directory
 out = 'out'                                  # the output directory (for artifacts)
 libs = ['lib']                               # a list of library directories
-remappings = [
-    'forge-std/=lib/forge-std/src/', 
-    'create-util/=lib/create-util/contracts/'
-]                                            # a list of remappings
+remappings = []                              # a list of remappings
 cache = true                                 # whether to cache builds or not
 cache_path = 'cache'                         # where the cache is stored if enabled
 force = true                                 # whether to ignore the cache (clean build)

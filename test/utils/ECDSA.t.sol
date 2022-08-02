@@ -1,32 +1,26 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.15;
 
-import {Test} from "../../forge-std/Test.sol";
+import {Test} from "../../lib/forge-std/src/Test.sol";
 import {VyperDeployer} from "../../lib/utils/VyperDeployer.sol";
 
-contract SimpleStoreTest is Test {
-    ///@notice create a new instance of VyperDeployer
-    VyperDeployer vyperDeployer = new VyperDeployer();
+import {IECDSA} from "../../test/utils/IECDSA.sol";
 
-    ISimpleStore simpleStore;
+contract ECDSATest is Test {
+    VyperDeployer private vyperDeployer = new VyperDeployer();
+    // solhint-disable-next-line var-name-mixedcase
+    IECDSA private ECDSA;
 
     function setUp() public {
-        ///@notice deploy a new instance of ISimplestore by passing in the address of the deployed Vyper contract
-        simpleStore = ISimpleStore(
-            vyperDeployer.deployContract("SimpleStore", abi.encode(1234))
-        );
+        ECDSA = IECDSA(vyperDeployer.deployContract("src/utils/", "ECDSA"));
     }
 
-    function testGet() public {
-        uint256 val = simpleStore.get();
-
-        require(val == 1234);
-    }
-
-    function testStore(uint256 _val) public {
-        simpleStore.store(_val);
-        uint256 val = simpleStore.get();
-
-        require(_val == val);
+    // solhint-disable-next-line func-name-mixedcase
+    function test_recover_sig() public {
+        address alice = vm.addr(1);
+        bytes32 hash = keccak256("WAGMI");
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(1, hash);
+        bytes memory signature = abi.encodePacked(r, s, v);
+        assertEq(alice, ECDSA._recover_sig(hash, signature));
     }
 }
