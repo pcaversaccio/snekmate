@@ -1,5 +1,5 @@
 ## defaults for all profiles
-[default]
+[profile.default]
 src = 'src'                                  # the source directory
 test = 'test'                                # the test directory
 out = 'out'                                  # the output directory (for artifacts)
