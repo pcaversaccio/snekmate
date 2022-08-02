@@ -1,5 +1,6 @@
 # 🐍 snekmate
 
+[![Test smart contracts](https://github.com/pcaversaccio/snekmate/actions/workflows/test-contracts.yml/badge.svg)](https://github.com/pcaversaccio/snekmate/actions/workflows/test-contracts.yml)
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
 
 State-of-the-art, highly opinionated, hyper-optimised, and secure Vyper smart contract building blocks.
