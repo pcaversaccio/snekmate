@@ -8,6 +8,7 @@
         "ignoreConstructors": true
       }
     ],
-    "no-empty-blocks": "off"
+    "no-empty-blocks": "off",
+    "func-name-mixedcase": "off"
   }
 }
