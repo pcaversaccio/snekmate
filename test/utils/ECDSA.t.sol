@@ -34,7 +34,7 @@ contract ECDSATest is Test {
      * @return short The 64-bytes EIP-2098 compliant signature.
      */
     function to2098Format(bytes memory signature)
-        public
+        internal
         view
         returns (bytes memory)
     {
