@@ -12,6 +12,19 @@ contract ECDSATest is Test {
     // solhint-disable-next-line var-name-mixedcase
     IECDSA private ECDSA;
 
+    function to2098Format(bytes calldata signature)
+        public
+        pure
+        returns (bytes memory)
+    {
+        require(signature.length == 65, "invalid signature length");
+        require(uint8(signature[32]) >> 7 != 1, "invalid signature 's' value");
+        bytes memory short = signature[0:32];
+        uint8 parityBit = uint8(short[32]) | ((uint8(signature[64]) % 27) << 7);
+        short[32] = bytes1(parityBit);
+        return short;
+    }
+
     function setUp() public {
         ECDSA = IECDSA(vyperDeployer.deployContract("src/utils/", "ECDSA"));
     }
@@ -22,11 +35,16 @@ contract ECDSATest is Test {
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(1, hash);
         bytes memory signature = abi.encodePacked(r, s, v);
         assertEq(alice, ECDSA.recover_sig(hash, signature));
+
+        // EIP-2098
+        // console.logBytes1(signature[32]);
+        // bytes memory signature2098 = to2098Format(signature);
+        // assertEq(alice, ECDSA.recover_sig(hash, signature2098));
     }
 
     function testRecoverWithTooShortSignature() public {
         bytes32 hash = keccak256("WAGMI");
-        bytes memory signature = abi.encodePacked("0x0123456789");
+        bytes memory signature = "0x0123456789";
         assertEq(address(0), ECDSA.recover_sig(hash, signature));
     }
 
@@ -59,11 +77,58 @@ contract ECDSATest is Test {
 
     function testRecoverWithInvalidSignature() public {
         bytes32 hash = keccak256("WAGMI");
-        bytes memory signatureInvalid = abi.encodePacked(
-            "0x98f089cabeb2f7b29052b41de3f863deae900c39e35f044039733c8ee9e2fb0860233dd93c5bdd0ceb03b9ae4fd8ef2ab02026399626ee49da226ca7adbb804a1c"
-        );
-        vm.expectRevert();
+        (, bytes32 r, bytes32 s) = vm.sign(1, hash);
+        bytes memory signatureInvalid = abi.encodePacked(r, s, bytes1(0xa0));
+        vm.expectRevert(bytes("ECDSA: invalid signature"));
         ECDSA.recover_sig(hash, signatureInvalid);
+    }
+
+    function testRecoverWith00Value() public {
+        bytes32 hash = keccak256("WAGMI");
+        (, bytes32 r, bytes32 s) = vm.sign(1, hash);
+        bytes memory signatureWithoutVersion = abi.encodePacked(r, s);
+        bytes1 version = 0x00;
+        vm.expectRevert(bytes("ECDSA: invalid signature"));
+        ECDSA.recover_sig(
+            hash,
+            abi.encodePacked(signatureWithoutVersion, version)
+        );
+    }
+
+    function testRecoverWithWrongVersion() public {
+        bytes32 hash = keccak256("WAGMI");
+        (, bytes32 r, bytes32 s) = vm.sign(1, hash);
+        bytes memory signatureWithoutVersion = abi.encodePacked(r, s);
+        bytes1 version = 0x02;
+        vm.expectRevert(bytes("ECDSA: invalid signature"));
+        ECDSA.recover_sig(
+            hash,
+            abi.encodePacked(signatureWithoutVersion, version)
+        );
+    }
+
+    function testRecoverWithCorrectVersion() public {
+        address alice = vm.addr(1);
+        bytes32 hash = keccak256("WAGMI");
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(1, hash);
+        bytes memory signatureWithoutVersion = abi.encodePacked(r, s);
+        assertEq(
+            alice,
+            ECDSA.recover_sig(
+                hash,
+                abi.encodePacked(signatureWithoutVersion, v)
+            )
+        );
+    }
+
+    function testRecoverWithTooHighSValue() public {
+        bytes32 hash = keccak256("WAGMI");
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(1, hash);
+        uint256 sTooHigh = uint256(s) +
+            0x7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF5D576E7357A4501DDFE92F46681B20A0;
+        bytes memory signature = abi.encodePacked(r, bytes32(sTooHigh), v);
+        vm.expectRevert(bytes("ECDSA: invalid signature 's' value"));
+        ECDSA.recover_sig(hash, signature);
     }
 
     function testEthSignedMessageHash() public {
