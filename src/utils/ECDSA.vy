@@ -16,12 +16,13 @@ _SIGNATURE_INCREMENT: constant(bytes32) = 0X7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
 
 @external
 @pure
-def _recover_sig(hash: bytes32, signature: Bytes[65]) -> address:
+def recover_sig(hash: bytes32, signature: Bytes[65]) -> address:
     """
     @dev Recover the signer address from a message digest `hash`
          and the signature `signature`.
     @param hash The 32-bytes message digest that was signed.
     @param signature The secp256k1 64/65-bytes signature of `hash`.
+    @return address The recovered 20-bytes signer address.
     """
     # 65-bytes case: r,s,v standard signature.
     if (len(signature) == 65):
@@ -48,6 +49,7 @@ def _recover_vrs(hash: bytes32, v: uint256, r: uint256, s: uint256) -> address:
     @param v The secp256k1 1-byte signature parameter `v`.
     @param r The secp256k1 32-bytes signature parameter `r`.
     @param s The secp256k1 32-bytes signature parameter `s`.
+    @return address The recovered 20-bytes signer address.
     """
     return self._try_recover_vrs(hash, v, r, s)
 
@@ -63,6 +65,7 @@ def _try_recover_r_vs(hash: bytes32, r: uint256, vs: uint256) -> address:
     @param hash The 32-bytes message digest that was signed.
     @param r The secp256k1 32-bytes signature parameter `r`.
     @param vs The secp256k1 32-bytes short signature field of `v` and `s`.
+    @return address The recovered 20-bytes signer address.
     """
     s: uint256 = vs & convert(_SIGNATURE_INCREMENT, uint256)
     # We do not check for an overflow here since the shift operation
@@ -87,6 +90,7 @@ def _try_recover_vrs(hash: bytes32, v: uint256, r: uint256, s: uint256) -> addre
     @param v The secp256k1 1-byte signature parameter `v`.
     @param r The secp256k1 32-bytes signature parameter `r`.
     @param s The secp256k1 32-bytes signature parameter `s`.
+    @return address The recovered 20-bytes signer address.
     """
     if (s > convert(_MALLEABILITY_THRESHOLD, uint256)):
         raise "ECDSA: invalid signature 's' value"
@@ -96,3 +100,41 @@ def _try_recover_vrs(hash: bytes32, v: uint256, r: uint256, s: uint256) -> addre
         raise "ECDSA: invalid signature"
     
     return signer
+
+
+@external
+@pure
+def to_eth_signed_message_hash(hash: bytes32) -> bytes32:
+    """
+    @dev Return an Ethereum signed message from a 32-bytes
+         message digest `hash`.
+    @notice This function returns a 32-bytes hash that
+            corresponds to the one signed with the JSON-RPC method:
+            https://ethereum.org/en/developers/docs/apis/json-rpc/#eth_sign.
+            This method is part of EIP-191:
+            https://eips.ethereum.org/EIPS/eip-191.
+    @param hash The 32-bytes message digest.
+    @return bytes32 The 32-bytes Ethereum signed message.
+    """
+    return keccak256(concat(convert(b"\x19Ethereum Signed Message:\n32", bytes32), hash))
+
+
+@external
+@pure
+def to_typed_data_hash(domain_separator: bytes32, struct_hash: bytes32) -> bytes32:
+    """
+    @dev Return an Ethereum signed typed data from a 32-bytes
+         `domain_separator` and a 32-bytes `struct_hash`.
+    @notice This function returns a 32-bytes hash that
+            corresponds to the one signed with the JSON-RPC method:
+            https://eips.ethereum.org/EIPS/eip-712#specification-of-the-eth_signtypeddata-json-rpc.
+            This method is part of EIP-712:
+            https://eips.ethereum.org/EIPS/eip-712.
+    @param domain_separator The 32-bytes domain separator that is
+           used as part of the EIP-712 encoding scheme.
+    @param struct_hash The 32-bytes struct hash that is used as
+           part of the EIP-712 encoding scheme. See the definition:
+           https://eips.ethereum.org/EIPS/eip-712#definition-of-hashstruct.
+    @return bytes32 The 32-bytes Ethereum signed typed data.
+    """
+    return keccak256(concat(convert(b"\x19\x01", bytes32), domain_separator, struct_hash))
