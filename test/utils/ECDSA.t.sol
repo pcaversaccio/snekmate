@@ -2,6 +2,7 @@
 pragma solidity ^0.8.15;
 
 import {Test} from "../../lib/forge-std/src/Test.sol";
+import {console} from "../../lib/forge-std/src/console.sol";
 import {VyperDeployer} from "../../lib/utils/VyperDeployer.sol";
 
 import {IECDSA} from "../../test/utils/IECDSA.sol";
@@ -63,5 +64,20 @@ contract ECDSATest is Test {
         );
         vm.expectRevert();
         ECDSA.recover_sig(hash, signatureInvalid);
+    }
+
+    function testEthSignedMessageHash() public {
+        bytes32 hash = keccak256("WAGMI");
+        bytes32 digest1 = keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", hash));
+        bytes32 digest2 = ECDSA.to_eth_signed_message_hash(hash);
+        assertEq(digest1, digest2);
+    }
+
+    function testToTypedDataHash() public {
+        bytes32 domainSeparator = keccak256("WAGMI");
+        bytes32 structHash = keccak256("GM");
+        bytes32 digest1 = keccak256(abi.encodePacked("\x19\x01", domainSeparator, structHash));
+        bytes32 digest2 = ECDSA.to_typed_data_hash(domainSeparator, structHash);
+        assertEq(digest1, digest2);
     }
 }

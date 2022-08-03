@@ -116,7 +116,7 @@ def to_eth_signed_message_hash(hash: bytes32) -> bytes32:
     @param hash The 32-bytes message digest.
     @return bytes32 The 32-bytes Ethereum signed message.
     """
-    return keccak256(concat(convert(b"\x19Ethereum Signed Message:\n32", bytes32), hash))
+    return keccak256(concat(b"\x19Ethereum Signed Message:\n32", hash))
 
 
 @external
@@ -137,4 +137,4 @@ def to_typed_data_hash(domain_separator: bytes32, struct_hash: bytes32) -> bytes
            https://eips.ethereum.org/EIPS/eip-712#definition-of-hashstruct.
     @return bytes32 The 32-bytes Ethereum signed typed data.
     """
-    return keccak256(concat(convert(b"\x19\x01", bytes32), domain_separator, struct_hash))
+    return keccak256(concat(b"\x19\x01", domain_separator, struct_hash))

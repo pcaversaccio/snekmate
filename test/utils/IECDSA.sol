@@ -6,4 +6,14 @@ interface IECDSA {
         external
         pure
         returns (address);
+
+    function to_eth_signed_message_hash(bytes32 hash)
+        external
+        pure
+        returns (bytes32);
+
+    function to_typed_data_hash(bytes32 domainSeparator, bytes32 structHash)
+        external
+        pure
+        returns (bytes32);
 }
