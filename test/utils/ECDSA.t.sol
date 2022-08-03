@@ -3,23 +3,26 @@ pragma solidity ^0.8.15;
 
 import {Test} from "../../lib/forge-std/src/Test.sol";
 import {console} from "../../lib/forge-std/src/console.sol";
+import {BytesLib} from "../../lib/solidity-bytes-utils/contracts/BytesLib.sol";
 import {VyperDeployer} from "../../lib/utils/VyperDeployer.sol";
 
 import {IECDSA} from "../../test/utils/IECDSA.sol";
 
 contract ECDSATest is Test {
+    using BytesLib for bytes;
+
     VyperDeployer private vyperDeployer = new VyperDeployer();
     // solhint-disable-next-line var-name-mixedcase
     IECDSA private ECDSA;
 
-    function to2098Format(bytes calldata signature)
+    function to2098Format(bytes memory signature)
         public
         pure
         returns (bytes memory)
     {
         require(signature.length == 65, "invalid signature length");
         require(uint8(signature[32]) >> 7 != 1, "invalid signature 's' value");
-        bytes memory short = signature[0:32];
+        bytes memory short = signature.slice(0, 64);
         uint8 parityBit = uint8(short[32]) | ((uint8(signature[64]) % 27) << 7);
         short[32] = bytes1(parityBit);
         return short;
@@ -37,15 +40,18 @@ contract ECDSATest is Test {
         assertEq(alice, ECDSA.recover_sig(hash, signature));
 
         // EIP-2098
-        // console.logBytes1(signature[32]);
-        // bytes memory signature2098 = to2098Format(signature);
-        // assertEq(alice, ECDSA.recover_sig(hash, signature2098));
+        bytes memory signature2098 = to2098Format(signature);
+        assertEq(alice, ECDSA.recover_sig(hash, signature2098));
     }
 
     function testRecoverWithTooShortSignature() public {
         bytes32 hash = keccak256("WAGMI");
         bytes memory signature = "0x0123456789";
         assertEq(address(0), ECDSA.recover_sig(hash, signature));
+
+        // EIP-2098
+        vm.expectRevert(bytes("invalid signature length"));
+        to2098Format(signature);
     }
 
     function testRecoverWithTooLongSignature() public {
@@ -55,6 +61,10 @@ contract ECDSATest is Test {
         );
         vm.expectRevert();
         ECDSA.recover_sig(hash, signature);
+
+        // EIP-2098
+        vm.expectRevert(bytes("invalid signature length"));
+        to2098Format(signature);
     }
 
     function testRecoverWithArbitraryMessage() public {
@@ -63,6 +73,10 @@ contract ECDSATest is Test {
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(1, hash);
         bytes memory signature = abi.encodePacked(r, s, v);
         assertEq(alice, ECDSA.recover_sig(hash, signature));
+
+        // EIP-2098
+        bytes memory signature2098 = to2098Format(signature);
+        assertEq(alice, ECDSA.recover_sig(hash, signature2098));
     }
 
     function testRecoverWithWrongMessage() public {
@@ -73,6 +87,10 @@ contract ECDSATest is Test {
         bytes32 hashWrong = keccak256("WAGMI1");
         address recoveredAddress = ECDSA.recover_sig(hashWrong, signature);
         assertTrue(alice != recoveredAddress);
+
+        // EIP-2098
+        bytes memory signature2098 = to2098Format(signature);
+        assertTrue(alice != ECDSA.recover_sig(hashWrong, signature2098));
     }
 
     function testRecoverWithInvalidSignature() public {
@@ -119,6 +137,12 @@ contract ECDSATest is Test {
                 abi.encodePacked(signatureWithoutVersion, v)
             )
         );
+
+        // EIP-2098
+        bytes memory signature2098 = to2098Format(
+            abi.encodePacked(signatureWithoutVersion, v)
+        );
+        assertEq(alice, ECDSA.recover_sig(hash, signature2098));
     }
 
     function testRecoverWithTooHighSValue() public {
@@ -129,6 +153,11 @@ contract ECDSATest is Test {
         bytes memory signature = abi.encodePacked(r, bytes32(sTooHigh), v);
         vm.expectRevert(bytes("ECDSA: invalid signature 's' value"));
         ECDSA.recover_sig(hash, signature);
+
+        // EIP-2098
+        vm.expectRevert(bytes("invalid signature 's' value"));
+        bytes memory signature2098 = to2098Format(signature);
+        vm.expectRevert(bytes("invalid signature 's' value"));
     }
 
     function testEthSignedMessageHash() public {
