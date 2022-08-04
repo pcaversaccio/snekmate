@@ -5,7 +5,7 @@ import {Test} from "../../lib/forge-std/src/Test.sol";
 import {BytesLib} from "../../lib/solidity-bytes-utils/contracts/BytesLib.sol";
 import {VyperDeployer} from "../../lib/utils/VyperDeployer.sol";
 
-import {IECDSA} from "../../test/utils/IECDSA.sol";
+import {IECDSA} from "../../test/utils/interfaces/IECDSA.sol";
 
 /**
  * @dev Error that occurs when the signature length is invalid.

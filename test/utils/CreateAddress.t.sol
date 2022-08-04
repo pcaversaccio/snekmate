@@ -6,7 +6,7 @@ import {VyperDeployer} from "../../lib/utils/VyperDeployer.sol";
 import {ERC20Mock} from "../../lib/openzeppelin-contracts/contracts/mocks/ERC20Mock.sol";
 import {Create} from "../../lib/create-util/contracts/Create.sol";
 
-import {ICreateAddress} from "../../test/utils/ICreateAddress.sol";
+import {ICreateAddress} from "../../test/utils/interfaces/ICreateAddress.sol";
 
 contract CreateAddressTest is Test {
     VyperDeployer private vyperDeployer = new VyperDeployer();
