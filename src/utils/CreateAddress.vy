@@ -11,25 +11,33 @@
 """
 
 
-@internal
-@pure
-def _compute_address_rlp_self(nonce: uint256) -> address:
+# @dev A Vyper contract cannot call directly between two external functions.
+# To bypass this, we can use an interface.
+interface ComputeCreateAddress:
+    def compute_address_rlp(deployer: address, nonce: uint256) -> address: pure
+
+
+@external
+@view
+def compute_address_rlp_self(nonce: uint256) -> address:
     """
     @dev Returns the address where a contract will be stored if
          deployed via this contract using the `CREATE` opcode.
     @param nonce The next uint256 nonce of this contract.
+    @return address The 20-bytes address where a contract will be stored.
     """
-    return self._compute_address_rlp(self, nonce)
+    return ComputeCreateAddress(self).compute_address_rlp(self, nonce)
 
 
-@internal
+@external
 @pure
-def _compute_address_rlp(deployer: address, nonce: uint256) -> address:
+def compute_address_rlp(deployer: address, nonce: uint256) -> address:
     """
     @dev Returns the address where a contract will be stored
-         if deployed via the `CREATE` opcode. For the specification
-         of the Recursive Length Prefix (RLP) encoding scheme, please
-         refer to p. 19 of the Ethereum Yellow Paper (https://ethereum.github.io/yellowpaper/paper.pdf)
+         if deployed via `deployer` using the `CREATE` opcode.
+         For the specification of the Recursive Length Prefix (RLP)
+         encoding scheme, please refer to p. 19 of the Ethereum
+         Yellow Paper (https://ethereum.github.io/yellowpaper/paper.pdf)
          and the Ethereum Wiki (https://eth.wiki/fundamentals/rlp).
          For further insights also, see the following issue:
          https://github.com/transmissions11/solmate/issues/207.
@@ -40,6 +48,7 @@ def _compute_address_rlp(deployer: address, nonce: uint256) -> address:
          created by another contract is calculated with a non-zero nonce.
     @param deployer The 20-bytes deployer address.
     @param nonce The next uint256 nonce of the deployer address.
+    @return address The 20-bytes address where a contract will be stored.
     """
 
     length: bytes1 = 0x94
@@ -57,9 +66,9 @@ def _compute_address_rlp(deployer: address, nonce: uint256) -> address:
     else:
     # @dev In the case of `nonce > convert(max_value(uint24), uint256)`,
     # we have the following encoding scheme:
-    # 0xda = 0xc0 (short RLP prefix) + 0x16 (length of: 0x94 ++ address ++ 0x84 ++ nonce)
-    # 0x94 = 0x80 + 0x14 (0x14 = the length of an address, 20 bytes, in hex)
-    # 0x84 = 0x80 + 0x04 (0x04 = the bytes length of the nonce, 4 bytes, in hex)
+    # 0xda = 0xc0 (short RLP prefix) + 0x16 (length of: 0x94 ++ address ++ 0x84 ++ nonce),
+    # 0x94 = 0x80 + 0x14 (0x14 = the length of an address, 20 bytes, in hex),
+    # 0x84 = 0x80 + 0x04 (0x04 = the bytes length of the nonce, 4 bytes, in hex).
         return self._convert_keccak256_2_address(keccak256(concat(0xda, length, convert(deployer, bytes20), 0x84, convert(nonce, bytes32))))
 
 
@@ -69,5 +78,6 @@ def _convert_keccak256_2_address(digest: bytes32) -> address:
     """
     @dev Converts a 32-bytes keccak256 digest to an address.
     @param digest The 32-bytes keccak256 digest.
+    @return address The converted 20-bytes address.
     """
     return convert(convert(digest, uint256) & max_value(uint160), address)
