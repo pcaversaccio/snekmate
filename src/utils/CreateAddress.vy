@@ -70,9 +70,9 @@ def compute_address_rlp(deployer: address, nonce: uint256) -> address:
         return self._convert_keccak256_2_address(keccak256(concat(0xd9, length, convert(deployer, bytes20), 0x83, convert(convert(nonce, uint24), bytes3))))
     # @dev In the case of `nonce > convert(max_value(uint24), uint256)`,
     # we have the following encoding scheme:
-    # 0xda = 0xc0 (short RLP prefix) + 0x16 (length of: 0x94 ++ address ++ 0x84 ++ nonce),
-    # 0x94 = 0x80 + 0x14 (0x14 = the length of an address, 20 bytes, in hex),
-    # 0x84 = 0x80 + 0x04 (0x04 = the bytes length of the nonce, 4 bytes, in hex).
+    # 0xda = 0xc0 (short RLP prefix) + 0x1a (= the bytes length of: 0x94 + address + 0x84 + nonce),
+    # 0x94 = 0x80 + 0x14 (= the bytes length of an address, 20 bytes, in hex),
+    # 0x84 = 0x80 + 0x04 (= the bytes length of the nonce, 4 bytes, in hex).
     else:
         return self._convert_keccak256_2_address(keccak256(concat(0xda, length, convert(deployer, bytes20), 0x84, convert(convert(nonce, uint32), bytes4))))
 
