@@ -2,7 +2,6 @@
 pragma solidity ^0.8.15;
 
 import {Test} from "../../lib/forge-std/src/Test.sol";
-import {console} from "../../lib/forge-std/src/console.sol";
 import {BytesLib} from "../../lib/solidity-bytes-utils/contracts/BytesLib.sol";
 import {VyperDeployer} from "../../lib/utils/VyperDeployer.sol";
 
