@@ -53,6 +53,11 @@ def compute_address_rlp(deployer: address, nonce: uint256) -> address:
 
     length: bytes1 = 0x94
 
+    # @dev The theoretical limit for an account nonce is uint64; see e.g. here:
+    # https://github.com/ethereum/go-ethereum/blob/master/core/types/transaction.go#L280.
+    # We assume, however, that nobody can have a nonce large enough to require more than 4 bytes.
+    assert nonce <= convert(max_value(uint32), uint256), "RLP: invalid nonce value"
+
     if (nonce == convert(0x00, uint256)):
         return self._convert_keccak256_2_address(keccak256(concat(0xd6, length, convert(deployer, bytes20), 0x80)))
     elif (nonce <= convert(0x7f, uint256)):
@@ -68,9 +73,6 @@ def compute_address_rlp(deployer: address, nonce: uint256) -> address:
     # 0xda = 0xc0 (short RLP prefix) + 0x16 (length of: 0x94 ++ address ++ 0x84 ++ nonce),
     # 0x94 = 0x80 + 0x14 (0x14 = the length of an address, 20 bytes, in hex),
     # 0x84 = 0x80 + 0x04 (0x04 = the bytes length of the nonce, 4 bytes, in hex).
-    # @notice The theoretical limit for an account nonce is uint64; see e.g. here:
-    # https://github.com/ethereum/go-ethereum/blob/master/core/types/transaction.go#L280.
-    # We assume, however, that nobody can have a nonce large enough to require more than 4 bytes.
     else:
         return self._convert_keccak256_2_address(keccak256(concat(0xda, length, convert(deployer, bytes20), 0x84, convert(convert(nonce, uint32), bytes4))))
 

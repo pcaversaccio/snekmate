@@ -19,6 +19,18 @@ contract CreateAddressTest is Test {
         );
     }
 
+    function testComputeAddressRevertTooHighNonce() public {
+        uint64 nonce = type(uint40).max;
+        vm.expectRevert(bytes("RLP: invalid nonce value"));
+        createAddress.compute_address_rlp(vm.addr(1), nonce);
+    }
+
+    function testComputeAddressSelfRevertTooHighNonce() public {
+        uint64 nonce = type(uint40).max;
+        vm.expectRevert(bytes("RLP: invalid nonce value"));
+        createAddress.compute_address_rlp_self(nonce);
+    }
+
     function testComputeAddressNonce0x00() public {
         address alice = vm.addr(1);
         uint64 nonce = 0x00;
@@ -133,7 +145,7 @@ contract CreateAddressTest is Test {
         assertEq(createAddressComputed, createAddressComputedOnChain);
     }
 
-    function testComputeSelfAddressNonce0x7f() public {
+    function testComputeAddressSelfNonce0x7f() public {
         uint64 nonce = 0x7f;
         vm.setNonce(address(create), nonce);
         address createAddressComputed = createAddress.compute_address_rlp_self(
@@ -146,7 +158,7 @@ contract CreateAddressTest is Test {
         assertEq(createAddressComputed, createAddressComputedOnChain);
     }
 
-    function testComputeSelfAddressNonceUint8() public {
+    function testComputeAddressSelfNonceUint8() public {
         uint64 nonce = type(uint8).max;
         vm.setNonce(address(create), nonce);
         address createAddressComputed = createAddress.compute_address_rlp_self(
@@ -159,7 +171,7 @@ contract CreateAddressTest is Test {
         assertEq(createAddressComputed, createAddressComputedOnChain);
     }
 
-    function testComputeSelfAddressNonceUint16() public {
+    function testComputeAddressSelfNonceUint16() public {
         uint64 nonce = type(uint16).max;
         vm.setNonce(address(create), nonce);
         address createAddressComputed = createAddress.compute_address_rlp_self(
@@ -172,7 +184,7 @@ contract CreateAddressTest is Test {
         assertEq(createAddressComputed, createAddressComputedOnChain);
     }
 
-    function testComputeSelfAddressNonceUint24() public {
+    function testComputeAddressSelfNonceUint24() public {
         uint64 nonce = type(uint24).max;
         vm.setNonce(address(create), nonce);
         address createAddressComputed = createAddress.compute_address_rlp_self(
@@ -185,7 +197,7 @@ contract CreateAddressTest is Test {
         assertEq(createAddressComputed, createAddressComputedOnChain);
     }
 
-    function testComputeSelfAddressNonceUint32() public {
+    function testComputeAddressSelfNonceUint32() public {
         uint64 nonce = type(uint32).max;
         vm.setNonce(address(create), nonce);
         address createAddressComputed = createAddress.compute_address_rlp_self(
