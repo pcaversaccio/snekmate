@@ -12,6 +12,7 @@ utils
 ├─ ECDSA — "Elliptic Curve Digital Signature Algorithm (ECDSA) Functions"
 ├─ CreateAddress — "`CREATE` EVM Opcode Utility Function for Address Calculation"
 ├─ Create2Address — "`CREATE2` EVM Opcode Utility Functions for Address Calculations"
+├─ EIP712 — "EIP-712 Domain Separator"
 ```
 
 ## 💢 Disclaimer

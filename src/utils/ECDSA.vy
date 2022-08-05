@@ -18,7 +18,7 @@ _SIGNATURE_INCREMENT: constant(bytes32) = 0X7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
 @pure
 def recover_sig(hash: bytes32, signature: Bytes[65]) -> address:
     """
-    @dev Recover the signer address from a message digest `hash`
+    @dev Recovers the signer address from a message digest `hash`
          and the signature `signature`.
     @param hash The 32-bytes message digest that was signed.
     @param signature The secp256k1 64/65-bytes signature of `hash`.
@@ -43,7 +43,7 @@ def recover_sig(hash: bytes32, signature: Bytes[65]) -> address:
 @pure
 def _recover_vrs(hash: bytes32, v: uint256, r: uint256, s: uint256) -> address:
     """
-    @dev Recover the signer address from a message digest `hash`
+    @dev Recovers the signer address from a message digest `hash`
          and the secp256k1 signature parameters `v`, `r`, and `s`.
     @param hash The 32-bytes message digest that was signed.
     @param v The secp256k1 1-byte signature parameter `v`.
@@ -58,7 +58,7 @@ def _recover_vrs(hash: bytes32, v: uint256, r: uint256, s: uint256) -> address:
 @pure
 def _try_recover_r_vs(hash: bytes32, r: uint256, vs: uint256) -> address:
     """
-    @dev Recover the signer address from a message digest `hash`
+    @dev Recovers the signer address from a message digest `hash`
          and the secp256k1 short signature fields `r` and `vs`.
     @notice See https://eips.ethereum.org/EIPS/eip-2098 for the
             compact signature representation.
@@ -79,7 +79,7 @@ def _try_recover_r_vs(hash: bytes32, r: uint256, vs: uint256) -> address:
 @pure
 def _try_recover_vrs(hash: bytes32, v: uint256, r: uint256, s: uint256) -> address:
     """
-    @dev Recover the signer address from a message digest `hash`
+    @dev Recovers the signer address from a message digest `hash`
          and the secp256k1 signature parameters `v`, `r`, and `s`.
     @notice All client implementations of the precompile `ecrecover`
             check if the value of `v` is 27 or 28. The references for
@@ -106,7 +106,7 @@ def _try_recover_vrs(hash: bytes32, v: uint256, r: uint256, s: uint256) -> addre
 @pure
 def to_eth_signed_message_hash(hash: bytes32) -> bytes32:
     """
-    @dev Return an Ethereum signed message from a 32-bytes
+    @dev Returns an Ethereum signed message from a 32-bytes
          message digest `hash`.
     @notice This function returns a 32-bytes hash that
             corresponds to the one signed with the JSON-RPC method:
@@ -123,7 +123,7 @@ def to_eth_signed_message_hash(hash: bytes32) -> bytes32:
 @pure
 def to_typed_data_hash(domain_separator: bytes32, struct_hash: bytes32) -> bytes32:
     """
-    @dev Return an Ethereum signed typed data from a 32-bytes
+    @dev Returns an Ethereum signed typed data from a 32-bytes
          `domain_separator` and a 32-bytes `struct_hash`.
     @notice This function returns a 32-bytes hash that
             corresponds to the one signed with the JSON-RPC method:
