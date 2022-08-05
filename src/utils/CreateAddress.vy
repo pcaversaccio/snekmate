@@ -55,7 +55,7 @@ def compute_address_rlp(deployer: address, nonce: uint256) -> address:
 
     # @dev The theoretical allowed limit, based on EIP-2681,
     # for an account nonce is 2**64-2: https://eips.ethereum.org/EIPS/eip-2681.
-    assert nonce <= unsafe_sub(convert(max_value(uint64), uint256), 1), "RLP: invalid nonce value"
+    assert nonce < convert(max_value(uint64), uint256), "RLP: invalid nonce value"
 
     # @dev The integer zero is treated as an empty byte string and
     # therefore has only one length prefix, 0x80, which is calculated
