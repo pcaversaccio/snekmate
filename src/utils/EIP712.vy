@@ -12,10 +12,6 @@
 """
 
 
-_CACHED_DOMAIN_SEPARATOR: immutable(bytes32)
-_CACHED_CHAIN_ID: immutable(uint256)
-_CACHED_THIS: immutable(address)
-
 _HASHED_NAME: immutable(bytes32)
 _HASHED_VERSION: immutable(bytes32)
 _TYPE_HASH: immutable(bytes32)
@@ -47,23 +43,17 @@ def __init__(name: String[50], version: String[20]):
     type_hash: bytes32 = keccak256(convert("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)", Bytes[82]))
     _HASHED_NAME = hashed_name
     _HASHED_VERSION = hashed_version
-    _CACHED_CHAIN_ID = chain.id
-    _CACHED_DOMAIN_SEPARATOR = self._build_domain_separator(type_hash, hashed_name, type_hash)
-    _CACHED_THIS = self
     _TYPE_HASH = type_hash
 
 
 @external
 @view
-def _domain_separator_v4() -> bytes32:
+def domain_separator_v4() -> bytes32:
     """
     @dev Returns the domain separator for the current chain.
     @return bytes32 The 32-bytes domain separator.
     """
-    if (self == _CACHED_THIS and chain.id == _CACHED_CHAIN_ID):
-        return _CACHED_DOMAIN_SEPARATOR
-    else:
-        return self._build_domain_separator(_TYPE_HASH, _HASHED_NAME, _HASHED_VERSION)
+    return self._build_domain_separator(_TYPE_HASH, _HASHED_NAME, _HASHED_VERSION)
 
 
 @internal
@@ -78,7 +68,7 @@ def _build_domain_separator(type_hash: bytes32, name_hash: bytes32, version_hash
 
 @external
 @view
-def _hash_typed_data_v4(struct_hash: bytes32) -> bytes32:
+def hash_typed_data_v4(struct_hash: bytes32) -> bytes32:
     """
     @dev Returns the hash of the fully encoded EIP-712
          message for this domain.
