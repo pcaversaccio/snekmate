@@ -55,26 +55,41 @@ def compute_address_rlp(deployer: address, nonce: uint256) -> address:
 
     # @dev The theoretical limit for an account nonce is uint64; see e.g. here:
     # https://github.com/ethereum/go-ethereum/blob/master/core/types/transaction.go#L280.
-    # We assume, however, that nobody can have a nonce large enough to require more than 4 bytes.
-    assert nonce <= convert(max_value(uint32), uint256), "RLP: invalid nonce value"
+    assert nonce <= convert(max_value(uint64), uint256), "RLP: invalid nonce value"
 
+    # @dev The integer zero is treated as an empty byte string and
+    # therefore has only one length prefix, 0x80, which is calculated
+    # via 0x80 + 0.
     if (nonce == convert(0x00, uint256)):
         return self._convert_keccak256_2_address(keccak256(concat(0xd6, length, convert(deployer, bytes20), 0x80)))
+    # @dev A one-byte integer in the [0x00, 0x7f] range uses its own
+    # value as a length prefix, there is no additional "0x80 + length"
+    # prefix that precedes it.
     elif (nonce <= convert(0x7f, uint256)):
         return self._convert_keccak256_2_address(keccak256(concat(0xd6, length, convert(deployer, bytes20), convert(convert(nonce, uint8), bytes1))))
+    # @dev In the case of `nonce > convert(0x7f, uint256)` and
+    # `nonce <= convert(max_value((uint8), uint256)`, we have the
+    # following encoding scheme (the same calculation can be carried
+    # over for higher nonce bytes):
+    # 0xda = 0xc0 (short RLP prefix) + 0x1a (= the bytes length of: 0x94 + address + 0x84 + nonce, in hex),
+    # 0x94 = 0x80 + 0x14 (= the bytes length of an address, 20 bytes, in hex),
+    # 0x84 = 0x80 + 0x04 (= the bytes length of the nonce, 4 bytes, in hex).
     elif (nonce <= convert(max_value(uint8), uint256)):
         return self._convert_keccak256_2_address(keccak256(concat(0xd7, length, convert(deployer, bytes20), 0x81, convert(convert(nonce, uint8), bytes1))))
     elif (nonce <= convert(max_value(uint16), uint256)):
         return self._convert_keccak256_2_address(keccak256(concat(0xd8, length, convert(deployer, bytes20), 0x82, convert(convert(nonce, uint16), bytes2))))
     elif (nonce <= convert(max_value(uint24), uint256)):
         return self._convert_keccak256_2_address(keccak256(concat(0xd9, length, convert(deployer, bytes20), 0x83, convert(convert(nonce, uint24), bytes3))))
-    # @dev In the case of `nonce > convert(max_value(uint24), uint256)`,
-    # we have the following encoding scheme:
-    # 0xda = 0xc0 (short RLP prefix) + 0x1a (= the bytes length of: 0x94 + address + 0x84 + nonce, in hex),
-    # 0x94 = 0x80 + 0x14 (= the bytes length of an address, 20 bytes, in hex),
-    # 0x84 = 0x80 + 0x04 (= the bytes length of the nonce, 4 bytes, in hex).
-    else:
+    elif (nonce <= convert(max_value(uint32), uint256)):
         return self._convert_keccak256_2_address(keccak256(concat(0xda, length, convert(deployer, bytes20), 0x84, convert(convert(nonce, uint32), bytes4))))
+    elif (nonce <= convert(max_value(uint40), uint256)):
+        return self._convert_keccak256_2_address(keccak256(concat(0xdb, length, convert(deployer, bytes20), 0x85, convert(convert(nonce, uint40), bytes5))))
+    elif (nonce <= convert(max_value(uint48), uint256)):
+        return self._convert_keccak256_2_address(keccak256(concat(0xdc, length, convert(deployer, bytes20), 0x86, convert(convert(nonce, uint48), bytes6))))
+    elif (nonce <= convert(max_value(uint56), uint256)):
+        return self._convert_keccak256_2_address(keccak256(concat(0xdd, length, convert(deployer, bytes20), 0x87, convert(convert(nonce, uint56), bytes7))))
+    else:
+        return self._convert_keccak256_2_address(keccak256(concat(0xde, length, convert(deployer, bytes20), 0x88, convert(convert(nonce, uint64), bytes8))))
 
 
 @internal
