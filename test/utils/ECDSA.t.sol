@@ -136,7 +136,7 @@ contract ECDSATest is Test {
         ECDSA.recover_sig(hash, signatureInvalid);
     }
 
-    function testRecoverWith00Value() public {
+    function testRecoverWith0x00Value() public {
         /// @dev Standard signature check.
         bytes32 hash = keccak256("WAGMI");
         (, bytes32 r, bytes32 s) = vm.sign(1, hash);
