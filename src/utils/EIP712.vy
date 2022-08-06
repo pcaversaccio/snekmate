@@ -1,4 +1,4 @@
-# @version ^0.3.4
+# @version ^0.3.5
 """
 @title EIP-712 Domain Separator
 @license GNU Affero General Public License v3.0

@@ -1,4 +1,4 @@
-# @version ^0.3.4
+# @version ^0.3.5
 """
 @title Elliptic Curve Digital Signature Algorithm (ECDSA) Functions
 @license GNU Affero General Public License v3.0
