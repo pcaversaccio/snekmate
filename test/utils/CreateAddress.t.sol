@@ -20,13 +20,13 @@ contract CreateAddressTest is Test {
     }
 
     function testComputeAddressRevertTooHighNonce() public {
-        uint72 nonce = uint72(type(uint64).max) + 1;
+        uint72 nonce = uint72(type(uint64).max);
         vm.expectRevert(bytes("RLP: invalid nonce value"));
         createAddress.compute_address_rlp(vm.addr(1), nonce);
     }
 
     function testComputeAddressSelfRevertTooHighNonce() public {
-        uint72 nonce = uint72(type(uint64).max) + 1;
+        uint72 nonce = uint72(type(uint64).max);
         vm.expectRevert(bytes("RLP: invalid nonce value"));
         createAddress.compute_address_rlp_self(nonce);
     }
@@ -50,19 +50,19 @@ contract CreateAddressTest is Test {
         string memory arg2 = "MTKN";
         address arg3 = vm.addr(1);
         uint256 arg4 = 100;
-        bytes memory args = abi.encode(arg1, arg2, arg3, arg4);
-        bytes memory bytecode = abi.encodePacked(
-            vm.getCode("ERC20Mock.sol:ERC20Mock"),
-            args
-        );
         uint64 nonce = 0x7f;
-        vm.setNonce(address(create), nonce);
+        vm.setNonce(address(this), nonce);
         address createAddressComputed = createAddress.compute_address_rlp(
-            address(create),
+            address(this),
             nonce
         );
-        address createAddressComputedOnChain = create.deploy(0, bytecode);
-        assertEq(createAddressComputed, createAddressComputedOnChain);
+        ERC20Mock createAddressComputedOnChain = new ERC20Mock(
+            arg1,
+            arg2,
+            arg3,
+            arg4
+        );
+        assertEq(createAddressComputed, address(createAddressComputedOnChain));
     }
 
     function testComputeAddressNonceUint8() public {
@@ -70,19 +70,19 @@ contract CreateAddressTest is Test {
         string memory arg2 = "MTKN";
         address arg3 = vm.addr(1);
         uint256 arg4 = 100;
-        bytes memory args = abi.encode(arg1, arg2, arg3, arg4);
-        bytes memory bytecode = abi.encodePacked(
-            vm.getCode("ERC20Mock.sol:ERC20Mock"),
-            args
-        );
         uint64 nonce = type(uint8).max;
-        vm.setNonce(address(create), nonce);
+        vm.setNonce(address(this), nonce);
         address createAddressComputed = createAddress.compute_address_rlp(
-            address(create),
+            address(this),
             nonce
         );
-        address createAddressComputedOnChain = create.deploy(0, bytecode);
-        assertEq(createAddressComputed, createAddressComputedOnChain);
+        ERC20Mock createAddressComputedOnChain = new ERC20Mock(
+            arg1,
+            arg2,
+            arg3,
+            arg4
+        );
+        assertEq(createAddressComputed, address(createAddressComputedOnChain));
     }
 
     function testComputeAddressNonceUint16() public {
@@ -90,19 +90,19 @@ contract CreateAddressTest is Test {
         string memory arg2 = "MTKN";
         address arg3 = vm.addr(1);
         uint256 arg4 = 100;
-        bytes memory args = abi.encode(arg1, arg2, arg3, arg4);
-        bytes memory bytecode = abi.encodePacked(
-            vm.getCode("ERC20Mock.sol:ERC20Mock"),
-            args
-        );
         uint64 nonce = type(uint16).max;
-        vm.setNonce(address(create), nonce);
+        vm.setNonce(address(this), nonce);
         address createAddressComputed = createAddress.compute_address_rlp(
-            address(create),
+            address(this),
             nonce
         );
-        address createAddressComputedOnChain = create.deploy(0, bytecode);
-        assertEq(createAddressComputed, createAddressComputedOnChain);
+        ERC20Mock createAddressComputedOnChain = new ERC20Mock(
+            arg1,
+            arg2,
+            arg3,
+            arg4
+        );
+        assertEq(createAddressComputed, address(createAddressComputedOnChain));
     }
 
     function testComputeAddressNonceUint24() public {
@@ -110,19 +110,19 @@ contract CreateAddressTest is Test {
         string memory arg2 = "MTKN";
         address arg3 = vm.addr(1);
         uint256 arg4 = 100;
-        bytes memory args = abi.encode(arg1, arg2, arg3, arg4);
-        bytes memory bytecode = abi.encodePacked(
-            vm.getCode("ERC20Mock.sol:ERC20Mock"),
-            args
-        );
         uint64 nonce = type(uint24).max;
-        vm.setNonce(address(create), nonce);
+        vm.setNonce(address(this), nonce);
         address createAddressComputed = createAddress.compute_address_rlp(
-            address(create),
+            address(this),
             nonce
         );
-        address createAddressComputedOnChain = create.deploy(0, bytecode);
-        assertEq(createAddressComputed, createAddressComputedOnChain);
+        ERC20Mock createAddressComputedOnChain = new ERC20Mock(
+            arg1,
+            arg2,
+            arg3,
+            arg4
+        );
+        assertEq(createAddressComputed, address(createAddressComputedOnChain));
     }
 
     function testComputeAddressNonceUint32() public {
@@ -130,19 +130,19 @@ contract CreateAddressTest is Test {
         string memory arg2 = "MTKN";
         address arg3 = vm.addr(1);
         uint256 arg4 = 100;
-        bytes memory args = abi.encode(arg1, arg2, arg3, arg4);
-        bytes memory bytecode = abi.encodePacked(
-            vm.getCode("ERC20Mock.sol:ERC20Mock"),
-            args
-        );
         uint64 nonce = type(uint32).max;
-        vm.setNonce(address(create), nonce);
+        vm.setNonce(address(this), nonce);
         address createAddressComputed = createAddress.compute_address_rlp(
-            address(create),
+            address(this),
             nonce
         );
-        address createAddressComputedOnChain = create.deploy(0, bytecode);
-        assertEq(createAddressComputed, createAddressComputedOnChain);
+        ERC20Mock createAddressComputedOnChain = new ERC20Mock(
+            arg1,
+            arg2,
+            arg3,
+            arg4
+        );
+        assertEq(createAddressComputed, address(createAddressComputedOnChain));
     }
 
     function testComputeAddressNonceUint40() public {
@@ -150,19 +150,19 @@ contract CreateAddressTest is Test {
         string memory arg2 = "MTKN";
         address arg3 = vm.addr(1);
         uint256 arg4 = 100;
-        bytes memory args = abi.encode(arg1, arg2, arg3, arg4);
-        bytes memory bytecode = abi.encodePacked(
-            vm.getCode("ERC20Mock.sol:ERC20Mock"),
-            args
-        );
         uint64 nonce = type(uint40).max;
-        vm.setNonce(address(create), nonce);
+        vm.setNonce(address(this), nonce);
         address createAddressComputed = createAddress.compute_address_rlp(
-            address(create),
+            address(this),
             nonce
         );
-        address createAddressComputedOnChain = create.deploy(0, bytecode);
-        assertEq(createAddressComputed, createAddressComputedOnChain);
+        ERC20Mock createAddressComputedOnChain = new ERC20Mock(
+            arg1,
+            arg2,
+            arg3,
+            arg4
+        );
+        assertEq(createAddressComputed, address(createAddressComputedOnChain));
     }
 
     function testComputeAddressNonceUint48() public {
@@ -170,19 +170,19 @@ contract CreateAddressTest is Test {
         string memory arg2 = "MTKN";
         address arg3 = vm.addr(1);
         uint256 arg4 = 100;
-        bytes memory args = abi.encode(arg1, arg2, arg3, arg4);
-        bytes memory bytecode = abi.encodePacked(
-            vm.getCode("ERC20Mock.sol:ERC20Mock"),
-            args
-        );
         uint64 nonce = type(uint48).max;
-        vm.setNonce(address(create), nonce);
+        vm.setNonce(address(this), nonce);
         address createAddressComputed = createAddress.compute_address_rlp(
-            address(create),
+            address(this),
             nonce
         );
-        address createAddressComputedOnChain = create.deploy(0, bytecode);
-        assertEq(createAddressComputed, createAddressComputedOnChain);
+        ERC20Mock createAddressComputedOnChain = new ERC20Mock(
+            arg1,
+            arg2,
+            arg3,
+            arg4
+        );
+        assertEq(createAddressComputed, address(createAddressComputedOnChain));
     }
 
     function testComputeAddressNonceUint56() public {
@@ -190,19 +190,19 @@ contract CreateAddressTest is Test {
         string memory arg2 = "MTKN";
         address arg3 = vm.addr(1);
         uint256 arg4 = 100;
-        bytes memory args = abi.encode(arg1, arg2, arg3, arg4);
-        bytes memory bytecode = abi.encodePacked(
-            vm.getCode("ERC20Mock.sol:ERC20Mock"),
-            args
-        );
         uint64 nonce = type(uint56).max;
-        vm.setNonce(address(create), nonce);
+        vm.setNonce(address(this), nonce);
         address createAddressComputed = createAddress.compute_address_rlp(
-            address(create),
+            address(this),
             nonce
         );
-        address createAddressComputedOnChain = create.deploy(0, bytecode);
-        assertEq(createAddressComputed, createAddressComputedOnChain);
+        ERC20Mock createAddressComputedOnChain = new ERC20Mock(
+            arg1,
+            arg2,
+            arg3,
+            arg4
+        );
+        assertEq(createAddressComputed, address(createAddressComputedOnChain));
     }
 
     function testComputeAddressNonceUint64() public {
@@ -210,19 +210,19 @@ contract CreateAddressTest is Test {
         string memory arg2 = "MTKN";
         address arg3 = vm.addr(1);
         uint256 arg4 = 100;
-        bytes memory args = abi.encode(arg1, arg2, arg3, arg4);
-        bytes memory bytecode = abi.encodePacked(
-            vm.getCode("ERC20Mock.sol:ERC20Mock"),
-            args
-        );
         uint64 nonce = uint64(type(uint64).max) - 1;
-        vm.setNonce(address(create), nonce);
+        vm.setNonce(address(this), nonce);
         address createAddressComputed = createAddress.compute_address_rlp(
-            address(create),
+            address(this),
             nonce
         );
-        address createAddressComputedOnChain = create.deploy(0, bytecode);
-        assertEq(createAddressComputed, createAddressComputedOnChain);
+        ERC20Mock createAddressComputedOnChain = new ERC20Mock(
+            arg1,
+            arg2,
+            arg3,
+            arg4
+        );
+        assertEq(createAddressComputed, address(createAddressComputedOnChain));
     }
 
     function testComputeAddressSelfNonce0x7f() public {
@@ -231,11 +231,11 @@ contract CreateAddressTest is Test {
         address createAddressComputed = createAddress.compute_address_rlp_self(
             nonce
         );
-        address createAddressComputedOnChain = create.computeAddress(
+        address createAddressLibComputed = create.computeAddress(
             address(createAddress),
             nonce
         );
-        assertEq(createAddressComputed, createAddressComputedOnChain);
+        assertEq(createAddressComputed, createAddressLibComputed);
     }
 
     function testComputeAddressSelfNonceUint8() public {
@@ -244,11 +244,11 @@ contract CreateAddressTest is Test {
         address createAddressComputed = createAddress.compute_address_rlp_self(
             nonce
         );
-        address createAddressComputedOnChain = create.computeAddress(
+        address createAddressLibComputed = create.computeAddress(
             address(createAddress),
             nonce
         );
-        assertEq(createAddressComputed, createAddressComputedOnChain);
+        assertEq(createAddressComputed, createAddressLibComputed);
     }
 
     function testComputeAddressSelfNonceUint16() public {
@@ -257,11 +257,11 @@ contract CreateAddressTest is Test {
         address createAddressComputed = createAddress.compute_address_rlp_self(
             nonce
         );
-        address createAddressComputedOnChain = create.computeAddress(
+        address createAddressLibComputed = create.computeAddress(
             address(createAddress),
             nonce
         );
-        assertEq(createAddressComputed, createAddressComputedOnChain);
+        assertEq(createAddressComputed, createAddressLibComputed);
     }
 
     function testComputeAddressSelfNonceUint24() public {
@@ -270,11 +270,11 @@ contract CreateAddressTest is Test {
         address createAddressComputed = createAddress.compute_address_rlp_self(
             nonce
         );
-        address createAddressComputedOnChain = create.computeAddress(
+        address createAddressLibComputed = create.computeAddress(
             address(createAddress),
             nonce
         );
-        assertEq(createAddressComputed, createAddressComputedOnChain);
+        assertEq(createAddressComputed, createAddressLibComputed);
     }
 
     function testComputeAddressSelfNonceUint32() public {
@@ -283,11 +283,11 @@ contract CreateAddressTest is Test {
         address createAddressComputed = createAddress.compute_address_rlp_self(
             nonce
         );
-        address createAddressComputedOnChain = create.computeAddress(
+        address createAddressLibComputed = create.computeAddress(
             address(createAddress),
             nonce
         );
-        assertEq(createAddressComputed, createAddressComputedOnChain);
+        assertEq(createAddressComputed, createAddressLibComputed);
     }
 
     function testComputeAddressSelfNonceUint40() public {
@@ -296,11 +296,11 @@ contract CreateAddressTest is Test {
         address createAddressComputed = createAddress.compute_address_rlp_self(
             nonce
         );
-        address createAddressComputedOnChain = create.computeAddress(
+        address createAddressLibComputed = create.computeAddress(
             address(createAddress),
             nonce
         );
-        assertEq(createAddressComputed, createAddressComputedOnChain);
+        assertEq(createAddressComputed, createAddressLibComputed);
     }
 
     function testComputeAddressSelfNonceUint48() public {
@@ -309,11 +309,11 @@ contract CreateAddressTest is Test {
         address createAddressComputed = createAddress.compute_address_rlp_self(
             nonce
         );
-        address createAddressComputedOnChain = create.computeAddress(
+        address createAddressLibComputed = create.computeAddress(
             address(createAddress),
             nonce
         );
-        assertEq(createAddressComputed, createAddressComputedOnChain);
+        assertEq(createAddressComputed, createAddressLibComputed);
     }
 
     function testComputeAddressSelfNonceUint56() public {
@@ -322,11 +322,11 @@ contract CreateAddressTest is Test {
         address createAddressComputed = createAddress.compute_address_rlp_self(
             nonce
         );
-        address createAddressComputedOnChain = create.computeAddress(
+        address createAddressLibComputed = create.computeAddress(
             address(createAddress),
             nonce
         );
-        assertEq(createAddressComputed, createAddressComputedOnChain);
+        assertEq(createAddressComputed, createAddressLibComputed);
     }
 
     function testComputeAddressSelfNonceUint64() public {
@@ -335,10 +335,10 @@ contract CreateAddressTest is Test {
         address createAddressComputed = createAddress.compute_address_rlp_self(
             nonce
         );
-        address createAddressComputedOnChain = create.computeAddress(
+        address createAddressLibComputed = create.computeAddress(
             address(createAddress),
             nonce
         );
-        assertEq(createAddressComputed, createAddressComputedOnChain);
+        assertEq(createAddressComputed, createAddressLibComputed);
     }
 }

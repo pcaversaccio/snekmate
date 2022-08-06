@@ -34,15 +34,18 @@ contract Create2AddressTest is Test {
         address create2AddressComputed = create2Address.compute_address(
             salt,
             bytecodeHash,
-            address(create2Impl)
+            address(this)
         );
-        address create2AddressOZComputed = create2Impl
-            .computeAddressWithDeployer(
-                salt,
-                bytecodeHash,
-                address(create2Impl)
-            );
-        assertEq(create2AddressComputed, create2AddressOZComputed);
+        ERC20Mock create2AddressComputedOnChain = new ERC20Mock{salt: salt}(
+            arg1,
+            arg2,
+            arg3,
+            arg4
+        );
+        assertEq(
+            create2AddressComputed,
+            address(create2AddressComputedOnChain)
+        );
     }
 
     function testComputeAddressSelf() public {

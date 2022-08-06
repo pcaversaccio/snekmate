@@ -4,7 +4,7 @@ pragma solidity ^0.8.15;
 import {Test} from "../../lib/forge-std/src/Test.sol";
 import {VyperDeployer} from "../../lib/utils/VyperDeployer.sol";
 import {EIP712External} from "../../lib/openzeppelin-contracts/contracts/mocks/EIP712External.sol";
-import {console} from "../../lib/forge-std/src/console.sol";
+// import {console} from "../../lib/forge-std/src/console.sol";
 
 import {IEIP712} from "../../test/utils/interfaces/IEIP712.sol";
 
@@ -25,10 +25,10 @@ contract CreateAddressTest is Test {
         );
     }
 
-    function testDomainSeparatorV4() public {
-        // assertEq(EIP712.domain_separator_v4(), eip712External.domainSeparator());
-        console.logBytes32(EIP712.domain_separator_v4());
-    }
+    // function testDomainSeparatorV4() public {
+    // assertEq(EIP712.domain_separator_v4(), eip712External.domainSeparator());
+    // console.logBytes32(EIP712.domain_separator_v4());
+    // }
 
-    function testHashTypedDataV4() public {}
+    // function testHashTypedDataV4() public {}
 }
