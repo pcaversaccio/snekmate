@@ -2,8 +2,9 @@
 pragma solidity ^0.8.15;
 
 import {Test} from "../../lib/forge-std/src/Test.sol";
-import {BytesLib} from "../../lib/solidity-bytes-utils/contracts/BytesLib.sol";
 import {VyperDeployer} from "../../lib/utils/VyperDeployer.sol";
+
+import {BytesLib} from "../../lib/solidity-bytes-utils/contracts/BytesLib.sol";
 
 import {IECDSA} from "../../test/utils/interfaces/IECDSA.sol";
 
@@ -83,7 +84,7 @@ contract ECDSATest is Test {
     function testRecoverWithTooLongSignature() public {
         /// @dev Standard signature check.
         bytes32 hash = keccak256("WAGMI");
-        bytes memory signature = abi.encodePacked(
+        bytes memory signature = bytes(
             "0x012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789"
         );
         vm.expectRevert();
@@ -205,20 +206,20 @@ contract ECDSATest is Test {
 
     function testEthSignedMessageHash() public {
         bytes32 hash = keccak256("WAGMI");
-        bytes32 digest1 = keccak256(
+        bytes32 digest1 = ECDSA.to_eth_signed_message_hash(hash);
+        bytes32 digest2 = keccak256(
             abi.encodePacked("\x19Ethereum Signed Message:\n32", hash)
         );
-        bytes32 digest2 = ECDSA.to_eth_signed_message_hash(hash);
         assertEq(digest1, digest2);
     }
 
     function testToTypedDataHash() public {
         bytes32 domainSeparator = keccak256("WAGMI");
         bytes32 structHash = keccak256("GM");
-        bytes32 digest1 = keccak256(
+        bytes32 digest1 = ECDSA.to_typed_data_hash(domainSeparator, structHash);
+        bytes32 digest2 = keccak256(
             abi.encodePacked("\x19\x01", domainSeparator, structHash)
         );
-        bytes32 digest2 = ECDSA.to_typed_data_hash(domainSeparator, structHash);
         assertEq(digest1, digest2);
     }
 }

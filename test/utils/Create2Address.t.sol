@@ -3,8 +3,9 @@ pragma solidity ^0.8.15;
 
 import {Test} from "../../lib/forge-std/src/Test.sol";
 import {VyperDeployer} from "../../lib/utils/VyperDeployer.sol";
-import {ERC20Mock} from "../../lib/openzeppelin-contracts/contracts/mocks/ERC20Mock.sol";
+
 import {Create2Impl} from "../../lib/openzeppelin-contracts/contracts/mocks/Create2Impl.sol";
+import {ERC20Mock} from "../../lib/openzeppelin-contracts/contracts/mocks/ERC20Mock.sol";
 
 import {ICreate2Address} from "../../test/utils/interfaces/ICreate2Address.sol";
 
