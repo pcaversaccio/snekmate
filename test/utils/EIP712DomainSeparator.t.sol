@@ -32,7 +32,7 @@ contract CreateAddressTest is Test {
     function setUp() public {
         bytes memory args = abi.encode(_NAME, _VERSION);
         EIP712 = IEIP712(
-            vyperDeployer.deployContract("src/utils/", "EIP712", args)
+            vyperDeployer.deployContract("src/utils/", "EIP712DomainSeparator", args)
         );
         _CACHED_DOMAIN_SEPARATOR = keccak256(
             abi.encode(

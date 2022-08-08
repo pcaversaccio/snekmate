@@ -1,9 +1,9 @@
 # @version ^0.3.6
 """
-@title `CREATE` EVM Opcode Utility Function for Address Calculation
+@title `CREATE` EVM Opcode Utility Functions for Address Calculations
 @license GNU Affero General Public License v3.0
 @author pcaversaccio
-@notice This function can be used to compute in advance the address
+@notice These functions can be used to compute in advance the address
         where a smart contract will be deployed if deployed via the
         `CREATE` opcode. The implementation is inspired by my
         implementation here:
