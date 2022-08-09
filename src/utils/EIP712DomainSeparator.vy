@@ -39,9 +39,9 @@ def __init__(name: String[50], version: String[20]):
             Since the Vyper design requires strings of fixed size,
             we arbitrarily set the maximum length for `name` to 50 bytes
             and `version` to 20 bytes.
-    @param name The maximum 50-bytes user-readable string name of
+    @param name The maximum 50-byte user-readable string name of
            the signing domain, i.e. the name of the dApp or protocol.
-    @param version The maximum 20-bytes current main version of the
+    @param version The maximum 20-byte current main version of the
            signing domain. Signatures from different versions are
            not compatible.
     """
@@ -61,7 +61,7 @@ def __init__(name: String[50], version: String[20]):
 def domain_separator_v4() -> bytes32:
     """
     @dev Returns the domain separator for the current chain.
-    @return bytes32 The 32-bytes domain separator.
+    @return bytes32 The 32-byte domain separator.
     """
     if (self == _CACHED_SELF and chain.id == _CACHED_CHAIN_ID):
         return _CACHED_DOMAIN_SEPARATOR
@@ -74,7 +74,7 @@ def domain_separator_v4() -> bytes32:
 def _build_domain_separator(type_hash: bytes32, name_hash: bytes32, version_hash: bytes32) -> bytes32:
     """
     @dev Builds the domain separator for the current chain.
-    @return bytes32 The 32-bytes domain separator.
+    @return bytes32 The 32-byte domain separator.
     """
     return keccak256(_abi_encode(type_hash, name_hash, version_hash, chain.id, self))
 
@@ -87,8 +87,8 @@ def hash_typed_data_v4(struct_hash: bytes32) -> bytes32:
          message for this domain.
     @notice The definition of the hashed struct can be found here:
             https://eips.ethereum.org/EIPS/eip-712#definition-of-hashstruct.
-    @param struct_hash The 32-bytes hashed struct.
-    @return bytes32 The 32-bytes fully encoded EIP712
+    @param struct_hash The 32-byte hashed struct.
+    @return bytes32 The 32-byte fully encoded EIP712
             message hash for this domain.
     """
     return self._to_typed_data_hash(domainSeparatorV4(self).domain_separator_v4(), struct_hash)

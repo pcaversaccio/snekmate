@@ -24,7 +24,7 @@ def compute_address_rlp_self(nonce: uint256) -> address:
     @dev Returns the address where a contract will be stored if
          deployed via this contract using the `CREATE` opcode.
     @param nonce The next uint256 nonce of this contract.
-    @return address The 20-bytes address where a contract will be stored.
+    @return address The 20-byte address where a contract will be stored.
     """
     return ComputeCreateAddress(self).compute_address_rlp(self, nonce)
 
@@ -46,9 +46,9 @@ def compute_address_rlp(deployer: address, nonce: uint256) -> address:
          specification, all contract accounts on the Ethereum mainnet
          are initiated with `nonce = 1`. Thus, the first contract address
          created by another contract is calculated with a non-zero nonce.
-    @param deployer The 20-bytes deployer address.
+    @param deployer The 20-byte deployer address.
     @param nonce The next uint256 nonce of the deployer address.
-    @return address The 20-bytes address where a contract will be stored.
+    @return address The 20-byte address where a contract will be stored.
     """
 
     length: bytes1 = 0x94
@@ -96,8 +96,8 @@ def compute_address_rlp(deployer: address, nonce: uint256) -> address:
 @pure
 def _convert_keccak256_2_address(digest: bytes32) -> address:
     """
-    @dev Converts a 32-bytes keccak256 digest to an address.
-    @param digest The 32-bytes keccak256 digest.
-    @return address The converted 20-bytes address.
+    @dev Converts a 32-byte keccak256 digest to an address.
+    @param digest The 32-byte keccak256 digest.
+    @return address The converted 20-byte address.
     """
     return convert(convert(digest, uint256) & max_value(uint160), address)
