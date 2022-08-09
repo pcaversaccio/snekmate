@@ -20,7 +20,7 @@
 
 @external
 @pure
-def verify(proof: DynArray[bytes32, max_value(uint128)], root: bytes32, leaf: bytes32) -> bool:
+def verify(proof: DynArray[bytes32, max_value(uint16)], root: bytes32, leaf: bytes32) -> bool:
     """
     @dev Returns true if it can be proved that a `leaf` is
          part of a Merkle tree defined by `root`.
@@ -39,7 +39,7 @@ def verify(proof: DynArray[bytes32, max_value(uint128)], root: bytes32, leaf: by
 
 @internal
 @pure
-def _process_proof(proof: DynArray[bytes32, max_value(uint128)], leaf: bytes32) -> bytes32:
+def _process_proof(proof: DynArray[bytes32, max_value(uint16)], leaf: bytes32) -> bytes32:
     """
     @dev Returns the recovered hash obtained by traversing
          a Merkle tree from `leaf` using `proof`.

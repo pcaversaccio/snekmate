@@ -30,6 +30,9 @@
     "lint:fix": "yarn prettier:fix && yarn solhint:fix"
   },
   "devDependencies": {
+    "ethers": "^5.6.9",
+    "keccak256": "^1.0.6",
+    "merkletreejs": "^0.2.32",
     "prettier": "^2.7.1",
     "prettier-plugin-solidity": "^1.0.0-beta.24"
   }
