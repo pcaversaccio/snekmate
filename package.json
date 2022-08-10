@@ -26,8 +26,8 @@
     "prettier:fix": "prettier -w **/*.{md,sol,js,json,yml}",
     "solhint:check": "npx solhint '**/*.sol'",
     "solhint:fix": "npx solhint '**/*.sol' --fix",
-    "lint:check": "yarn prettier:check && yarn solhint:check && npx eslint **/*.js",
-    "lint:fix": "yarn prettier:fix && yarn solhint:fix && npx eslint **/*.js --fix"
+    "lint:check": "yarn prettier:check && yarn solhint:check && eslint --ext .js .",
+    "lint:fix": "yarn prettier:fix && yarn solhint:fix && eslint --ext .js . --fix"
   },
   "devDependencies": {
     "eslint": "^8.21.0",
