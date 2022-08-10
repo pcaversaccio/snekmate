@@ -22,14 +22,16 @@
   "author": "Pascal Marco Caversaccio <pascal.caversaccio@hotmail.ch>",
   "license": "AGPL-3.0",
   "scripts": {
-    "prettier:check": "prettier -c **/*.{md,sol,json,yml}",
-    "prettier:fix": "prettier -w **/*.{md,sol,json,yml}",
+    "prettier:check": "prettier -c **/*.{md,sol,js,json,yml}",
+    "prettier:fix": "prettier -w **/*.{md,sol,js,json,yml}",
     "solhint:check": "npx solhint '**/*.sol'",
     "solhint:fix": "npx solhint '**/*.sol' --fix",
-    "lint:check": "yarn prettier:check && yarn solhint:check",
-    "lint:fix": "yarn prettier:fix && yarn solhint:fix"
+    "lint:check": "yarn prettier:check && yarn solhint:check && npx eslint **/*.js",
+    "lint:fix": "yarn prettier:fix && yarn solhint:fix && npx eslint **/*.js --fix"
   },
   "devDependencies": {
+    "eslint": "^8.21.0",
+    "eslint-config-prettier": "^8.5.0",
     "ethers": "^5.6.9",
     "keccak256": "^1.0.6",
     "merkletreejs": "^0.2.32",
