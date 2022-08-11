@@ -100,6 +100,7 @@ contract MerkleProofVerificationTest is Test {
             bytes32[] memory proofDecoded,
             bytes32[] memory proofDecodedSliced
         ) = decode(true);
+
         assertTrue(
             merkleProofVerification.verify(
                 proofDecoded,
@@ -128,6 +129,7 @@ contract MerkleProofVerificationTest is Test {
         bytes memory leaf = vm.ffi(cmdsCorrectLeaf);
 
         (bytes32[] memory badProofDecoded, ) = decode(false);
+
         assertTrue(
             !merkleProofVerification.verify(
                 badProofDecoded,
@@ -154,6 +156,7 @@ contract MerkleProofVerificationTest is Test {
         proofInvalidLengthDecoded[0] = proofDecoded[0];
         proofInvalidLengthDecoded[1] = proofDecoded[1];
         proofInvalidLengthDecoded[2] = proofDecoded[2];
+
         assertTrue(
             !merkleProofVerification.verify(
                 proofInvalidLengthDecoded,
