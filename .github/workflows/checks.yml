@@ -1,4 +1,4 @@
-name: 👮‍♂️ Lint
+name: 👮‍♂️ Sanity checks
 
 on: [push, pull_request]
 
@@ -7,7 +7,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  unit:
+  lint:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -42,3 +42,20 @@ jobs:
 
       - name: Prettier and lint
         run: yarn lint:check
+
+  codespell:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os:
+          - ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Run codespell
+        uses: codespell-project/actions-codespell@v1.0
+        with:
+          check_filenames: true
+          skip: yarn.lock
