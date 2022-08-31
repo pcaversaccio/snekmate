@@ -8,7 +8,7 @@
         is inspired by OpenZeppelin's implementation here:
         https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/cryptography/ECDSA.sol.
 @custom:security Signatures must not be used as unique identifiers since the
-                 `ecrecover` EVM opcode allows for malleable (non-unique) signatures.
+                 `ecrecover` opcode allows for malleable (non-unique) signatures.
 """
 
 
