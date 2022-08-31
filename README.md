@@ -14,6 +14,7 @@ utils
 ├─ Create2Address — "`CREATE2` EVM Opcode Utility Functions for Address Calculations"
 ├─ EIP712DomainSeparator — "EIP-712 Domain Separator"
 ├─ MerkleProofVerification — "Merkle Tree Proof Verification Functions"
+├─ Multicall — "Multicall Functions"
 ```
 
 ## 💢 Disclaimer
