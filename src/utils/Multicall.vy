@@ -97,12 +97,12 @@ def multicall_self(data: DynArray[Batch, max_value(uint16)]) -> DynArray[Result,
     for i in data:
         idx: uint256 = 0
         if (i.allow_failure == False):
-            results[idx].return_data = raw_call(i.target, i.call_data, max_outsize=max_value(uint16), is_delegate_call=True)
+            results[idx].return_data = raw_call(self, i.call_data, max_outsize=max_value(uint16), is_delegate_call=True)
             results[idx].success = True
             idx += 1
         else:
             results[idx].success, results[idx].return_data = \
-                raw_call(i.target, i.call_data, max_outsize=max_value(uint16), is_delegate_call=True, revert_on_failure=False)
+                raw_call(self, i.call_data, max_outsize=max_value(uint16), is_delegate_call=True, revert_on_failure=False)
             idx += 1
     return results
 
@@ -125,12 +125,12 @@ def multicall_value_self(data: DynArray[BatchValue, max_value(uint16)]) -> DynAr
         msg_value: uint256 = i.value
         value_accumulator = unsafe_add(value_accumulator, msg_value)
         if (i.allow_failure == False):
-            results[idx].return_data = raw_call(i.target, i.call_data, max_outsize=max_value(uint16), value=msg_value, is_delegate_call=True)
+            results[idx].return_data = raw_call(self, i.call_data, max_outsize=max_value(uint16), value=msg_value, is_delegate_call=True)
             results[idx].success = True
             idx += 1
         else:
             results[idx].success, results[idx].return_data = \
-                raw_call(i.target, i.call_data, max_outsize=max_value(uint16), value=msg_value, is_delegate_call=True, revert_on_failure=False)
+                raw_call(self, i.call_data, max_outsize=max_value(uint16), value=msg_value, is_delegate_call=True, revert_on_failure=False)
             idx += 1
     assert msg.value == value_accumulator, "Multicall: value mismatch"
     return results
