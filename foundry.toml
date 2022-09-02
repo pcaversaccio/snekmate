@@ -1,12 +1,13 @@
 ## defaults for all profiles
 [profile.default]
-src = 'src'                                  # the source directory
-test = 'test'                                # the test directory
-out = 'out'                                  # the output directory (for artifacts)
-libs = ['lib']                               # a list of library directories
-remappings = []                              # a list of remappings
-cache = true                                 # whether to cache builds or not
-cache_path = 'cache'                         # where the cache is stored if enabled
-force = true                                 # whether to ignore the cache (clean build)
-ffi = true                                   # whether to enable foreign function interface (ffi) cheatcodes or not
-verbosity = 3                                # the verbosity of tests
+src = 'src'                                                 # the source directory
+test = 'test'                                               # the test directory
+out = 'out'                                                 # the output directory (for artifacts)
+libs = ['lib']                                              # a list of library directories
+remappings = []                                             # a list of remappings
+cache = true                                                # whether to cache builds or not
+cache_path = 'cache'                                        # where the cache is stored if enabled
+force = true                                                # whether to ignore the cache (clean build)
+ffi = true                                                  # whether to enable foreign function interface (ffi) cheatcodes or not
+verbosity = 3                                               # the verbosity of tests
+fs_permissions = [{ access = "read-write", path = "./"}]    # set read-write access to project root
