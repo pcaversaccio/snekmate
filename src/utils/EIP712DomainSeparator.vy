@@ -74,6 +74,9 @@ def domain_separator_v4() -> bytes32:
 def _build_domain_separator(type_hash: bytes32, name_hash: bytes32, version_hash: bytes32) -> bytes32:
     """
     @dev Builds the domain separator for the current chain.
+    @param type_hash The 32-byte hashed type.
+    @param name_hash The 32-byte hashed name.
+    @param version_hash The 32-byte hashed version.
     @return bytes32 The 32-byte domain separator.
     """
     return keccak256(_abi_encode(type_hash, name_hash, version_hash, chain.id, self))
