@@ -30,7 +30,7 @@
     "lint:fix": "yarn prettier:fix && yarn solhint:fix && eslint --ext .js . --fix"
   },
   "devDependencies": {
-    "eslint": "^8.23.0",
+    "eslint": "^8.23.1",
     "eslint-config-prettier": "^8.5.0",
     "ethers": "^5.7.0",
     "keccak256": "^1.0.6",
