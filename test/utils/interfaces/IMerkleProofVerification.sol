@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: WTFPL
-pragma solidity ^0.8.16;
+pragma solidity ^0.8.17;
 
 interface IMerkleProofVerification {
     function verify(
