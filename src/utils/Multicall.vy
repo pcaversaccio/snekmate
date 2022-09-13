@@ -56,6 +56,8 @@ def multicall(data: DynArray[Batch, max_value(uint16)]) -> DynArray[Result, max_
     """
     @dev Aggregates function calls, ensuring that each
          function returns successfully if required.
+         Since this function uses `CALL`, the `msg.sender`
+         will be the multicall contract itself.
     @param data The array of `Batch` structs.
     @return DynArray The array of `Result` structs.
     """
@@ -80,7 +82,9 @@ def multicall_value(data: DynArray[BatchValue, max_value(uint16)]) -> DynArray[R
     """
     @dev Aggregates function calls with a `msg.value`,
          ensuring that each function returns successfully
-         if required.
+         if required. Since this function uses `CALL`,
+         the `msg.sender` will be the multicall contract
+         itself.
     @param data The array of `BatchValue` structs.
     @return DynArray The array of `Result` structs.
     """
@@ -108,7 +112,14 @@ def multicall_self(data: DynArray[BatchSelf, max_value(uint16)]) -> DynArray[Res
     """
     @dev Aggregates function calls using `DELEGATECALL`,
          ensuring that each function returns successfully
-         if required.
+         if required. Since this function uses `DELEGATECALL`,
+         the `msg.sender` remains the same account that
+         invoked the function `multicall_self` in the first place.
+    @notice Developers can include this function in their own
+            contract so that users can submit multiple function
+            calls in one transaction. Since the `msg.sender` is
+            preserved, it's equivalent to sending multiple transactions
+            from an EOA (externally-owned account, i.e. non-contract account).
     @param data The array of `BatchSelf` structs.
     @return DynArray The array of `Result` structs.
     """
@@ -131,9 +142,17 @@ def multicall_self(data: DynArray[BatchSelf, max_value(uint16)]) -> DynArray[Res
 @payable
 def multicall_value_self(data: DynArray[BatchValueSelf, max_value(uint16)]) -> DynArray[Result, max_value(uint16)]:
     """
-    @dev Aggregates function calls with a `msg.value`
-         using `DELEGATECALL`, ensuring that each
-         function returns successfully if required.
+    @dev Aggregates function calls with a `msg.value` using
+         `DELEGATECALL`, ensuring that each function returns
+         successfully if required. Since this function uses
+         `DELEGATECALL`, the `msg.sender` remains the same
+         account that invoked the function `multicall_value_self`
+         in the first place.
+    @notice Developers can include this function in their own
+            contract so that users can submit multiple function
+            calls in one transaction. Since the `msg.sender` is
+            preserved, it's equivalent to sending multiple transactions
+            from an EOA (externally-owned account, i.e. non-contract account).
     @param data The array of `BatchValueSelf` structs.
     @return DynArray The array of `Result` structs.
     """
