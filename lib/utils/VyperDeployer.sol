@@ -24,12 +24,11 @@ interface _CheatCodes {
  * @title Vyper Contract Deployer
  * @author pcaversaccio
  * @notice Forked and adjusted accordingly from here:
- * https://github.com/0xKitsune/Foundry-Vyper/blob/main/lib/utils/VyperDeployer.sol
+ * https://github.com/0xKitsune/Foundry-Vyper/blob/main/lib/utils/VyperDeployer.sol.
  * @dev The Vyper deployer is a pre-built contract that takes a filename
  * and deploys the corresponding Vyper contract, returning the address
  * that the bytecode was deployed to.
  */
-
 contract VyperDeployer is Create {
     address private constant HEVM_ADDRESS =
         address(bytes20(uint160(uint256(keccak256("hevm cheat code")))));
