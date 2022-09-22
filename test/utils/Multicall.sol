@@ -41,6 +41,7 @@ contract MulticallsTest is Test {
             true,
             abi.encodeWithSignature("thisMethodReverts()")
         );
+
         IMulticall.Result[] memory results = multicall.multicall(batch);
         assertTrue(results[0].success);
         assertEq(
@@ -72,6 +73,7 @@ contract MulticallsTest is Test {
             false,
             abi.encodeWithSignature("thisMethodReverts()")
         );
+
         vm.expectRevert(
             abi.encodeWithSelector(Reverted.selector, address(mockCallee))
         );
@@ -109,6 +111,7 @@ contract MulticallsTest is Test {
                 address(etherReceiver)
             )
         );
+
         IMulticall.Result[] memory results = multicall.multicall_value{
             value: 1
         }(batchValue);
@@ -142,6 +145,7 @@ contract MulticallsTest is Test {
             0,
             abi.encodeWithSignature("store(uint256)", type(uint256).max)
         );
+        /// @dev We don't allow for a failure.
         batchValue[2] = IMulticall.BatchValue(
             address(mockCallee),
             false,
@@ -157,10 +161,11 @@ contract MulticallsTest is Test {
                 address(etherReceiver)
             )
         );
+
         vm.expectRevert(
             abi.encodeWithSelector(Reverted.selector, address(mockCallee))
         );
-        multicall.multicall_value(batchValue);
+        multicall.multicall_value{value: 1}(batchValue);
     }
 
     function testMulticallValueRevertCase2() public {
@@ -194,33 +199,58 @@ contract MulticallsTest is Test {
                 address(etherReceiver)
             )
         );
+
         vm.expectRevert(bytes("Multicall: value mismatch"));
+        /// @dev We don't send any `msg.value`.
         multicall.multicall_value(batchValue);
     }
 
     function testMulticallSelfSuccess() public {
-        // IMulticall.Batch[] memory batch = new IMulticall.Batch[](3);
-        // batch[0] = IMulticall.Batch(
-        //     address(mockCallee),
-        //     false,
-        //     abi.encodeWithSignature("getBlockHash(uint256)", block.number)
-        // );
-        // batch[1] = IMulticall.Batch(
-        //     address(mockCallee),
-        //     false,
-        //     abi.encodeWithSignature("store(uint256)", type(uint256).max)
-        // );
-        // batch[2] = IMulticall.Batch(
-        //     address(mockCallee),
-        //     true,
-        //     abi.encodeWithSignature("thisMethodReverts()")
-        // );
-        // IMulticall.BatchSelf[] memory batchSelf = new IMulticall.BatchSelf[](1);
-        // batchSelf[0] = IMulticall.BatchSelf(
-        //     false,
-        //     abi.encodeWithSignature("multicall((address,bool,bytes)[])", batch)
-        // );
-        // multicall.multicall_self(batchSelf);
+        IMulticall.Batch[] memory batch1 = new IMulticall.Batch[](3);
+        batch1[0] = IMulticall.Batch(
+            address(mockCallee),
+            false,
+            abi.encodeWithSignature("getBlockHash(uint256)", block.number)
+        );
+        batch1[1] = IMulticall.Batch(
+            address(mockCallee),
+            false,
+            abi.encodeWithSignature("store(uint256)", type(uint256).max)
+        );
+        batch1[2] = IMulticall.Batch(
+            address(mockCallee),
+            true,
+            abi.encodeWithSignature("thisMethodReverts()")
+        );
+
+        IMulticall.Batch[] memory batch2 = new IMulticall.Batch[](2);
+        batch2[0] = IMulticall.Batch(
+            address(mockCallee),
+            false,
+            abi.encodeWithSignature("getBlockHash(uint256)", block.number)
+        );
+        batch2[1] = IMulticall.Batch(
+            address(mockCallee),
+            true,
+            abi.encodeWithSignature("thisMethodReverts()")
+        );
+
+        IMulticall.BatchSelf[] memory batchSelf = new IMulticall.BatchSelf[](2);
+        batchSelf[0] = IMulticall.BatchSelf(
+            false,
+            abi.encodeWithSignature("multicall((address,bool,bytes)[])", batch1)
+        );
+        batchSelf[1] = IMulticall.BatchSelf(
+            false,
+            abi.encodeWithSignature(
+                "multistaticcall((address,bool,bytes)[])",
+                batch2
+            )
+        );
+        IMulticall.Result[] memory results = multicall.multicall_self(
+            batchSelf
+        );
+        assertTrue(results[0].success);
     }
 
     function testMulticallSelfRevert() public {}
@@ -237,6 +267,7 @@ contract MulticallsTest is Test {
             true,
             abi.encodeWithSignature("thisMethodReverts()")
         );
+
         IMulticall.Result[] memory results = multicall.multistaticcall(batch);
         assertTrue(results[0].success);
         assertEq(
@@ -263,6 +294,7 @@ contract MulticallsTest is Test {
             true,
             abi.encodeWithSignature("thisMethodReverts()")
         );
+
         vm.expectRevert();
         multicall.multistaticcall(batch);
     }

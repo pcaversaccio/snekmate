@@ -19,7 +19,7 @@
 struct Batch:
     target: address
     allow_failure: bool
-    call_data: Bytes[max_value(uint8)]
+    call_data: Bytes[max_value(uint16)]
 
 
 # @dev Batch struct for `payable` function calls.
@@ -27,14 +27,14 @@ struct BatchValue:
     target: address
     allow_failure: bool
     value: uint256
-    call_data: Bytes[max_value(uint8)]
+    call_data: Bytes[max_value(uint16)]
 
 
 # @dev Batch struct for ordinary (i.e. non-payable) function calls
 #      using this contract as destination address.
 struct BatchSelf:
     allow_failure: bool
-    call_data: Bytes[max_value(uint8)]
+    call_data: Bytes[max_value(uint16)]
 
 
 # @dev Batch struct for `payable` function calls using this contract
@@ -42,7 +42,7 @@ struct BatchSelf:
 struct BatchValueSelf:
     allow_failure: bool
     value: uint256
-    call_data: Bytes[max_value(uint8)]
+    call_data: Bytes[max_value(uint16)]
 
 
 # @dev Result struct for function call results.
