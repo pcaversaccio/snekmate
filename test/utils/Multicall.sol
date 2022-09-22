@@ -215,7 +215,6 @@ contract MulticallsTest is Test {
         //     true,
         //     abi.encodeWithSignature("thisMethodReverts()")
         // );
-
         // IMulticall.BatchSelf[] memory batchSelf = new IMulticall.BatchSelf[](1);
         // batchSelf[0] = IMulticall.BatchSelf(
         //     false,
@@ -224,10 +223,7 @@ contract MulticallsTest is Test {
         // multicall.multicall_self(batchSelf);
     }
 
-    function testMulticallSelfRevert() public {
-        
-
-    }
+    function testMulticallSelfRevert() public {}
 
     function testMultistaticcallSuccess() public {
         IMulticall.Batch[] memory batch = new IMulticall.Batch[](2);
