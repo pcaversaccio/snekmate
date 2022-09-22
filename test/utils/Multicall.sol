@@ -6,20 +6,15 @@ import {VyperDeployer} from "../../lib/utils/VyperDeployer.sol";
 
 import {EtherReceiver} from "./mocks/EtherReceiver.sol";
 import {MockCallee, Reverted} from "./mocks/MockCallee.sol";
-import {MulticallTokenMock} from "../../lib/openzeppelin-contracts/contracts/mocks/MulticallTokenMock.sol";
-import {MulticallTest} from "../../lib/openzeppelin-contracts/contracts/mocks/MulticallTest.sol";
 
 import {IMulticall} from "../../test/utils/interfaces/IMulticall.sol";
 
 contract MulticallsTest is Test {
-    uint256 private constant _AMOUNT = 25000;
-
     VyperDeployer private vyperDeployer = new VyperDeployer();
 
     IMulticall private multicall;
     EtherReceiver private etherReceiver;
     MockCallee private mockCallee;
-    MulticallTokenMock private multicallTokenMock;
 
     function setUp() public {
         multicall = IMulticall(
@@ -27,7 +22,6 @@ contract MulticallsTest is Test {
         );
         etherReceiver = new EtherReceiver();
         mockCallee = new MockCallee();
-        multicallTokenMock = new MulticallTokenMock(_AMOUNT);
     }
 
     function testMulticallSuccess() public {
@@ -39,7 +33,7 @@ contract MulticallsTest is Test {
         );
         batch[1] = IMulticall.Batch(
             address(mockCallee),
-            true,
+            false,
             abi.encodeWithSignature("store(uint256)", type(uint256).max)
         );
         batch[2] = IMulticall.Batch(
@@ -70,7 +64,7 @@ contract MulticallsTest is Test {
         );
         batch[1] = IMulticall.Batch(
             address(mockCallee),
-            true,
+            false,
             abi.encodeWithSignature("store(uint256)", type(uint256).max)
         );
         batch[2] = IMulticall.Batch(
@@ -96,7 +90,7 @@ contract MulticallsTest is Test {
         );
         batchValue[1] = IMulticall.BatchValue(
             address(mockCallee),
-            true,
+            false,
             0,
             abi.encodeWithSignature("store(uint256)", type(uint256).max)
         );
@@ -108,7 +102,7 @@ contract MulticallsTest is Test {
         );
         batchValue[3] = IMulticall.BatchValue(
             address(mockCallee),
-            true,
+            false,
             1,
             abi.encodeWithSignature(
                 "transferEther(address)",
@@ -144,7 +138,7 @@ contract MulticallsTest is Test {
         );
         batchValue[1] = IMulticall.BatchValue(
             address(mockCallee),
-            true,
+            false,
             0,
             abi.encodeWithSignature("store(uint256)", type(uint256).max)
         );
@@ -156,7 +150,7 @@ contract MulticallsTest is Test {
         );
         batchValue[3] = IMulticall.BatchValue(
             address(mockCallee),
-            true,
+            false,
             1,
             abi.encodeWithSignature(
                 "transferEther(address)",
@@ -181,7 +175,7 @@ contract MulticallsTest is Test {
         );
         batchValue[1] = IMulticall.BatchValue(
             address(mockCallee),
-            true,
+            false,
             0,
             abi.encodeWithSignature("store(uint256)", type(uint256).max)
         );
@@ -202,6 +196,37 @@ contract MulticallsTest is Test {
         );
         vm.expectRevert(bytes("Multicall: value mismatch"));
         multicall.multicall_value(batchValue);
+    }
+
+    function testMulticallSelfSuccess() public {
+        // IMulticall.Batch[] memory batch = new IMulticall.Batch[](3);
+        // batch[0] = IMulticall.Batch(
+        //     address(mockCallee),
+        //     false,
+        //     abi.encodeWithSignature("getBlockHash(uint256)", block.number)
+        // );
+        // batch[1] = IMulticall.Batch(
+        //     address(mockCallee),
+        //     false,
+        //     abi.encodeWithSignature("store(uint256)", type(uint256).max)
+        // );
+        // batch[2] = IMulticall.Batch(
+        //     address(mockCallee),
+        //     true,
+        //     abi.encodeWithSignature("thisMethodReverts()")
+        // );
+
+        // IMulticall.BatchSelf[] memory batchSelf = new IMulticall.BatchSelf[](1);
+        // batchSelf[0] = IMulticall.BatchSelf(
+        //     false,
+        //     abi.encodeWithSignature("multicall((address,bool,bytes)[])", batch)
+        // );
+        // multicall.multicall_self(batchSelf);
+    }
+
+    function testMulticallSelfRevert() public {
+        
+
     }
 
     function testMultistaticcallSuccess() public {
