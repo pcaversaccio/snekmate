@@ -7,6 +7,6 @@ updates:
       day: "monday"
     target-branch: "main"
     labels:
-      - "dependencies"
+      - "dependencies 🔁"
     assignees:
       - "pcaversaccio"

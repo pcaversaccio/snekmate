@@ -1,6 +1,6 @@
 {
   "baseBranches": ["main"],
-  "labels": ["dependencies"],
+  "labels": ["dependencies 🔁"],
   "assignees": ["pcaversaccio"],
   "separateMajorMinor": false,
   "extends": [
