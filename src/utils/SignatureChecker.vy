@@ -44,10 +44,10 @@ def is_valid_signature_now(signer: address, hash: bytes32, signature: Bytes[65])
         return True
 
     # Second check: EIP-1271 case.
-    return_data: Bytes[max_value(uint8)] = b""
+    return_data: Bytes[32] = empty(Bytes[32])
     return_data = \
-        raw_call(signer, _abi_encode(_IERC1271_ISVALIDSIGNATURE_SELECTOR, hash, signature), max_outsize=max_value(uint8), is_static_call=True)
-    return ((len(return_data) == 32) and (convert(_abi_decode(return_data, Bytes[32]), bytes32) == convert(_IERC1271_ISVALIDSIGNATURE_SELECTOR, bytes32)))
+        raw_call(signer, _abi_encode(hash, signature, method_id=_IERC1271_ISVALIDSIGNATURE_SELECTOR), max_outsize=32, is_static_call=True)
+    return ((len(return_data) == 32) and (convert(return_data, bytes32) == convert(_IERC1271_ISVALIDSIGNATURE_SELECTOR, bytes32)))
 
 
 @internal
