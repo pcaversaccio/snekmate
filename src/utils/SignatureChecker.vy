@@ -1,0 +1,118 @@
+# @version ^0.3.6
+"""
+@title ECDSA and EIP-1271 Signature Verification Function
+@license GNU Affero General Public License v3.0
+@author pcaversaccio
+@notice Signature verification helper that can be used instead
+        of `ECDSA.recover_sig` to seamlessly support both ECDSA
+        signatures from externally-owned accounts (EOAs) as well
+        as EIP-1271 (https://eips.ethereum.org/EIPS/eip-1271)
+        signatures from smart contract wallets like Argent and Gnosis Safe.
+        The implementation is inspired by OpenZeppelin's implementation here:
+        https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/cryptography/SignatureChecker.sol.
+@custom:security Signatures must not be used as unique identifiers since the
+                 `ecrecover` opcode allows for malleable (non-unique) signatures.
+"""
+
+
+_IERC1271_ISVALIDSIGNATURE_SELECTOR: constant(bytes4) = 0x1626BA7E
+_MALLEABILITY_THRESHOLD: constant(bytes32) = 0x7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF5D576E7357A4501DDFE92F46681B20A0
+_SIGNATURE_INCREMENT: constant(bytes32) = 0X7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+
+
+@external
+@view
+def is_valid_signature_now(signer: address, hash: bytes32, signature: Bytes[65]) -> bool:
+    """
+    @dev Checks if a signature `signature` is valid
+         for a given `signer` and message digest `hash`.
+         If the signer is a smart contract, the signature
+         is validated against that smart contract using
+         EIP-1271, otherwise it's validated using `ECDSA.recover_sig`.
+    @notice Unlike ECDSA signatures, contract signatures
+            are revocable and the result of this function
+            can therefore change over time. It could return
+            true in block N and false in block N+1 (or the opposite).
+    @param hash The 32-byte message digest that was signed.
+    @param signature The secp256k1 64/65-byte signature of `hash`.
+    @return bool The verification whether `signature` is valid
+            for the provided data.
+    """
+    # First check: ECDSA case.
+    recovered: address = self.recover_sig(hash, signature)
+    if (recovered == signer):
+        return True
+
+    # Second check: EIP-1271 case.
+    return_data: Bytes[max_value(uint8)] = b""
+    return_data = \
+        raw_call(signer, _abi_encode(_IERC1271_ISVALIDSIGNATURE_SELECTOR, hash, signature), max_outsize=max_value(uint8), is_static_call=True)
+    return ((len(return_data) == 32) and (convert(_abi_decode(return_data, Bytes[32]), bytes32) == convert(_IERC1271_ISVALIDSIGNATURE_SELECTOR, bytes32)))
+
+
+@internal
+@pure
+def recover_sig(hash: bytes32, signature: Bytes[65]) -> address:
+    """
+    @dev Sourced from {ECDSA-recover_sig}.
+    @notice See {ECDSA-recover_sig} for the
+            function docstring.
+    """
+    # 65-byte case: r,s,v standard signature.
+    if (len(signature) == 65):
+        r: uint256 = extract32(signature, 0, output_type=uint256)
+        s: uint256 = extract32(signature, 32, output_type=uint256)
+        v: uint256 = convert(slice(signature, 64, 1), uint256)
+        return self._try_recover_vrs(hash, v, r, s)
+    # 64-byte case: r,vs signature; see: https://eips.ethereum.org/EIPS/eip-2098.
+    elif (len(signature) == 64):
+        r: uint256 = extract32(signature, 0, output_type=uint256)
+        vs: uint256 = extract32(signature, 32, output_type=uint256)
+        return self._try_recover_r_vs(hash, r, vs)
+    else:
+        return empty(address)
+
+
+@internal
+@pure
+def _recover_vrs(hash: bytes32, v: uint256, r: uint256, s: uint256) -> address:
+    """
+    @dev Sourced from {ECDSA-_recover_vrs}.
+    @notice See {ECDSA-_recover_vrs} for the
+            function docstring.
+    """
+    return self._try_recover_vrs(hash, v, r, s)
+
+
+@internal
+@pure
+def _try_recover_r_vs(hash: bytes32, r: uint256, vs: uint256) -> address:
+    """
+    @dev Sourced from {ECDSA-_try_recover_r_vs}.
+    @notice See {ECDSA-_try_recover_r_vs} for the
+            function docstring.
+    """
+    s: uint256 = vs & convert(_SIGNATURE_INCREMENT, uint256)
+    # We do not check for an overflow here since the shift operation
+    # `shift(vs, -255)` results essentially in a uint8 type (0 or 1)
+    # and we use uint256 as result type.
+    v: uint256 = unsafe_add(shift(vs, -255), 27)
+    return self._try_recover_vrs(hash, v, r, s)
+
+
+@internal
+@pure
+def _try_recover_vrs(hash: bytes32, v: uint256, r: uint256, s: uint256) -> address:
+    """
+    @dev Sourced from {ECDSA-_try_recover_vrs}.
+    @notice See {ECDSA-_try_recover_vrs} for the
+            function docstring.
+    """
+    if (s > convert(_MALLEABILITY_THRESHOLD, uint256)):
+        raise "ECDSA: invalid signature 's' value"
+
+    signer: address = ecrecover(hash, v, r, s)
+    if (signer == empty(address)):
+        raise "ECDSA: invalid signature"
+    
+    return signer

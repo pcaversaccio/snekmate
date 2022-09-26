@@ -15,6 +15,7 @@ utils
 ├─ EIP712DomainSeparator — "EIP-712 Domain Separator"
 ├─ MerkleProofVerification — "Merkle Tree Proof Verification Functions"
 ├─ Multicall — "Multicall Functions"
+├─ SignatureChecker — "ECDSA and EIP-1271 Signature Verification Function"
 ```
 
 ## 💢 Disclaimer
