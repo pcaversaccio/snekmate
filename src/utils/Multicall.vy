@@ -1,4 +1,4 @@
-# @version ^0.3.6
+# @version ^0.3.7
 """
 @title Multicall Functions
 @license GNU Affero General Public License v3.0
@@ -31,14 +31,14 @@ struct BatchValue:
 
 
 # @dev Batch struct for ordinary (i.e. non-payable) function calls
-#      using this contract as destination address.
+# using this contract as destination address.
 struct BatchSelf:
     allow_failure: bool
     call_data: Bytes[max_value(uint16)]
 
 
 # @dev Batch struct for `payable` function calls using this contract
-#      as destination address. 
+# as destination address. 
 struct BatchValueSelf:
     allow_failure: bool
     value: uint256

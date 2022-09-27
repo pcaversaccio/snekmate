@@ -1,4 +1,4 @@
-# @version ^0.3.6
+# @version ^0.3.7
 """
 @title Merkle Tree Proof Verification Functions
 @license GNU Affero General Public License v3.0

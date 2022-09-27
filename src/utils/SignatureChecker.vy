@@ -1,4 +1,4 @@
-# @version ^0.3.6
+# @version ^0.3.7
 """
 @title ECDSA and EIP-1271 Signature Verification Function
 @license GNU Affero General Public License v3.0
@@ -15,7 +15,7 @@
 """
 
 
-_IERC1271_ISVALIDSIGNATURE_SELECTOR: constant(bytes4) = 0x1626BA7E
+IERC1271_ISVALIDSIGNATURE_SELECTOR: public(constant(bytes4)) = 0x1626BA7E
 _MALLEABILITY_THRESHOLD: constant(bytes32) = 0x7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF5D576E7357A4501DDFE92F46681B20A0
 _SIGNATURE_INCREMENT: constant(bytes32) = 0X7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
 
@@ -45,8 +45,8 @@ def is_valid_signature_now(signer: address, hash: bytes32, signature: Bytes[65])
 
     # Second check: EIP-1271 case.
     return_data: Bytes[32] = \
-        raw_call(signer, _abi_encode(hash, signature, method_id=_IERC1271_ISVALIDSIGNATURE_SELECTOR), max_outsize=32, is_static_call=True)
-    return ((len(return_data) == 32) and (convert(return_data, bytes32) == convert(_IERC1271_ISVALIDSIGNATURE_SELECTOR, bytes32)))
+        raw_call(signer, _abi_encode(hash, signature, method_id=IERC1271_ISVALIDSIGNATURE_SELECTOR), max_outsize=32, is_static_call=True)
+    return ((len(return_data) == 32) and (convert(return_data, bytes32) == convert(IERC1271_ISVALIDSIGNATURE_SELECTOR, bytes32)))
 
 
 @internal
