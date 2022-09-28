@@ -39,7 +39,7 @@ def is_valid_signature_now(signer: address, hash: bytes32, signature: Bytes[65])
             for the provided data.
     """
     # First check: ECDSA case.
-    recovered: address = self.recover_sig(hash, signature)
+    recovered: address = self._recover_sig(hash, signature)
     if (recovered == signer):
         return True
 
@@ -51,7 +51,7 @@ def is_valid_signature_now(signer: address, hash: bytes32, signature: Bytes[65])
 
 @internal
 @pure
-def recover_sig(hash: bytes32, signature: Bytes[65]) -> address:
+def _recover_sig(hash: bytes32, signature: Bytes[65]) -> address:
     """
     @dev Sourced from {ECDSA-recover_sig}.
     @notice See {ECDSA-recover_sig} for the
