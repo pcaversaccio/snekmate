@@ -64,4 +64,4 @@ jobs:
         run: forge test -vvv
 
       - name: Run snapshot
-        run: forge snapshot >> $GITHUB_STEP_SUMMARY
+        run: NO_COLOR=1 forge snapshot >> $GITHUB_STEP_SUMMARY
