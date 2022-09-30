@@ -16,6 +16,7 @@ utils
 ├─ MerkleProofVerification — "Merkle Tree Proof Verification Functions"
 ├─ Multicall — "Multicall Functions"
 ├─ SignatureChecker — "ECDSA and EIP-1271 Signature Verification Function"
+├─ BatchDistributor — "Batch Sending Both Native and ERC-20 Tokens"
 ```
 
 ## 💢 Disclaimer
