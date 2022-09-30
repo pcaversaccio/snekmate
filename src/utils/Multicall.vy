@@ -71,7 +71,6 @@ def multicall(data: DynArray[Batch, max_value(uint8)]) -> DynArray[Result, max_v
     @param data The array of `Batch` structs.
     @return DynArray The array of `Result` structs.
     """
-    length: uint256 = len(data)
     results: DynArray[Result, max_value(uint8)] = []
     return_data: Bytes[max_value(uint8)] = b""
     success: bool = False
@@ -100,7 +99,6 @@ def multicall_value(data: DynArray[BatchValue, max_value(uint8)]) -> DynArray[Re
     @return DynArray The array of `Result` structs.
     """
     value_accumulator: uint256 = 0
-    length: uint256 = len(data)
     results: DynArray[Result, max_value(uint8)] = []
     return_data: Bytes[max_value(uint8)] = b""
     success: bool = False
@@ -135,7 +133,6 @@ def multicall_self(data: DynArray[BatchSelf, max_value(uint8)]) -> DynArray[Resu
     @param data The array of `BatchSelf` structs.
     @return DynArray The array of `Result` structs.
     """
-    length: uint256 = len(data)
     results: DynArray[Result, max_value(uint8)] = []
     return_data: Bytes[max_value(uint8)] = b""
     success: bool = False
@@ -170,7 +167,6 @@ def multicall_value_self(data: DynArray[BatchValueSelf, max_value(uint8)]) -> Dy
     @return DynArray The array of `Result` structs.
     """
     value_accumulator: uint256 = 0
-    length: uint256 = len(data)
     results: DynArray[Result, max_value(uint8)] = []
     return_data: Bytes[max_value(uint8)] = b""
     success: bool = False
@@ -198,7 +194,6 @@ def multistaticcall(data: DynArray[Batch, max_value(uint8)]) -> DynArray[Result,
     @param data The array of `Batch` structs.
     @return DynArray The array of `Result` structs.
     """
-    length: uint256 = len(data)
     results: DynArray[Result, max_value(uint8)] = []
     return_data: Bytes[max_value(uint8)] = b""
     success: bool = False
