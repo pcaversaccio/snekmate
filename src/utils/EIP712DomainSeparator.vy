@@ -31,9 +31,12 @@ interface domainSeparatorV4:
 
 
 @external
+@payable
 def __init__(name: String[50], version: String[20]):
     """
     @dev Initialises the domain separator and the parameter caches.
+         To omit the opcodes for checking the `msg.value` in the
+         creation-time EVM bytecode, the constructor is declared as `payable`.
     @notice The definition of the domain separator can be found here:
             https://eips.ethereum.org/EIPS/eip-712#definition-of-domainseparator.
             Since the Vyper design requires strings of fixed size,
