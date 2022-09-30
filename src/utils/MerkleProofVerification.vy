@@ -19,6 +19,16 @@
 
 
 @external
+@payable
+def __init__():
+    """
+    @dev To omit the opcodes for checking the `msg.value` in the
+         creation-time EVM bytecode, the constructor is declared as `payable`.
+    """
+    pass
+
+
+@external
 @pure
 def verify(proof: DynArray[bytes32, max_value(uint16)], root: bytes32, leaf: bytes32) -> bool:
     """

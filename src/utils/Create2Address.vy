@@ -21,6 +21,16 @@ interface ComputeCreate2Address:
 
 
 @external
+@payable
+def __init__():
+    """
+    @dev To omit the opcodes for checking the `msg.value` in the
+         creation-time EVM bytecode, the constructor is declared as `payable`.
+    """
+    pass
+
+
+@external
 @view
 def compute_address_self(salt: bytes32, bytecode_hash: bytes32) -> address:
     """

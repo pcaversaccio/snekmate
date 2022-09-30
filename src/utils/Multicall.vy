@@ -52,6 +52,16 @@ struct Result:
 
 
 @external
+@payable
+def __init__():
+    """
+    @dev To omit the opcodes for checking the `msg.value` in the
+         creation-time EVM bytecode, the constructor is declared as `payable`.
+    """
+    pass
+
+
+@external
 def multicall(data: DynArray[Batch, max_value(uint8)]) -> DynArray[Result, max_value(uint8)]:
     """
     @dev Aggregates function calls, ensuring that each
