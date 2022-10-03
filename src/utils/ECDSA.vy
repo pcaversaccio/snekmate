@@ -20,8 +20,9 @@ _SIGNATURE_INCREMENT: constant(bytes32) = 0X7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
 @payable
 def __init__():
     """
-    @dev To omit the opcodes for checking the `msg.value` in the
-         creation-time EVM bytecode, the constructor is declared as `payable`.
+    @dev To omit the opcodes for checking the `msg.value`
+         in the creation-time EVM bytecode, the constructor
+         is declared as `payable`.
     """
     pass
 

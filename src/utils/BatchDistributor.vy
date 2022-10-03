@@ -3,7 +3,10 @@
 @title Batch Sending Both Native and ERC-20 Tokens
 @license GNU Affero General Public License v3.0
 @author pcaversaccio
-@notice TBD
+@notice These functions can be used for batch sending
+        both native and ERC-20 tokens. The implementation
+        is inspired by my implementation here:
+        https://github.com/pcaversaccio/batch-distributor/blob/main/contracts/BatchDistributor.sol.
 """
 
 
@@ -25,8 +28,9 @@ struct Batch:
 @payable
 def __init__():
     """
-    @dev To omit the opcodes for checking the `msg.value` in the
-         creation-time EVM bytecode, the constructor is declared as `payable`.
+    @dev To omit the opcodes for checking the `msg.value`
+         in the creation-time EVM bytecode, the constructor
+         is declared as `payable`.
     """
     pass
 
@@ -36,27 +40,44 @@ def __init__():
 @nonreentrant("lock")
 def distribute_ether(data: DynArray[Batch, max_value(uint8)]):
     """
-    @dev TBD
-    @notice TBD
-    @param data TBD
+    @dev Distributes ether, denominated in wei, to a
+         predefined batch of recipient addresses.
+    @notice In the event that excessive ether is sent,
+            the residual amount is returned back to the
+            `msg.sender`.
+    @param data Nested struct object that contains an array
+           of tuples that contain each a recipient address &
+           ether amount in wei.
     """
-    return_data: Bytes[32] = b""
+    return_data: Bytes[1] = b""
     idx: uint256 = 0
     for batch in data:
-        return_data = raw_call(batch.txns[idx].recipient, b"", max_outsize=32, value=batch.txns[idx].amount)
+        # A low-level call is used to guarantee compatibility
+        # with smart contract wallets. As a general pre-emptive
+        # safety measure, a reentrancy guard is used.
+        return_data = raw_call(batch.txns[idx].recipient, b"", max_outsize=1, value=batch.txns[idx].amount)
         idx += 1
 
     if (self.balance != 0):
-        return_data = raw_call(msg.sender, b"", max_outsize=32, value=self.balance)
+        return_data = raw_call(msg.sender, b"", max_outsize=1, value=self.balance)
 
 
 @external
 def distribute_token(token: ERC20, data: DynArray[Batch, max_value(uint8)]):
     """
-    @dev TBD
-    @notice TBD
-    @param token TBD
-    @param data TBD
+    @dev Distributes ERC-20 tokens, denominated in their corresponding
+         lowest unit, to a predefined batch of recipient addresses.
+    @notice To deal with non-compliant ERC20 tokens that do have no return
+            value, we use the kwarg `default_return_value` for external calls.
+            This function was introduced in Vyper version 0.3.4. For more
+            details see:
+            - https://github.com/vyperlang/vyper/pull/2839,
+            - https://github.com/vyperlang/vyper/issues/2812,
+            - https://medium.com/coinmonks/missing-return-value-bug-at-least-130-tokens-affected-d67bf08521ca.
+    @param token ERC-20 token contract address.
+    @param data Nested struct object that contains an array
+           of tuples that contain each a recipient address &
+           token amount.
     """
     total: uint256 = 0
     inc: uint256 = 0
@@ -64,11 +85,9 @@ def distribute_token(token: ERC20, data: DynArray[Batch, max_value(uint8)]):
         total += batch.txns[inc].amount
         inc += 1
 
-    # TODO: implement safeTransferFrom function
-    token.transferFrom(msg.sender, self, total)
-    
+    assert token.transferFrom(msg.sender, self, total, default_return_value=True)
+
     idx: uint256 = 0
     for batch in data:
-        # TODO: implement safeTransfer function
-        token.transfer(batch.txns[idx].recipient, batch.txns[idx].amount)
+        assert token.transfer(batch.txns[idx].recipient, batch.txns[idx].amount, default_return_value=True)
         idx += 1
