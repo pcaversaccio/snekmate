@@ -6,7 +6,9 @@
 @notice These functions can be used for batch sending
         both native and ERC-20 tokens. The implementation
         is inspired by my implementation here:
-        https://github.com/pcaversaccio/batch-distributor/blob/main/contracts/BatchDistributor.sol.
+        https://github.com/pcaversaccio/batch-distributor/blob/main/contracts/BatchDistributor.sol,
+        as well as the original implementation by banteg:
+        https://github.com/banteg/disperse-research.
 """
 
 
