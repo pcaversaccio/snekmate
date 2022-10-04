@@ -38,7 +38,7 @@ def __init__():
 @external
 @payable
 @nonreentrant("lock")
-def distribute_ether(data: DynArray[Batch, max_value(uint8)]):
+def distribute_ether(data: Batch):
     """
     @dev Distributes ether, denominated in wei, to a
          predefined batch of recipient addresses.
@@ -49,44 +49,41 @@ def distribute_ether(data: DynArray[Batch, max_value(uint8)]):
            of tuples that contain each a recipient address &
            ether amount in wei.
     """
-    idx: uint256 = 0
-    for batch in data:
+    for batch in data.txns:
         # A low-level call is used to guarantee compatibility
         # with smart contract wallets. As a general pre-emptive
         # safety measure, a reentrancy guard is used.
-        raw_call(batch.txns[idx].recipient, b"", value=batch.txns[idx].amount)
-        idx += 1
+        raw_call(batch.recipient, b"", value=batch.amount)
 
     if (self.balance != 0):
         raw_call(msg.sender, b"", value=self.balance)
 
 
 @external
-def distribute_token(token: ERC20, data: DynArray[Batch, max_value(uint8)]):
+def distribute_token(token: ERC20, data: Batch):
     """
     @dev Distributes ERC-20 tokens, denominated in their corresponding
          lowest unit, to a predefined batch of recipient addresses.
-    @notice To deal with non-compliant ERC20 tokens that do have no return
-            value, we use the kwarg `default_return_value` for external calls.
-            This function was introduced in Vyper version 0.3.4. For more
+    @notice To deal with (potentially) non-compliant ERC-20 tokens that do have
+            no return value, we use the kwarg `default_return_value` for external
+            calls. This function was introduced in Vyper version 0.3.4. For more
             details see:
             - https://github.com/vyperlang/vyper/pull/2839,
             - https://github.com/vyperlang/vyper/issues/2812,
             - https://medium.com/coinmonks/missing-return-value-bug-at-least-130-tokens-affected-d67bf08521ca.
+            Note: Since we cast the token address into the official ERC-20 interface,
+            the use of non-compliant ERC-20 tokens is prevented by design. Nevertheless,
+            we keep this guardrail for security reasons.
     @param token ERC-20 token contract address.
     @param data Nested struct object that contains an array
            of tuples that contain each a recipient address &
            token amount.
     """
     total: uint256 = 0
-    inc: uint256 = 0
-    for batch in data:
-        total += batch.txns[inc].amount
-        inc += 1
+    for batch in data.txns:
+        total += batch.amount
 
     assert token.transferFrom(msg.sender, self, total, default_return_value=True)
 
-    idx: uint256 = 0
-    for batch in data:
-        assert token.transfer(batch.txns[idx].recipient, batch.txns[idx].amount, default_return_value=True)
-        idx += 1
+    for batch in data.txns:
+        assert token.transfer(batch.recipient, batch.amount, default_return_value=True)

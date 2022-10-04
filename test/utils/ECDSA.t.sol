@@ -24,6 +24,7 @@ contract ECDSATest is Test {
     using BytesLib for bytes;
 
     VyperDeployer private vyperDeployer = new VyperDeployer();
+
     // solhint-disable-next-line var-name-mixedcase
     IECDSA private ECDSA;
 

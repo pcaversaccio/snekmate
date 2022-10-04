@@ -12,6 +12,7 @@ import {ICreate2Address} from "../../test/utils/interfaces/ICreate2Address.sol";
 contract Create2AddressTest is Test {
     VyperDeployer private vyperDeployer = new VyperDeployer();
     Create2Impl private create2Impl = new Create2Impl();
+
     ICreate2Address private create2Address;
 
     function setUp() public {

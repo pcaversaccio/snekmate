@@ -13,7 +13,7 @@ interface IBatchDistributor {
         Transaction[] txns;
     }
 
-    function distribute_ether(Batch calldata batch) external payable;
+    function distribute_ether(Batch memory batch) external payable;
 
-    function distribute_token(IERC20 token, Batch calldata batch) external;
+    function distribute_token(IERC20 token, Batch memory batch) external;
 }
