@@ -7,7 +7,7 @@
         both native and ERC-20 tokens. The implementation
         is inspired by my implementation here:
         https://github.com/pcaversaccio/batch-distributor/blob/main/contracts/BatchDistributor.sol,
-        as well as the original implementation by banteg:
+        as well as by the original implementation of banteg:
         https://github.com/banteg/disperse-research.
 """
 
