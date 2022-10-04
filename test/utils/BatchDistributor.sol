@@ -150,7 +150,7 @@ contract BatchDistributorTest is Test {
 
         /**
          * @dev The `Test` contract does not have a `fallback` function and must
-         * revert if excessive funds are returned.  
+         * revert if excessive funds are returned.
          */
         vm.expectRevert();
         batchDistributor.distribute_ether{value: 1 ether}(batch);
@@ -161,12 +161,7 @@ contract BatchDistributorTest is Test {
         string memory arg2 = "MTKN";
         address arg3 = vm.addr(1);
         uint256 arg4 = 100;
-        ERC20Mock erc20Mock = new ERC20Mock(
-            arg1,
-            arg2,
-            arg3,
-            arg4
-        );
+        ERC20Mock erc20Mock = new ERC20Mock(arg1, arg2, arg3, arg4);
         vm.startPrank(arg3);
         erc20Mock.approve(address(batchDistributor), 30);
 
@@ -191,12 +186,7 @@ contract BatchDistributorTest is Test {
         string memory arg2 = "MTKN";
         address arg3 = vm.addr(1);
         uint256 arg4 = 100;
-        ERC20Mock erc20Mock = new ERC20Mock(
-            arg1,
-            arg2,
-            arg3,
-            arg4
-        );
+        ERC20Mock erc20Mock = new ERC20Mock(arg1, arg2, arg3, arg4);
         vm.startPrank(arg3);
         erc20Mock.approve(address(batchDistributor), 100);
 
@@ -233,12 +223,7 @@ contract BatchDistributorTest is Test {
         string memory arg2 = "MTKN";
         address arg3 = vm.addr(1);
         uint256 arg4 = 100;
-        ERC20Mock erc20Mock = new ERC20Mock(
-            arg1,
-            arg2,
-            arg3,
-            arg4
-        );
+        ERC20Mock erc20Mock = new ERC20Mock(arg1, arg2, arg3, arg4);
         vm.startPrank(arg3);
         erc20Mock.approve(address(batchDistributor), 99);
 
