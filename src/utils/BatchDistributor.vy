@@ -51,11 +51,11 @@ def distribute_ether(data: Batch):
            of tuples that contain each a recipient address &
            ether amount in wei.
     """
-    for batch in data.txns:
+    for txn in data.txns:
         # A low-level call is used to guarantee compatibility
         # with smart contract wallets. As a general pre-emptive
         # safety measure, a reentrancy guard is used.
-        raw_call(batch.recipient, b"", value=batch.amount)
+        raw_call(txn.recipient, b"", value=txn.amount)
 
     if (self.balance != 0):
         raw_call(msg.sender, b"", value=self.balance)
@@ -82,10 +82,10 @@ def distribute_token(token: ERC20, data: Batch):
            token amount.
     """
     total: uint256 = 0
-    for batch in data.txns:
-        total += batch.amount
+    for txn in data.txns:
+        total += txn.amount
 
     assert token.transferFrom(msg.sender, self, total, default_return_value=True)
 
-    for batch in data.txns:
-        assert token.transfer(batch.recipient, batch.amount, default_return_value=True)
+    for txn in data.txns:
+        assert token.transfer(txn.recipient, txn.amount, default_return_value=True)

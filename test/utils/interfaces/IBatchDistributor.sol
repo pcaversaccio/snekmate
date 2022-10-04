@@ -5,7 +5,7 @@ import {IERC20} from "../../../lib/openzeppelin-contracts/contracts/token/ERC20/
 
 interface IBatchDistributor {
     struct Transaction {
-        address payable recipient;
+        address recipient;
         uint256 amount;
     }
 

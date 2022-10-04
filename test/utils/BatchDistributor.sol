@@ -96,7 +96,9 @@ contract BatchDistributorTest is Test {
         assertTrue(msgSender.balance == (balance - 2 wei - 100 wei - 2000 wei));
     }
 
-    function testDistributeEtherRevertCase1() public {
+    function testDistributeEtherRevertWithNoFallbackFunctionForReceipt()
+        public
+    {
         address payable alice = payable(address(batchDistributor));
         address payable bob = payable(vm.addr(2));
         address payable carol = payable(vm.addr(3));
@@ -126,7 +128,9 @@ contract BatchDistributorTest is Test {
         batchDistributor.distribute_ether{value: 2102 wei}(batch);
     }
 
-    function testDistributeEtherRevertCase2() public {
+    function testDistributeEtherRevertWithNoFallbackFunctionForMsgSender()
+        public
+    {
         address payable alice = payable(vm.addr(1));
         address payable bob = payable(vm.addr(2));
         address payable carol = payable(vm.addr(3));
@@ -154,6 +158,35 @@ contract BatchDistributorTest is Test {
          */
         vm.expectRevert();
         batchDistributor.distribute_ether{value: 1 ether}(batch);
+    }
+
+    function testDistributeEtherRevertWithInsufficientFunds() public {
+        address payable alice = payable(vm.addr(1));
+        address payable bob = payable(vm.addr(2));
+        address payable carol = payable(vm.addr(3));
+        IBatchDistributor.Transaction[]
+            memory transaction = new IBatchDistributor.Transaction[](3);
+        transaction[0] = IBatchDistributor.Transaction({
+            recipient: alice,
+            amount: 2 wei
+        });
+        transaction[1] = IBatchDistributor.Transaction({
+            recipient: bob,
+            amount: 100 wei
+        });
+        transaction[2] = IBatchDistributor.Transaction({
+            recipient: carol,
+            amount: 2000 wei
+        });
+        IBatchDistributor.Batch memory batch = IBatchDistributor.Batch({
+            txns: transaction
+        });
+
+        /**
+         * @dev Sends too little funds, which triggers an insufficient funds error.
+         */
+        vm.expectRevert();
+        batchDistributor.distribute_ether{value: 1 wei}(batch);
     }
 
     function testDistributeTokenOneAddressSuccess() public {
@@ -249,6 +282,41 @@ contract BatchDistributorTest is Test {
         });
 
         vm.expectRevert(bytes("ERC20: insufficient allowance"));
+        batchDistributor.distribute_token(erc20Mock, batch);
+        vm.stopPrank();
+    }
+
+    function testDistributeTokenRevertWithInsufficientBalance() public {
+        string memory arg1 = "MyToken";
+        string memory arg2 = "MTKN";
+        address arg3 = vm.addr(1);
+        uint256 arg4 = 100;
+        ERC20Mock erc20Mock = new ERC20Mock(arg1, arg2, arg3, arg4);
+        vm.startPrank(arg3);
+        erc20Mock.approve(address(batchDistributor), 120);
+
+        address payable alice = payable(vm.addr(2));
+        address payable bob = payable(vm.addr(3));
+        address payable carol = payable(vm.addr(4));
+        IBatchDistributor.Transaction[]
+            memory transaction = new IBatchDistributor.Transaction[](3);
+        transaction[0] = IBatchDistributor.Transaction({
+            recipient: alice,
+            amount: 50
+        });
+        transaction[1] = IBatchDistributor.Transaction({
+            recipient: bob,
+            amount: 20
+        });
+        transaction[2] = IBatchDistributor.Transaction({
+            recipient: carol,
+            amount: 50
+        });
+        IBatchDistributor.Batch memory batch = IBatchDistributor.Batch({
+            txns: transaction
+        });
+
+        vm.expectRevert(bytes("ERC20: transfer amount exceeds balance"));
         batchDistributor.distribute_token(erc20Mock, batch);
         vm.stopPrank();
     }
