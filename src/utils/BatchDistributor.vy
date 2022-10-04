@@ -49,17 +49,16 @@ def distribute_ether(data: DynArray[Batch, max_value(uint8)]):
            of tuples that contain each a recipient address &
            ether amount in wei.
     """
-    return_data: Bytes[1] = b""
     idx: uint256 = 0
     for batch in data:
         # A low-level call is used to guarantee compatibility
         # with smart contract wallets. As a general pre-emptive
         # safety measure, a reentrancy guard is used.
-        return_data = raw_call(batch.txns[idx].recipient, b"", max_outsize=1, value=batch.txns[idx].amount)
+        raw_call(batch.txns[idx].recipient, b"", value=batch.txns[idx].amount)
         idx += 1
 
     if (self.balance != 0):
-        return_data = raw_call(msg.sender, b"", max_outsize=1, value=self.balance)
+        raw_call(msg.sender, b"", value=self.balance)
 
 
 @external
