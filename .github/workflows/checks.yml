@@ -59,4 +59,4 @@ jobs:
         uses: codespell-project/actions-codespell@v1.0
         with:
           check_filenames: true
-          skip: yarn.lock
+          skip: .git,yarn.lock
