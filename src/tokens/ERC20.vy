@@ -99,7 +99,7 @@ def transferFrom(sender:address, receiver: address, amount: uint256) -> bool:
 def approve(spender: address, amount: uint256) -> bool:
     """
     @param spender The address that will execute on owner behalf.
-    @param amount The amount of token to be transfered.
+    @param amount The amount of token to be transferred.
     """
     self.allowance[msg.sender][spender] = amount
 

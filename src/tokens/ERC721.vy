@@ -63,7 +63,7 @@ interface ERC721Enumerable:
 #      transfer, the approved address for that NFT (if any) is reset to none.
 # @param owner Sender of NFT (if address is zero address it indicates token creation).
 # @param receiver Receiver of NFT (if address is zero address it indicates token destruction).
-# @param tokenId The NFT that got transfered.
+# @param tokenId The NFT that got transferred.
 event Transfer:
     sender: indexed(address)
     receiver: indexed(address)
