@@ -34,10 +34,10 @@ implements: ERC20
 
 
 # @dev Emitted when `amount` tokens are moved
-# from one account (`sender`) to another (`to`).
+# from one account (`owner`) to another (`to`).
 # Note that the parameter `amount` may be zero.
 event Transfer:
-    sender: indexed(address)
+    owner: indexed(address)
     to: indexed(address)
     amount: uint256
 
@@ -145,57 +145,103 @@ def approve(spender: address, amount: uint256) -> bool:
 
 
 @external
-def transferFrom(sender: address, to: address, amount: uint256) -> bool:
+def transferFrom(owner: address, to: address, amount: uint256) -> bool:
     """
-    @dev Moves `amount` tokens from `sender`
+    @dev Moves `amount` tokens from `owner`
          to `to` using the allowance mechanism.
          The `amount` is then deducted from the
          caller's allowance.
-    @notice Note that `sender` and `to` cannot
-            be the zero address. Also, `sender`
+    @notice Note that `owner` and `to` cannot
+            be the zero address. Also, `owner`
             must have a balance of at least `amount`.
             Eventually, the caller must have allowance
-            for `sender`'s tokens of at least `amount`.
+            for `owner`'s tokens of at least `amount`.
 
             IMPORTANT: The function does not update the
             allowance if the current allowance is the
             maximum `uint256`.
-    @param sender The 20-byte sender address.
+    @param owner The 20-byte owner address.
     @param to The 20-byte receiver address.
     @param amount The 32-byte token amount to be transferred.
     @return bool The verification whether the transfer succeeded
             or failed. Note that the function reverts instead
             of returning `False` on a failure.
     """
-    self._spend_allowance(sender, to, amount)
-    self._transfer(sender, to, amount)
+    self._spend_allowance(owner, msg.sender, amount)
+    self._transfer(owner, to, amount)
+    return True
+
+
+@external
+def increase_allowance(spender: address, added_amount: uint256) -> bool:
+    """
+    @dev Atomically increases the allowance granted to
+         `spender` by the caller.
+    @notice This is an alternative to `approve` that can
+            be used as a mitigation for the problems
+            described in https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729.
+            Note that `spender` cannot be the zero address.
+    @param spender The 20-byte spender address.
+    @param added_amount The 32-byte token amount that is
+           added atomically to the allowance of the `spender`.
+    @return bool The verification whether the allowance increase
+            operation succeeded or failed. Note that the function
+            reverts instead of returning `False` on a failure.
+    """
+    owner: address = msg.sender
+    self._approve(owner, spender, self.allowance[owner][spender] + added_amount)
+    return True
+
+
+@external
+def decrease_allowance(spender: address, subtracted_amount: uint256) -> bool:
+    """
+    @dev Atomically decreases the allowance granted to
+         `spender` by the caller.
+    @notice This is an alternative to `approve` that can
+            be used as a mitigation for the problems
+            described in https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729.
+            Note that `spender` cannot be the zero address.
+            Also, `spender` must have an allowance for
+            the caller of at least `subtracted_amount`.
+    @param spender The 20-byte spender address.
+    @param subtracted_amount The 32-byte token amount that is
+           subtracted atomically from the allowance of the `spender`.
+    @return bool The verification whether the allowance decrease
+            operation succeeded or failed. Note that the function
+            reverts instead of returning `False` on a failure.
+    """
+    owner: address = msg.sender
+    current_allowance: uint256 = self.allowance[owner][spender]
+    assert current_allowance >= subtracted_amount, "ERC20: decreased allowance below zero"
+    self._approve(owner, spender, unsafe_sub(current_allowance, subtracted_amount))
     return True
 
 
 @internal
-def _transfer(sender: address, to: address, amount: uint256):
+def _transfer(owner: address, to: address, amount: uint256):
     """
-    @dev Moves `amount` tokens from the sender's
+    @dev Moves `amount` tokens from the owner's
          account to `to`.
-    @notice Note that `sender` and `to` cannot be
-            the zero address. Also, `sender` must
+    @notice Note that `owner` and `to` cannot be
+            the zero address. Also, `owner` must
             have a balance of at least `amount`.
-    @param sender The 20-byte sender address.
+    @param owner The 20-byte owner address.
     @param to The 20-byte receiver address.
     @param amount The 32-byte token amount to be transferred.
     """
-    assert sender != empty(address), "ERC20: transfer from the zero address"
+    assert owner != empty(address), "ERC20: transfer from the zero address"
     assert to != empty(address), "ERC20: transfer to the zero address"
 
-    self._before_token_transfer(sender, to, amount)
+    self._before_token_transfer(owner, to, amount)
 
-    sender_balanceOf: uint256 = self.balanceOf[sender]
-    assert sender_balanceOf >= amount, "ERC20: transfer amount exceeds balance"
-    self.balanceOf[sender] = sender_balanceOf - amount
-    self.balanceOf[to] += amount
-    log Transfer(sender, to, amount)
+    owner_balanceOf: uint256 = self.balanceOf[owner]
+    assert owner_balanceOf >= amount, "ERC20: transfer amount exceeds balance"
+    self.balanceOf[owner] = unsafe_sub(owner_balanceOf, amount)
+    self.balanceOf[to] = unsafe_add(self.balanceOf[to], amount)
+    log Transfer(owner, to, amount)
 
-    self._after_token_transfer(sender, to, amount)
+    self._after_token_transfer(owner, to, amount)
 
 
 @internal
@@ -220,7 +266,7 @@ def _approve(owner: address, spender: address, amount: uint256):
 @internal
 def _spend_allowance(owner: address, spender: address, amount: uint256):
     """
-    @dev Updates `owner` s allowance for `spender`
+    @dev Updates `owner`'s allowance for `spender`
          based on spent `amount`.
     @notice Note that it does not update the allowance
             `amount` in case of infinite allowance.
@@ -234,24 +280,24 @@ def _spend_allowance(owner: address, spender: address, amount: uint256):
     current_allowance: uint256 = self.allowance[owner][spender]
     if (current_allowance != max_value(uint256)):
         assert current_allowance >= amount, "ERC20: insufficient allowance"
-        self._approve(owner, spender, current_allowance - amount)
+        self._approve(owner, spender, unsafe_sub(current_allowance, amount))
 
 
 @internal
-def _before_token_transfer(sender: address, to: address, amount: uint256):
+def _before_token_transfer(owner: address, to: address, amount: uint256):
     """
     @dev Hook that is called before any transfer of tokens.
          This includes minting and burning.
     @notice The calling conditions are:
-            - when `sender` and `to` are both non-zero,
-              `amount` of `sender`'s tokens will be
+            - when `owner` and `to` are both non-zero,
+              `amount` of `owner`'s tokens will be
               transferred to `to`,
-            - when `sender` is zero, `amount` tokens will
+            - when `owner` is zero, `amount` tokens will
               be minted for `to`,
-            - when `to` is zero, `amount` of `sender`'s
+            - when `to` is zero, `amount` of `owner`'s
               tokens will be burned,
-            - `sender` and `to` are never both zero.
-    @param sender The 20-byte sender address.
+            - `owner` and `to` are never both zero.
+    @param owner The 20-byte owner address.
     @param to The 20-byte receiver address.
     @param amount The 32-byte token amount to be transferred.
     """
@@ -259,20 +305,20 @@ def _before_token_transfer(sender: address, to: address, amount: uint256):
 
 
 @internal
-def _after_token_transfer(sender: address, to: address, amount: uint256):
+def _after_token_transfer(owner: address, to: address, amount: uint256):
     """
     @dev Hook that is called after any transfer of tokens.
          This includes minting and burning.
     @notice The calling conditions are:
-            - when `sender` and `to` are both non-zero,
-              `amount` of `sender`'s tokens has been
+            - when `owner` and `to` are both non-zero,
+              `amount` of `owner`'s tokens has been
               transferred to `to`,
-            - when `sender` is zero, `amount` tokens
+            - when `owner` is zero, `amount` tokens
               have been minted for `to`,
-            - when `to` is zero, `amount` of `sender`'s
+            - when `to` is zero, `amount` of `owner`'s
               tokens have been burned,
-            - `sender` and `to` are never both zero.
-    @param sender The 20-byte sender address.
+            - `owner` and `to` are never both zero.
+    @param owner The 20-byte owner address.
     @param to The 20-byte receiver address.
     @param amount The 32-byte token amount that has
            been transferred.
