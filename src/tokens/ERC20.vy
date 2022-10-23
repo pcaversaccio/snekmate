@@ -51,6 +51,13 @@ event Approval:
     amount: uint256
 
 
+# @dev Emitted when the ownership is transferred
+# from `previous_owner` to `new_owner`.
+event OwnershipTransferred:
+    previous_owner: indexed(address)
+    new_owner: indexed(address)
+
+
 # @dev Returns the decimals places of the token.
 # The default value is 18.
 # @notice If you declare a variable as public,
@@ -84,6 +91,14 @@ allowance: public(HashMap[address, HashMap[address, uint256]])
 totalSupply: public(uint256)
 
 
+# @dev Returns the address of the current owner.
+owner: public(address)
+
+
+# @dev Returns `True` if an `address` has been granted the minter role.
+is_minter: public(HashMap[address, bool])
+
+
 @external
 @payable
 def __init__(name_: String[25], symbol_: String[5]):
@@ -92,6 +107,9 @@ def __init__(name_: String[25], symbol_: String[5]):
          in the creation-time EVM bytecode, the constructor
          is declared as `payable`.
     """
+    msg_sender: address = msg.sender
+    self.owner = msg_sender
+    self.is_minter[msg_sender] = True
     name = name_
     symbol = symbol_
 
@@ -218,6 +236,102 @@ def decrease_allowance(spender: address, subtracted_amount: uint256) -> bool:
     return True
 
 
+@external
+def mint(owner: address, amount: uint256):
+    """
+    @dev Creates `amount` tokens and assigns them to `owner`.
+    @notice Only authorised minters can access this function.
+            Note that `owner` cannot be the zero address.
+    @param amount The 32-byte token amount to be created.
+    """
+    assert self.is_minter[msg.sender], "AccessControl: Access is denied"
+    self._mint(owner, amount)
+
+
+@external
+def add_minter(minter: address):
+    """
+    @dev Adds a new `minter` address to the list of allowed
+         minters. Note that only the `owner` can add new minters.
+         Also, the new `minter` cannot be the zero address.
+    @param minter The 20-byte minter address.
+    """
+    self._check_owner()
+    assert minter != empty(address), "AccessControl: new minter is the zero address"
+    self.is_minter[minter] = True
+
+
+@external
+def remove_minter(minter: address):
+    """
+    @dev Removes an existing `minter` address from the list of allowed
+         minters. Note that only the `owner` can remove minters. Also,
+         the `owner` cannot remove himself from the list of allowed
+         minters.
+    @param minter The 20-byte minter address.
+    """
+    self._check_owner()
+    assert minter != self.owner, "AccessControl: removed minter is owner address"
+    self.is_minter[minter] = False
+
+
+@external
+def transfer_ownership(new_owner: address):
+    """
+    @dev Transfers the ownership of the contract
+         to a new account `new_owner`.
+    @notice Note that this function can only be
+            called by the current `owner`. Also,
+            the `new_owner` cannot be the zero address.
+    @param new_owner The 20-byte address of the new owner.
+    """
+    self._check_owner()
+    assert new_owner != empty(address), "AccessControl: new owner is the zero address"
+    self._transfer_ownership(new_owner)
+
+
+@external
+def renounce_ownership():
+    """
+    @dev Leaves the contract without owner.
+    @notice Renouncing ownership will leave
+            the contract without an owner,
+            thereby removing any functionality
+            that is only available to the owner.
+            Notice, that the `owner` is also
+            removed from the list of allowed
+            minters.
+    """
+    self._check_owner()
+    self.is_minter[msg.sender] = False
+    self._transfer_ownership(empty(address))
+
+
+@external
+def burn(amount: uint256):
+    """
+    @dev Destroys `amount` tokens from the caller.
+    @param amount The 32-byte token amount to be destroyed.
+    """
+    self._burn(msg.sender, amount)
+
+
+@external
+def burn_from(owner: address, amount: uint256):
+    """
+    @dev Destroys `amount` tokens from `owner`,
+         deducting from the caller's allowance.
+    @notice Note that `owner` cannot be the
+            zero address. Also, the caller must
+            have an allowance for `owner`'s tokens
+            of at least `amount`.
+    @param owner The 20-byte owner address.
+    @param amount The 32-byte token amount to be destroyed.
+    """
+    self._spend_allowance(owner, msg.sender, amount)
+    self._burn(owner, amount)
+
+
 @internal
 def _transfer(owner: address, to: address, amount: uint256):
     """
@@ -242,6 +356,52 @@ def _transfer(owner: address, to: address, amount: uint256):
     log Transfer(owner, to, amount)
 
     self._after_token_transfer(owner, to, amount)
+
+
+@internal
+def _mint(owner: address, amount: uint256):
+    """
+    @dev Creates `amount` tokens and assigns
+         them to `owner`, increasing the
+         total supply.
+    @notice Note that `owner` cannot be the
+            zero address.
+    @param owner The 20-byte owner address.
+    @param amount The 32-byte token amount to be created.
+    """
+    assert owner != empty(address), "ERC20: mint to the zero address"
+
+    self._before_token_transfer(empty(address), owner, amount)
+
+    self.totalSupply += amount
+    self.balanceOf[owner] = unsafe_add(self.balanceOf[owner], amount)
+    log Transfer(empty(address), owner, amount)
+
+    self._after_token_transfer(empty(address), owner, amount)
+
+
+@internal
+def _burn(owner: address, amount: uint256):
+    """
+    @dev Destroys `amount` tokens from `owner`,
+         reducing the total supply.
+    @notice Note that `owner` cannot be the
+            zero address. Also, `owner` must
+            have at least `amount` tokens.
+    @param owner The 20-byte owner address.
+    @param amount The 32-byte token amount to be destroyed.
+    """
+    assert owner != empty(address), "ERC20: burn from the zero address"
+
+    self._before_token_transfer(owner, empty(address), amount)
+
+    account_balance: uint256 = self.balanceOf[owner]
+    assert account_balance >= amount, "ERC20: burn amount exceeds balance"
+    self.balanceOf[owner] = unsafe_sub(account_balance, amount)
+    self.totalSupply = unsafe_sub(self.totalSupply, amount)
+    log Transfer(owner, empty(address), amount)
+
+    self._after_token_transfer(owner, empty(address), amount)
 
 
 @internal
@@ -324,3 +484,25 @@ def _after_token_transfer(owner: address, to: address, amount: uint256):
            been transferred.
     """
     pass
+
+
+@internal
+def _check_owner():
+    """
+    @dev Throws if the sender is not the owner.
+    """
+    assert msg.sender == self.owner, "AccessControl: caller is not the owner"
+
+
+@internal
+def _transfer_ownership(new_owner: address):
+    """
+    @dev Transfers the ownership of the contract
+         to a new account `new_owner`.
+    @notice Internal function without access
+            restriction.
+    @param new_owner The 20-byte address of the new owner.
+    """
+    old_owner: address = self.owner
+    self.owner = new_owner
+    log OwnershipTransferred(old_owner, new_owner)
