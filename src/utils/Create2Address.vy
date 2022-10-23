@@ -14,7 +14,7 @@
 _COLLISION_OFFSET: constant(bytes1) = 0xFF
 
 
-# @dev A Vyper contract cannot call directly between two external functions.
+# @dev A Vyper contract cannot call directly between two `external` functions.
 # To bypass this, we can use an interface.
 interface ComputeCreate2Address:
     def compute_address(salt: bytes32, bytecode_hash: bytes32, deployer: address) -> address: pure

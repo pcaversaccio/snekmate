@@ -12,7 +12,7 @@
 """
 
 
-# @dev Cache the domain separator as an immutable value,
+# @dev Cache the domain separator as an `immutable` value,
 # but also store the corresponding chain id to invalidate
 # the cached domain separator if the chain id changes.
 _CACHED_CHAIN_ID: immutable(uint256)
@@ -24,7 +24,7 @@ _HASHED_VERSION: immutable(bytes32)
 _TYPE_HASH: immutable(bytes32)
 
 
-# @dev A Vyper contract cannot call directly between two external functions.
+# @dev A Vyper contract cannot call directly between two `external` functions.
 # To bypass this, we can use an interface.
 interface domainSeparatorV4:
     def domain_separator_v4() -> bytes32: view
