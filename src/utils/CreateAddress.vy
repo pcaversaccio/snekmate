@@ -11,7 +11,7 @@
 """
 
 
-# @dev A Vyper contract cannot call directly between two external functions.
+# @dev A Vyper contract cannot call directly between two `external` functions.
 # To bypass this, we can use an interface.
 interface ComputeCreateAddress:
     def compute_address_rlp(deployer: address, nonce: uint256) -> address: pure
@@ -64,21 +64,21 @@ def compute_address_rlp(deployer: address, nonce: uint256) -> address:
 
     length: bytes1 = 0x94
 
-    # @dev The theoretical allowed limit, based on EIP-2681,
-    # for an account nonce is 2**64-2: https://eips.ethereum.org/EIPS/eip-2681.
+    # The theoretical allowed limit, based on EIP-2681, for an
+    # account nonce is 2**64-2: https://eips.ethereum.org/EIPS/eip-2681.
     assert nonce < convert(max_value(uint64), uint256), "RLP: invalid nonce value"
 
-    # @dev The integer zero is treated as an empty byte string and
-    # therefore has only one length prefix, 0x80, which is calculated
-    # via 0x80 + 0.
+    # The integer zero is treated as an empty byte string and
+    # therefore has only one length prefix, 0x80, which is
+    # calculated via 0x80 + 0.
     if (nonce == convert(0x00, uint256)):
         return self._convert_keccak256_2_address(keccak256(concat(0xd6, length, convert(deployer, bytes20), 0x80)))
-    # @dev A one-byte integer in the [0x00, 0x7f] range uses its own
+    # A one-byte integer in the [0x00, 0x7f] range uses its own
     # value as a length prefix, there is no additional "0x80 + length"
     # prefix that precedes it.
     elif (nonce <= convert(0x7f, uint256)):
         return self._convert_keccak256_2_address(keccak256(concat(0xd6, length, convert(deployer, bytes20), convert(convert(nonce, uint8), bytes1))))
-    # @dev In the case of `nonce > convert(0x7f, uint256)` and
+    # In the case of `nonce > convert(0x7f, uint256)` and
     # `nonce <= convert(max_value((uint8), uint256)`, we have the
     # following encoding scheme (the same calculation can be carried
     # over for higher nonce bytes):
