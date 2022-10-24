@@ -14,6 +14,9 @@
         - `permit` (`external` function),
         - `mint` (`external` function),
         - `add_minter` (`external` function),
+        - `remove_minter` (`external` function),
+        - `transfer_ownership` (`external` function),
+        - `renounce_ownership` (`external` function),
         - `_before_token_transfer` (`internal` function),
         - `_after_token_transfer` (`internal` function).
         The `permit` function implements approvals via EIP-712
@@ -108,7 +111,7 @@ def __init__(name_: String[25], symbol_: String[5]):
          is declared as `payable`.
     """
     msg_sender: address = msg.sender
-    self.owner = msg_sender
+    self._transfer_ownership(msg_sender)
     self.is_minter[msg_sender] = True
     name = name_
     symbol = symbol_
