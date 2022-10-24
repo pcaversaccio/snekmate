@@ -11,10 +11,9 @@
         - `decrease_allowance` (`external` function),
         - `burn` (`external` function),
         - `burn_from` (`external` function),
-        - `permit` (`external` function),
         - `mint` (`external` function),
-        - `add_minter` (`external` function),
-        - `remove_minter` (`external` function),
+        - `set_minter` (`external` function),
+        - `permit` (`external` function),
         - `transfer_ownership` (`external` function),
         - `renounce_ownership` (`external` function),
         - `_before_token_transfer` (`internal` function),
@@ -133,6 +132,13 @@ event OwnershipTransferred:
     new_owner: indexed(address)
 
 
+# @dev Emitted when the status of a `minter`
+# address is changed.
+event RoleMinterChanged:
+    minter: indexed(address)
+    status: bool
+
+
 @external
 @payable
 def __init__(name_: String[25], symbol_: String[5], init_supply_: uint256, name_eip712_: String[50], version_eip712_: String[20]):
@@ -143,8 +149,10 @@ def __init__(name_: String[25], symbol_: String[5], init_supply_: uint256, name_
     @notice The initial supply of the token as well
             as the `owner` role will be assigned to
             the `msg.sender`.
-    @param name_ The name of the token.
-    @param symbol_ The symbol of the token.
+    @param name_ The maximum 25-byte user-readable string
+           name of the token.
+    @param symbol_ The maximum 5-byte user-readable string
+           symbol of the token.
     @param init_supply_ The initial supply of the token.
     @param name_eip712_ The maximum 50-byte user-readable
            string name of the signing domain, i.e. the name
@@ -298,6 +306,31 @@ def decrease_allowance(spender: address, subtracted_amount: uint256) -> bool:
 
 
 @external
+def burn(amount: uint256):
+    """
+    @dev Destroys `amount` tokens from the caller.
+    @param amount The 32-byte token amount to be destroyed.
+    """
+    self._burn(msg.sender, amount)
+
+
+@external
+def burn_from(owner: address, amount: uint256):
+    """
+    @dev Destroys `amount` tokens from `owner`,
+         deducting from the caller's allowance.
+    @notice Note that `owner` cannot be the
+            zero address. Also, the caller must
+            have an allowance for `owner`'s tokens
+            of at least `amount`.
+    @param owner The 20-byte owner address.
+    @param amount The 32-byte token amount to be destroyed.
+    """
+    self._spend_allowance(owner, msg.sender, amount)
+    self._burn(owner, amount)
+
+
+@external
 def mint(owner: address, amount: uint256):
     """
     @dev Creates `amount` tokens and assigns them to `owner`.
@@ -310,32 +343,58 @@ def mint(owner: address, amount: uint256):
 
 
 @external
-def add_minter(minter: address):
+def set_minter(minter: address, status: bool):
     """
-    @dev Adds a new `minter` address to the list of
-         allowed minters. Note that only the `owner`
-         can add new minters. Also, the new `minter`
-         cannot be the zero address.
+    @dev Adds or removes an address `minter` to/from the
+         list of allowed minters. Note that only the
+         `owner` can add or remove `minter` addresses.
+         Also, the `minter` cannot be the zero address.
+         Eventually, the `owner` cannot remove himself
+         from the list of allowed minters.
     @param minter The 20-byte minter address.
+    @param status The Boolean variable that sets the status.
     """
     self._check_owner()
-    assert minter != empty(address), "AccessControl: new minter is the zero address"
-    self.is_minter[minter] = True
+    assert minter != empty(address), "AccessControl: minter is the zero address"
+    assert minter != self.owner, "AccessControl: minter is owner address"
+    self.is_minter[minter] = status
+    log RoleMinterChanged(minter, status)
 
 
 @external
-def remove_minter(minter: address):
+def permit(owner: address, spender: address, amount: uint256, deadline: uint256, v: uint256, r: bytes32, s: bytes32):
     """
-    @dev Removes an existing `minter` address from the
-         list of allowed minters. Note that only the
-         `owner` can remove minters. Also, the `owner`
-         cannot remove himself from the list of allowed
-         minters.
-    @param minter The 20-byte minter address.
+    @dev Sets `amount` as the allowance of `spender`
+         over `owner`'s tokens, given `owner`'s signed
+         approval.
+    @notice Note that `spender` cannot be the zero address.
+            Also, `deadline` must be a block timestamp in
+            the future. `v`, `r`, and `s` must be a valid
+            secp256k1 signature from `owner` over the
+            EIP-712-formatted function arguments. Eventually,
+            the signature must use `owner`'s current nonce.
+    @param owner The 20-byte owner address.
+    @param spender The 20-byte spender address.
+    @param amount The 32-byte token amount that is
+           allowed to be spent by the `spender`.
+    @param deadline The 32-byte block timestamp up
+           which the `spender` is allowed to spend `amount`.
+    @param v The secp256k1 1-byte signature parameter `v`.
+    @param r The secp256k1 32-byte signature parameter `r`.
+    @param s The secp256k1 32-byte signature parameter `s`.
     """
-    self._check_owner()
-    assert minter != self.owner, "AccessControl: removed minter is owner address"
-    self.is_minter[minter] = False
+    assert block.timestamp <= deadline, "ERC20Permit: expired deadline"
+
+    current_nonce: uint256 = self.nonces[owner]
+    self.nonces[owner] = unsafe_add(current_nonce, 1)
+    
+    struct_hash: bytes32 = keccak256(_abi_encode(_PERMIT_TYPE_HASH, owner, spender, amount, current_nonce, deadline))
+    hash: bytes32  = self._hash_typed_data_v4(struct_hash)
+
+    signer: address = self._recover_vrs(hash, v, convert(r, uint256), convert(s, uint256))
+    assert signer == owner, "ERC20Permit: invalid signature"
+
+    self._approve(owner, spender, amount)
 
 
 @external
@@ -373,67 +432,6 @@ def renounce_ownership():
     self._check_owner()
     self.is_minter[msg.sender] = False
     self._transfer_ownership(empty(address))
-
-
-@external
-def burn(amount: uint256):
-    """
-    @dev Destroys `amount` tokens from the caller.
-    @param amount The 32-byte token amount to be destroyed.
-    """
-    self._burn(msg.sender, amount)
-
-
-@external
-def burn_from(owner: address, amount: uint256):
-    """
-    @dev Destroys `amount` tokens from `owner`,
-         deducting from the caller's allowance.
-    @notice Note that `owner` cannot be the
-            zero address. Also, the caller must
-            have an allowance for `owner`'s tokens
-            of at least `amount`.
-    @param owner The 20-byte owner address.
-    @param amount The 32-byte token amount to be destroyed.
-    """
-    self._spend_allowance(owner, msg.sender, amount)
-    self._burn(owner, amount)
-
-
-@external
-def permit(owner: address, spender: address, amount: uint256, deadline: uint256, v: uint256, r: bytes32, s: bytes32):
-    """
-    @dev Sets `amount` as the allowance of `spender`
-         over `owner`'s tokens, given `owner`'s signed
-         approval.
-    @notice Note that `spender` cannot be the zero address.
-            Also, `deadline` must be a block timestamp in
-            the future. `v`, `r`, and `s` must be a valid
-            secp256k1 signature from `owner` over the
-            EIP-712-formatted function arguments. Eventually,
-            the signature must use `owner`'s current nonce.
-    @param owner The 20-byte owner address.
-    @param spender The 20-byte spender address.
-    @param amount The 32-byte token amount that is
-           allowed to be spent by the `spender`.
-    @param deadline The 32-byte block timestamp up
-           which the `spender` is allowed to spend `amount`.
-    @param v The secp256k1 1-byte signature parameter `v`.
-    @param r The secp256k1 32-byte signature parameter `r`.
-    @param s The secp256k1 32-byte signature parameter `s`.
-    """
-    assert block.timestamp <= deadline, "ERC20Permit: expired deadline"
-
-    current_nonce: uint256 = self.nonces[owner]
-    self.nonces[owner] = unsafe_add(current_nonce, 1)
-    
-    struct_hash: bytes32 = keccak256(_abi_encode(_PERMIT_TYPE_HASH, owner, spender, amount, current_nonce, deadline))
-    hash: bytes32  = self._hash_typed_data_v4(struct_hash)
-
-    signer: address = self._recover_vrs(hash, v, convert(r, uint256), convert(s, uint256))
-    assert signer == owner, "ERC20Permit: invalid signature"
-
-    self._approve(owner, spender, amount)
 
 
 @internal
