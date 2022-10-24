@@ -24,7 +24,9 @@
         https://eips.ethereum.org/EIPS/eip-2612.
         The implementation is inspired by OpenZeppelin's
         implementation here:
-        https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC20/ERC20.sol.
+        https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC20/ERC20.sol,
+        as well as by ApeAcademy's implementation here:
+        https://github.com/ApeAcademy/ERC20/blob/main/%7B%7Bcookiecutter.project_name%7D%7D/contracts/Token.vy.
 """
 
 
@@ -34,6 +36,76 @@
 # as `immutable` and `constant` variables.
 from vyper.interfaces import ERC20
 implements: ERC20
+
+
+# @dev Constant used as part of the ECDSA recovery function.
+_MALLEABILITY_THRESHOLD: constant(bytes32) = 0x7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF5D576E7357A4501DDFE92F46681B20A0
+
+
+# @dev The 32-byte type hash of the `permit` function.
+_PERMIT_TYPE_HASH: constant(bytes32) = keccak256("Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)")
+
+
+# @dev Returns the decimals places of the token.
+# The default value is 18.
+# @notice If you declare a variable as `public`,
+# Vyper automatically generates an `external`
+# getter function for the variable.
+DECIMALS: public(constant(uint8)) = 18
+
+
+# @dev Cache the domain separator as an `immutable` value,
+# but also store the corresponding chain id to invalidate
+# the cached domain separator if the chain id changes.
+_CACHED_CHAIN_ID: immutable(uint256)
+_CACHED_SELF: immutable(address)
+_CACHED_DOMAIN_SEPARATOR: immutable(bytes32)
+
+
+# @dev `immutable` variables to store the name, version,
+# and type hash during contract creation.
+_HASHED_NAME: immutable(bytes32)
+_HASHED_VERSION: immutable(bytes32)
+_TYPE_HASH: immutable(bytes32)
+
+
+# @dev Returns the name of the token.
+NAME: public(immutable(String[25]))
+
+
+# @dev Returns the symbol of the token.
+SYMBOL: public(immutable(String[5]))
+
+
+# @dev Returns the amount of tokens owned by an `address`.
+balanceOf: public(HashMap[address, uint256])
+
+
+# @dev Returns the remaining number of tokens that a
+# `spender` will be allowed to spend on behalf of
+# `owner` through `transferFrom`. This is zero by
+# default. This value changes when `approve`,
+# `increase_allowance`, `decrease_allowance`, or
+# `transferFrom` are called.
+allowance: public(HashMap[address, HashMap[address, uint256]])
+
+
+# @dev Returns the amount of tokens in existence.
+totalSupply: public(uint256)
+
+
+# @dev Returns the address of the current owner.
+owner: public(address)
+
+
+# @dev Returns `True` if an `address` has been
+# granted the minter role.
+is_minter: public(HashMap[address, bool])
+
+
+# @dev Returns the current on-chain tracked nonce
+# of `address`.
+nonces: public(HashMap[address, uint256])
 
 
 # @dev Emitted when `amount` tokens are moved
@@ -61,60 +133,46 @@ event OwnershipTransferred:
     new_owner: indexed(address)
 
 
-# @dev Returns the decimals places of the token.
-# The default value is 18.
-# @notice If you declare a variable as public,
-# Vyper automatically generates an `external`
-# getter function for the variable.
-decimals: public(constant(uint8)) = 18
-
-
-# @dev Returns the name of the token.
-name: public(immutable(String[25]))
-
-
-# @dev Returns the symbol of the token.
-symbol: public(immutable(String[5]))
-
-
-# @dev Returns the amount of tokens owned by an `address`.
-balanceOf: public(HashMap[address, uint256])
-
-
-# @dev Returns the remaining number of tokens that a
-# `spender` will be allowed to spend on behalf of
-# `owner` through `transferFrom`. This is zero by
-# default. This value changes when `approve`,
-# `increase_allowance`, `decrease_allowance`, or
-# `transferFrom` are called.
-allowance: public(HashMap[address, HashMap[address, uint256]])
-
-
-# @dev Returns the amount of tokens in existence.
-totalSupply: public(uint256)
-
-
-# @dev Returns the address of the current owner.
-owner: public(address)
-
-
-# @dev Returns `True` if an `address` has been granted the minter role.
-is_minter: public(HashMap[address, bool])
-
-
 @external
 @payable
-def __init__(name_: String[25], symbol_: String[5]):
+def __init__(name_: String[25], symbol_: String[5], init_supply_: uint256, name_eip712_: String[50], version_eip712_: String[20]):
     """
     @dev To omit the opcodes for checking the `msg.value`
          in the creation-time EVM bytecode, the constructor
          is declared as `payable`.
+    @notice The initial supply of the token as well
+            as the `owner` role will be assigned to
+            the `msg.sender`.
+    @param name_ The name of the token.
+    @param symbol_ The symbol of the token.
+    @param init_supply_ The initial supply of the token.
+    @param name_eip712_ The maximum 50-byte user-readable
+           string name of the signing domain, i.e. the name
+           of the dApp or protocol.
+    @param version_eip712_ The maximum 20-byte current main
+           version of the signing domain. Signatures from
+           different versions are not compatible.
     """
     msg_sender: address = msg.sender
+    init_supply: uint256 = init_supply_ * 10 ** convert(DECIMALS, uint256)
+    NAME = name_
+    SYMBOL = symbol_
+
     self._transfer_ownership(msg_sender)
     self.is_minter[msg_sender] = True
-    name = name_
-    symbol = symbol_
+    if (init_supply > 0):
+        self.balanceOf[msg_sender] = init_supply
+        self.totalSupply = init_supply
+
+    hashed_name: bytes32 = keccak256(convert(name_eip712_, Bytes[50]))
+    hashed_version: bytes32 = keccak256(convert(version_eip712_, Bytes[20]))
+    type_hash: bytes32 = keccak256(convert("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)", Bytes[82]))
+    _HASHED_NAME = hashed_name
+    _HASHED_VERSION = hashed_version
+    _TYPE_HASH = type_hash
+    _CACHED_CHAIN_ID = chain.id
+    _CACHED_SELF = self
+    _CACHED_DOMAIN_SEPARATOR = self._build_domain_separator(type_hash, hashed_name, hashed_version)
 
 
 @external
@@ -247,16 +305,17 @@ def mint(owner: address, amount: uint256):
             Note that `owner` cannot be the zero address.
     @param amount The 32-byte token amount to be created.
     """
-    assert self.is_minter[msg.sender], "AccessControl: Access is denied"
+    assert self.is_minter[msg.sender], "AccessControl: access is denied"
     self._mint(owner, amount)
 
 
 @external
 def add_minter(minter: address):
     """
-    @dev Adds a new `minter` address to the list of allowed
-         minters. Note that only the `owner` can add new minters.
-         Also, the new `minter` cannot be the zero address.
+    @dev Adds a new `minter` address to the list of
+         allowed minters. Note that only the `owner`
+         can add new minters. Also, the new `minter`
+         cannot be the zero address.
     @param minter The 20-byte minter address.
     """
     self._check_owner()
@@ -267,9 +326,10 @@ def add_minter(minter: address):
 @external
 def remove_minter(minter: address):
     """
-    @dev Removes an existing `minter` address from the list of allowed
-         minters. Note that only the `owner` can remove minters. Also,
-         the `owner` cannot remove himself from the list of allowed
+    @dev Removes an existing `minter` address from the
+         list of allowed minters. Note that only the
+         `owner` can remove minters. Also, the `owner`
+         cannot remove himself from the list of allowed
          minters.
     @param minter The 20-byte minter address.
     """
@@ -296,14 +356,19 @@ def transfer_ownership(new_owner: address):
 @external
 def renounce_ownership():
     """
-    @dev Leaves the contract without owner.
-    @notice Renouncing ownership will leave
-            the contract without an owner,
-            thereby removing any functionality
-            that is only available to the owner.
-            Notice, that the `owner` is also
-            removed from the list of allowed
-            minters.
+    @dev Leaves the contract without an owner.
+    @notice Renouncing ownership will leave the
+            contract without an owner, thereby
+            removing any functionality that is
+            only available to the owner. Notice,
+            that the `owner` is also removed from
+            the list of allowed minters.
+
+            WARNING: All other existing `minter`
+            addresses will still be able to create
+            new tokens. Consider removing all non-owner
+            minter addresses first via `remove_minter`
+            before calling `renounce_ownership`.
     """
     self._check_owner()
     self.is_minter[msg.sender] = False
@@ -333,6 +398,42 @@ def burn_from(owner: address, amount: uint256):
     """
     self._spend_allowance(owner, msg.sender, amount)
     self._burn(owner, amount)
+
+
+@external
+def permit(owner: address, spender: address, amount: uint256, deadline: uint256, v: uint256, r: bytes32, s: bytes32):
+    """
+    @dev Sets `amount` as the allowance of `spender`
+         over `owner`'s tokens, given `owner`'s signed
+         approval.
+    @notice Note that `spender` cannot be the zero address.
+            Also, `deadline` must be a block timestamp in
+            the future. `v`, `r`, and `s` must be a valid
+            secp256k1 signature from `owner` over the
+            EIP-712-formatted function arguments. Eventually,
+            the signature must use `owner`'s current nonce.
+    @param owner The 20-byte owner address.
+    @param spender The 20-byte spender address.
+    @param amount The 32-byte token amount that is
+           allowed to be spent by the `spender`.
+    @param deadline The 32-byte block timestamp up
+           which the `spender` is allowed to spend `amount`.
+    @param v The secp256k1 1-byte signature parameter `v`.
+    @param r The secp256k1 32-byte signature parameter `r`.
+    @param s The secp256k1 32-byte signature parameter `s`.
+    """
+    assert block.timestamp <= deadline, "ERC20Permit: expired deadline"
+
+    current_nonce: uint256 = self.nonces[owner]
+    self.nonces[owner] = unsafe_add(current_nonce, 1)
+    
+    struct_hash: bytes32 = keccak256(_abi_encode(_PERMIT_TYPE_HASH, owner, spender, amount, current_nonce, deadline))
+    hash: bytes32  = self._hash_typed_data_v4(struct_hash)
+
+    signer: address = self._recover_vrs(hash, v, convert(r, uint256), convert(s, uint256))
+    assert signer == owner, "ERC20Permit: invalid signature"
+
+    self._approve(owner, spender, amount)
 
 
 @internal
@@ -367,8 +468,9 @@ def _mint(owner: address, amount: uint256):
     @dev Creates `amount` tokens and assigns
          them to `owner`, increasing the
          total supply.
-    @notice Note that `owner` cannot be the
-            zero address.
+    @notice This is an `internal` function without
+            access restriction. Note that `owner`
+            cannot be the zero address.
     @param owner The 20-byte owner address.
     @param amount The 32-byte token amount to be created.
     """
@@ -502,10 +604,86 @@ def _transfer_ownership(new_owner: address):
     """
     @dev Transfers the ownership of the contract
          to a new account `new_owner`.
-    @notice Internal function without access
-            restriction.
+    @notice This is an `internal` function without
+            access restriction.
     @param new_owner The 20-byte address of the new owner.
     """
     old_owner: address = self.owner
     self.owner = new_owner
     log OwnershipTransferred(old_owner, new_owner)
+
+
+@internal
+@view
+def _domain_separator_v4() -> bytes32:
+    """
+    @dev Sourced from {EIP712DomainSeparator-domain_separator_v4}.
+    @notice See {EIP712DomainSeparator-domain_separator_v4}
+            for the function docstring.
+    """
+    if (self == _CACHED_SELF and chain.id == _CACHED_CHAIN_ID):
+        return _CACHED_DOMAIN_SEPARATOR
+    else:
+        return self._build_domain_separator(_TYPE_HASH, _HASHED_NAME, _HASHED_VERSION)
+
+
+@internal
+@view
+def _build_domain_separator(type_hash: bytes32, name_hash: bytes32, version_hash: bytes32) -> bytes32:
+    """
+    @dev Sourced from {EIP712DomainSeparator-_build_domain_separator}.
+    @notice See {EIP712DomainSeparator-_build_domain_separator}
+            for the function docstring.
+    """
+    return keccak256(_abi_encode(type_hash, name_hash, version_hash, chain.id, self))
+
+
+@internal
+@view
+def _hash_typed_data_v4(struct_hash: bytes32) -> bytes32:
+    """
+    @dev Sourced from {EIP712DomainSeparator-hash_typed_data_v4}.
+    @notice See {EIP712DomainSeparator-hash_typed_data_v4}
+            for the function docstring.
+    """
+    return self._to_typed_data_hash(self._domain_separator_v4(), struct_hash)
+
+
+@internal
+@pure
+def _to_typed_data_hash(domain_separator: bytes32, struct_hash: bytes32) -> bytes32:
+    """
+    @dev Sourced from {ECDSA-to_typed_data_hash}.
+    @notice See {ECDSA-to_typed_data_hash} for the
+            function docstring.
+    """
+    return keccak256(concat(b"\x19\x01", domain_separator, struct_hash))
+
+
+@internal
+@pure
+def _recover_vrs(hash: bytes32, v: uint256, r: uint256, s: uint256) -> address:
+    """
+    @dev Sourced from {ECDSA-_recover_vrs}.
+    @notice See {ECDSA-_recover_vrs} for the
+            function docstring.
+    """
+    return self._try_recover_vrs(hash, v, r, s)
+
+
+@internal
+@pure
+def _try_recover_vrs(hash: bytes32, v: uint256, r: uint256, s: uint256) -> address:
+    """
+    @dev Sourced from {ECDSA-_try_recover_vrs}.
+    @notice See {ECDSA-_try_recover_vrs} for the
+            function docstring.
+    """
+    if (s > convert(_MALLEABILITY_THRESHOLD, uint256)):
+        raise "ECDSA: invalid signature 's' value"
+
+    signer: address = ecrecover(hash, v, r, s)
+    if (signer == empty(address)):
+        raise "ECDSA: invalid signature"
+    
+    return signer
