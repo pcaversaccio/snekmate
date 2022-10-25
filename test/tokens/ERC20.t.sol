@@ -9,7 +9,7 @@ import {IERC20Extended} from "../../test/tokens/interfaces/IERC20Extended.sol";
 /**
  UNIT TEST COVERAGE
  - constructor [DONE]
- - transfer
+ - transfer [DONE]
  - approve
  - transferFrom
  - increase_allowance
@@ -76,36 +76,69 @@ contract ERC20Test is Test {
         assertTrue(ERC20Extended.is_minter(deployer));
     }
 
-    function testSetMinterSuccess() public {
+    function testTotalSupply() public {
+        uint256 multiplier = 10**uint256(ERC20Extended.decimals());
+        assertTrue(ERC20Extended.totalSupply() == _INITIAL_SUPPLY * multiplier);
+    }
+
+    function testBalanceOf() public {
+        address deployer = address(vyperDeployer);
+        uint256 multiplier = 10**uint256(ERC20Extended.decimals());
+        assertTrue(
+            ERC20Extended.balanceOf(deployer) == _INITIAL_SUPPLY * multiplier
+        );
+        assertTrue(ERC20Extended.balanceOf(vm.addr(1)) == 0);
+    }
+
+    function testTransferSuccess() public {
         address owner = address(vyperDeployer);
-        address minter = vm.addr(1);
+        address to = vm.addr(1);
+        uint256 amount = ERC20Extended.balanceOf(owner);
         vm.startPrank(owner);
-        vm.expectEmit(true, false, false, true);
-        emit RoleMinterChanged(minter, true);
-        ERC20Extended.set_minter(minter, true);
-        assertTrue(ERC20Extended.is_minter(minter));
-
-        vm.expectEmit(true, false, false, true);
-        emit RoleMinterChanged(minter, false);
-        ERC20Extended.set_minter(minter, false);
-        assertTrue(!ERC20Extended.is_minter(minter));
+        vm.expectEmit(true, true, false, true);
+        emit Transfer(owner, to, amount);
+        bool returnValue = ERC20Extended.transfer(to, amount);
+        assertTrue(returnValue);
+        assertTrue(ERC20Extended.balanceOf(owner) == 0);
+        assertTrue(ERC20Extended.balanceOf(to) == amount);
+        vm.stopPrank();
     }
 
-    function testSetMinterNonOwner() public {
-        vm.expectRevert(bytes("AccessControl: caller is not the owner"));
-        ERC20Extended.set_minter(vm.addr(1), true);
-    }
-
-    function testSetMinterToZeroAddress() public {
+    function testTransferInvalidAmount() public {
         vm.prank(address(vyperDeployer));
-        vm.expectRevert(bytes("AccessControl: minter is the zero address"));
-        ERC20Extended.set_minter(address(0), true);
+        vm.expectRevert(bytes("ERC20: transfer amount exceeds balance"));
+        ERC20Extended.transfer(vm.addr(1), type(uint256).max);
     }
 
-    function testSetMinterRemoveOwnerAddress() public {
+    function testTransferZeroTokens() public {
+        address owner = address(vyperDeployer);
+        address to = vm.addr(1);
+        uint256 balance = ERC20Extended.balanceOf(owner);
+        uint256 amount = 0;
+        vm.startPrank(owner);
+        vm.expectEmit(true, true, false, true);
+        emit Transfer(owner, to, amount);
+        bool returnValue = ERC20Extended.transfer(to, amount);
+        assertTrue(returnValue);
+        assertTrue(ERC20Extended.balanceOf(owner) == balance);
+        assertTrue(ERC20Extended.balanceOf(to) == amount);
+        vm.stopPrank();
+    }
+
+    function testTransferToZeroAddress() public {
         vm.prank(address(vyperDeployer));
-        vm.expectRevert(bytes("AccessControl: minter is owner address"));
-        ERC20Extended.set_minter(address(vyperDeployer), false);
+        vm.expectRevert(bytes("ERC20: transfer to the zero address"));
+        ERC20Extended.transfer(address(0), type(uint256).max);
+    }
+
+    function testTransferFromZeroAddress() public {
+        address owner = address(vyperDeployer);
+        uint256 amount = ERC20Extended.balanceOf(owner);
+        vm.prank(owner);
+        ERC20Extended.burn(amount);
+        vm.prank(address(0));
+        vm.expectRevert(bytes("ERC20: transfer from the zero address"));
+        ERC20Extended.transfer(vm.addr(1), amount);
     }
 
     function testMintSuccess() public {
@@ -140,6 +173,39 @@ contract ERC20Test is Test {
         vm.prank(address(vyperDeployer));
         vm.expectRevert();
         ERC20Extended.mint(vm.addr(1), type(uint256).max);
+    }
+
+    function testSetMinterSuccess() public {
+        address owner = address(vyperDeployer);
+        address minter = vm.addr(1);
+        vm.startPrank(owner);
+        vm.expectEmit(true, false, false, true);
+        emit RoleMinterChanged(minter, true);
+        ERC20Extended.set_minter(minter, true);
+        assertTrue(ERC20Extended.is_minter(minter));
+
+        vm.expectEmit(true, false, false, true);
+        emit RoleMinterChanged(minter, false);
+        ERC20Extended.set_minter(minter, false);
+        assertTrue(!ERC20Extended.is_minter(minter));
+        vm.stopPrank();
+    }
+
+    function testSetMinterNonOwner() public {
+        vm.expectRevert(bytes("AccessControl: caller is not the owner"));
+        ERC20Extended.set_minter(vm.addr(1), true);
+    }
+
+    function testSetMinterToZeroAddress() public {
+        vm.prank(address(vyperDeployer));
+        vm.expectRevert(bytes("AccessControl: minter is the zero address"));
+        ERC20Extended.set_minter(address(0), true);
+    }
+
+    function testSetMinterRemoveOwnerAddress() public {
+        vm.prank(address(vyperDeployer));
+        vm.expectRevert(bytes("AccessControl: minter is owner address"));
+        ERC20Extended.set_minter(address(vyperDeployer), false);
     }
 
     function testHasOwner() public {
