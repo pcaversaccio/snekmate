@@ -49,31 +49,41 @@ _PERMIT_TYPE_HASH: constant(bytes32) = keccak256("Permit(address owner,address s
 # The default value is 18.
 # @notice If you declare a variable as `public`,
 # Vyper automatically generates an `external`
-# getter function for the variable.
-DECIMALS: public(constant(uint8)) = 18
+# getter function for the variable. Furthermore,
+# to preserve consistency with the interface for
+# the optional metadata functions of the ERC-20
+# standard, we use lower case letters for the
+# `immutable` and `constant` variables `name`,
+# `symbol`, and `decimals`.
+decimals: public(constant(uint8)) = 18
 
 
-# @dev Cache the domain separator as an `immutable` value,
-# but also store the corresponding chain id to invalidate
-# the cached domain separator if the chain id changes.
+# @dev Cache the domain separator as an `immutable`
+# value, but also store the corresponding chain id
+# to invalidate the cached domain separator if the
+# chain id changes.
 _CACHED_CHAIN_ID: immutable(uint256)
 _CACHED_SELF: immutable(address)
 _CACHED_DOMAIN_SEPARATOR: immutable(bytes32)
 
 
-# @dev `immutable` variables to store the name, version,
-# and type hash during contract creation.
+# @dev `immutable` variables to store the name,
+# version, and type hash during contract creation.
 _HASHED_NAME: immutable(bytes32)
 _HASHED_VERSION: immutable(bytes32)
 _TYPE_HASH: immutable(bytes32)
 
 
 # @dev Returns the name of the token.
-NAME: public(immutable(String[25]))
+# @notice See comment on lower case letters
+# above at `decimals`.
+name: public(immutable(String[25]))
 
 
 # @dev Returns the symbol of the token.
-SYMBOL: public(immutable(String[5]))
+# @notice See comment on lower case letters
+# above at `decimals`.
+symbol: public(immutable(String[5]))
 
 
 # @dev Returns the amount of tokens owned by an `address`.
@@ -141,7 +151,7 @@ event RoleMinterChanged:
 
 @external
 @payable
-def __init__(name_: String[25], symbol_: String[5], init_supply_: uint256, name_eip712_: String[50], version_eip712_: String[20]):
+def __init__(name_: String[25], symbol_: String[5], initial_supply_: uint256, name_eip712_: String[50], version_eip712_: String[20]):
     """
     @dev To omit the opcodes for checking the `msg.value`
          in the creation-time EVM bytecode, the constructor
@@ -153,7 +163,7 @@ def __init__(name_: String[25], symbol_: String[5], init_supply_: uint256, name_
            name of the token.
     @param symbol_ The maximum 5-byte user-readable string
            symbol of the token.
-    @param init_supply_ The initial supply of the token.
+    @param initial_supply_ The initial supply of the token.
     @param name_eip712_ The maximum 50-byte user-readable
            string name of the signing domain, i.e. the name
            of the dApp or protocol.
@@ -162,15 +172,15 @@ def __init__(name_: String[25], symbol_: String[5], init_supply_: uint256, name_
            different versions are not compatible.
     """
     msg_sender: address = msg.sender
-    init_supply: uint256 = init_supply_ * 10 ** convert(DECIMALS, uint256)
-    NAME = name_
-    SYMBOL = symbol_
+    initial_supply: uint256 = initial_supply_ * 10 ** convert(decimals, uint256)
+    name = name_
+    symbol = symbol_
 
     self._transfer_ownership(msg_sender)
     self.is_minter[msg_sender] = True
-    if (init_supply > 0):
-        self.balanceOf[msg_sender] = init_supply
-        self.totalSupply = init_supply
+    if (initial_supply > 0):
+        self.balanceOf[msg_sender] = initial_supply
+        self.totalSupply = initial_supply
 
     hashed_name: bytes32 = keccak256(convert(name_eip712_, Bytes[50]))
     hashed_version: bytes32 = keccak256(convert(version_eip712_, Bytes[20]))

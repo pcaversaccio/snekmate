@@ -12,16 +12,17 @@
 """
 
 
-# @dev Cache the domain separator as an `immutable` value,
-# but also store the corresponding chain id to invalidate
-# the cached domain separator if the chain id changes.
+# @dev Cache the domain separator as an `immutable`
+# value, but also store the corresponding chain id
+# to invalidate the cached domain separator if the
+# chain id changes.
 _CACHED_CHAIN_ID: immutable(uint256)
 _CACHED_SELF: immutable(address)
 _CACHED_DOMAIN_SEPARATOR: immutable(bytes32)
 
 
-# @dev `immutable` variables to store the name, version,
-# and type hash during contract creation.
+# @dev `immutable` variables to store the name,
+# version, and type hash during contract creation.
 _HASHED_NAME: immutable(bytes32)
 _HASHED_VERSION: immutable(bytes32)
 _TYPE_HASH: immutable(bytes32)
