@@ -315,6 +315,231 @@ contract ERC20Test is Test {
         ERC20Extended.transferFrom(address(0), vm.addr(1), 0);
     }
 
+    function testIncreaseAllowanceSuccessCase1() public {
+        address owner = address(vyperDeployer);
+        address spender = vm.addr(1);
+        uint256 addedAmount = ERC20Extended.balanceOf(owner);
+        vm.startPrank(owner);
+        vm.expectEmit(true, true, false, true);
+        emit Approval(owner, spender, addedAmount);
+        bool returnValue = ERC20Extended.increase_allowance(
+            spender,
+            addedAmount
+        );
+        assertTrue(returnValue);
+        assertTrue(ERC20Extended.allowance(owner, spender) == addedAmount);
+        vm.stopPrank();
+    }
+
+    function testIncreaseAllowanceSuccessCase2() public {
+        address owner = address(vyperDeployer);
+        address spender = vm.addr(1);
+        uint256 amount = 100;
+        uint256 addedAmount = ERC20Extended.balanceOf(owner);
+        vm.startPrank(owner);
+        vm.expectEmit(true, true, false, true);
+        emit Approval(owner, spender, amount);
+        bool returnValue1 = ERC20Extended.approve(spender, amount);
+        assertTrue(ERC20Extended.allowance(owner, spender) == amount);
+        assertTrue(returnValue1);
+        vm.expectEmit(true, true, false, true);
+        emit Approval(owner, spender, amount + addedAmount);
+        bool returnValue2 = ERC20Extended.increase_allowance(
+            spender,
+            addedAmount
+        );
+        assertTrue(returnValue2);
+        assertTrue(
+            ERC20Extended.allowance(owner, spender) == amount + addedAmount
+        );
+        vm.stopPrank();
+    }
+
+    function testIncreaseAllowanceExceedingBalanceCase1() public {
+        address owner = address(vyperDeployer);
+        address spender = vm.addr(1);
+        uint256 addedAmount = type(uint128).max;
+        vm.startPrank(owner);
+        vm.expectEmit(true, true, false, true);
+        emit Approval(owner, spender, addedAmount);
+        bool returnValue = ERC20Extended.increase_allowance(
+            spender,
+            addedAmount
+        );
+        assertTrue(returnValue);
+        assertTrue(ERC20Extended.allowance(owner, spender) == addedAmount);
+        vm.stopPrank();
+    }
+
+    function testIncreaseAllowanceExceedingBalanceCase2() public {
+        address owner = address(vyperDeployer);
+        address spender = vm.addr(1);
+        uint256 amount = 100;
+        uint256 addedAmount = type(uint128).max;
+        vm.startPrank(owner);
+        vm.expectEmit(true, true, false, true);
+        emit Approval(owner, spender, amount);
+        bool returnValue1 = ERC20Extended.approve(spender, amount);
+        assertTrue(ERC20Extended.allowance(owner, spender) == amount);
+        assertTrue(returnValue1);
+        vm.expectEmit(true, true, false, true);
+        emit Approval(owner, spender, amount + addedAmount);
+        bool returnValue2 = ERC20Extended.increase_allowance(
+            spender,
+            addedAmount
+        );
+        assertTrue(returnValue2);
+        assertTrue(
+            ERC20Extended.allowance(owner, spender) == amount + addedAmount
+        );
+        vm.stopPrank();
+    }
+
+    function testIncreaseAllowanceToZeroAddress() public {
+        address owner = address(vyperDeployer);
+        uint256 addedAmount = ERC20Extended.balanceOf(owner);
+        vm.prank(owner);
+        vm.expectRevert(bytes("ERC20: approve to the zero address"));
+        ERC20Extended.increase_allowance(address(0), addedAmount);
+    }
+
+    function testIncreaseAllowanceFromZeroAddress() public {
+        vm.prank(address(0));
+        vm.expectRevert(bytes("ERC20: approve from the zero address"));
+        ERC20Extended.increase_allowance(vm.addr(1), type(uint256).max);
+    }
+
+    function testDecreaseAllowanceSuccessCase1() public {
+        address owner = address(vyperDeployer);
+        address spender = vm.addr(1);
+        uint256 amount = ERC20Extended.balanceOf(owner);
+        uint256 subtractedAmount = 100;
+        vm.startPrank(owner);
+        vm.expectEmit(true, true, false, true);
+        emit Approval(owner, spender, amount);
+        bool returnValue1 = ERC20Extended.approve(spender, amount);
+        assertTrue(ERC20Extended.allowance(owner, spender) == amount);
+        assertTrue(returnValue1);
+        vm.expectEmit(true, true, false, true);
+        emit Approval(owner, spender, amount - subtractedAmount);
+        bool returnValue2 = ERC20Extended.decrease_allowance(
+            spender,
+            subtractedAmount
+        );
+        assertTrue(returnValue2);
+        assertTrue(
+            ERC20Extended.allowance(owner, spender) == amount - subtractedAmount
+        );
+        vm.stopPrank();
+    }
+
+    function testDecreaseAllowanceSuccessCase2() public {
+        address owner = address(vyperDeployer);
+        address spender = vm.addr(1);
+        uint256 amount = ERC20Extended.balanceOf(owner);
+        uint256 subtractedAmount = amount;
+        vm.startPrank(owner);
+        vm.expectEmit(true, true, false, true);
+        emit Approval(owner, spender, amount);
+        bool returnValue1 = ERC20Extended.approve(spender, amount);
+        assertTrue(ERC20Extended.allowance(owner, spender) == amount);
+        assertTrue(returnValue1);
+        vm.expectEmit(true, true, false, true);
+        emit Approval(owner, spender, amount - subtractedAmount);
+        bool returnValue2 = ERC20Extended.decrease_allowance(
+            spender,
+            subtractedAmount
+        );
+        assertTrue(returnValue2);
+        assertTrue(
+            ERC20Extended.allowance(owner, spender) == amount - subtractedAmount
+        );
+        vm.stopPrank();
+    }
+
+    function testDecreaseAllowanceExceedingBalanceCase1() public {
+        address owner = address(vyperDeployer);
+        address spender = vm.addr(1);
+        uint256 amount = type(uint128).max;
+        uint256 subtractedAmount = 100;
+        vm.startPrank(owner);
+        vm.expectEmit(true, true, false, true);
+        emit Approval(owner, spender, amount);
+        bool returnValue1 = ERC20Extended.approve(spender, amount);
+        assertTrue(ERC20Extended.allowance(owner, spender) == amount);
+        assertTrue(returnValue1);
+        vm.expectEmit(true, true, false, true);
+        emit Approval(owner, spender, amount - subtractedAmount);
+        bool returnValue2 = ERC20Extended.decrease_allowance(
+            spender,
+            subtractedAmount
+        );
+        assertTrue(returnValue2);
+        assertTrue(
+            ERC20Extended.allowance(owner, spender) == amount - subtractedAmount
+        );
+        vm.stopPrank();
+    }
+
+    function testDecreaseAllowanceExceedingBalanceCase2() public {
+        address owner = address(vyperDeployer);
+        address spender = vm.addr(1);
+        uint256 amount = type(uint128).max;
+        uint256 subtractedAmount = amount;
+        vm.startPrank(owner);
+        vm.expectEmit(true, true, false, true);
+        emit Approval(owner, spender, amount);
+        bool returnValue1 = ERC20Extended.approve(spender, amount);
+        assertTrue(ERC20Extended.allowance(owner, spender) == amount);
+        assertTrue(returnValue1);
+        vm.expectEmit(true, true, false, true);
+        emit Approval(owner, spender, amount - subtractedAmount);
+        bool returnValue2 = ERC20Extended.decrease_allowance(
+            spender,
+            subtractedAmount
+        );
+        assertTrue(returnValue2);
+        assertTrue(
+            ERC20Extended.allowance(owner, spender) == amount - subtractedAmount
+        );
+        vm.stopPrank();
+    }
+
+    function testDecreaseAllowanceTooMuchCase1() public {
+        vm.prank(address(vyperDeployer));
+        vm.expectRevert(bytes("ERC20: decreased allowance below zero"));
+        ERC20Extended.decrease_allowance(vm.addr(1), 1);
+    }
+
+    function testDecreaseAllowanceTooMuchCase2() public {
+        address owner = address(vyperDeployer);
+        address spender = vm.addr(1);
+        uint256 amount = ERC20Extended.balanceOf(owner);
+        uint256 subtractedAmount = ERC20Extended.balanceOf(owner) + 1;
+        vm.startPrank(owner);
+        vm.expectEmit(true, true, false, true);
+        emit Approval(owner, spender, amount);
+        bool returnValue = ERC20Extended.approve(spender, amount);
+        assertTrue(ERC20Extended.allowance(owner, spender) == amount);
+        assertTrue(returnValue);
+        vm.expectRevert(bytes("ERC20: decreased allowance below zero"));
+        ERC20Extended.decrease_allowance(spender, subtractedAmount);
+    }
+
+    function testDecreaseAllowanceToZeroAddress() public {
+        address owner = address(vyperDeployer);
+        uint256 subtractedAmount = ERC20Extended.balanceOf(owner);
+        vm.prank(owner);
+        vm.expectRevert(bytes("ERC20: decreased allowance below zero"));
+        ERC20Extended.decrease_allowance(address(0), subtractedAmount);
+    }
+
+    function testDecreaseAllowanceFromZeroAddress() public {
+        vm.prank(address(0));
+        vm.expectRevert(bytes("ERC20: decreased allowance below zero"));
+        ERC20Extended.decrease_allowance(vm.addr(1), type(uint256).max);
+    }
+
     function testMintSuccess() public {
         address minter = address(vyperDeployer);
         address owner = vm.addr(1);
