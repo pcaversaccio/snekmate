@@ -12,9 +12,9 @@ import {IERC20Extended} from "../../test/tokens/interfaces/IERC20Extended.sol";
  - transfer [DONE]
  - approve [DONE]
  - transferFrom [DONE]
- - increase_allowance
- - decrease_allowance
- - burn
+ - increase_allowance [DONE]
+ - decrease_allowance [DONE]
+ - burn [DONE]
  - burn_from
  - mint [DONE]
  - set_minter [DONE]
@@ -524,6 +524,7 @@ contract ERC20Test is Test {
         assertTrue(returnValue);
         vm.expectRevert(bytes("ERC20: decreased allowance below zero"));
         ERC20Extended.decrease_allowance(spender, subtractedAmount);
+        vm.stopPrank();
     }
 
     function testDecreaseAllowanceToZeroAddress() public {
@@ -538,6 +539,49 @@ contract ERC20Test is Test {
         vm.prank(address(0));
         vm.expectRevert(bytes("ERC20: decreased allowance below zero"));
         ERC20Extended.decrease_allowance(vm.addr(1), type(uint256).max);
+    }
+
+    function testBurnSuccessCase1() public {
+        address owner = address(vyperDeployer);
+        uint256 balance = ERC20Extended.balanceOf(owner);
+        uint256 totalSupply = ERC20Extended.totalSupply();
+        uint256 amount = 0;
+        vm.startPrank(owner);
+        vm.expectEmit(true, true, false, true);
+        emit Transfer(owner, address(0), amount);
+        ERC20Extended.burn(amount);
+        assertTrue(ERC20Extended.balanceOf(owner) == balance - amount);
+        assertTrue(ERC20Extended.totalSupply() == totalSupply - amount);
+        vm.stopPrank();
+    }
+
+    function testBurnSuccessCase2() public {
+        address owner = address(vyperDeployer);
+        uint256 balance = ERC20Extended.balanceOf(owner);
+        uint256 totalSupply = ERC20Extended.totalSupply();
+        uint256 amount = 100;
+        vm.startPrank(owner);
+        vm.expectEmit(true, true, false, true);
+        emit Transfer(owner, address(0), amount);
+        ERC20Extended.burn(amount);
+        assertTrue(ERC20Extended.balanceOf(owner) == balance - amount);
+        assertTrue(ERC20Extended.totalSupply() == totalSupply - amount);
+        vm.stopPrank();
+    }
+
+    function testBurnTooMuch() public {
+        address owner = address(vyperDeployer);
+        uint256 balance = ERC20Extended.balanceOf(owner);
+        uint256 amount = balance + 1;
+        vm.prank(owner);
+        vm.expectRevert(bytes("ERC20: burn amount exceeds balance"));
+        ERC20Extended.burn(amount);
+    }
+
+    function testBurnFromZeroAddress() public {
+        vm.prank(address(0));
+        vm.expectRevert(bytes("ERC20: burn from the zero address"));
+        ERC20Extended.burn(0);
     }
 
     function testMintSuccess() public {
