@@ -10,7 +10,7 @@ import {IERC20Extended} from "../../test/tokens/interfaces/IERC20Extended.sol";
  UNIT TEST COVERAGE
  - constructor [DONE]
  - transfer [DONE]
- - approve
+ - approve [DONE]
  - transferFrom
  - increase_allowance
  - decrease_allowance
@@ -126,9 +126,11 @@ contract ERC20Test is Test {
     }
 
     function testTransferToZeroAddress() public {
-        vm.prank(address(vyperDeployer));
+        address owner = address(vyperDeployer);
+        uint256 amount = ERC20Extended.balanceOf(owner);
+        vm.prank(owner);
         vm.expectRevert(bytes("ERC20: transfer to the zero address"));
-        ERC20Extended.transfer(address(0), type(uint256).max);
+        ERC20Extended.transfer(address(0), amount);
     }
 
     function testTransferFromZeroAddress() public {
@@ -139,6 +141,84 @@ contract ERC20Test is Test {
         vm.prank(address(0));
         vm.expectRevert(bytes("ERC20: transfer from the zero address"));
         ERC20Extended.transfer(vm.addr(1), amount);
+    }
+
+    function testApproveSuccessCase1() public {
+        address owner = address(vyperDeployer);
+        address spender = vm.addr(1);
+        uint256 amount = ERC20Extended.balanceOf(owner);
+        vm.startPrank(owner);
+        vm.expectEmit(true, true, false, true);
+        emit Approval(owner, spender, amount);
+        bool returnValue = ERC20Extended.approve(spender, amount);
+        assertTrue(returnValue);
+        assertTrue(ERC20Extended.allowance(owner, spender) == amount);
+        vm.stopPrank();
+    }
+
+    function testApproveSuccessCase2() public {
+        address owner = address(vyperDeployer);
+        address spender = vm.addr(1);
+        uint256 firstAmount = 100;
+        uint256 secondAmount = ERC20Extended.balanceOf(owner);
+        vm.startPrank(owner);
+        vm.expectEmit(true, true, false, true);
+        emit Approval(owner, spender, firstAmount);
+        bool returnValue1 = ERC20Extended.approve(spender, firstAmount);
+        assertTrue(ERC20Extended.allowance(owner, spender) == firstAmount);
+        assertTrue(returnValue1);
+        vm.expectEmit(true, true, false, true);
+        emit Approval(owner, spender, secondAmount);
+        bool returnValue2 = ERC20Extended.approve(spender, secondAmount);
+        assertTrue(returnValue2);
+        assertTrue(ERC20Extended.allowance(owner, spender) == secondAmount);
+        vm.stopPrank();
+    }
+
+    function testApproveExceedingBalanceCase1() public {
+        address owner = address(vyperDeployer);
+        address spender = vm.addr(1);
+        uint256 amount = type(uint128).max;
+        vm.startPrank(owner);
+        vm.expectEmit(true, true, false, true);
+        emit Approval(owner, spender, amount);
+        bool returnValue = ERC20Extended.approve(spender, amount);
+        assertTrue(returnValue);
+        assertTrue(ERC20Extended.allowance(owner, spender) == amount);
+        vm.stopPrank();
+    }
+
+    function testApproveExceedingBalanceCase2() public {
+        address owner = address(vyperDeployer);
+        address spender = vm.addr(1);
+        uint256 firstAmount = 100;
+        uint256 secondAmount = type(uint128).max;
+        vm.startPrank(owner);
+        vm.expectEmit(true, true, false, true);
+        emit Approval(owner, spender, firstAmount);
+        bool returnValue1 = ERC20Extended.approve(spender, firstAmount);
+        assertTrue(ERC20Extended.allowance(owner, spender) == firstAmount);
+        assertTrue(returnValue1);
+        vm.expectEmit(true, true, false, true);
+        emit Approval(owner, spender, secondAmount);
+        bool returnValue2 = ERC20Extended.approve(spender, secondAmount);
+        assertTrue(returnValue2);
+        assertTrue(ERC20Extended.allowance(owner, spender) == secondAmount);
+        vm.stopPrank();
+    }
+
+    function testApproveToZeroAddress() public {
+        address owner = address(vyperDeployer);
+        uint256 amount = ERC20Extended.balanceOf(owner);
+        vm.prank(owner);
+        vm.expectRevert(bytes("ERC20: approve to the zero address"));
+        ERC20Extended.approve(address(0), amount);
+    }
+
+    function testApproveFromZeroAddress() public {
+        vm.prank(address(0));
+        vm.expectRevert(bytes("ERC20: approve from the zero address"));
+        ERC20Extended.approve(vm.addr(1), type(uint256).max);
     }
 
     function testMintSuccess() public {
