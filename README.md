@@ -25,7 +25,7 @@ utils
 ├─ BatchDistributor — "Batch Sending Both Native and ERC-20 Tokens"
 ```
 
-## Acknowledgements
+## 🙏🏼 Acknowledgements
 
 This repository is inspired by or directly modified from many sources, primarily:
 
