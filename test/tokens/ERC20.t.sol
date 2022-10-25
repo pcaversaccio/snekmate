@@ -6,28 +6,24 @@ import {VyperDeployer} from "../../lib/utils/VyperDeployer.sol";
 
 import {IERC20Extended} from "../../test/tokens/interfaces/IERC20Extended.sol";
 
-/**
- UNIT TEST COVERAGE
- - constructor [DONE]
- - transfer [DONE]
- - approve [DONE]
- - transferFrom [DONE]
- - increase_allowance [DONE]
- - decrease_allowance [DONE]
- - burn [DONE]
- - burn_from
- - mint [DONE]
- - set_minter [DONE]
- - permit
- - transfer_ownership [DONE]
- - renounce_ownership [DONE]
-*/
 contract ERC20Test is Test {
     string private constant _NAME = "MyToken";
     string private constant _SYMBOL = "WAGMI";
     string private constant _NAME_EIP712 = "MyToken";
     string private constant _VERSION_EIP712 = "1";
     uint256 private constant _INITIAL_SUPPLY = type(uint8).max;
+    bytes32 private constant _TYPE_HASH =
+        keccak256(
+            bytes(
+                "EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)"
+            )
+        );
+    bytes32 private constant _PERMIT_TYPE_HASH =
+        keccak256(
+            bytes(
+                "Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)"
+            )
+        );
 
     VyperDeployer private vyperDeployer = new VyperDeployer();
 
@@ -278,7 +274,7 @@ contract ERC20Test is Test {
         ERC20Extended.transferFrom(owner, vm.addr(2), amount);
     }
 
-    function testUnlimitedAllowance() public {
+    function testTransferFromUnlimitedAllowance() public {
         address owner = address(vyperDeployer);
         address spender = vm.addr(1);
         address to = vm.addr(2);
@@ -505,13 +501,13 @@ contract ERC20Test is Test {
         vm.stopPrank();
     }
 
-    function testDecreaseAllowanceTooMuchCase1() public {
+    function testDecreaseAllowanceInvalidAmountCase1() public {
         vm.prank(address(vyperDeployer));
         vm.expectRevert(bytes("ERC20: decreased allowance below zero"));
         ERC20Extended.decrease_allowance(vm.addr(1), 1);
     }
 
-    function testDecreaseAllowanceTooMuchCase2() public {
+    function testDecreaseAllowanceInvalidAmountCase2() public {
         address owner = address(vyperDeployer);
         address spender = vm.addr(1);
         uint256 amount = ERC20Extended.balanceOf(owner);
@@ -569,7 +565,7 @@ contract ERC20Test is Test {
         vm.stopPrank();
     }
 
-    function testBurnTooMuch() public {
+    function testBurnInvalidAmount() public {
         address owner = address(vyperDeployer);
         uint256 balance = ERC20Extended.balanceOf(owner);
         uint256 amount = balance + 1;
@@ -582,6 +578,113 @@ contract ERC20Test is Test {
         vm.prank(address(0));
         vm.expectRevert(bytes("ERC20: burn from the zero address"));
         ERC20Extended.burn(0);
+    }
+
+    function testBurnFromSuccessCase1() public {
+        address owner = address(vyperDeployer);
+        uint256 balance = ERC20Extended.balanceOf(owner);
+        uint256 totalSupply = ERC20Extended.totalSupply();
+        address spender = vm.addr(1);
+        uint256 amount = 0;
+        vm.prank(owner);
+        ERC20Extended.approve(spender, amount);
+        vm.startPrank(spender);
+        vm.expectEmit(true, true, false, true);
+        emit Approval(
+            owner,
+            spender,
+            ERC20Extended.allowance(owner, spender) - amount
+        );
+        vm.expectEmit(true, true, false, true);
+        emit Transfer(owner, address(0), amount);
+        ERC20Extended.burn_from(owner, amount);
+        assertTrue(ERC20Extended.balanceOf(owner) == balance - amount);
+        assertTrue(ERC20Extended.totalSupply() == totalSupply - amount);
+        assertTrue(ERC20Extended.allowance(owner, spender) == 0);
+        vm.stopPrank();
+    }
+
+    function testBurnFromSuccessCase2() public {
+        address owner = address(vyperDeployer);
+        uint256 balance = ERC20Extended.balanceOf(owner);
+        uint256 totalSupply = ERC20Extended.totalSupply();
+        address spender = vm.addr(1);
+        uint256 amount = 100;
+        vm.prank(owner);
+        ERC20Extended.approve(spender, balance);
+        vm.startPrank(spender);
+        vm.expectEmit(true, true, false, true);
+        emit Approval(
+            owner,
+            spender,
+            ERC20Extended.allowance(owner, spender) - amount
+        );
+        vm.expectEmit(true, true, false, true);
+        emit Transfer(owner, address(0), amount);
+        ERC20Extended.burn_from(owner, amount);
+        assertTrue(ERC20Extended.balanceOf(owner) == balance - amount);
+        assertTrue(ERC20Extended.totalSupply() == totalSupply - amount);
+        assertTrue(ERC20Extended.allowance(owner, spender) == balance - amount);
+        vm.stopPrank();
+    }
+
+    function testBurnFromExceedingBalance() public {
+        address owner = address(vyperDeployer);
+        address spender = vm.addr(1);
+        uint256 amount = ERC20Extended.balanceOf(owner) + 1;
+        vm.prank(owner);
+        ERC20Extended.approve(spender, amount);
+        vm.startPrank(spender);
+        vm.expectRevert(bytes("ERC20: burn amount exceeds balance"));
+        ERC20Extended.burn_from(owner, amount);
+    }
+
+    function testBurnFromInsufficientAllowanceCase1() public {
+        address owner = address(vyperDeployer);
+        address spender = vm.addr(1);
+        uint256 amount = ERC20Extended.balanceOf(owner);
+        vm.prank(owner);
+        ERC20Extended.approve(spender, amount - 1);
+        vm.prank(spender);
+        vm.expectRevert(bytes("ERC20: insufficient allowance"));
+        ERC20Extended.burn_from(owner, amount);
+    }
+
+    function testBurnFromInsufficientAllowanceCase2() public {
+        address owner = address(vyperDeployer);
+        address spender = vm.addr(1);
+        uint256 amount = ERC20Extended.balanceOf(owner) + 1;
+        vm.prank(owner);
+        ERC20Extended.approve(spender, amount - 1);
+        vm.prank(spender);
+        vm.expectRevert(bytes("ERC20: insufficient allowance"));
+        ERC20Extended.burn_from(owner, amount);
+    }
+
+    function testBurnFromUnlimitedAllowance() public {
+        address owner = address(vyperDeployer);
+        uint256 balance = ERC20Extended.balanceOf(owner);
+        uint256 totalSupply = ERC20Extended.totalSupply();
+        address spender = vm.addr(1);
+        uint256 amount = balance;
+        vm.prank(owner);
+        ERC20Extended.approve(spender, type(uint256).max);
+        vm.startPrank(spender);
+        vm.expectEmit(true, true, false, true);
+        emit Transfer(owner, address(0), amount);
+        ERC20Extended.burn_from(owner, amount);
+        assertTrue(ERC20Extended.balanceOf(owner) == balance - amount);
+        assertTrue(ERC20Extended.totalSupply() == totalSupply - amount);
+        assertTrue(
+            ERC20Extended.allowance(owner, spender) == type(uint256).max
+        );
+        vm.stopPrank();
+    }
+
+    function testBurnFromFromZeroAddress() public {
+        vm.prank(address(0));
+        vm.expectRevert(bytes("ERC20: approve to the zero address"));
+        ERC20Extended.burn_from(vm.addr(1), 0);
     }
 
     function testMintSuccess() public {
@@ -649,6 +752,298 @@ contract ERC20Test is Test {
         vm.prank(address(vyperDeployer));
         vm.expectRevert(bytes("AccessControl: minter is owner address"));
         ERC20Extended.set_minter(address(vyperDeployer), false);
+    }
+
+    function testPermitSuccess() public {
+        address owner = vm.addr(1);
+        address spender = vm.addr(2);
+        uint256 amount = 100;
+        uint256 nonce = ERC20Extended.nonces(owner);
+        // solhint-disable-next-line not-rely-on-time
+        uint256 deadline = block.timestamp + 100000;
+        bytes32 domainSeparator = keccak256(
+            abi.encode(
+                _TYPE_HASH,
+                keccak256(bytes(_NAME_EIP712)),
+                keccak256(bytes(_VERSION_EIP712)),
+                block.chainid,
+                address(ERC20Extended)
+            )
+        );
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(
+            1,
+            keccak256(
+                abi.encodePacked(
+                    "\x19\x01",
+                    domainSeparator,
+                    keccak256(
+                        abi.encode(
+                            _PERMIT_TYPE_HASH,
+                            owner,
+                            spender,
+                            amount,
+                            nonce,
+                            deadline
+                        )
+                    )
+                )
+            )
+        );
+        ERC20Extended.permit(
+            owner,
+            spender,
+            amount,
+            deadline,
+            uint256(v),
+            r,
+            s
+        );
+        assertEq(ERC20Extended.allowance(owner, spender), amount);
+        assertEq(ERC20Extended.nonces(owner), 1);
+    }
+
+    function testPermitReplaySignature() public {
+        address owner = vm.addr(1);
+        address spender = vm.addr(2);
+        uint256 amount = 100;
+        uint256 nonce = ERC20Extended.nonces(owner);
+        // solhint-disable-next-line not-rely-on-time
+        uint256 deadline = block.timestamp + 100000;
+        bytes32 domainSeparator = keccak256(
+            abi.encode(
+                _TYPE_HASH,
+                keccak256(bytes(_NAME_EIP712)),
+                keccak256(bytes(_VERSION_EIP712)),
+                block.chainid,
+                address(ERC20Extended)
+            )
+        );
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(
+            1,
+            keccak256(
+                abi.encodePacked(
+                    "\x19\x01",
+                    domainSeparator,
+                    keccak256(
+                        abi.encode(
+                            _PERMIT_TYPE_HASH,
+                            owner,
+                            spender,
+                            amount,
+                            nonce,
+                            deadline
+                        )
+                    )
+                )
+            )
+        );
+        ERC20Extended.permit(
+            owner,
+            spender,
+            amount,
+            deadline,
+            uint256(v),
+            r,
+            s
+        );
+        vm.expectRevert(bytes("ERC20Permit: invalid signature"));
+        ERC20Extended.permit(
+            owner,
+            spender,
+            amount,
+            deadline,
+            uint256(v),
+            r,
+            s
+        );
+    }
+
+    function testPermitOtherSignature() public {
+        address owner = vm.addr(1);
+        address spender = vm.addr(2);
+        uint256 amount = 100;
+        uint256 nonce = ERC20Extended.nonces(owner);
+        // solhint-disable-next-line not-rely-on-time
+        uint256 deadline = block.timestamp + 100000;
+        bytes32 domainSeparator = keccak256(
+            abi.encode(
+                _TYPE_HASH,
+                keccak256(bytes(_NAME_EIP712)),
+                keccak256(bytes(_VERSION_EIP712)),
+                block.chainid,
+                address(ERC20Extended)
+            )
+        );
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(
+            3,
+            keccak256(
+                abi.encodePacked(
+                    "\x19\x01",
+                    domainSeparator,
+                    keccak256(
+                        abi.encode(
+                            _PERMIT_TYPE_HASH,
+                            owner,
+                            spender,
+                            amount,
+                            nonce,
+                            deadline
+                        )
+                    )
+                )
+            )
+        );
+        vm.expectRevert(bytes("ERC20Permit: invalid signature"));
+        ERC20Extended.permit(
+            owner,
+            spender,
+            amount,
+            deadline,
+            uint256(v),
+            r,
+            s
+        );
+    }
+
+    function testPermitBadChainId() public {
+        address owner = vm.addr(1);
+        address spender = vm.addr(2);
+        uint256 amount = 100;
+        uint256 nonce = ERC20Extended.nonces(owner);
+        // solhint-disable-next-line not-rely-on-time
+        uint256 deadline = block.timestamp + 100000;
+        bytes32 domainSeparator = keccak256(
+            abi.encode(
+                _TYPE_HASH,
+                keccak256(bytes(_NAME_EIP712)),
+                keccak256(bytes(_VERSION_EIP712)),
+                block.chainid + 1,
+                address(ERC20Extended)
+            )
+        );
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(
+            1,
+            keccak256(
+                abi.encodePacked(
+                    "\x19\x01",
+                    domainSeparator,
+                    keccak256(
+                        abi.encode(
+                            _PERMIT_TYPE_HASH,
+                            owner,
+                            spender,
+                            amount,
+                            nonce,
+                            deadline
+                        )
+                    )
+                )
+            )
+        );
+        vm.expectRevert(bytes("ERC20Permit: invalid signature"));
+        ERC20Extended.permit(
+            owner,
+            spender,
+            amount,
+            deadline,
+            uint256(v),
+            r,
+            s
+        );
+    }
+
+    function testPermitBadNonce() public {
+        address owner = vm.addr(1);
+        address spender = vm.addr(2);
+        uint256 amount = 100;
+        uint256 nonce = 1;
+        // solhint-disable-next-line not-rely-on-time
+        uint256 deadline = block.timestamp + 100000;
+        bytes32 domainSeparator = keccak256(
+            abi.encode(
+                _TYPE_HASH,
+                keccak256(bytes(_NAME_EIP712)),
+                keccak256(bytes(_VERSION_EIP712)),
+                block.chainid,
+                address(ERC20Extended)
+            )
+        );
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(
+            1,
+            keccak256(
+                abi.encodePacked(
+                    "\x19\x01",
+                    domainSeparator,
+                    keccak256(
+                        abi.encode(
+                            _PERMIT_TYPE_HASH,
+                            owner,
+                            spender,
+                            amount,
+                            nonce,
+                            deadline
+                        )
+                    )
+                )
+            )
+        );
+        vm.expectRevert(bytes("ERC20Permit: invalid signature"));
+        ERC20Extended.permit(
+            owner,
+            spender,
+            amount,
+            deadline,
+            uint256(v),
+            r,
+            s
+        );
+    }
+
+    function testPermitExpiredDeadline() public {
+        address owner = vm.addr(1);
+        address spender = vm.addr(2);
+        uint256 amount = 100;
+        uint256 nonce = ERC20Extended.nonces(owner);
+        // solhint-disable-next-line not-rely-on-time
+        uint256 deadline = block.timestamp - 1;
+        bytes32 domainSeparator = keccak256(
+            abi.encode(
+                _TYPE_HASH,
+                keccak256(bytes(_NAME_EIP712)),
+                keccak256(bytes(_VERSION_EIP712)),
+                block.chainid,
+                address(ERC20Extended)
+            )
+        );
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(
+            1,
+            keccak256(
+                abi.encodePacked(
+                    "\x19\x01",
+                    domainSeparator,
+                    keccak256(
+                        abi.encode(
+                            _PERMIT_TYPE_HASH,
+                            owner,
+                            spender,
+                            amount,
+                            nonce,
+                            deadline
+                        )
+                    )
+                )
+            )
+        );
+        vm.expectRevert(bytes("ERC20Permit: expired deadline"));
+        ERC20Extended.permit(
+            owner,
+            spender,
+            amount,
+            deadline,
+            uint256(v),
+            r,
+            s
+        );
     }
 
     function testHasOwner() public {

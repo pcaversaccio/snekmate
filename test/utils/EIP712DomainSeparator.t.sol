@@ -9,13 +9,13 @@ import {IEIP712DomainSeparator} from "../../test/utils/interfaces/IEIP712DomainS
 contract EIP712DomainSeparatorTest is Test {
     string private constant _NAME = "WAGMI";
     string private constant _VERSION = "1";
-    bytes32 private constant _TYPEHASH =
+    bytes32 private constant _TYPE_HASH =
         keccak256(
             bytes(
                 "EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)"
             )
         );
-    bytes32 private constant _PERMIT_TYPEHASH =
+    bytes32 private constant _PERMIT_TYPE_HASH =
         keccak256(
             bytes(
                 "Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)"
@@ -40,7 +40,7 @@ contract EIP712DomainSeparatorTest is Test {
         );
         _CACHED_DOMAIN_SEPARATOR = keccak256(
             abi.encode(
-                _TYPEHASH,
+                _TYPE_HASH,
                 keccak256(bytes(_NAME)),
                 keccak256(bytes(_VERSION)),
                 block.chainid,
@@ -64,7 +64,7 @@ contract EIP712DomainSeparatorTest is Test {
         vm.chainId(block.chainid + 1);
         bytes32 digest = keccak256(
             abi.encode(
-                _TYPEHASH,
+                _TYPE_HASH,
                 keccak256(bytes(_NAME)),
                 keccak256(bytes(_VERSION)),
                 block.chainid,
@@ -82,7 +82,14 @@ contract EIP712DomainSeparatorTest is Test {
         // solhint-disable-next-line not-rely-on-time
         uint256 deadline = block.timestamp + 100000;
         bytes32 structHash = keccak256(
-            abi.encode(_PERMIT_TYPEHASH, owner, spender, value, nonce, deadline)
+            abi.encode(
+                _PERMIT_TYPE_HASH,
+                owner,
+                spender,
+                value,
+                nonce,
+                deadline
+            )
         );
         bytes32 digest1 = EIP712domainSeparator.hash_typed_data_v4(structHash);
         bytes32 digest2 = keccak256(
