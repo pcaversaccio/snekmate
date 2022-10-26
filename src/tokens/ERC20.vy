@@ -436,7 +436,7 @@ def renounce_ownership():
             WARNING: All other existing `minter`
             addresses will still be able to create
             new tokens. Consider removing all non-owner
-            minter addresses first via `remove_minter`
+            minter addresses first via `set_minter`
             before calling `renounce_ownership`.
     """
     self._check_owner()
