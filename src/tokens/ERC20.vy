@@ -33,6 +33,9 @@
 # (https://github.com/vyperlang/vyper/blob/master/vyper/builtin_interfaces/ERC20Detailed.py)
 # to be able to declare `name`, `symbol`, and `decimals`
 # as `immutable` and `constant` variables.
+# @notice This is a known compiler bug (https://github.com/vyperlang/vyper/issues/3130)
+# and we will import the interface `ERC20Detailed`
+# once it is fixed.
 from vyper.interfaces import ERC20
 implements: ERC20
 
@@ -171,15 +174,14 @@ def __init__(name_: String[25], symbol_: String[5], initial_supply_: uint256, na
            version of the signing domain. Signatures from
            different versions are not compatible.
     """
-    msg_sender: address = msg.sender
     initial_supply: uint256 = initial_supply_ * 10 ** convert(decimals, uint256)
     name = name_
     symbol = symbol_
 
-    self._transfer_ownership(msg_sender)
-    self.is_minter[msg_sender] = True
+    self._transfer_ownership(msg.sender)
+    self.is_minter[msg.sender] = True
     if (initial_supply > 0):
-        self.balanceOf[msg_sender] = initial_supply
+        self.balanceOf[msg.sender] = initial_supply
         self.totalSupply = initial_supply
 
     hashed_name: bytes32 = keccak256(convert(name_eip712_, Bytes[50]))
@@ -216,11 +218,11 @@ def approve(spender: address, amount: uint256) -> bool:
     """
     @dev Sets `amount` as the allowance of `spender`
          over the caller's tokens.
-    @notice Note that if `amount` is the maximum `uint256`,
-            the allowance is not updated on `transferFrom`.
-            This is semantically equivalent to an infinite
-            approval. Also, `spender` cannot be the zero
-            address.
+    @notice WARNING: Note that if `amount` is the maximum
+            `uint256`, the allowance is not updated on
+            `transferFrom`. This is semantically equivalent
+            to an infinite approval. Also, `spender` cannot
+            be the zero address.
 
             IMPORTANT: Beware that changing an allowance
             with this method brings the risk that someone
@@ -254,7 +256,7 @@ def transferFrom(owner: address, to: address, amount: uint256) -> bool:
             Eventually, the caller must have allowance
             for `owner`'s tokens of at least `amount`.
 
-            IMPORTANT: The function does not update the
+            WARNING: The function does not update the
             allowance if the current allowance is the
             maximum `uint256`.
     @param owner The 20-byte owner address.
@@ -285,8 +287,7 @@ def increase_allowance(spender: address, added_amount: uint256) -> bool:
             operation succeeded or failed. Note that the function
             reverts instead of returning `False` on a failure.
     """
-    owner: address = msg.sender
-    self._approve(owner, spender, self.allowance[owner][spender] + added_amount)
+    self._approve(msg.sender, spender, self.allowance[msg.sender][spender] + added_amount)
     return True
 
 
@@ -308,10 +309,9 @@ def decrease_allowance(spender: address, subtracted_amount: uint256) -> bool:
             operation succeeded or failed. Note that the function
             reverts instead of returning `False` on a failure.
     """
-    owner: address = msg.sender
-    current_allowance: uint256 = self.allowance[owner][spender]
+    current_allowance: uint256 = self.allowance[msg.sender][spender]
     assert current_allowance >= subtracted_amount, "ERC20: decreased allowance below zero"
-    self._approve(owner, spender, unsafe_sub(current_allowance, subtracted_amount))
+    self._approve(msg.sender, spender, unsafe_sub(current_allowance, subtracted_amount))
     return True
 
 
@@ -541,10 +541,10 @@ def _spend_allowance(owner: address, spender: address, amount: uint256):
     """
     @dev Updates `owner`'s allowance for `spender`
          based on spent `amount`.
-    @notice Note that it does not update the allowance
-            `amount` in case of infinite allowance.
-            Also, it reverts if not enough allowance
-            is available.
+    @notice WARNING: Note that it does not update the
+            allowance `amount` in case of infinite
+            allowance. Also, it reverts if not enough
+            allowance is available.
     @param owner The 20-byte owner address.
     @param spender The 20-byte spender address.
     @param amount The 32-byte token amount that is
