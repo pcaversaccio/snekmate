@@ -3,10 +3,11 @@
 @title Modern and Gas-Efficient ERC-20 + EIP-2612 Implementation
 @license GNU Affero General Public License v3.0
 @author pcaversaccio
-@notice These functions implement the ERC-20 standard interface:
+@notice These functions implement the ERC-20
+        standard interface:
         - https://eips.ethereum.org/EIPS/eip-20.
-        In addition, the following functions have been added
-        for convenience:
+        In addition, the following functions have
+        been added for convenience:
         - `increase_allowance` (`external` function),
         - `decrease_allowance` (`external` function),
         - `burn` (`external` function),
@@ -14,12 +15,13 @@
         - `mint` (`external` function),
         - `set_minter` (`external` function),
         - `permit` (`external` function),
+        - `DOMAIN_SEPARATOR` (`external` function),
         - `transfer_ownership` (`external` function),
         - `renounce_ownership` (`external` function),
         - `_before_token_transfer` (`internal` function),
         - `_after_token_transfer` (`internal` function).
-        The `permit` function implements approvals via EIP-712
-        secp256k1 signatures:
+        The `permit` function implements approvals via
+        EIP-712 secp256k1 signatures:
         https://eips.ethereum.org/EIPS/eip-2612.
         The implementation is inspired by OpenZeppelin's
         implementation here:
@@ -38,6 +40,12 @@
 # once it is fixed.
 from vyper.interfaces import ERC20
 implements: ERC20
+
+
+# @dev We import the `IERC20Permit` interface which
+# is written using standard Vyper syntax.
+import interfaces.IERC20Permit as IERC20Permit
+implements: IERC20Permit
 
 
 # @dev Constant used as part of the ECDSA recovery function.
@@ -372,7 +380,7 @@ def set_minter(minter: address, status: bool):
 
 
 @external
-def permit(owner: address, spender: address, amount: uint256, deadline: uint256, v: uint256, r: bytes32, s: bytes32):
+def permit(owner: address, spender: address, amount: uint256, deadline: uint256, v: uint8, r: bytes32, s: bytes32):
     """
     @dev Sets `amount` as the allowance of `spender`
          over `owner`'s tokens, given `owner`'s signed
@@ -401,10 +409,20 @@ def permit(owner: address, spender: address, amount: uint256, deadline: uint256,
     struct_hash: bytes32 = keccak256(_abi_encode(_PERMIT_TYPE_HASH, owner, spender, amount, current_nonce, deadline))
     hash: bytes32  = self._hash_typed_data_v4(struct_hash)
 
-    signer: address = self._recover_vrs(hash, v, convert(r, uint256), convert(s, uint256))
+    signer: address = self._recover_vrs(hash, convert(v, uint256), convert(r, uint256), convert(s, uint256))
     assert signer == owner, "ERC20Permit: invalid signature"
 
     self._approve(owner, spender, amount)
+
+
+@external
+@view
+def DOMAIN_SEPARATOR() -> bytes32:
+    """
+    @dev Returns the domain separator for the current chain.
+    @return bytes32 The 32-byte domain separator.
+    """
+    return self._domain_separator_v4()
 
 
 @external

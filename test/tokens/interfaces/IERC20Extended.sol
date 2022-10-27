@@ -10,6 +10,8 @@ interface IERC20Extended is IERC20Metadata {
 
     function nonces(address owner) external view returns (uint256);
 
+    function DOMAIN_SEPARATOR() external view returns (bytes32);
+
     function increase_allowance(address spender, uint256 addedAmount)
         external
         returns (bool);
@@ -31,7 +33,7 @@ interface IERC20Extended is IERC20Metadata {
         address spender,
         uint256 amount,
         uint256 deadline,
-        uint256 v,
+        uint8 v,
         bytes32 r,
         bytes32 s
     ) external;

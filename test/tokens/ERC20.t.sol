@@ -29,6 +29,8 @@ contract ERC20Test is Test {
 
     // solhint-disable-next-line var-name-mixedcase
     IERC20Extended private ERC20Extended;
+    // solhint-disable-next-line var-name-mixedcase
+    bytes32 private _CACHED_DOMAIN_SEPARATOR;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
 
@@ -55,6 +57,15 @@ contract ERC20Test is Test {
         );
         ERC20Extended = IERC20Extended(
             vyperDeployer.deployContract("src/tokens/", "ERC20", args)
+        );
+        _CACHED_DOMAIN_SEPARATOR = keccak256(
+            abi.encode(
+                _TYPE_HASH,
+                keccak256(bytes(_NAME_EIP712)),
+                keccak256(bytes(_VERSION_EIP712)),
+                block.chainid,
+                address(ERC20Extended)
+            )
         );
     }
 
@@ -761,15 +772,7 @@ contract ERC20Test is Test {
         uint256 nonce = ERC20Extended.nonces(owner);
         // solhint-disable-next-line not-rely-on-time
         uint256 deadline = block.timestamp + 100000;
-        bytes32 domainSeparator = keccak256(
-            abi.encode(
-                _TYPE_HASH,
-                keccak256(bytes(_NAME_EIP712)),
-                keccak256(bytes(_VERSION_EIP712)),
-                block.chainid,
-                address(ERC20Extended)
-            )
-        );
+        bytes32 domainSeparator = ERC20Extended.DOMAIN_SEPARATOR();
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(
             1,
             keccak256(
@@ -789,15 +792,7 @@ contract ERC20Test is Test {
                 )
             )
         );
-        ERC20Extended.permit(
-            owner,
-            spender,
-            amount,
-            deadline,
-            uint256(v),
-            r,
-            s
-        );
+        ERC20Extended.permit(owner, spender, amount, deadline, v, r, s);
         assertEq(ERC20Extended.allowance(owner, spender), amount);
         assertEq(ERC20Extended.nonces(owner), 1);
     }
@@ -809,15 +804,7 @@ contract ERC20Test is Test {
         uint256 nonce = ERC20Extended.nonces(owner);
         // solhint-disable-next-line not-rely-on-time
         uint256 deadline = block.timestamp + 100000;
-        bytes32 domainSeparator = keccak256(
-            abi.encode(
-                _TYPE_HASH,
-                keccak256(bytes(_NAME_EIP712)),
-                keccak256(bytes(_VERSION_EIP712)),
-                block.chainid,
-                address(ERC20Extended)
-            )
-        );
+        bytes32 domainSeparator = ERC20Extended.DOMAIN_SEPARATOR();
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(
             1,
             keccak256(
@@ -837,25 +824,9 @@ contract ERC20Test is Test {
                 )
             )
         );
-        ERC20Extended.permit(
-            owner,
-            spender,
-            amount,
-            deadline,
-            uint256(v),
-            r,
-            s
-        );
+        ERC20Extended.permit(owner, spender, amount, deadline, v, r, s);
         vm.expectRevert(bytes("ERC20Permit: invalid signature"));
-        ERC20Extended.permit(
-            owner,
-            spender,
-            amount,
-            deadline,
-            uint256(v),
-            r,
-            s
-        );
+        ERC20Extended.permit(owner, spender, amount, deadline, v, r, s);
     }
 
     function testPermitOtherSignature() public {
@@ -865,15 +836,7 @@ contract ERC20Test is Test {
         uint256 nonce = ERC20Extended.nonces(owner);
         // solhint-disable-next-line not-rely-on-time
         uint256 deadline = block.timestamp + 100000;
-        bytes32 domainSeparator = keccak256(
-            abi.encode(
-                _TYPE_HASH,
-                keccak256(bytes(_NAME_EIP712)),
-                keccak256(bytes(_VERSION_EIP712)),
-                block.chainid,
-                address(ERC20Extended)
-            )
-        );
+        bytes32 domainSeparator = ERC20Extended.DOMAIN_SEPARATOR();
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(
             3,
             keccak256(
@@ -894,15 +857,7 @@ contract ERC20Test is Test {
             )
         );
         vm.expectRevert(bytes("ERC20Permit: invalid signature"));
-        ERC20Extended.permit(
-            owner,
-            spender,
-            amount,
-            deadline,
-            uint256(v),
-            r,
-            s
-        );
+        ERC20Extended.permit(owner, spender, amount, deadline, v, r, s);
     }
 
     function testPermitBadChainId() public {
@@ -941,15 +896,7 @@ contract ERC20Test is Test {
             )
         );
         vm.expectRevert(bytes("ERC20Permit: invalid signature"));
-        ERC20Extended.permit(
-            owner,
-            spender,
-            amount,
-            deadline,
-            uint256(v),
-            r,
-            s
-        );
+        ERC20Extended.permit(owner, spender, amount, deadline, v, r, s);
     }
 
     function testPermitBadNonce() public {
@@ -959,15 +906,7 @@ contract ERC20Test is Test {
         uint256 nonce = 1;
         // solhint-disable-next-line not-rely-on-time
         uint256 deadline = block.timestamp + 100000;
-        bytes32 domainSeparator = keccak256(
-            abi.encode(
-                _TYPE_HASH,
-                keccak256(bytes(_NAME_EIP712)),
-                keccak256(bytes(_VERSION_EIP712)),
-                block.chainid,
-                address(ERC20Extended)
-            )
-        );
+        bytes32 domainSeparator = ERC20Extended.DOMAIN_SEPARATOR();
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(
             1,
             keccak256(
@@ -988,15 +927,7 @@ contract ERC20Test is Test {
             )
         );
         vm.expectRevert(bytes("ERC20Permit: invalid signature"));
-        ERC20Extended.permit(
-            owner,
-            spender,
-            amount,
-            deadline,
-            uint256(v),
-            r,
-            s
-        );
+        ERC20Extended.permit(owner, spender, amount, deadline, v, r, s);
     }
 
     function testPermitExpiredDeadline() public {
@@ -1006,15 +937,7 @@ contract ERC20Test is Test {
         uint256 nonce = ERC20Extended.nonces(owner);
         // solhint-disable-next-line not-rely-on-time
         uint256 deadline = block.timestamp - 1;
-        bytes32 domainSeparator = keccak256(
-            abi.encode(
-                _TYPE_HASH,
-                keccak256(bytes(_NAME_EIP712)),
-                keccak256(bytes(_VERSION_EIP712)),
-                block.chainid,
-                address(ERC20Extended)
-            )
-        );
+        bytes32 domainSeparator = ERC20Extended.DOMAIN_SEPARATOR();
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(
             1,
             keccak256(
@@ -1035,15 +958,25 @@ contract ERC20Test is Test {
             )
         );
         vm.expectRevert(bytes("ERC20Permit: expired deadline"));
-        ERC20Extended.permit(
-            owner,
-            spender,
-            amount,
-            deadline,
-            uint256(v),
-            r,
-            s
+        ERC20Extended.permit(owner, spender, amount, deadline, v, r, s);
+    }
+
+    function testCachedDomainSeparator() public {
+        assertEq(ERC20Extended.DOMAIN_SEPARATOR(), _CACHED_DOMAIN_SEPARATOR);
+    }
+
+    function testDomainSeparator() public {
+        vm.chainId(block.chainid + 1);
+        bytes32 digest = keccak256(
+            abi.encode(
+                _TYPE_HASH,
+                keccak256(bytes(_NAME_EIP712)),
+                keccak256(bytes(_VERSION_EIP712)),
+                block.chainid,
+                address(ERC20Extended)
+            )
         );
+        assertEq(ERC20Extended.DOMAIN_SEPARATOR(), digest);
     }
 
     function testHasOwner() public {
