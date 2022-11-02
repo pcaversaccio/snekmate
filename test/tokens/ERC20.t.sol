@@ -71,7 +71,7 @@ contract ERC20Test is Test {
 
     function testInitialSetup() public {
         address deployer = address(vyperDeployer);
-        uint256 multiplier = 10**uint256(ERC20Extended.decimals());
+        uint256 multiplier = 10 ** uint256(ERC20Extended.decimals());
         assertTrue(ERC20Extended.decimals() == 18);
         assertEq(ERC20Extended.name(), _NAME);
         assertEq(ERC20Extended.symbol(), _SYMBOL);
@@ -84,13 +84,13 @@ contract ERC20Test is Test {
     }
 
     function testTotalSupply() public {
-        uint256 multiplier = 10**uint256(ERC20Extended.decimals());
+        uint256 multiplier = 10 ** uint256(ERC20Extended.decimals());
         assertTrue(ERC20Extended.totalSupply() == _INITIAL_SUPPLY * multiplier);
     }
 
     function testBalanceOf() public {
         address deployer = address(vyperDeployer);
-        uint256 multiplier = 10**uint256(ERC20Extended.decimals());
+        uint256 multiplier = 10 ** uint256(ERC20Extended.decimals());
         assertTrue(
             ERC20Extended.balanceOf(deployer) == _INITIAL_SUPPLY * multiplier
         );
@@ -702,7 +702,7 @@ contract ERC20Test is Test {
         address minter = address(vyperDeployer);
         address owner = vm.addr(1);
         uint256 amount = type(uint8).max;
-        uint256 multiplier = 10**uint256(ERC20Extended.decimals());
+        uint256 multiplier = 10 ** uint256(ERC20Extended.decimals());
         vm.startPrank(minter);
         vm.expectEmit(true, true, false, true);
         emit Transfer(address(0), owner, amount);

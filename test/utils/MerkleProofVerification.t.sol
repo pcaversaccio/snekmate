@@ -20,10 +20,9 @@ contract MerkleProofVerificationTest is Test {
         );
     }
 
-    function decode(bool flag)
-        internal
-        returns (bytes32[] memory, bytes32[] memory)
-    {
+    function decode(
+        bool flag
+    ) internal returns (bytes32[] memory, bytes32[] memory) {
         bytes32[] memory proofDecoded = new bytes32[](7);
         bytes32[] memory proofDecodedSliced = new bytes32[](6);
 

@@ -34,11 +34,9 @@ contract ECDSATest is Test {
      * @param signature The secp256k1 64/65-bytes signature.
      * @return short The 64-bytes EIP-2098 compliant signature.
      */
-    function to2098Format(bytes memory signature)
-        internal
-        view
-        returns (bytes memory)
-    {
+    function to2098Format(
+        bytes memory signature
+    ) internal view returns (bytes memory) {
         if (signature.length != 65)
             revert InvalidSignatureLength(address(this));
         if (uint8(signature[32]) >> 7 == 1)

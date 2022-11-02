@@ -12,13 +12,15 @@ interface IERC20Extended is IERC20Metadata {
 
     function DOMAIN_SEPARATOR() external view returns (bytes32);
 
-    function increase_allowance(address spender, uint256 addedAmount)
-        external
-        returns (bool);
+    function increase_allowance(
+        address spender,
+        uint256 addedAmount
+    ) external returns (bool);
 
-    function decrease_allowance(address spender, uint256 subtractedAmount)
-        external
-        returns (bool);
+    function decrease_allowance(
+        address spender,
+        uint256 subtractedAmount
+    ) external returns (bool);
 
     function burn(uint256 amount) external;
 

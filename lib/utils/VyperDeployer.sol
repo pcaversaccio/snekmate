@@ -48,10 +48,10 @@ contract VyperDeployer is Create {
      * For example, the file name for "ECDSA.vy" is "ECDSA".
      * @return deployedAddress The address that the contract was deployed to.
      */
-    function deployContract(string memory path, string memory fileName)
-        public
-        returns (address)
-    {
+    function deployContract(
+        string memory path,
+        string memory fileName
+    ) public returns (address) {
         /**
          * @dev Create a list of strings with the commands necessary
          * to compile Vyper contracts.
