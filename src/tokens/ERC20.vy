@@ -42,7 +42,7 @@ from vyper.interfaces import ERC20
 implements: ERC20
 
 
-# @dev We import the `IERC20Permit` interface which
+# @dev We import the `IERC20Permit` interface, which
 # is written using standard Vyper syntax.
 import interfaces.IERC20Permit as IERC20Permit
 implements: IERC20Permit
