@@ -15,8 +15,8 @@ implements: ERC165
 
 # @dev We import the `ERC721` interface, which
 # is a built-in interface of the Vyper compiler.
-from vyper.interfaces import ERC721
-implements: ERC721
+# from vyper.interfaces import ERC721
+# implements: ERC721
 
 
 # @dev We import the `IERC721Metadata` interface, which
@@ -43,7 +43,7 @@ implements: ERC721
 # implements: IERC721Receiver
 
 
-# @dev Returns the ERC-165 interface identifier for each
+# @dev Stores the ERC-165 interface identifier for each
 # imported interface. The ERC-165 interface identifier
 # is defined as the XOR of all function selectors in the
 # interface.
@@ -73,8 +73,16 @@ name: public(immutable(String[25]))
 symbol: public(immutable(String[5]))
 
 
-# @dev Returns the amount of tokens owned by an `address`.
-balanceOf: public(HashMap[address, uint256])
+# @dev Stores the base URI for computing `tokenURI`.
+_BASE_URI: immutable(String[25])
+
+
+# @dev Mapping from owner address to token count.
+_balances: HashMap[address, uint256]
+
+
+# @dev Mapping from token ID to owner address.
+_owners: HashMap[uint256, address]
 
 
 # @dev Emitted when `token_id` token is
@@ -104,12 +112,13 @@ event ApprovalForAll:
 
 @external
 @payable
-def __init__(name_: String[25], symbol_: String[5]):
+def __init__(name_: String[25], symbol_: String[5], base_uri_: String[25]):
     """
     @dev TBD
     """
     name = name_
     symbol = symbol_
+    _BASE_URI = base_uri_
 
 
 @external
@@ -123,3 +132,40 @@ def supportsInterface(interface_id: bytes4) -> bool:
             implements the interface or not.
     """
     return interface_id in _SUPPORTED_INTERFACES
+
+
+@external
+@view
+def balanceOf(owner: address) -> uint256:
+    assert owner != empty(address), "ERC721: address zero is not a valid owner"
+    return self._balances[owner]
+
+
+@external
+@view
+def ownerOf(token_id: uint256) -> address:
+    owner: address = self._owners[token_id]
+    assert owner != empty(address), "ERC721: invalid token ID"
+    return owner
+
+
+@external
+@view
+def tokenURI(token_id: uint256) -> String[max_value(uint8)]:
+    self._require_minted(token_id)
+    if (len(_BASE_URI) > 0):
+        return concat(_BASE_URI, uint2str(token_id))
+    else:
+        return ""
+
+
+@internal
+@view
+def _require_minted(token_id: uint256):
+    assert self._exists(token_id), "ERC721: invalid token ID"
+
+
+@internal
+@view
+def _exists(token_id: uint256) -> bool:
+    return self._owners[token_id] != empty(address)
