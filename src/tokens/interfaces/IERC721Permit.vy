@@ -20,6 +20,7 @@
         implement the `permit` function via the secp256k1 signature
         parameters `v`, `r`, and `s` and do not support EIP-2098
         signatures (64-byte length, see https://eips.ethereum.org/EIPS/eip-2098).
+        The ERC-165 identifier for this interface is 0x589c5ce2.
 
         On how to use interfaces in Vyper, please visit:
         https://vyper.readthedocs.io/en/latest/interfaces.html#interfaces.
