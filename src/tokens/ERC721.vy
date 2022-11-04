@@ -114,7 +114,16 @@ event ApprovalForAll:
 @payable
 def __init__(name_: String[25], symbol_: String[5], base_uri_: String[25]):
     """
-    @dev TBD
+    @dev To omit the opcodes for checking the `msg.value`
+         in the creation-time EVM bytecode, the constructor
+         is declared as `payable`.
+    @notice TBD
+    @param name_ The maximum 25-byte user-readable string
+           name of the token collection.
+    @param symbol_ The maximum 5-byte user-readable string
+           symbol of the token collection.
+    @param base_uri_ The maximum 25-byte user-readable string
+            base URI for computing `tokenURI`.
     """
     name = name_
     symbol = symbol_
@@ -137,13 +146,26 @@ def supportsInterface(interface_id: bytes4) -> bool:
 @external
 @view
 def balanceOf(owner: address) -> uint256:
-    assert owner != empty(address), "ERC721: address zero is not a valid owner"
+    """
+    @dev Returns the amount of tokens owned by `owner`.
+    @notice Note that `owner` cannot be the zero address.
+    @param owner The 20-byte owner address.
+    @return uint256 The 32-byte token amount owned
+            by `owner`.
+    """
+    assert owner != empty(address), "ERC721: the zero address is not a valid owner"
     return self._balances[owner]
 
 
 @external
 @view
 def ownerOf(token_id: uint256) -> address:
+    """
+    @dev Returns the owner of the `token_id` token.
+    @notice Note that `token_id` must exist.
+    @param token_id The 32-byte identifier of the token.
+    @return address The 20-byte owner address.
+    """
     owner: address = self._owners[token_id]
     assert owner != empty(address), "ERC721: invalid token ID"
     return owner
@@ -152,6 +174,14 @@ def ownerOf(token_id: uint256) -> address:
 @external
 @view
 def tokenURI(token_id: uint256) -> String[max_value(uint8)]:
+    """
+    @dev Returns the Uniform Resource Identifier (URI)
+         for `token_id` token.
+    @notice Throws if `token_id` is not a valid ERC-721 token.  
+    @param token_id The 32-byte identifier of the token.
+    @return String The maximum 255-byte user-readable string
+            token URI of the `token_id` token.
+    """
     self._require_minted(token_id)
     if (len(_BASE_URI) > 0):
         return concat(_BASE_URI, uint2str(token_id))
@@ -159,13 +189,35 @@ def tokenURI(token_id: uint256) -> String[max_value(uint8)]:
         return ""
 
 
+# @external
+# @payable
+# def approve(to: address, token_id: uint256):
+#     owner: address = self._owners[token_id]
+#     assert to != owner, "ERC721: approval to current owner"
+#     assert owner == msg.sender or (self.isApprovedForAll[owner])[msg.sender]
+
+
 @internal
 @view
 def _require_minted(token_id: uint256):
+    """
+    @dev Reverts if the `token_id` has not yet been minted.
+    @param token_id The 32-byte identifier of the token.
+    """
     assert self._exists(token_id), "ERC721: invalid token ID"
 
 
 @internal
 @view
 def _exists(token_id: uint256) -> bool:
+    """
+    @dev Returns whether `token_id` exists.
+    @notice Tokens can be managed by their owner or approved
+            accounts via `approve` or `setApprovalForAll`.
+            Tokens start existing when they are minted (`_mint`),
+            and stop existing when they are burned (`_burn`).
+    @param token_id The 32-byte identifier of the token.
+    @return The verification whether `token_id` exists
+            or not.
+    """
     return self._owners[token_id] != empty(address)
