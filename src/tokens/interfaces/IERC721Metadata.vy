@@ -39,13 +39,13 @@ def symbol() -> String[5]:
 
 @external
 @view
-def tokenURI(_tokenId: uint256) -> String[255]:
+def tokenURI(_tokenId: uint256) -> String[512]:
     """
     @dev Returns the Uniform Resource Identifier (URI)
          for `_tokenId` token.
     @notice Throws if `_tokenId` is not a valid ERC-721 token.
     @param _tokenId The 32-byte identifier of the token.
-    @return String The maximum 255-byte user-readable string
+    @return String The maximum 512-byte user-readable string
             token URI of the `_tokenId` token.
     """
     return ""
