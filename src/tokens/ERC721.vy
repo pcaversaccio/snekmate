@@ -7,40 +7,42 @@
 """
 
 
-# @dev We import the `ERC165` interface, which
-# is a built-in interface of the Vyper compiler.
+# @dev We import and implement the `ERC165` interface,
+# which is a built-in interface of the Vyper compiler.
 from vyper.interfaces import ERC165
 implements: ERC165
 
 
-# @dev We import the `ERC721` interface, which
-# is a built-in interface of the Vyper compiler.
-# from vyper.interfaces import ERC721
-# implements: ERC721
+# @dev We import and implement the `ERC721` interface,
+# which is a built-in interface of the Vyper compiler.
+# @notice We do not import the interface `IERC721Metadata`
+# (https://github.com/pcaversaccio/snekmate/blob/main/src/tokens/interfaces/IERC721Metadata.vy)
+# to be able to declare `name` and `symbol` as
+# `immutable` variables. This is a known compiler
+# bug (https://github.com/vyperlang/vyper/issues/3130)
+# and we will import the interface `IERC721Metadata`
+# once it is fixed.
+from vyper.interfaces import ERC721
+implements: ERC721
 
 
-# @dev We import the `IERC721Metadata` interface, which
-# is written using standard Vyper syntax.
-# import interfaces.IERC721Metadata as IERC721Metadata
-# implements: IERC721Metadata
-
-
-# @dev We import the `IERC721Enumerable` interface, which
-# is written using standard Vyper syntax.
+# @dev We import and implement the `IERC721Enumerable`
+# interface, which is written using standard Vyper
+# syntax.
 # import interfaces.IERC721Enumerable as IERC721Enumerable
 # implements: IERC721Enumerable
 
 
-# @dev We import the `IERC721Permit` interface, which
-# is written using standard Vyper syntax.
+# @dev We import and implement the `IERC721Permit`
+# interface, which is written using standard Vyper
+# syntax.
 # import interfaces.IERC721Permit as IERC721Permit
 # implements: IERC721Permit
 
 
 # @dev We import the `IERC721Receiver` interface, which
 # is written using standard Vyper syntax.
-# import interfaces.IERC721Receiver as IERC721Receiver
-# implements: IERC721Receiver
+import interfaces.IERC721Receiver as IERC721Receiver
 
 
 # @dev Stores the ERC-165 interface identifier for each
@@ -77,12 +79,20 @@ symbol: public(immutable(String[5]))
 _BASE_URI: immutable(String[25])
 
 
+# @dev Mapping from owner to operator approvals.
+isApprovedForAll: public(HashMap[address, HashMap[address, bool]])
+
+
 # @dev Mapping from owner address to token count.
 _balances: HashMap[address, uint256]
 
 
 # @dev Mapping from token ID to owner address.
 _owners: HashMap[uint256, address]
+
+
+# @dev Mapping from token ID to approved address.
+_token_approvals: HashMap[uint256, address]
 
 
 # @dev Emitted when `token_id` token is
@@ -189,12 +199,39 @@ def tokenURI(token_id: uint256) -> String[max_value(uint8)]:
         return ""
 
 
-# @external
-# @payable
-# def approve(to: address, token_id: uint256):
-#     owner: address = self._owners[token_id]
-#     assert to != owner, "ERC721: approval to current owner"
-#     assert owner == msg.sender or (self.isApprovedForAll[owner])[msg.sender]
+@external
+@payable
+def approve(to: address, token_id: uint256):
+    owner: address = ERC721(self).ownerOf(token_id)
+    assert to != owner, "ERC721: approval to current owner"
+    assert owner == msg.sender or self.isApprovedForAll[owner][msg.sender], "ERC721: approve caller is not token owner or approved for all"
+    self._approve(to, token_id)
+
+
+@external
+@view
+def getApproved(token_id: uint256) -> address:
+    self._require_minted(token_id)
+    return self._token_approvals[token_id]
+
+
+@external
+def setApprovalForAll(operator: address, approved: bool):
+    self._set_approval_for_all(msg.sender, operator, approved)
+
+
+@external
+@payable
+def transferFrom(owner: address, to: address, token_id: uint256):
+    assert self._is_approved_or_owner(msg.sender, token_id), "ERC721: caller is not token owner or approved"
+    self._transfer(owner, to, token_id)
+
+
+@external
+@payable
+def safeTransferFrom(owner: address, to: address, token_id: uint256, data: Bytes[1024]):
+    assert self._is_approved_or_owner(msg.sender, token_id), "ERC721: caller is not token owner or approved"
+    self._safe_transfer(owner, to, token_id, data)
 
 
 @internal
@@ -221,3 +258,60 @@ def _exists(token_id: uint256) -> bool:
             or not.
     """
     return self._owners[token_id] != empty(address)
+
+
+@internal
+def _approve(to: address, token_id: uint256):
+    self._token_approvals[token_id] = to
+    log Approval(ERC721(self).ownerOf(token_id), to, token_id)
+
+
+@internal
+def _set_approval_for_all(owner: address, operator: address, approved: bool):
+    assert owner != operator, "ERC721: approve to caller"
+    self.isApprovedForAll[owner][operator] = approved
+    log ApprovalForAll(owner, operator, approved)
+
+
+@internal
+def _is_approved_or_owner(spender: address, token_id: uint256) -> bool:
+    owner: address = ERC721(self).ownerOf(token_id)
+    return (spender == owner or self.isApprovedForAll[owner][spender] or ERC721(self).getApproved(token_id) == spender)
+
+
+@internal
+def _safe_transfer(owner: address, to: address, token_id: uint256, data: Bytes[1024]):
+    self._transfer(owner, to, token_id)
+    
+
+@internal
+def _transfer(owner: address, to: address, token_id: uint256):
+    assert ERC721(self).ownerOf(token_id) == owner, "ERC721: transfer from incorrect owner"
+    assert to != empty(address), "ERC721: transfer to the zero address"
+    
+    self._before_token_transfer(owner, to, token_id)
+    assert ERC721(self).ownerOf(token_id) == owner, "ERC721: transfer from incorrect owner"
+    self._token_approvals[token_id] = empty(address)
+    self._balances[owner] = unsafe_sub(self._balances[owner], 1)
+    self._balances[to] = unsafe_add(self._balances[to], 1)
+    self._owners[token_id] = to
+    log Transfer(owner, to, token_id)
+
+    self._after_token_transfer(owner, to, token_id)
+
+
+@internal
+def _before_token_transfer(owner: address, to: address, token_id: uint256):
+    pass
+
+
+@internal
+def _after_token_transfer(owner: address, to: address, token_id: uint256):
+    pass
+
+
+@internal
+def _check_on_erc721_received(owner: address, to: address, token_id: uint256, data: Bytes[1024]):
+    if (to.is_contract):
+        return_value: bytes4 = IERC721Receiver(to).onERC721Received(msg.sender, owner, token_id, data)
+        assert return_value == method_id("onERC721Received(address,address,uint256,bytes)", output_type=bytes4)

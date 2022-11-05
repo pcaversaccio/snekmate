@@ -39,7 +39,7 @@ def symbol() -> String[5]:
 
 @external
 @view
-def tokenURI(_tokenId: uint256) -> String[max_value(uint8)]:
+def tokenURI(_tokenId: uint256) -> String[255]:
     """
     @dev Returns the Uniform Resource Identifier (URI)
          for `_tokenId` token.

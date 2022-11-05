@@ -31,19 +31,22 @@
 """
 
 
-# @dev We do not import the interface `ERC20Detailed`
+# @dev We import and implement the `ERC20` interface,
+# which is a built-in interface of the Vyper compiler.
+# @notice We do not import the interface `ERC20Detailed`
 # (https://github.com/vyperlang/vyper/blob/master/vyper/builtin_interfaces/ERC20Detailed.py)
 # to be able to declare `name`, `symbol`, and `decimals`
-# as `immutable` and `constant` variables.
-# @notice This is a known compiler bug (https://github.com/vyperlang/vyper/issues/3130)
+# as `immutable` and `constant` variables. This is a
+# known compiler bug (https://github.com/vyperlang/vyper/issues/3130)
 # and we will import the interface `ERC20Detailed`
 # once it is fixed.
 from vyper.interfaces import ERC20
 implements: ERC20
 
 
-# @dev We import the `IERC20Permit` interface, which
-# is written using standard Vyper syntax.
+# @dev We import and implement the `IERC20Permit`
+# interface, which is written using standard Vyper
+# syntax.
 import interfaces.IERC20Permit as IERC20Permit
 implements: IERC20Permit
 
