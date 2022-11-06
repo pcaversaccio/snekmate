@@ -84,10 +84,10 @@ symbol: public(immutable(String[5]))
 
 
 # @dev Stores the base URI for computing `tokenURI`.
-_BASE_URI: immutable(String[25])
+_BASE_URI: immutable(String[80])
 
 
-# @dev Cache the domain separator as an `immutable`
+# @dev Caches the domain separator as an `immutable`
 # value, but also store the corresponding chain id
 # to invalidate the cached domain separator if the
 # chain id changes.
@@ -152,7 +152,14 @@ _all_tokens_index: HashMap[uint256, uint256]
 
 
 # @dev Mapping from token ID to token URI.
-_token_uris: HashMap[uint256, String[350]]
+# @notice Since the Vyper design requires
+# strings of fixed size, we arbitrarily set
+# the maximum length for `_token_uris` to 432
+# characters. Since we have set the maximum
+# length for `_BASE_URI` to 80 characters,
+# which implies a maximum character length
+# for `tokenURI` of 512.
+_token_uris: HashMap[uint256, String[432]]
 
 
 # @dev Emitted when `token_id` token is
@@ -196,24 +203,25 @@ event RoleMinterChanged:
 
 @external
 @payable
-def __init__(name_: String[25], symbol_: String[5], base_uri_: String[25], name_eip712_: String[50], version_eip712_: String[20]):
+def __init__(name_: String[25], symbol_: String[5], base_uri_: String[80], name_eip712_: String[50], version_eip712_: String[20]):
     """
     @dev To omit the opcodes for checking the `msg.value`
          in the creation-time EVM bytecode, the constructor
          is declared as `payable`.
-    @notice TBD
-    @param name_ The maximum 25-byte user-readable string
+    @notice The `owner` role will be assigned to
+            the `msg.sender`.
+    @param name_ The maximum 25-character user-readable string
            name of the token collection.
-    @param symbol_ The maximum 5-byte user-readable string
+    @param symbol_ The maximum 5-character user-readable string
            symbol of the token collection.
-    @param base_uri_ The maximum 25-byte user-readable string
-            base URI for computing `tokenURI`.
-    @param name_eip712_ The maximum 50-byte user-readable
+    @param base_uri_ The maximum 80-character user-readable
+           string base URI for computing `tokenURI`.
+    @param name_eip712_ The maximum 50-character user-readable
            string name of the signing domain, i.e. the name
            of the dApp or protocol.
-    @param version_eip712_ The maximum 20-byte current main
-           version of the signing domain. Signatures from
-           different versions are not compatible.
+    @param version_eip712_ The maximum 20-character current
+           main version of the signing domain. Signatures
+           from different versions are not compatible.
     """
     name = name_
     symbol = symbol_
@@ -275,55 +283,54 @@ def ownerOf(token_id: uint256) -> address:
 
 
 @external
-@view
-def tokenURI(token_id: uint256) -> String[512]:
-    """
-    @dev Returns the Uniform Resource Identifier (URI)
-         for `token_id` token.
-    @notice Throws if `token_id` is not a valid ERC-721 token.  
-    @param token_id The 32-byte identifier of the token.
-    @return String The maximum 512-byte user-readable string
-            token URI of the `token_id` token.
-    """
-    self._require_minted(token_id)
-    token_uri: String[350] = self._token_uris[token_id]
-
-    if (len(_BASE_URI) == 0):
-        return token_uri
-    
-    if (len(token_uri) > 0):
-        return concat(_BASE_URI, token_uri)
-
-    if (len(_BASE_URI) > 0):
-        return concat(_BASE_URI, uint2str(token_id))
-    else:
-        return ""
-
-
-@external
 @payable
 def approve(to: address, token_id: uint256):
+    """
+    @dev TBD
+    @notice TBD
+    @param to TBD
+    @param token_id TBD
+    """
     owner: address = ERC721(self).ownerOf(token_id)
     assert to != owner, "ERC721: approval to current owner"
-    assert owner == msg.sender or self.isApprovedForAll[owner][msg.sender], "ERC721: approve caller is not token owner or approved for all"
+    assert msg.sender == owner or self.isApprovedForAll[owner][msg.sender], "ERC721: approve caller is not token owner or approved for all"
     self._approve(to, token_id)
 
 
 @external
 @view
 def getApproved(token_id: uint256) -> address:
+    """
+    @dev TBD
+    @notice TBD
+    @param token_id TBD
+    @return address TBD
+    """
     self._require_minted(token_id)
     return self._token_approvals[token_id]
 
 
 @external
 def setApprovalForAll(operator: address, approved: bool):
+    """
+    @dev TBD
+    @notice TBD
+    @param operator TBD
+    @param approved TBD
+    """
     self._set_approval_for_all(msg.sender, operator, approved)
 
 
 @external
 @payable
 def transferFrom(owner: address, to: address, token_id: uint256):
+    """
+    @dev TBD
+    @notice TBD
+    @param owner TBD
+    @param to TBD
+    @param token_id TBD
+    """
     assert self._is_approved_or_owner(msg.sender, token_id), "ERC721: caller is not token owner or approved"
     self._transfer(owner, to, token_id)
 
@@ -331,19 +338,72 @@ def transferFrom(owner: address, to: address, token_id: uint256):
 @external
 @payable
 def safeTransferFrom(owner: address, to: address, token_id: uint256, data: Bytes[1024]):
+    """
+    @dev TBD
+    @notice TBD
+    @param owner TBD
+    @param to TBD
+    @param token_id TBD
+    @param data TBD
+    """
     assert self._is_approved_or_owner(msg.sender, token_id), "ERC721: caller is not token owner or approved"
     self._safe_transfer(owner, to, token_id, data)
 
 
 @external
 @view
+def tokenURI(token_id: uint256) -> String[512]:
+    """
+    @dev Returns the Uniform Resource Identifier (URI)
+         for `token_id` token.
+    @notice Throws if `token_id` is not a valid ERC-721 token.  
+    @param token_id The 32-byte identifier of the token.
+    @return String The maximum 512-character user-readable
+            string token URI of the `token_id` token.
+    """
+    self._require_minted(token_id)
+    token_uri: String[432] = self._token_uris[token_id]
+
+    # If there is no base URI, return the token URI.
+    if (len(_BASE_URI) == 0):
+        return token_uri
+
+    # If both are set, concatenate the base URI
+    # and token URI.
+    if (len(token_uri) > 0):
+        return concat(_BASE_URI, token_uri)
+
+    # If there is no token URI but a base URI,
+    # concatenate the base URI and token ID.
+    if (len(_BASE_URI) > 0):
+        return concat(_BASE_URI, uint2str(token_id))
+    else:
+        return ""
+
+
+@external
+@view
 def totalSupply() -> uint256:
+    """
+    @dev Returns the amount of tokens in existence.
+    @return uint256 The 32-byte token supply.
+    """
     return len(self._all_tokens)
 
 
 @external
 @view
 def tokenByIndex(index: uint256) -> uint256:
+    """
+    @dev Returns a token ID at a given `index` of
+         all the tokens stored by the contract.
+    @notice Use along with `totalSupply` to enumerate
+            all tokens.
+    @param index The 32-byte counter (must be less
+           than `totalSupply()`).
+    @return uint256 The 32-byte token ID at index
+            `index`.
+    """
     assert index < IERC721Enumerable(self).totalSupply(), "ERC721Enumerable: global index out of bounds"
     return self._all_tokens[index]
 
@@ -351,25 +411,51 @@ def tokenByIndex(index: uint256) -> uint256:
 @external
 @view
 def tokenOfOwnerByIndex(owner: address, index: uint256) -> uint256:
+    """
+    @dev Returns a token ID owned by `owner` at a
+         given `index` of its token list.
+    @notice Use along with `balanceOf` to enumerate
+            all of `owner`'s tokens.
+    @param owner The 20-byte owner address.
+    @param index The 32-byte counter (must be less
+           than `balanceOf(owner)`).
+    @return uint256 The 32-byte token ID owned by
+            `owner` at index `index`.
+    """
     assert index < ERC721(self).balanceOf(owner), "ERC721Enumerable: owner index out of bounds"
     return self._owned_tokens[owner][index]
 
 
 @external
-def safe_mint(owner: address, uri: String[350]):
+def burn(token_id: uint256):
     """
     @dev TBD
+    @notice TBD
+    @param token_id TBD
     """
-    assert self.is_minter[msg.sender], "AccessControl: access is denied"
-    token_id: uint256 = unsafe_add(IERC721Enumerable(self).totalSupply(), 1)
-    self._safe_mint(owner, token_id, b"")
-    self._set_token_uri(token_id, uri)
+    assert self._is_approved_or_owner(msg.sender, token_id), "ERC721: caller is not token owner or approved"
+    self._burn(token_id)
 
 
 @external
-def burn(token_id: uint256):
-    assert self._is_approved_or_owner(msg.sender, token_id), "ERC721: caller is not token owner or approved"
-    self._burn(token_id)
+def safe_mint(owner: address, uri: String[432]):
+    """
+    @dev TBD
+    @notice TBD
+    @param owner TBD
+    @param uri TBD
+    """
+    assert self.is_minter[msg.sender], "AccessControl: access is denied"
+    # New tokens will be automatically assigned an incremental ID.
+    # The first token ID will be zero.
+    token_id: uint256 = IERC721Enumerable(self).totalSupply()
+    # Theoretically, the following line could overflow
+    # if all 2**256 token IDs were minted. However,
+    # since we have bounded the dynamic array `_all_tokens`
+    # by the maximum value of `uint64`, this is no longer
+    # even theoretically possible.
+    self._safe_mint(owner, token_id, b"")
+    self._set_token_uri(token_id, uri)
 
 
 @external
@@ -414,7 +500,6 @@ def permit(spender: address, token_id: uint256, deadline: uint256, v: uint8, r: 
     assert block.timestamp <= deadline, "ERC721Permit: expired deadline"
 
     owner: address = ERC721(self).ownerOf(token_id)
-
     current_nonce: uint256 = self.nonces[token_id]
     self.nonces[token_id] = unsafe_add(current_nonce, 1)
 
@@ -502,12 +587,25 @@ def _exists(token_id: uint256) -> bool:
 
 @internal
 def _approve(to: address, token_id: uint256):
+    """
+    @dev TBD
+    @notice TBD
+    @param to TBD
+    @param token_id TBD
+    """
     self._token_approvals[token_id] = to
     log Approval(ERC721(self).ownerOf(token_id), to, token_id)
 
 
 @internal
 def _set_approval_for_all(owner: address, operator: address, approved: bool):
+    """
+    @dev TBD
+    @notice TBD
+    @param owner TBD
+    @param operator TBD
+    @param approved TBD
+    """
     assert owner != operator, "ERC721: approve to caller"
     self.isApprovedForAll[owner][operator] = approved
     log ApprovalForAll(owner, operator, approved)
@@ -515,24 +613,50 @@ def _set_approval_for_all(owner: address, operator: address, approved: bool):
 
 @internal
 def _is_approved_or_owner(spender: address, token_id: uint256) -> bool:
+    """
+    @dev TBD
+    @notice TBD
+    @param spender TBD
+    @param token_id TBD
+    """
     owner: address = ERC721(self).ownerOf(token_id)
     return (spender == owner or self.isApprovedForAll[owner][spender] or ERC721(self).getApproved(token_id) == spender)
 
 
 @internal
 def _safe_mint(to: address, token_id: uint256, data: Bytes[1024]):
+    """
+    @dev TBD
+    @notice TBD
+    @param to TBD
+    @param token_id TBD
+    @param data TBD
+    """
     self._mint(to, token_id)
-    assert self._check_on_erc721_received(empty(address), to, token_id, data), "ERC721: transfer to non ERC721Receiver implementer"
+    assert self._check_on_erc721_received(empty(address), to, token_id, data), "ERC721: transfer to non-ERC721Receiver implementer"
 
 
 @internal
 def _mint(to: address, token_id: uint256):
+    """
+    @dev TBD
+    @notice TBD
+    @param to TBD
+    @param token_id TBD
+    """
     assert to != empty(address), "ERC721: mint to the zero address"
     assert not(self._exists(token_id)), "ERC721: token already minted"
 
     self._before_token_transfer(empty(address), to, token_id)
-
+    # Checks that the `token_id` was not minted by the
+    # `_before_token_transfer` hook.
     assert not(self._exists(token_id)), "ERC721: token already minted"
+
+    # Theoretically, the following line could overflow
+    # if all 2**256 token IDs were minted to the same owner.
+    # However, since we have bounded the dynamic array
+    # `_all_tokens` by the maximum value of `uint64`,
+    # this is no longer even theoretically possible.
     self._balances[to] = unsafe_add(self._balances[to], 1)
     self._owners[token_id] = to
     log Transfer(empty(address), to, token_id)
@@ -542,18 +666,38 @@ def _mint(to: address, token_id: uint256):
 
 @internal
 def _safe_transfer(owner: address, to: address, token_id: uint256, data: Bytes[1024]):
+    """
+    @dev TBD
+    @notice TBD
+    @param owner TBD
+    @param to TBD
+    @param token_id TBD
+    @param data TBD
+    """
     self._transfer(owner, to, token_id)
+    assert self._check_on_erc721_received(owner, to, token_id, data), "ERC721: transfer to non-ERC721Receiver implementer"
 
 
 @internal
 def _transfer(owner: address, to: address, token_id: uint256):
+    """
+    @dev TBD
+    @notice TBD
+    @param owner TBD
+    @param to TBD
+    @param token_id TBD
+    """
     assert ERC721(self).ownerOf(token_id) == owner, "ERC721: transfer from incorrect owner"
     assert to != empty(address), "ERC721: transfer to the zero address"
     
     self._before_token_transfer(owner, to, token_id)
-
+    # Checks that the `token_id` was not transferred by the
+    # `_before_token_transfer` hook.
     assert ERC721(self).ownerOf(token_id) == owner, "ERC721: transfer from incorrect owner"
+    
     self._token_approvals[token_id] = empty(address)
+    # See comment why an overflow is not possible in the
+    # following two lines above at `_mint`.
     self._balances[owner] = unsafe_sub(self._balances[owner], 1)
     self._balances[to] = unsafe_add(self._balances[to], 1)
     self._owners[token_id] = to
@@ -563,41 +707,77 @@ def _transfer(owner: address, to: address, token_id: uint256):
 
 
 @internal
-def _set_token_uri(token_id: uint256, token_uri: String[350]):
+def _set_token_uri(token_id: uint256, token_uri: String[432]):
+    """
+    @dev TBD
+    @notice TBD
+    @param token_id TBD
+    @param token_uri TBD
+    """
     assert self._exists(token_id), "ERC721URIStorage: URI set of nonexistent token"
     self._token_uris[token_id] = token_uri
 
 
 @internal
 def _burn(token_id: uint256):
+    """
+    @dev TBD
+    @notice TBD
+    @param token_id TBD
+    """
     owner: address = ERC721(self).ownerOf(token_id)
 
     self._before_token_transfer(owner, empty(address), token_id)
-
+    # Updates ownership in case the `token_id` was
+    # transferred by the `_before_token_transfer` hook.
     owner = ERC721(self).ownerOf(token_id)
+
     self._token_approvals[token_id] = empty(address)
+    # Overflow is not possible, as in this case more tokens would
+    # have to be burnt/transferred than the owner originally
+    # received through minting and transfer.
     self._balances[owner] = unsafe_sub(self._balances[owner], 1)
     self._owners[token_id] = empty(address)
     log Transfer(owner, empty(address), token_id)
 
     self._after_token_transfer(owner, empty(address), token_id)
 
+    # Checks whether a token-specific URI has been set for the token
+    # and deletes the token URI from the storage mapping.
     if (len(self._token_uris[token_id]) > 0):
         self._token_uris[token_id] = ""
 
 
 @internal
 def _check_on_erc721_received(owner: address, to: address, token_id: uint256, data: Bytes[1024]) -> bool:
+    """
+    @dev TBD
+    @notice TBD
+    @param owner TBD
+    @param to TBD
+    @param token_id TBD
+    @param data TBD
+    @return bool TBD
+    """
+    # Contract case.
     if (to.is_contract):
         return_value: bytes4 = IERC721Receiver(to).onERC721Received(msg.sender, owner, token_id, data)
-        assert return_value == method_id("onERC721Received(address,address,uint256,bytes)", output_type=bytes4), "ERC721: transfer to non ERC721Receiver implementer"
+        assert return_value == method_id("onERC721Received(address,address,uint256,bytes)", output_type=bytes4), "ERC721: transfer to non-ERC721Receiver implementer"
         return True
+    # EOA case.
     else:
-        return False
+        return True
 
 
 @internal
 def _before_token_transfer(owner: address, to: address, first_token_id: uint256):
+    """
+    @dev TBD
+    @notice TBD
+    @param owner TBD
+    @param to TBD
+    @param first_token_id TBD
+    """
     token_id: uint256 = first_token_id
 
     if (owner == empty(address)):
@@ -613,11 +793,24 @@ def _before_token_transfer(owner: address, to: address, first_token_id: uint256)
 
 @internal
 def _after_token_transfer(owner: address, to: address, first_token_id: uint256):
+    """
+    @dev TBD
+    @notice TBD
+    @param owner TBD
+    @param to TBD
+    @param first_token_id TBD
+    """
     pass
 
 
 @internal
 def _add_token_to_owner_enumeration(to: address, token_id: uint256):
+    """
+    @dev TBD
+    @notice TBD
+    @param to TBD
+    @param token_id TBD
+    """
     length: uint256 = ERC721(self).balanceOf(to)
     self._owned_tokens[to][length] = token_id
     self._owned_tokens_index[token_id] = length
@@ -625,33 +818,73 @@ def _add_token_to_owner_enumeration(to: address, token_id: uint256):
 
 @internal
 def _add_token_to_all_tokens_enumeration(token_id: uint256):
+    """
+    @dev TBD
+    @notice TBD
+    @param token_id TBD
+    """
     self._all_tokens_index[token_id] = len(self._all_tokens)
     self._all_tokens.append(token_id)
 
 
 @internal
 def _remove_token_from_owner_enumeration(owner: address, token_id:uint256):
+    """
+    @dev TBD
+    @notice TBD
+    @param owner TBD
+    @param token_id TBD
+    """
+    # To prevent a gap in `owner`'s tokens array,
+    # we store the last token in the index of the
+    # token to delete, and then delete the last slot.
     last_token_index: uint256 = ERC721(self).balanceOf(owner) - 1
     token_index: uint256 = self._owned_tokens_index[token_id]
 
+    # When the token to delete is the last token,
+    # the swap operation is unnecessary.
     if (token_index != last_token_index):
         last_token_id: uint256 = self._owned_tokens[owner][last_token_index]
+        # Moves the last token to the slot of the to-delete token.
         self._owned_tokens[owner][token_index] = last_token_id
+        # Updates the moved token's index.
         self._owned_tokens_index[last_token_id] = token_index
     
+    # This also deletes the contents at the
+    # last position of the array.
     self._owned_tokens_index[token_id] = 0
     self._owned_tokens[owner][last_token_index] = 0
 
 
 @internal
 def _remove_token_from_all_tokens_enumeration(token_id: uint256):
+    """
+    @dev TBD
+    @notice TBD
+    @param token_id TBD
+    """
+    # To prevent a gap in the tokens array,
+    # we store the last token in the index
+    # of the token to delete, and then delete
+    # the last slot.
     last_token_index: uint256 = len(self._all_tokens) - 1
     token_index: uint256 = self._all_tokens_index[token_id]
+    
+    # When the token to delete is the last token,
+    # the swap operation is unnecessary. However,
+    # since this occurs so rarely (when the last
+    # minted token is burnt) that we still do the
+    # swap here to avoid the gas cost of adding
+    # an 'if' statement (like in `_remove_token_from_owner_enumeration`).
     last_token_id: uint256  = self._all_tokens[last_token_index]
 
+    # Moves the last token to the slot of the to-delete token.
     self._all_tokens[token_index] = last_token_id
+    # Updates the moved token's index.
     self._all_tokens_index[last_token_id] = token_index
 
+    # This also deletes the contents at the
+    # last position of the array.
     self._all_tokens_index[token_id] = 0
     self._all_tokens.pop()
 

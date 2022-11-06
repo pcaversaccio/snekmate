@@ -46,6 +46,7 @@ def tokenOfOwnerByIndex(_owner: address, _index: uint256) -> uint256:
          given `_index` of its token list.
     @notice Use along with `balanceOf` to enumerate
             all of `_owner`'s tokens.
+    @param _owner The 20-byte owner address.
     @param _index The 32-byte counter (must be less
            than `balanceOf(_owner)`).
     @return uint256 The 32-byte token ID owned by

@@ -20,8 +20,9 @@
 def name() -> String[25]:
     """
     @dev Returns the token collection name.
-    @return String The maximum 25-byte user-readable string
-            name of the token collection.
+    @return String The maximum 25-character
+            user-readable string name of the
+            token collection.
     """
     return ""
 
@@ -31,8 +32,9 @@ def name() -> String[25]:
 def symbol() -> String[5]:
     """
     @dev Returns the token collection symbol.
-    @return String The maximum 5-byte user-readable string
-            symbol of the token collection.
+    @return String The maximum 5-character
+            user-readable string symbol of the
+            token collection.
     """
     return ""
 
@@ -45,7 +47,7 @@ def tokenURI(_tokenId: uint256) -> String[512]:
          for `_tokenId` token.
     @notice Throws if `_tokenId` is not a valid ERC-721 token.
     @param _tokenId The 32-byte identifier of the token.
-    @return String The maximum 512-byte user-readable string
-            token URI of the `_tokenId` token.
+    @return String The maximum 512-character user-readable
+            string token URI of the `_tokenId` token.
     """
     return ""
