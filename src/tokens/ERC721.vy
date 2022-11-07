@@ -27,7 +27,7 @@
         - `_after_token_transfer` (`internal` function).
         The `permit` function implements approvals via
         EIP-712 secp256k1 signatures for ERC-721 tokens:
-        https://eips.ethereum.org/EIPS/eip-4494
+        https://eips.ethereum.org/EIPS/eip-4494.
         The implementation is inspired by OpenZeppelin's
         implementation here:
         https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC721/ERC721.sol,
