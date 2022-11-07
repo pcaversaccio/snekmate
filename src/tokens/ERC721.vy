@@ -382,7 +382,7 @@ def safeTransferFrom(owner: address, to: address, token_id: uint256, data: Bytes
             is not `owner`, it must be approved to move this
             token by either `approve` or `setApprovalForAll`.
             Eventually, if `to` refers to a smart contract,
-            it must implement `IERC721Receiver-onERC721Received`,
+            it must implement {IERC721Receiver-onERC721Received},
             which is called upon a safe transfer.
 
             IMPORTANT: The function is declared as
@@ -684,7 +684,7 @@ def _safe_mint(to: address, token_id: uint256, data: Bytes[1024]):
     @dev Safely mints `token_id` and transfers it to `to`.
     @notice Note that `token_id` must not exist. Also, if `to`
             refers to a smart contract, it must implement
-            `IERC721Receiver-onERC721Received`, which is called
+            {IERC721Receiver-onERC721Received}, which is called
             upon a safe transfer.
     @param to The 20-byte receiver address.
     @param token_id The 32-byte identifier of the token.
@@ -744,7 +744,7 @@ def _safe_transfer(owner: address, to: address, token_id: uint256, data: Bytes[1
             address. Also, `token_id` token must exist and
             must be owned by `owner`. Eventually, if `to`
             refers to a smart contract, it must implement
-            `IERC721Receiver-onERC721Received`, which is
+            {IERC721Receiver-onERC721Received}, which is
             called upon a safe transfer.
     @param owner The 20-byte owner address.
     @param to The 20-byte receiver address.
@@ -838,7 +838,7 @@ def _burn(token_id: uint256):
 @internal
 def _check_on_erc721_received(owner: address, to: address, token_id: uint256, data: Bytes[1024]) -> bool:
     """
-    @dev An `internal` function that invokes `IERC721Receiver-onERC721Received`
+    @dev An `internal` function that invokes {IERC721Receiver-onERC721Received}
          on a target address. The call is not executed
          if the target address is not a contract.
     @param owner The 20-byte address which previously
@@ -859,9 +859,9 @@ def _check_on_erc721_received(owner: address, to: address, token_id: uint256, da
     else:
         return True
 
-# CHECK FROM HERE
+
 @internal
-def _before_token_transfer(owner: address, to: address, first_token_id: uint256):
+def _before_token_transfer(owner: address, to: address, token_id: uint256):
     """
     @dev Hook that is called before any token transfer.
          This includes minting and burning.
@@ -875,11 +875,8 @@ def _before_token_transfer(owner: address, to: address, first_token_id: uint256)
             - `owner` and `to` are never both zero.
     @param owner The 20-byte owner address.
     @param to The 20-byte receiver address.
-    @param first_token_id The 32-byte identifier of the
-           first token.
+    @param token_id The 32-byte identifier of the token.
     """
-    token_id: uint256 = first_token_id
-
     if (owner == empty(address)):
         self._add_token_to_all_tokens_enumeration(token_id)
     elif (owner != to):
@@ -892,7 +889,7 @@ def _before_token_transfer(owner: address, to: address, first_token_id: uint256)
 
 
 @internal
-def _after_token_transfer(owner: address, to: address, first_token_id: uint256):
+def _after_token_transfer(owner: address, to: address, token_id: uint256):
     """
     @dev Hook that is called after any token transfer.
          This includes minting and burning.
@@ -906,8 +903,7 @@ def _after_token_transfer(owner: address, to: address, first_token_id: uint256):
             - `owner` and `to` are never both zero.
     @param owner The 20-byte owner address.
     @param to The 20-byte receiver address.
-    @param first_token_id The 32-byte identifier of the
-           first token.
+    @param token_id The 32-byte identifier of the token.
     """
     pass
 
@@ -915,9 +911,9 @@ def _after_token_transfer(owner: address, to: address, first_token_id: uint256):
 @internal
 def _add_token_to_owner_enumeration(to: address, token_id: uint256):
     """
-    @dev TBD
-    @notice TBD
-    @param to TBD
+    @dev This is an `internal` function that adds a token
+         to the ownership-tracking data structures.
+    @param to The 20-byte receiver address.
     @param token_id The 32-byte identifier of the token.
     """
     length: uint256 = ERC721(self).balanceOf(to)
@@ -928,8 +924,8 @@ def _add_token_to_owner_enumeration(to: address, token_id: uint256):
 @internal
 def _add_token_to_all_tokens_enumeration(token_id: uint256):
     """
-    @dev TBD
-    @notice TBD
+    @dev This is an `internal` function that adds a token
+         to the token tracking data structures.
     @param token_id The 32-byte identifier of the token.
     """
     self._all_tokens_index[token_id] = len(self._all_tokens)
@@ -939,9 +935,16 @@ def _add_token_to_all_tokens_enumeration(token_id: uint256):
 @internal
 def _remove_token_from_owner_enumeration(owner: address, token_id:uint256):
     """
-    @dev TBD
-    @notice TBD
-    @param owner TBD
+    @dev This is an `internal` function that removes a token
+         from the ownership-tracking data structures.
+    @notice Note that while the token is not assigned a new
+            owner, the `_owned_tokens_index` mapping is NOT
+            updated: this allows for gas optimisations e.g.
+            when performing a transfer operation (avoiding
+            double writes). This function has O(1) time
+            complexity, but alters the order of the
+            `_owned_tokens` array.
+    @param owner The 20-byte owner address.
     @param token_id The 32-byte identifier of the token.
     """
     # To prevent a gap in `owner`'s tokens array,
@@ -968,10 +971,10 @@ def _remove_token_from_owner_enumeration(owner: address, token_id:uint256):
 @internal
 def _remove_token_from_all_tokens_enumeration(token_id: uint256):
     """
-    @dev An `internal` function that removes a token from
-         the token tracking data structures.
-    @notice This has O(1) time complexity, but alters the
-            order of the `_all_tokens` array.
+    @dev This is an `internal` function that removes a token
+         from the token tracking data structures.
+    @notice This function has O(1) time complexity, but
+            alters the order of the `_all_tokens` array.
     @param token_id The 32-byte identifier of the token.
     """
     # To prevent a gap in the tokens array,
