@@ -2,16 +2,9 @@
 pragma solidity ^0.8.17;
 
 import {IERC20Metadata} from "../../../lib/openzeppelin-contracts/contracts/token/ERC20/extensions/IERC20Metadata.sol";
+import {IERC20Permit} from "../../../lib/openzeppelin-contracts/contracts/token/ERC20/extensions/IERC20Permit.sol";
 
-interface IERC20Extended is IERC20Metadata {
-    function owner() external view returns (address);
-
-    function is_minter(address minter) external view returns (bool);
-
-    function nonces(address owner) external view returns (uint256);
-
-    function DOMAIN_SEPARATOR() external view returns (bytes32);
-
+interface IERC20Extended is IERC20Metadata, IERC20Permit {
     function increase_allowance(
         address spender,
         uint256 addedAmount
@@ -26,19 +19,13 @@ interface IERC20Extended is IERC20Metadata {
 
     function burn_from(address owner, uint256 amount) external;
 
+    function owner() external view returns (address);
+
+    function is_minter(address minter) external view returns (bool);
+
     function mint(address owner, uint256 amount) external;
 
     function set_minter(address minter, bool status) external;
-
-    function permit(
-        address owner,
-        address spender,
-        uint256 amount,
-        uint256 deadline,
-        uint8 v,
-        bytes32 r,
-        bytes32 s
-    ) external;
 
     function transfer_ownership(address newOwner) external;
 
