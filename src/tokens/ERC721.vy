@@ -3,7 +3,36 @@
 @title Modern and Gas-Efficient ERC-721 + EIP-4494 Implementation
 @license GNU Affero General Public License v3.0
 @author pcaversaccio
-@notice TBD
+@notice These functions implement the ERC-721
+        standard interface:
+        - https://eips.ethereum.org/EIPS/eip-721.
+        In addition, the following functions have
+        been added for convenience:
+        - `name` (`external` function),
+        - `symbol` (`external` function),
+        - `tokenURI` (`external` function),
+        - `totalSupply` (`external` function),
+        - `tokenByIndex` (`external` function),
+        - `tokenOfOwnerByIndex` (`external` function),
+        - `burn` (`external` function),
+        - `safe_mint` (`external` function),
+        - `set_minter` (`external` function),
+        - `permit` (`external` function),
+        - `nonces` (`external` function),
+        - `DOMAIN_SEPARATOR` (`external` function),
+        - `transfer_ownership` (`external` function),
+        - `renounce_ownership` (`external` function),
+        - `_check_on_erc721_received` (`internal` function),
+        - `_before_token_transfer` (`internal` function),
+        - `_after_token_transfer` (`internal` function).
+        The `permit` function implements approvals via
+        EIP-712 secp256k1 signatures for ERC-721 tokens:
+        https://eips.ethereum.org/EIPS/eip-4494
+        The implementation is inspired by OpenZeppelin's
+        implementation here:
+        https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC721/ERC721.sol,
+        as well as by ApeAcademy's implementation here:
+        https://github.com/ApeAcademy/ERC721/blob/main/%7B%7Bcookiecutter.project_name%7D%7D/contracts/NFT.vy.
 """
 
 

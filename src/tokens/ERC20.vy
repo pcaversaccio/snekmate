@@ -8,6 +8,9 @@
         - https://eips.ethereum.org/EIPS/eip-20.
         In addition, the following functions have
         been added for convenience:
+        - `name` (`external` function),
+        - `symbol` (`external` function),
+        - `decimals` (`external` function),
         - `increase_allowance` (`external` function),
         - `decrease_allowance` (`external` function),
         - `burn` (`external` function),
@@ -15,6 +18,7 @@
         - `mint` (`external` function),
         - `set_minter` (`external` function),
         - `permit` (`external` function),
+        - `nonces` (`external` function),
         - `DOMAIN_SEPARATOR` (`external` function),
         - `transfer_ownership` (`external` function),
         - `renounce_ownership` (`external` function),
