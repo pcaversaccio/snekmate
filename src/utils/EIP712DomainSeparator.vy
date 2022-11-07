@@ -12,7 +12,7 @@
 """
 
 
-# @dev Cache the domain separator as an `immutable`
+# @dev Caches the domain separator as an `immutable`
 # value, but also store the corresponding chain id
 # to invalidate the cached domain separator if the
 # chain id changes.
@@ -40,16 +40,17 @@ def __init__(name_: String[50], version_: String[20]):
     """
     @dev Initialises the domain separator and the parameter caches.
          To omit the opcodes for checking the `msg.value` in the
-         creation-time EVM bytecode, the constructor is declared as `payable`.
+         creation-time EVM bytecode, the constructor is declared as
+         `payable`.
     @notice The definition of the domain separator can be found here:
             https://eips.ethereum.org/EIPS/eip-712#definition-of-domainseparator.
             Since the Vyper design requires strings of fixed size,
-            we arbitrarily set the maximum length for `name` to 50 bytes
-            and `version` to 20 bytes.
-    @param name_ The maximum 50-byte user-readable string name of
-           the signing domain, i.e. the name of the dApp or protocol.
-    @param version_ The maximum 20-byte current main version of the
-           signing domain. Signatures from different versions are
+            we arbitrarily set the maximum length for `name` to 50
+            characters and `version` to 20 characters.
+    @param name_ The maximum 50-character user-readable string name
+           of the signing domain, i.e. the name of the dApp or protocol.
+    @param version_ The maximum 20-character current main version of
+           the signing domain. Signatures from different versions are
            not compatible.
     """
     hashed_name: bytes32 = keccak256(convert(name_, Bytes[50]))

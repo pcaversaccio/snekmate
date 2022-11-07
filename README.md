@@ -12,8 +12,8 @@
 ```ml
 tokens
 ├─ ERC20 — "Modern and Gas-Efficient ERC-20 + EIP-2612 Implementation"
-├─ ERC721 — "Modern and Gas-Efficient ERC-721 Implementation"
-├─ ERC1155 — "Modern and Gas-Efficient ERC-1155 Implementation"
+├─ ERC721 — "Modern and Gas-Efficient ERC-721 + EIP-4494 Implementation"
+├─ ERC1155 — "Modern and Gas-Efficient ERC-1155 Implementation (TBD)"
 utils
 ├─ ECDSA — "Elliptic Curve Digital Signature Algorithm (ECDSA) Functions"
 ├─ CreateAddress — "`CREATE` EVM Opcode Utility Function for Address Calculation"

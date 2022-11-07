@@ -8,6 +8,9 @@
         - https://eips.ethereum.org/EIPS/eip-20.
         In addition, the following functions have
         been added for convenience:
+        - `name` (`external` function),
+        - `symbol` (`external` function),
+        - `decimals` (`external` function),
         - `increase_allowance` (`external` function),
         - `decrease_allowance` (`external` function),
         - `burn` (`external` function),
@@ -15,6 +18,7 @@
         - `mint` (`external` function),
         - `set_minter` (`external` function),
         - `permit` (`external` function),
+        - `nonces` (`external` function),
         - `DOMAIN_SEPARATOR` (`external` function),
         - `transfer_ownership` (`external` function),
         - `renounce_ownership` (`external` function),
@@ -31,19 +35,22 @@
 """
 
 
-# @dev We do not import the interface `ERC20Detailed`
+# @dev We import and implement the `ERC20` interface,
+# which is a built-in interface of the Vyper compiler.
+# @notice We do not import the interface `ERC20Detailed`
 # (https://github.com/vyperlang/vyper/blob/master/vyper/builtin_interfaces/ERC20Detailed.py)
 # to be able to declare `name`, `symbol`, and `decimals`
-# as `immutable` and `constant` variables.
-# @notice This is a known compiler bug (https://github.com/vyperlang/vyper/issues/3130)
+# as `immutable` and `constant` variables. This is a
+# known compiler bug (https://github.com/vyperlang/vyper/issues/3130)
 # and we will import the interface `ERC20Detailed`
 # once it is fixed.
 from vyper.interfaces import ERC20
 implements: ERC20
 
 
-# @dev We import the `IERC20Permit` interface which
-# is written using standard Vyper syntax.
+# @dev We import and implement the `IERC20Permit`
+# interface, which is written using standard Vyper
+# syntax.
 import interfaces.IERC20Permit as IERC20Permit
 implements: IERC20Permit
 
@@ -69,7 +76,7 @@ _PERMIT_TYPE_HASH: constant(bytes32) = keccak256("Permit(address owner,address s
 decimals: public(constant(uint8)) = 18
 
 
-# @dev Cache the domain separator as an `immutable`
+# @dev Caches the domain separator as an `immutable`
 # value, but also store the corresponding chain id
 # to invalidate the cached domain separator if the
 # chain id changes.
@@ -170,17 +177,17 @@ def __init__(name_: String[25], symbol_: String[5], initial_supply_: uint256, na
     @notice The initial supply of the token as well
             as the `owner` role will be assigned to
             the `msg.sender`.
-    @param name_ The maximum 25-byte user-readable string
-           name of the token.
-    @param symbol_ The maximum 5-byte user-readable string
-           symbol of the token.
+    @param name_ The maximum 25-character user-readable
+           string name of the token.
+    @param symbol_ The maximum 5-character user-readable
+           string symbol of the token.
     @param initial_supply_ The initial supply of the token.
-    @param name_eip712_ The maximum 50-byte user-readable
+    @param name_eip712_ The maximum 50-character user-readable
            string name of the signing domain, i.e. the name
            of the dApp or protocol.
-    @param version_eip712_ The maximum 20-byte current main
-           version of the signing domain. Signatures from
-           different versions are not compatible.
+    @param version_eip712_ The maximum 20-character current
+           main version of the signing domain. Signatures
+           from different versions are not compatible.
     """
     initial_supply: uint256 = initial_supply_ * 10 ** convert(decimals, uint256)
     name = name_
