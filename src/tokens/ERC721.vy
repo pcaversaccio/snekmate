@@ -286,10 +286,23 @@ def ownerOf(token_id: uint256) -> address:
 @payable
 def approve(to: address, token_id: uint256):
     """
-    @dev TBD
-    @notice TBD
-    @param to TBD
-    @param token_id TBD
+    @dev Gives permission to `to` to transfer
+         `token_id` token to another account.
+         The approval is cleared when the token
+         is transferred.
+    @notice Only a single account can be approved
+            at a time, so approving the zero address
+            clears previous approvals. Also, the
+            caller must own the token or be an
+            approved operator, and `token_id` must
+            exist.
+
+            IMPORTANT: The function is declared as
+            `payable` to comply with the EIP-721
+            standard definition:
+            https://eips.ethereum.org/EIPS/eip-721.
+    @param to The 20-byte spender address.
+    @param token_id The 32-byte identifier of the token.
     """
     owner: address = ERC721(self).ownerOf(token_id)
     assert to != owner, "ERC721: approval to current owner"
@@ -301,10 +314,11 @@ def approve(to: address, token_id: uint256):
 @view
 def getApproved(token_id: uint256) -> address:
     """
-    @dev TBD
-    @notice TBD
-    @param token_id TBD
-    @return address TBD
+    @dev Returns the account approved for `token_id`
+         token.
+    @notice Note that `token_id` must exist.
+    @param token_id The 32-byte identifier of the token.
+    @return address The 20-byte approved address.
     """
     self._require_minted(token_id)
     return self._token_approvals[token_id]
@@ -313,10 +327,14 @@ def getApproved(token_id: uint256) -> address:
 @external
 def setApprovalForAll(operator: address, approved: bool):
     """
-    @dev TBD
-    @notice TBD
-    @param operator TBD
-    @param approved TBD
+    @dev Approves or removes `operator` as an operator
+         for the caller. Operators can call `transferFrom`
+         or `safeTransferFrom` for any token owned by
+         the caller.
+    @notice Note that the `operator` cannot be the caller.
+    @param operator The 20-byte operator address.
+    @param approved The Boolean variable that sets the
+           approval status.
     """
     self._set_approval_for_all(msg.sender, operator, approved)
 
@@ -325,11 +343,28 @@ def setApprovalForAll(operator: address, approved: bool):
 @payable
 def transferFrom(owner: address, to: address, token_id: uint256):
     """
-    @dev TBD
-    @notice TBD
-    @param owner TBD
-    @param to TBD
-    @param token_id TBD
+    @dev Transfers `token_id` token from `owner` to `to`.
+    @notice WARNING: Note that the caller is responsible
+            to confirm that the recipient is capable of
+            receiving an ERC-721 token or else they may
+            be permanently lost. Usage of `safeTransferFrom`
+            prevents loss, though the caller must understand
+            this adds an external call which potentially
+            creates a reentrancy vulnerability.
+
+            Note that `owner` and `to` cannot be the zero
+            address. Also, `token_id` token must exist and
+            must be owned by `owner`. Eventually, if the caller
+            is not `owner`, it must be approved to move this
+            token by either `approve` or `setApprovalForAll`.
+
+            IMPORTANT: The function is declared as
+            `payable` to comply with the EIP-721
+            standard definition:
+            https://eips.ethereum.org/EIPS/eip-721.
+    @param owner The 20-byte owner address.
+    @param to The 20-byte receiver address.
+    @param token_id The 32-byte identifier of the token.
     """
     assert self._is_approved_or_owner(msg.sender, token_id), "ERC721: caller is not token owner or approved"
     self._transfer(owner, to, token_id)
@@ -339,12 +374,27 @@ def transferFrom(owner: address, to: address, token_id: uint256):
 @payable
 def safeTransferFrom(owner: address, to: address, token_id: uint256, data: Bytes[1024]):
     """
-    @dev TBD
-    @notice TBD
-    @param owner TBD
-    @param to TBD
-    @param token_id TBD
-    @param data TBD
+    @dev Safely transfers `token_id` token from `owner`
+         to `to`.
+    @notice Note that `owner` and `to` cannot be the zero
+            address. Also, `token_id` token must exist and
+            must be owned by `owner`. Furthermore, if the caller
+            is not `owner`, it must be approved to move this
+            token by either `approve` or `setApprovalForAll`.
+            Eventually, if `to` refers to a smart contract,
+            it must implement `IERC721Receiver-onERC721Received`,
+            which is called upon a safe transfer.
+
+            IMPORTANT: The function is declared as
+            `payable` to comply with the EIP-721
+            standard definition:
+            https://eips.ethereum.org/EIPS/eip-721.
+    @param owner The 20-byte owner address.
+    @param to The 20-byte receiver address.
+    @param token_id The 32-byte identifier of the token.
+    @param data The maximum 1024-byte additional data
+           with no specified format that is sent
+           to `to`.
     """
     assert self._is_approved_or_owner(msg.sender, token_id), "ERC721: caller is not token owner or approved"
     self._safe_transfer(owner, to, token_id, data)
@@ -429,9 +479,10 @@ def tokenOfOwnerByIndex(owner: address, index: uint256) -> uint256:
 @external
 def burn(token_id: uint256):
     """
-    @dev TBD
-    @notice TBD
-    @param token_id TBD
+    @dev Burns the `token_id` token.
+    @notice Note that the caller must own `token_id`
+            or be an approved operator.
+    @param token_id The 32-byte identifier of the token.
     """
     assert self._is_approved_or_owner(msg.sender, token_id), "ERC721: caller is not token owner or approved"
     self._burn(token_id)
@@ -440,10 +491,14 @@ def burn(token_id: uint256):
 @external
 def safe_mint(owner: address, uri: String[432]):
     """
-    @dev TBD
-    @notice TBD
-    @param owner TBD
-    @param uri TBD
+    @dev Safely mints `token_id` and transfers it to `owner`.
+    @notice Only authorised minters can access this function.
+            Note that `owner` cannot be the zero address.
+            Also, new tokens will be automatically assigned
+            an incremental ID.
+    @param owner The 20-byte owner address.
+    @param uri The maximum 432-character user-readable
+           string URI for computing `tokenURI`.
     """
     assert self.is_minter[msg.sender], "AccessControl: access is denied"
     # New tokens will be automatically assigned an incremental ID.
@@ -588,10 +643,9 @@ def _exists(token_id: uint256) -> bool:
 @internal
 def _approve(to: address, token_id: uint256):
     """
-    @dev TBD
-    @notice TBD
-    @param to TBD
-    @param token_id TBD
+    @dev Approves `to` to operate on `token_id`.
+    @param to The 20-byte spender address.
+    @param token_id The 32-byte identifier of the token.
     """
     self._token_approvals[token_id] = to
     log Approval(ERC721(self).ownerOf(token_id), to, token_id)
@@ -600,11 +654,11 @@ def _approve(to: address, token_id: uint256):
 @internal
 def _set_approval_for_all(owner: address, operator: address, approved: bool):
     """
-    @dev TBD
-    @notice TBD
-    @param owner TBD
-    @param operator TBD
-    @param approved TBD
+    @dev Approves `operator` to operate on all of `owner` tokens.
+    @param owner The 20-byte owner address.
+    @param operator The 20-byte operator address.
+    @param approved The Boolean variable that sets the
+           approval status.
     """
     assert owner != operator, "ERC721: approve to caller"
     self.isApprovedForAll[owner][operator] = approved
@@ -614,10 +668,11 @@ def _set_approval_for_all(owner: address, operator: address, approved: bool):
 @internal
 def _is_approved_or_owner(spender: address, token_id: uint256) -> bool:
     """
-    @dev TBD
-    @notice TBD
-    @param spender TBD
-    @param token_id TBD
+    @dev Returns whether `spender` is allowed to manage
+         `token_id`.
+    @notice Note that `token_id` must exist.
+    @param spender The 20-byte spender address.
+    @param token_id The 32-byte identifier of the token.
     """
     owner: address = ERC721(self).ownerOf(token_id)
     return (spender == owner or self.isApprovedForAll[owner][spender] or ERC721(self).getApproved(token_id) == spender)
@@ -626,11 +681,16 @@ def _is_approved_or_owner(spender: address, token_id: uint256) -> bool:
 @internal
 def _safe_mint(to: address, token_id: uint256, data: Bytes[1024]):
     """
-    @dev TBD
-    @notice TBD
-    @param to TBD
-    @param token_id TBD
-    @param data TBD
+    @dev Safely mints `token_id` and transfers it to `to`.
+    @notice Note that `token_id` must not exist. Also, if `to`
+            refers to a smart contract, it must implement
+            `IERC721Receiver-onERC721Received`, which is called
+            upon a safe transfer.
+    @param to The 20-byte receiver address.
+    @param token_id The 32-byte identifier of the token.
+    @param data The maximum 1024-byte additional data
+           with no specified format that is sent
+           to `to`.
     """
     self._mint(to, token_id)
     assert self._check_on_erc721_received(empty(address), to, token_id, data), "ERC721: transfer to non-ERC721Receiver implementer"
@@ -639,10 +699,14 @@ def _safe_mint(to: address, token_id: uint256, data: Bytes[1024]):
 @internal
 def _mint(to: address, token_id: uint256):
     """
-    @dev TBD
-    @notice TBD
-    @param to TBD
-    @param token_id TBD
+    @dev Mints `token_id` and transfers it to `to`.
+    @notice Note that `token_id` must not exist and
+            `to` cannot be the zero address.
+
+            WARNING: Usage of this method is discouraged,
+            use `_safe_mint` whenever possible.
+    @param to The 20-byte receiver address.
+    @param token_id The 32-byte identifier of the token.
     """
     assert to != empty(address), "ERC721: mint to the zero address"
     assert not(self._exists(token_id)), "ERC721: token already minted"
@@ -667,12 +731,27 @@ def _mint(to: address, token_id: uint256):
 @internal
 def _safe_transfer(owner: address, to: address, token_id: uint256, data: Bytes[1024]):
     """
-    @dev TBD
-    @notice TBD
-    @param owner TBD
-    @param to TBD
-    @param token_id TBD
-    @param data TBD
+    @dev Safely transfers `token_id` token from
+         `owner` to `to`, checking first that contract
+         recipients are aware of the ERC-721 protocol
+         to prevent tokens from being forever locked.
+    @notice This `internal` function is equivalent to
+            `safeTransferFrom`, and can be used to e.g.
+            implement alternative mechanisms to perform
+            token transfers, such as signature-based.
+
+            Note that `owner` and `to` cannot be the zero
+            address. Also, `token_id` token must exist and
+            must be owned by `owner`. Eventually, if `to`
+            refers to a smart contract, it must implement
+            `IERC721Receiver-onERC721Received`, which is
+            called upon a safe transfer.
+    @param owner The 20-byte owner address.
+    @param to The 20-byte receiver address.
+    @param token_id The 32-byte identifier of the token.
+    @param data The maximum 1024-byte additional data
+           with no specified format that is sent
+           to `to`.
     """
     self._transfer(owner, to, token_id)
     assert self._check_on_erc721_received(owner, to, token_id, data), "ERC721: transfer to non-ERC721Receiver implementer"
@@ -681,11 +760,15 @@ def _safe_transfer(owner: address, to: address, token_id: uint256, data: Bytes[1
 @internal
 def _transfer(owner: address, to: address, token_id: uint256):
     """
-    @dev TBD
-    @notice TBD
-    @param owner TBD
-    @param to TBD
-    @param token_id TBD
+    @dev Transfers `token_id` from `owner` to `to`.
+         As opposed to `transferFrom`, this imposes
+         no restrictions on `msg.sender`.
+    @notice Note that `to` cannot be the zero address.
+            Also, `token_id` token must be owned by
+            `owner`.
+    @param owner The 20-byte owner address.
+    @param to The 20-byte receiver address.
+    @param token_id The 32-byte identifier of the token.
     """
     assert ERC721(self).ownerOf(token_id) == owner, "ERC721: transfer from incorrect owner"
     assert to != empty(address), "ERC721: transfer to the zero address"
@@ -709,10 +792,11 @@ def _transfer(owner: address, to: address, token_id: uint256):
 @internal
 def _set_token_uri(token_id: uint256, token_uri: String[432]):
     """
-    @dev TBD
-    @notice TBD
-    @param token_id TBD
-    @param token_uri TBD
+    @dev Sets `token_uri` as the token URI of `token_id`.
+    @notice Note that `token_id` must exist.
+    @param token_id The 32-byte identifier of the token.
+    @param token_uri The maximum 432-character user-readable
+           string URI for computing `tokenURI`.
     """
     assert self._exists(token_id), "ERC721URIStorage: URI set of nonexistent token"
     self._token_uris[token_id] = token_uri
@@ -721,9 +805,12 @@ def _set_token_uri(token_id: uint256, token_uri: String[432]):
 @internal
 def _burn(token_id: uint256):
     """
-    @dev TBD
-    @notice TBD
-    @param token_id TBD
+    @dev Destroys `token_id`.
+    @notice The approval is cleared when the token is burned.
+            This is an `internal` function that does not check
+            if the sender is authorised to operate on the token.
+            Note that `token_id` must exist.
+    @param token_id The 32-byte identifier of the token.
     """
     owner: address = ERC721(self).ownerOf(token_id)
 
@@ -751,13 +838,17 @@ def _burn(token_id: uint256):
 @internal
 def _check_on_erc721_received(owner: address, to: address, token_id: uint256, data: Bytes[1024]) -> bool:
     """
-    @dev TBD
-    @notice TBD
-    @param owner TBD
-    @param to TBD
-    @param token_id TBD
-    @param data TBD
-    @return bool TBD
+    @dev An `internal` function that invokes `IERC721Receiver-onERC721Received`
+         on a target address. The call is not executed
+         if the target address is not a contract.
+    @param owner The 20-byte address which previously
+           owned the token.
+    @param to The 20-byte address receiver address.
+    @param token_id The 32-byte identifier of the token.
+    @param data The maximum 1024-byte additional data
+           with no specified format.
+    @return bool The verification whether the call correctly
+            returned the expected magic value.
     """
     # Contract case.
     if (to.is_contract):
@@ -768,15 +859,24 @@ def _check_on_erc721_received(owner: address, to: address, token_id: uint256, da
     else:
         return True
 
-
+# CHECK FROM HERE
 @internal
 def _before_token_transfer(owner: address, to: address, first_token_id: uint256):
     """
-    @dev TBD
-    @notice TBD
-    @param owner TBD
-    @param to TBD
-    @param first_token_id TBD
+    @dev Hook that is called before any token transfer.
+         This includes minting and burning.
+    @notice The calling conditions are:
+            - when `owner` and `to` are both non-zero,
+              `owner`'s tokens will be transferred to `to`,
+            - when `owner` is zero, the tokens will
+              be minted for `to`,
+            - when `to` is zero, `owner`'s tokens will
+              be burned,
+            - `owner` and `to` are never both zero.
+    @param owner The 20-byte owner address.
+    @param to The 20-byte receiver address.
+    @param first_token_id The 32-byte identifier of the
+           first token.
     """
     token_id: uint256 = first_token_id
 
@@ -794,11 +894,20 @@ def _before_token_transfer(owner: address, to: address, first_token_id: uint256)
 @internal
 def _after_token_transfer(owner: address, to: address, first_token_id: uint256):
     """
-    @dev TBD
-    @notice TBD
-    @param owner TBD
-    @param to TBD
-    @param first_token_id TBD
+    @dev Hook that is called after any token transfer.
+         This includes minting and burning.
+    @notice The calling conditions are:
+            - when `owner` and `to` are both non-zero,
+              `owner`'s tokens were transferred to `to`,
+            - when `owner` is zero, the tokens were
+              be minted for `to`,
+            - when `to` is zero, `owner`'s tokens will
+              be burned,
+            - `owner` and `to` are never both zero.
+    @param owner The 20-byte owner address.
+    @param to The 20-byte receiver address.
+    @param first_token_id The 32-byte identifier of the
+           first token.
     """
     pass
 
@@ -809,7 +918,7 @@ def _add_token_to_owner_enumeration(to: address, token_id: uint256):
     @dev TBD
     @notice TBD
     @param to TBD
-    @param token_id TBD
+    @param token_id The 32-byte identifier of the token.
     """
     length: uint256 = ERC721(self).balanceOf(to)
     self._owned_tokens[to][length] = token_id
@@ -821,7 +930,7 @@ def _add_token_to_all_tokens_enumeration(token_id: uint256):
     """
     @dev TBD
     @notice TBD
-    @param token_id TBD
+    @param token_id The 32-byte identifier of the token.
     """
     self._all_tokens_index[token_id] = len(self._all_tokens)
     self._all_tokens.append(token_id)
@@ -833,7 +942,7 @@ def _remove_token_from_owner_enumeration(owner: address, token_id:uint256):
     @dev TBD
     @notice TBD
     @param owner TBD
-    @param token_id TBD
+    @param token_id The 32-byte identifier of the token.
     """
     # To prevent a gap in `owner`'s tokens array,
     # we store the last token in the index of the
@@ -859,9 +968,11 @@ def _remove_token_from_owner_enumeration(owner: address, token_id:uint256):
 @internal
 def _remove_token_from_all_tokens_enumeration(token_id: uint256):
     """
-    @dev TBD
-    @notice TBD
-    @param token_id TBD
+    @dev An `internal` function that removes a token from
+         the token tracking data structures.
+    @notice This has O(1) time complexity, but alters the
+            order of the `_all_tokens` array.
+    @param token_id The 32-byte identifier of the token.
     """
     # To prevent a gap in the tokens array,
     # we store the last token in the index
