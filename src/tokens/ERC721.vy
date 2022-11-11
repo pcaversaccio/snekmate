@@ -20,6 +20,7 @@
         - `permit` (`external` function),
         - `nonces` (`external` function),
         - `DOMAIN_SEPARATOR` (`external` function),
+        - `owner` (`external` function),
         - `transfer_ownership` (`external` function),
         - `renounce_ownership` (`external` function),
         - `_check_on_erc721_received` (`internal` function),

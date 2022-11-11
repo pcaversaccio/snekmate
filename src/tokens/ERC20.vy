@@ -20,6 +20,7 @@
         - `permit` (`external` function),
         - `nonces` (`external` function),
         - `DOMAIN_SEPARATOR` (`external` function),
+        - `owner` (`external` function),
         - `transfer_ownership` (`external` function),
         - `renounce_ownership` (`external` function),
         - `_before_token_transfer` (`internal` function),
