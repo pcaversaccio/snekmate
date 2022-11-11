@@ -15,6 +15,7 @@
         - `decrease_allowance` (`external` function),
         - `burn` (`external` function),
         - `burn_from` (`external` function),
+        - `is_minter` (`external` function),
         - `mint` (`external` function),
         - `set_minter` (`external` function),
         - `permit` (`external` function),

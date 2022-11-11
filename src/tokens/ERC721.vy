@@ -15,6 +15,7 @@
         - `tokenByIndex` (`external` function),
         - `tokenOfOwnerByIndex` (`external` function),
         - `burn` (`external` function),
+        - `is_minter` (`external` function),
         - `safe_mint` (`external` function),
         - `set_minter` (`external` function),
         - `permit` (`external` function),
