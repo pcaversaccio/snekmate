@@ -2,30 +2,29 @@
 pragma solidity ^0.8.17;
 
 import {Test} from "../../lib/forge-std/src/Test.sol";
+import {stdError} from "../../lib/forge-std/src/StdError.sol";
 import {VyperDeployer} from "../../lib/utils/VyperDeployer.sol";
 
 import {IERC165} from "../../lib/openzeppelin-contracts/contracts/utils/introspection/IERC165.sol";
 import {IERC721} from "../../lib/openzeppelin-contracts/contracts/token/ERC721/IERC721.sol";
+import {IERC721Receiver} from "../../lib/openzeppelin-contracts/contracts/token/ERC721/IERC721Receiver.sol";
 import {IERC721Metadata} from "../../lib/openzeppelin-contracts/contracts/token/ERC721/extensions/IERC721Metadata.sol";
 import {IERC721Enumerable} from "../../lib/openzeppelin-contracts/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
 import {IERC4494} from "./interfaces/IERC4494.sol";
 
 import {Address} from "../../lib/openzeppelin-contracts/contracts/utils/Address.sol";
+import {ERC721ReceiverMock} from "./mocks/ERC721ReceiverMock.sol";
 
 import {IERC721Extended} from "../../test/tokens/interfaces/IERC721Extended.sol";
 
 /**
  * Missing unit tests:
- *   - Transfer Event
  *   - Approval Event
  *   - ApprovalForAll Event
- *   - safeTransferFrom
- *   - safeTransferFrom (with data)
  *   - approve
  *   - setApprovalForAll
  *   - getApproved
  *   - isApprovedForAll
- *   - onERC721Received
  *   - tokenURI
  *   - totalSupply
  *   - tokenByIndex
@@ -68,6 +67,8 @@ contract ERC721Test is Test {
         address indexed to,
         uint256 indexed tokenId
     );
+
+    event Received(address operator, address from, uint256 tokenId, bytes data);
 
     event Approval(
         address indexed owner,
@@ -115,58 +116,121 @@ contract ERC721Test is Test {
      * @param owner The 20-byte owner address.
      * @param tokenId The 32-byte identifier of the token.
      * @param receiver The 20-byte receiver address.
+     * @param withData The Boolean variable indicating whether additional
+     * data is sent or not.
+     * @param data The additional data with no specified format that is sent
+     * to the `receiver`.
      */
     function _transferReverts(
         string memory transferFunction,
         address owner,
         uint256 tokenId,
-        address receiver
+        address receiver,
+        bool withData,
+        bytes memory data
     ) internal {
         vm.startPrank(vm.addr(5));
         vm.expectRevert(bytes("ERC721: caller is not token owner or approved"));
-        Address.functionCall(
-            address(ERC721Extended),
-            abi.encodeWithSignature(transferFunction, owner, receiver, tokenId)
-        );
+        if (!withData) {
+            Address.functionCall(
+                address(ERC721Extended),
+                abi.encodeWithSignature(
+                    transferFunction,
+                    owner,
+                    receiver,
+                    tokenId
+                )
+            );
+        } else {
+            Address.functionCall(
+                address(ERC721Extended),
+                abi.encodeWithSignature(
+                    transferFunction,
+                    owner,
+                    receiver,
+                    tokenId,
+                    data
+                )
+            );
+        }
         vm.stopPrank();
 
         vm.startPrank(owner);
         vm.expectRevert(bytes("ERC721: transfer from incorrect owner"));
-        Address.functionCall(
-            address(ERC721Extended),
-            abi.encodeWithSignature(
-                transferFunction,
-                receiver,
-                receiver,
-                tokenId
-            )
-        );
+        if (!withData) {
+            Address.functionCall(
+                address(ERC721Extended),
+                abi.encodeWithSignature(
+                    transferFunction,
+                    receiver,
+                    receiver,
+                    tokenId
+                )
+            );
+        } else {
+            Address.functionCall(
+                address(ERC721Extended),
+                abi.encodeWithSignature(
+                    transferFunction,
+                    receiver,
+                    receiver,
+                    tokenId,
+                    data
+                )
+            );
+        }
         vm.stopPrank();
 
         vm.startPrank(owner);
         vm.expectRevert(bytes("ERC721: invalid token ID"));
-        Address.functionCall(
-            address(ERC721Extended),
-            abi.encodeWithSignature(
-                transferFunction,
-                receiver,
-                receiver,
-                tokenId + 2
-            )
-        );
+        if (!withData) {
+            Address.functionCall(
+                address(ERC721Extended),
+                abi.encodeWithSignature(
+                    transferFunction,
+                    receiver,
+                    receiver,
+                    tokenId + 2
+                )
+            );
+        } else {
+            Address.functionCall(
+                address(ERC721Extended),
+                abi.encodeWithSignature(
+                    transferFunction,
+                    receiver,
+                    receiver,
+                    tokenId + 2,
+                    data
+                )
+            );
+        }
         vm.stopPrank();
 
         vm.startPrank(owner);
         vm.expectRevert(bytes("ERC721: transfer to the zero address"));
-        Address.functionCall(
-            address(ERC721Extended),
-            abi.encodeWithSignature(
-                transferFunction,
-                owner,
-                address(0),
-                tokenId
-            )
-        );
+        if (!withData) {
+            Address.functionCall(
+                address(ERC721Extended),
+                abi.encodeWithSignature(
+                    transferFunction,
+                    owner,
+                    address(0),
+                    tokenId
+                )
+            );
+        } else {
+            Address.functionCall(
+                address(ERC721Extended),
+                abi.encodeWithSignature(
+                    transferFunction,
+                    owner,
+                    address(0),
+                    tokenId,
+                    data
+                )
+            );
+        }
         vm.stopPrank();
     }
 
@@ -180,6 +244,10 @@ contract ERC721Test is Test {
      * @param operator The 20-byte operator address.
      * @param tokenId The 32-byte identifier of the token.
      * @param receiver The 20-byte receiver address.
+     * @param withData The Boolean variable indicating whether additional
+     * data is sent or not.
+     * @param data The additional data with no specified format that is sent
+     * to the `receiver`.
      */
     function _shouldTransferTokensByUsers(
         string memory transferFunction,
@@ -187,16 +255,36 @@ contract ERC721Test is Test {
         address approved,
         address operator,
         uint256 tokenId,
-        address receiver
+        address receiver,
+        bool withData,
+        bytes memory data
     ) internal {
         uint256 snapshot = vm.snapshot();
         vm.startPrank(owner);
         vm.expectEmit(true, true, true, false);
         emit Transfer(owner, receiver, tokenId);
-        Address.functionCall(
-            address(ERC721Extended),
-            abi.encodeWithSignature(transferFunction, owner, receiver, tokenId)
-        );
+        if (!withData) {
+            Address.functionCall(
+                address(ERC721Extended),
+                abi.encodeWithSignature(
+                    transferFunction,
+                    owner,
+                    receiver,
+                    tokenId
+                )
+            );
+        } else {
+            Address.functionCall(
+                address(ERC721Extended),
+                abi.encodeWithSignature(
+                    transferFunction,
+                    owner,
+                    receiver,
+                    tokenId,
+                    data
+                )
+            );
+        }
         _transferSuccess(owner, tokenId, receiver);
         vm.stopPrank();
         vm.revertTo(snapshot);
@@ -205,10 +293,28 @@ contract ERC721Test is Test {
         vm.startPrank(approved);
         vm.expectEmit(true, true, true, false);
         emit Transfer(owner, receiver, tokenId);
-        Address.functionCall(
-            address(ERC721Extended),
-            abi.encodeWithSignature(transferFunction, owner, receiver, tokenId)
-        );
+        if (!withData) {
+            Address.functionCall(
+                address(ERC721Extended),
+                abi.encodeWithSignature(
+                    transferFunction,
+                    owner,
+                    receiver,
+                    tokenId
+                )
+            );
+        } else {
+            Address.functionCall(
+                address(ERC721Extended),
+                abi.encodeWithSignature(
+                    transferFunction,
+                    owner,
+                    receiver,
+                    tokenId,
+                    data
+                )
+            );
+        }
         _transferSuccess(owner, tokenId, receiver);
         vm.stopPrank();
         vm.revertTo(snapshot);
@@ -217,10 +323,28 @@ contract ERC721Test is Test {
         vm.startPrank(operator);
         vm.expectEmit(true, true, true, false);
         emit Transfer(owner, receiver, tokenId);
-        Address.functionCall(
-            address(ERC721Extended),
-            abi.encodeWithSignature(transferFunction, owner, receiver, tokenId)
-        );
+        if (!withData) {
+            Address.functionCall(
+                address(ERC721Extended),
+                abi.encodeWithSignature(
+                    transferFunction,
+                    owner,
+                    receiver,
+                    tokenId
+                )
+            );
+        } else {
+            Address.functionCall(
+                address(ERC721Extended),
+                abi.encodeWithSignature(
+                    transferFunction,
+                    owner,
+                    receiver,
+                    tokenId,
+                    data
+                )
+            );
+        }
         _transferSuccess(owner, tokenId, receiver);
         vm.stopPrank();
         vm.revertTo(snapshot);
@@ -232,10 +356,28 @@ contract ERC721Test is Test {
         vm.startPrank(operator);
         vm.expectEmit(true, true, true, false);
         emit Transfer(owner, receiver, tokenId);
-        Address.functionCall(
-            address(ERC721Extended),
-            abi.encodeWithSignature(transferFunction, owner, receiver, tokenId)
-        );
+        if (!withData) {
+            Address.functionCall(
+                address(ERC721Extended),
+                abi.encodeWithSignature(
+                    transferFunction,
+                    owner,
+                    receiver,
+                    tokenId
+                )
+            );
+        } else {
+            Address.functionCall(
+                address(ERC721Extended),
+                abi.encodeWithSignature(
+                    transferFunction,
+                    owner,
+                    receiver,
+                    tokenId,
+                    data
+                )
+            );
+        }
         _transferSuccess(owner, tokenId, receiver);
         vm.stopPrank();
         vm.revertTo(snapshot);
@@ -244,10 +386,23 @@ contract ERC721Test is Test {
         vm.startPrank(owner);
         vm.expectEmit(true, true, true, false);
         emit Transfer(owner, owner, tokenId);
-        Address.functionCall(
-            address(ERC721Extended),
-            abi.encodeWithSignature(transferFunction, owner, owner, tokenId)
-        );
+        if (!withData) {
+            Address.functionCall(
+                address(ERC721Extended),
+                abi.encodeWithSignature(transferFunction, owner, owner, tokenId)
+            );
+        } else {
+            Address.functionCall(
+                address(ERC721Extended),
+                abi.encodeWithSignature(
+                    transferFunction,
+                    owner,
+                    owner,
+                    tokenId,
+                    data
+                )
+            );
+        }
         assertEq(ERC721Extended.ownerOf(tokenId), owner);
         assertEq(ERC721Extended.getApproved(tokenId), address(0));
         assertEq(ERC721Extended.balanceOf(owner), 2);
@@ -257,7 +412,113 @@ contract ERC721Test is Test {
         vm.revertTo(snapshot);
 
         /// @dev Validates all possible reverts.
-        _transferReverts(transferFunction, owner, tokenId, receiver);
+        _transferReverts(
+            transferFunction,
+            owner,
+            tokenId,
+            receiver,
+            withData,
+            data
+        );
+    }
+
+    /**
+     * @dev An `internal` function that validates all possible successful
+     * and reverted safe transfer calls.
+     * @param transferFunction The transfer function including the type definitions
+     * of the arguments.
+     * @param owner The 20-byte owner address.
+     * @param approved The 20-byte approved address.
+     * @param operator The 20-byte operator address.
+     * @param tokenId The 32-byte identifier of the token.
+     * @param receiver The 20-byte receiver address.
+     * @param data The additional data with no specified format that is sent
+     * to the `receiver`.
+     */
+    function _shouldTransferSafely(
+        string memory transferFunction,
+        address owner,
+        address approved,
+        address operator,
+        uint256 tokenId,
+        address receiver,
+        bytes memory data
+    ) internal {
+        uint256 snapshot = vm.snapshot();
+        _shouldTransferTokensByUsers(
+            transferFunction,
+            owner,
+            approved,
+            operator,
+            tokenId,
+            vm.addr(6),
+            true,
+            data
+        );
+        vm.revertTo(snapshot);
+
+        snapshot = vm.snapshot();
+        _shouldTransferTokensByUsers(
+            transferFunction,
+            owner,
+            approved,
+            operator,
+            tokenId,
+            receiver,
+            true,
+            data
+        );
+        vm.revertTo(snapshot);
+
+        snapshot = vm.snapshot();
+        vm.startPrank(owner);
+        vm.expectEmit(true, true, true, true, receiver);
+        emit Received(owner, owner, tokenId, data);
+        Address.functionCall(
+            address(ERC721Extended),
+            abi.encodeWithSignature(
+                transferFunction,
+                owner,
+                receiver,
+                tokenId,
+                data
+            )
+        );
+        _transferSuccess(owner, tokenId, receiver);
+        vm.stopPrank();
+        vm.revertTo(snapshot);
+
+        snapshot = vm.snapshot();
+        vm.startPrank(approved);
+        vm.expectEmit(true, true, true, true, receiver);
+        emit Received(approved, owner, tokenId, data);
+        Address.functionCall(
+            address(ERC721Extended),
+            abi.encodeWithSignature(
+                transferFunction,
+                owner,
+                receiver,
+                tokenId,
+                data
+            )
+        );
+        _transferSuccess(owner, tokenId, receiver);
+        vm.stopPrank();
+        vm.revertTo(snapshot);
+
+        vm.startPrank(owner);
+        vm.expectRevert(bytes("ERC721: invalid token ID"));
+        Address.functionCall(
+            address(ERC721Extended),
+            abi.encodeWithSignature(
+                transferFunction,
+                owner,
+                receiver,
+                tokenId + 2,
+                data
+            )
+        );
+        vm.stopPrank();
     }
 
     function setUp() public {
@@ -374,8 +635,164 @@ contract ERC721Test is Test {
             approved,
             operator,
             0,
-            vm.addr(4)
+            vm.addr(4),
+            false,
+            new bytes(0)
         );
+    }
+
+    function testSafeTransferFromNoData() public {
+        address deployer = address(vyperDeployer);
+        address owner = vm.addr(1);
+        address approved = vm.addr(2);
+        address operator = vm.addr(3);
+        string memory uri1 = "my_awesome_nft_uri_1";
+        string memory uri2 = "my_awesome_nft_uri_2";
+        bytes4 receiverMagicValue = type(IERC721Receiver).interfaceId;
+        ERC721ReceiverMock erc721ReceiverMock = new ERC721ReceiverMock(
+            receiverMagicValue,
+            ERC721ReceiverMock.Error.None
+        );
+        address receiver = address(erc721ReceiverMock);
+        vm.startPrank(deployer);
+        ERC721Extended.safe_mint(owner, uri1);
+        ERC721Extended.safe_mint(owner, uri2);
+        vm.stopPrank();
+        vm.startPrank(owner);
+        ERC721Extended.approve(approved, 0);
+        ERC721Extended.setApprovalForAll(operator, true);
+        vm.stopPrank();
+        _shouldTransferSafely(
+            "safeTransferFrom(address,address,uint256,bytes)",
+            owner,
+            approved,
+            operator,
+            0,
+            receiver,
+            new bytes(0)
+        );
+    }
+
+    function testSafeTransferFromWithData() public {
+        address deployer = address(vyperDeployer);
+        address owner = vm.addr(1);
+        address approved = vm.addr(2);
+        address operator = vm.addr(3);
+        string memory uri1 = "my_awesome_nft_uri_1";
+        string memory uri2 = "my_awesome_nft_uri_2";
+        bytes4 receiverMagicValue = type(IERC721Receiver).interfaceId;
+        ERC721ReceiverMock erc721ReceiverMock = new ERC721ReceiverMock(
+            receiverMagicValue,
+            ERC721ReceiverMock.Error.None
+        );
+        address receiver = address(erc721ReceiverMock);
+        vm.startPrank(deployer);
+        ERC721Extended.safe_mint(owner, uri1);
+        ERC721Extended.safe_mint(owner, uri2);
+        vm.stopPrank();
+        vm.startPrank(owner);
+        ERC721Extended.approve(approved, 0);
+        ERC721Extended.setApprovalForAll(operator, true);
+        vm.stopPrank();
+        _shouldTransferSafely(
+            "safeTransferFrom(address,address,uint256,bytes)",
+            owner,
+            approved,
+            operator,
+            0,
+            receiver,
+            new bytes(42)
+        );
+    }
+
+    function testSafeTransferFromReceiverInvalidReturnIdentifier() public {
+        address deployer = address(vyperDeployer);
+        address owner = vm.addr(1);
+        string memory uri = "my_awesome_nft_uri";
+        ERC721ReceiverMock erc721ReceiverMock = new ERC721ReceiverMock(
+            0x00bb8833,
+            ERC721ReceiverMock.Error.None
+        );
+        address receiver = address(erc721ReceiverMock);
+        vm.startPrank(deployer);
+        ERC721Extended.safe_mint(owner, uri);
+        vm.stopPrank();
+        vm.startPrank(owner);
+        vm.expectRevert(
+            bytes("ERC721: transfer to non-ERC721Receiver implementer")
+        );
+        ERC721Extended.safeTransferFrom(owner, receiver, 0, new bytes(0));
+        vm.stopPrank();
+    }
+
+    function testSafeTransferFromReceiverRevertsWithMessage() public {
+        address deployer = address(vyperDeployer);
+        address owner = vm.addr(1);
+        string memory uri = "my_awesome_nft_uri";
+        bytes4 receiverMagicValue = type(IERC721Receiver).interfaceId;
+        ERC721ReceiverMock erc721ReceiverMock = new ERC721ReceiverMock(
+            receiverMagicValue,
+            ERC721ReceiverMock.Error.RevertWithMessage
+        );
+        address receiver = address(erc721ReceiverMock);
+        vm.startPrank(deployer);
+        ERC721Extended.safe_mint(owner, uri);
+        vm.stopPrank();
+        vm.startPrank(owner);
+        vm.expectRevert(bytes("ERC721ReceiverMock: reverting"));
+        ERC721Extended.safeTransferFrom(owner, receiver, 0, new bytes(0));
+        vm.stopPrank();
+    }
+
+    function testSafeTransferFromReceiverRevertsWithoutMessage() public {
+        address deployer = address(vyperDeployer);
+        address owner = vm.addr(1);
+        string memory uri = "my_awesome_nft_uri";
+        bytes4 receiverMagicValue = type(IERC721Receiver).interfaceId;
+        ERC721ReceiverMock erc721ReceiverMock = new ERC721ReceiverMock(
+            receiverMagicValue,
+            ERC721ReceiverMock.Error.RevertWithoutMessage
+        );
+        address receiver = address(erc721ReceiverMock);
+        vm.startPrank(deployer);
+        ERC721Extended.safe_mint(owner, uri);
+        vm.stopPrank();
+        vm.startPrank(owner);
+        vm.expectRevert();
+        ERC721Extended.safeTransferFrom(owner, receiver, 0, new bytes(0));
+        vm.stopPrank();
+    }
+
+    function testSafeTransferFromReceiverRevertsWithPanic() public {
+        address deployer = address(vyperDeployer);
+        address owner = vm.addr(1);
+        string memory uri = "my_awesome_nft_uri";
+        bytes4 receiverMagicValue = type(IERC721Receiver).interfaceId;
+        ERC721ReceiverMock erc721ReceiverMock = new ERC721ReceiverMock(
+            receiverMagicValue,
+            ERC721ReceiverMock.Error.Panic
+        );
+        address receiver = address(erc721ReceiverMock);
+        vm.startPrank(deployer);
+        ERC721Extended.safe_mint(owner, uri);
+        vm.stopPrank();
+        vm.startPrank(owner);
+        vm.expectRevert(stdError.divisionError);
+        ERC721Extended.safeTransferFrom(owner, receiver, 0, new bytes(0));
+        vm.stopPrank();
+    }
+
+    function testSafeTransferFromReceiverFunctionNotImplemented() public {
+        address deployer = address(vyperDeployer);
+        address owner = vm.addr(1);
+        string memory uri = "my_awesome_nft_uri";
+        vm.startPrank(deployer);
+        ERC721Extended.safe_mint(owner, uri);
+        vm.stopPrank();
+        vm.startPrank(owner);
+        vm.expectRevert();
+        ERC721Extended.safeTransferFrom(owner, deployer, 0, new bytes(0));
+        vm.stopPrank();
     }
 
     function testCachedDomainSeparator() public {
