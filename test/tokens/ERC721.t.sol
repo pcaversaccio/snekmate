@@ -9,6 +9,7 @@ import {IERC721} from "../../lib/openzeppelin-contracts/contracts/token/ERC721/I
 import {IERC721Metadata} from "../../lib/openzeppelin-contracts/contracts/token/ERC721/extensions/IERC721Metadata.sol";
 import {IERC721Enumerable} from "../../lib/openzeppelin-contracts/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
 import {IERC4494} from "./interfaces/IERC4494.sol";
+
 import {Address} from "../../lib/openzeppelin-contracts/contracts/utils/Address.sol";
 
 import {IERC721Extended} from "../../test/tokens/interfaces/IERC721Extended.sol";
@@ -90,7 +91,7 @@ contract ERC721Test is Test {
     /**
      * @dev An `internal` function that validates a successful transfer call.
      * @param owner The 20-byte owner address.
-     * @param tokenId 32-byte identifier of the token.
+     * @param tokenId The 32-byte identifier of the token.
      * @param receiver The 20-byte receiver address.
      */
     function _transferSuccess(
@@ -112,7 +113,7 @@ contract ERC721Test is Test {
      * @param transferFunction The transfer function including the type definitions
      * of the arguments.
      * @param owner The 20-byte owner address.
-     * @param tokenId 32-byte identifier of the token.
+     * @param tokenId The 32-byte identifier of the token.
      * @param receiver The 20-byte receiver address.
      */
     function _transferReverts(
@@ -177,7 +178,7 @@ contract ERC721Test is Test {
      * @param owner The 20-byte owner address.
      * @param approved The 20-byte approved address.
      * @param operator The 20-byte operator address.
-     * @param tokenId 32-byte identifier of the token.
+     * @param tokenId The 32-byte identifier of the token.
      * @param receiver The 20-byte receiver address.
      */
     function _shouldTransferTokensByUsers(
