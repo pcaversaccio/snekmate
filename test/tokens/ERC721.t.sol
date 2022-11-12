@@ -31,10 +31,6 @@ import {IERC721Extended} from "../../test/tokens/interfaces/IERC721Extended.sol"
  *   - tokenOfOwnerByIndex
  *   - burn
  *   - safe_mint
- *   - set_minter
- *   - RoleMinterChanged event
- *   - permit
- *   - nonces
  */
 contract ERC721Test is Test {
     string private constant _NAME = "MyNFT";
@@ -793,6 +789,263 @@ contract ERC721Test is Test {
         vm.expectRevert();
         ERC721Extended.safeTransferFrom(owner, deployer, 0, new bytes(0));
         vm.stopPrank();
+    }
+
+    function testSetMinterSuccess() public {
+        address owner = address(vyperDeployer);
+        address minter = vm.addr(1);
+        vm.startPrank(owner);
+        vm.expectEmit(true, false, false, true);
+        emit RoleMinterChanged(minter, true);
+        ERC721Extended.set_minter(minter, true);
+        assertTrue(ERC721Extended.is_minter(minter));
+
+        vm.expectEmit(true, false, false, true);
+        emit RoleMinterChanged(minter, false);
+        ERC721Extended.set_minter(minter, false);
+        assertTrue(!ERC721Extended.is_minter(minter));
+        vm.stopPrank();
+    }
+
+    function testSetMinterNonOwner() public {
+        vm.expectRevert(bytes("AccessControl: caller is not the owner"));
+        ERC721Extended.set_minter(vm.addr(1), true);
+    }
+
+    function testSetMinterToZeroAddress() public {
+        vm.prank(address(vyperDeployer));
+        vm.expectRevert(bytes("AccessControl: minter is the zero address"));
+        ERC721Extended.set_minter(address(0), true);
+    }
+
+    function testSetMinterRemoveOwnerAddress() public {
+        vm.prank(address(vyperDeployer));
+        vm.expectRevert(bytes("AccessControl: minter is owner address"));
+        ERC721Extended.set_minter(address(vyperDeployer), false);
+    }
+
+    function testPermitSuccess() public {
+        address deployer = address(vyperDeployer);
+        address owner = vm.addr(1);
+        address spender = vm.addr(2);
+        uint256 tokenId = 0;
+        string memory uri = "my_awesome_nft_uri";
+        vm.startPrank(deployer);
+        ERC721Extended.safe_mint(owner, uri);
+        vm.stopPrank();
+        uint256 nonce = ERC721Extended.nonces(tokenId);
+        // solhint-disable-next-line not-rely-on-time
+        uint256 deadline = block.timestamp + 100000;
+        bytes32 domainSeparator = ERC721Extended.DOMAIN_SEPARATOR();
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(
+            1,
+            keccak256(
+                abi.encodePacked(
+                    "\x19\x01",
+                    domainSeparator,
+                    keccak256(
+                        abi.encode(
+                            _PERMIT_TYPE_HASH,
+                            spender,
+                            tokenId,
+                            nonce,
+                            deadline
+                        )
+                    )
+                )
+            )
+        );
+        vm.expectEmit(true, true, false, true);
+        emit Approval(owner, spender, tokenId);
+        ERC721Extended.permit(spender, tokenId, deadline, v, r, s);
+        assertEq(ERC721Extended.getApproved(tokenId), spender);
+        assertEq(ERC721Extended.nonces(tokenId), 1);
+    }
+
+    function testPermitReplaySignature() public {
+        address deployer = address(vyperDeployer);
+        address owner = vm.addr(1);
+        address spender = vm.addr(2);
+        uint256 tokenId = 0;
+        string memory uri = "my_awesome_nft_uri";
+        vm.startPrank(deployer);
+        ERC721Extended.safe_mint(owner, uri);
+        vm.stopPrank();
+        uint256 nonce = ERC721Extended.nonces(tokenId);
+        // solhint-disable-next-line not-rely-on-time
+        uint256 deadline = block.timestamp + 100000;
+        bytes32 domainSeparator = ERC721Extended.DOMAIN_SEPARATOR();
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(
+            1,
+            keccak256(
+                abi.encodePacked(
+                    "\x19\x01",
+                    domainSeparator,
+                    keccak256(
+                        abi.encode(
+                            _PERMIT_TYPE_HASH,
+                            spender,
+                            tokenId,
+                            nonce,
+                            deadline
+                        )
+                    )
+                )
+            )
+        );
+        vm.expectEmit(true, true, false, true);
+        emit Approval(owner, spender, tokenId);
+        ERC721Extended.permit(spender, tokenId, deadline, v, r, s);
+        vm.expectRevert(bytes("ERC721Permit: invalid signature"));
+        ERC721Extended.permit(spender, tokenId, deadline, v, r, s);
+    }
+
+    function testPermitOtherSignature() public {
+        address deployer = address(vyperDeployer);
+        address owner = vm.addr(1);
+        address spender = vm.addr(2);
+        uint256 tokenId = 0;
+        string memory uri = "my_awesome_nft_uri";
+        vm.startPrank(deployer);
+        ERC721Extended.safe_mint(owner, uri);
+        vm.stopPrank();
+        uint256 nonce = ERC721Extended.nonces(tokenId);
+        // solhint-disable-next-line not-rely-on-time
+        uint256 deadline = block.timestamp + 100000;
+        bytes32 domainSeparator = ERC721Extended.DOMAIN_SEPARATOR();
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(
+            3,
+            keccak256(
+                abi.encodePacked(
+                    "\x19\x01",
+                    domainSeparator,
+                    keccak256(
+                        abi.encode(
+                            _PERMIT_TYPE_HASH,
+                            spender,
+                            tokenId,
+                            nonce,
+                            deadline
+                        )
+                    )
+                )
+            )
+        );
+        vm.expectRevert(bytes("ERC721Permit: invalid signature"));
+        ERC721Extended.permit(spender, tokenId, deadline, v, r, s);
+    }
+
+    function testPermitBadChainId() public {
+        address deployer = address(vyperDeployer);
+        address owner = vm.addr(1);
+        address spender = vm.addr(2);
+        uint256 tokenId = 0;
+        string memory uri = "my_awesome_nft_uri";
+        vm.startPrank(deployer);
+        ERC721Extended.safe_mint(owner, uri);
+        vm.stopPrank();
+        uint256 nonce = ERC721Extended.nonces(tokenId);
+        // solhint-disable-next-line not-rely-on-time
+        uint256 deadline = block.timestamp + 100000;
+        bytes32 domainSeparator = keccak256(
+            abi.encode(
+                _TYPE_HASH,
+                keccak256(bytes(_NAME_EIP712)),
+                keccak256(bytes(_VERSION_EIP712)),
+                block.chainid + 1,
+                address(ERC721Extended)
+            )
+        );
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(
+            1,
+            keccak256(
+                abi.encodePacked(
+                    "\x19\x01",
+                    domainSeparator,
+                    keccak256(
+                        abi.encode(
+                            _PERMIT_TYPE_HASH,
+                            spender,
+                            tokenId,
+                            nonce,
+                            deadline
+                        )
+                    )
+                )
+            )
+        );
+        vm.expectRevert(bytes("ERC721Permit: invalid signature"));
+        ERC721Extended.permit(spender, tokenId, deadline, v, r, s);
+    }
+
+    function testPermitBadNonce() public {
+        address deployer = address(vyperDeployer);
+        address owner = vm.addr(1);
+        address spender = vm.addr(2);
+        uint256 tokenId = 0;
+        string memory uri = "my_awesome_nft_uri";
+        vm.startPrank(deployer);
+        ERC721Extended.safe_mint(owner, uri);
+        vm.stopPrank();
+        uint256 nonce = 1;
+        // solhint-disable-next-line not-rely-on-time
+        uint256 deadline = block.timestamp + 100000;
+        bytes32 domainSeparator = ERC721Extended.DOMAIN_SEPARATOR();
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(
+            3,
+            keccak256(
+                abi.encodePacked(
+                    "\x19\x01",
+                    domainSeparator,
+                    keccak256(
+                        abi.encode(
+                            _PERMIT_TYPE_HASH,
+                            spender,
+                            tokenId,
+                            nonce,
+                            deadline
+                        )
+                    )
+                )
+            )
+        );
+        vm.expectRevert(bytes("ERC721Permit: invalid signature"));
+        ERC721Extended.permit(spender, tokenId, deadline, v, r, s);
+    }
+
+    function testPermitExpiredDeadline() public {
+        address deployer = address(vyperDeployer);
+        address owner = vm.addr(1);
+        address spender = vm.addr(2);
+        uint256 tokenId = 0;
+        string memory uri = "my_awesome_nft_uri";
+        vm.startPrank(deployer);
+        ERC721Extended.safe_mint(owner, uri);
+        vm.stopPrank();
+        uint256 nonce = 1;
+        // solhint-disable-next-line not-rely-on-time
+        uint256 deadline = block.timestamp - 1;
+        bytes32 domainSeparator = ERC721Extended.DOMAIN_SEPARATOR();
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(
+            3,
+            keccak256(
+                abi.encodePacked(
+                    "\x19\x01",
+                    domainSeparator,
+                    keccak256(
+                        abi.encode(
+                            _PERMIT_TYPE_HASH,
+                            spender,
+                            tokenId,
+                            nonce,
+                            deadline
+                        )
+                    )
+                )
+            )
+        );
+        vm.expectRevert(bytes("ERC721Permit: expired deadline"));
+        ERC721Extended.permit(spender, tokenId, deadline, v, r, s);
     }
 
     function testCachedDomainSeparator() public {

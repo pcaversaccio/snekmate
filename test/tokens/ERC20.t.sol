@@ -792,6 +792,8 @@ contract ERC20Test is Test {
                 )
             )
         );
+        vm.expectEmit(true, true, false, true);
+        emit Approval(owner, spender, amount);
         ERC20Extended.permit(owner, spender, amount, deadline, v, r, s);
         assertEq(ERC20Extended.allowance(owner, spender), amount);
         assertEq(ERC20Extended.nonces(owner), 1);
@@ -824,6 +826,8 @@ contract ERC20Test is Test {
                 )
             )
         );
+        vm.expectEmit(true, true, false, true);
+        emit Approval(owner, spender, amount);
         ERC20Extended.permit(owner, spender, amount, deadline, v, r, s);
         vm.expectRevert(bytes("ERC20Permit: invalid signature"));
         ERC20Extended.permit(owner, spender, amount, deadline, v, r, s);
