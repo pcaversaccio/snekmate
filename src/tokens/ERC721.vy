@@ -193,6 +193,12 @@ _all_tokens_index: HashMap[uint256, uint256]
 _token_uris: HashMap[uint256, String[432]]
 
 
+# @dev An `uint256` counter variable that sets
+# the token ID for each `safe_mint` call and
+# then increments.
+_counter: uint256
+
+
 # @dev Emitted when `token_id` token is
 # transferred from `owner` to `to`.
 event Transfer:
@@ -254,6 +260,8 @@ def __init__(name_: String[25], symbol_: String[5], base_uri_: String[80], name_
            main version of the signing domain. Signatures
            from different versions are not compatible.
     """
+    self._counter = 0
+
     name = name_
     symbol = symbol_
     _BASE_URI = base_uri_
@@ -534,7 +542,8 @@ def safe_mint(owner: address, uri: String[432]):
     assert self.is_minter[msg.sender], "AccessControl: access is denied"
     # New tokens will be automatically assigned an incremental ID.
     # The first token ID will be zero.
-    token_id: uint256 = IERC721Enumerable(self).totalSupply()
+    token_id: uint256 = self._counter
+    self._counter += 1
     # Theoretically, the following line could overflow
     # if all 2**256 token IDs were minted. However,
     # since we have bounded the dynamic array `_all_tokens`

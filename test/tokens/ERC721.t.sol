@@ -17,13 +17,6 @@ import {ERC721ReceiverMock} from "./mocks/ERC721ReceiverMock.sol";
 
 import {IERC721Extended} from "../../test/tokens/interfaces/IERC721Extended.sol";
 
-/**
- * Missing unit tests:
- *   - tokenByIndex
- *   - tokenOfOwnerByIndex
- *   - burn
- *   - safe_mint
- */
 contract ERC721Test is Test {
     string private constant _NAME = "MyNFT";
     string private constant _SYMBOL = "WAGMI";
@@ -1175,6 +1168,149 @@ contract ERC721Test is Test {
         ERC721Extended.safe_mint(owner, uri2);
         vm.stopPrank();
         assertEq(ERC721Extended.totalSupply(), 2);
+    }
+
+    function testTokenByIndex() public {
+        address deployer = address(vyperDeployer);
+        address owner = vm.addr(1);
+        string memory uri1 = "my_awesome_nft_uri_1";
+        string memory uri2 = "my_awesome_nft_uri_2";
+        string memory uri3 = "my_awesome_nft_uri_3";
+        uint256 tokenId = 0;
+        vm.startPrank(deployer);
+        ERC721Extended.safe_mint(owner, uri1);
+        ERC721Extended.safe_mint(owner, uri2);
+        ERC721Extended.safe_mint(owner, uri3);
+        vm.stopPrank();
+        assertEq(ERC721Extended.tokenByIndex(0), tokenId);
+        assertEq(ERC721Extended.tokenByIndex(1), tokenId + 1);
+        assertEq(ERC721Extended.tokenByIndex(2), tokenId + 2);
+        assertEq(ERC721Extended.totalSupply(), 3);
+
+        vm.startPrank(owner);
+        ERC721Extended.burn(1);
+        vm.stopPrank();
+        assertEq(ERC721Extended.tokenByIndex(0), tokenId);
+        assertEq(ERC721Extended.tokenByIndex(1), tokenId + 2);
+        assertEq(ERC721Extended.totalSupply(), 2);
+
+        vm.startPrank(deployer);
+        ERC721Extended.safe_mint(owner, uri3);
+        vm.stopPrank();
+        assertEq(ERC721Extended.tokenByIndex(0), tokenId);
+        assertEq(ERC721Extended.tokenByIndex(1), tokenId + 2);
+        assertEq(ERC721Extended.tokenByIndex(2), tokenId + 3);
+        assertEq(ERC721Extended.totalSupply(), 3);
+    }
+
+    function testTokenByIndexOutOfBounds() public {
+        address deployer = address(vyperDeployer);
+        address owner = vm.addr(1);
+        string memory uri1 = "my_awesome_nft_uri_1";
+        string memory uri2 = "my_awesome_nft_uri_2";
+        vm.startPrank(deployer);
+        ERC721Extended.safe_mint(owner, uri1);
+        ERC721Extended.safe_mint(owner, uri2);
+        vm.stopPrank();
+        assertEq(ERC721Extended.totalSupply(), 2);
+        vm.expectRevert(bytes("ERC721Enumerable: global index out of bounds"));
+        ERC721Extended.tokenByIndex(2);
+    }
+
+    function testTokenOfOwnerByIndex() public {
+        address deployer = address(vyperDeployer);
+        address owner = vm.addr(1);
+        address other = vm.addr(2);
+        string memory uri1 = "my_awesome_nft_uri_1";
+        string memory uri2 = "my_awesome_nft_uri_2";
+        string memory uri3 = "my_awesome_nft_uri_3";
+        uint256 tokenId = 0;
+        vm.startPrank(deployer);
+        ERC721Extended.safe_mint(owner, uri1);
+        ERC721Extended.safe_mint(owner, uri2);
+        ERC721Extended.safe_mint(owner, uri3);
+        vm.stopPrank();
+        assertEq(ERC721Extended.totalSupply(), 3);
+        assertEq(ERC721Extended.tokenOfOwnerByIndex(owner, tokenId), tokenId);
+
+        vm.startPrank(owner);
+        ERC721Extended.burn(0);
+        vm.stopPrank();
+        assertEq(ERC721Extended.totalSupply(), 2);
+        assertEq(
+            ERC721Extended.tokenOfOwnerByIndex(owner, tokenId),
+            tokenId + 2
+        );
+        assertEq(
+            ERC721Extended.tokenOfOwnerByIndex(owner, tokenId + 1),
+            tokenId + 1
+        );
+
+        vm.startPrank(owner);
+        ERC721Extended.safeTransferFrom(owner, other, tokenId + 1, "");
+        vm.stopPrank();
+        assertEq(ERC721Extended.totalSupply(), 2);
+        assertEq(
+            ERC721Extended.tokenOfOwnerByIndex(owner, tokenId),
+            tokenId + 2
+        );
+        assertEq(
+            ERC721Extended.tokenOfOwnerByIndex(other, tokenId),
+            tokenId + 1
+        );
+
+        vm.startPrank(deployer);
+        ERC721Extended.safe_mint(owner, "");
+        vm.stopPrank();
+        assertEq(ERC721Extended.totalSupply(), 3);
+        assertEq(
+            ERC721Extended.tokenOfOwnerByIndex(owner, tokenId),
+            tokenId + 2
+        );
+        assertEq(
+            ERC721Extended.tokenOfOwnerByIndex(owner, tokenId + 1),
+            tokenId + 3
+        );
+        assertEq(
+            ERC721Extended.tokenOfOwnerByIndex(other, tokenId),
+            tokenId + 1
+        );
+    }
+
+    function testTokenOfOwnerByIndexReverts() public {
+        address deployer = address(vyperDeployer);
+        address owner = vm.addr(1);
+        address other = vm.addr(2);
+        string memory uri1 = "my_awesome_nft_uri_1";
+        string memory uri2 = "my_awesome_nft_uri_2";
+        string memory uri3 = "my_awesome_nft_uri_3";
+        uint256 tokenId = 0;
+        vm.startPrank(deployer);
+        ERC721Extended.safe_mint(owner, uri1);
+        ERC721Extended.safe_mint(owner, uri2);
+        ERC721Extended.safe_mint(owner, uri3);
+        vm.stopPrank();
+        assertEq(ERC721Extended.totalSupply(), 3);
+        vm.expectRevert(bytes("ERC721Enumerable: owner index out of bounds"));
+        ERC721Extended.tokenOfOwnerByIndex(owner, tokenId + 3);
+
+        vm.startPrank(owner);
+        ERC721Extended.safeTransferFrom(owner, other, tokenId, "");
+        ERC721Extended.safeTransferFrom(owner, other, tokenId + 1, "");
+        ERC721Extended.safeTransferFrom(owner, other, tokenId + 2, "");
+        vm.stopPrank();
+        assertEq(ERC721Extended.totalSupply(), 3);
+        vm.expectRevert(bytes("ERC721Enumerable: owner index out of bounds"));
+        ERC721Extended.tokenOfOwnerByIndex(owner, tokenId);
+        assertEq(ERC721Extended.tokenOfOwnerByIndex(other, tokenId), tokenId);
+        assertEq(
+            ERC721Extended.tokenOfOwnerByIndex(other, tokenId + 1),
+            tokenId + 1
+        );
+        assertEq(
+            ERC721Extended.tokenOfOwnerByIndex(other, tokenId + 2),
+            tokenId + 2
+        );
     }
 
     function testSetMinterSuccess() public {
