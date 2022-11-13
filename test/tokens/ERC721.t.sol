@@ -1313,6 +1313,73 @@ contract ERC721Test is Test {
         );
     }
 
+    function testBurnSuccess() public {
+        address deployer = address(vyperDeployer);
+        address owner = vm.addr(1);
+        string memory uri1 = "my_awesome_nft_uri_1";
+        string memory uri2 = "my_awesome_nft_uri_2";
+        uint256 tokenId = 0;
+        vm.startPrank(deployer);
+        ERC721Extended.safe_mint(owner, uri1);
+        ERC721Extended.safe_mint(owner, uri2);
+        vm.stopPrank();
+        vm.startPrank(owner);
+        vm.expectEmit(true, true, true, false);
+        emit Transfer(owner, address(0), tokenId);
+        ERC721Extended.burn(tokenId);
+        vm.expectRevert(bytes("ERC721: invalid token ID"));
+        ERC721Extended.burn(tokenId);
+        vm.stopPrank();
+        vm.expectRevert(bytes("ERC721: invalid token ID"));
+        ERC721Extended.ownerOf(tokenId);
+        assertEq(ERC721Extended.balanceOf(owner), 1);
+    }
+
+    function testBurnSuccessViaApproveAndSetApprovalForAll() public {
+        address deployer = address(vyperDeployer);
+        address owner = vm.addr(1);
+        address operator = vm.addr(2);
+        address other = vm.addr(3);
+        string memory uri1 = "my_awesome_nft_uri_1";
+        string memory uri2 = "my_awesome_nft_uri_2";
+        uint256 tokenId = 0;
+        vm.startPrank(deployer);
+        ERC721Extended.safe_mint(owner, uri1);
+        ERC721Extended.safe_mint(owner, uri2);
+        vm.stopPrank();
+        vm.startPrank(owner);
+        vm.expectRevert(bytes("ERC721: invalid token ID"));
+        ERC721Extended.burn(tokenId + 2);
+        ERC721Extended.setApprovalForAll(operator, true);
+        ERC721Extended.approve(other, tokenId + 1);
+        vm.stopPrank();
+
+        vm.startPrank(operator);
+        vm.expectEmit(true, true, true, false);
+        emit Transfer(owner, address(0), tokenId);
+        ERC721Extended.burn(tokenId);
+        vm.stopPrank();
+
+        vm.startPrank(other);
+        vm.expectEmit(true, true, true, false);
+        emit Transfer(owner, address(0), tokenId + 1);
+        ERC721Extended.burn(tokenId + 1);
+        vm.stopPrank();
+
+        vm.startPrank(owner);
+        vm.expectRevert(bytes("ERC721: invalid token ID"));
+        ERC721Extended.burn(tokenId);
+        vm.stopPrank();
+
+        vm.expectRevert(bytes("ERC721: invalid token ID"));
+        ERC721Extended.ownerOf(tokenId);
+        vm.expectRevert(bytes("ERC721: invalid token ID"));
+        ERC721Extended.getApproved(tokenId);
+        assertEq(ERC721Extended.balanceOf(owner), 0);
+        assertEq(ERC721Extended.balanceOf(operator), 0);
+        assertEq(ERC721Extended.balanceOf(other), 0);
+    }
+
     function testSetMinterSuccess() public {
         address owner = address(vyperDeployer);
         address minter = vm.addr(1);
