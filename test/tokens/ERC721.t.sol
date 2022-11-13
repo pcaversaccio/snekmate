@@ -19,8 +19,6 @@ import {IERC721Extended} from "../../test/tokens/interfaces/IERC721Extended.sol"
 
 /**
  * Missing unit tests:
- *   - ApprovalForAll Event
- *   - setApprovalForAll
  *   - getApproved
  *   - isApprovedForAll
  *   - tokenURI
@@ -1000,6 +998,85 @@ contract ERC721Test is Test {
         vm.startPrank(owner);
         vm.expectRevert(bytes("ERC721: invalid token ID"));
         ERC721Extended.approve(vm.addr(2), tokenId + 1);
+        vm.stopPrank();
+    }
+
+    function testSetApprovalForAllSuccessCase1() public {
+        address deployer = address(vyperDeployer);
+        address owner = vm.addr(1);
+        address operator = vm.addr(2);
+        bool approved = true;
+        string memory uri = "my_awesome_nft_uri";
+        vm.startPrank(deployer);
+        ERC721Extended.safe_mint(owner, uri);
+        vm.stopPrank();
+        vm.startPrank(owner);
+        vm.expectEmit(true, true, false, true);
+        emit ApprovalForAll(owner, operator, approved);
+        ERC721Extended.setApprovalForAll(operator, approved);
+        assertTrue(ERC721Extended.isApprovedForAll(owner, operator));
+        vm.stopPrank();
+    }
+
+    function testSetApprovalForAllSuccessCase2() public {
+        address deployer = address(vyperDeployer);
+        address owner = vm.addr(1);
+        address operator = vm.addr(2);
+        bool approved = true;
+        string memory uri = "my_awesome_nft_uri";
+        vm.startPrank(deployer);
+        ERC721Extended.safe_mint(owner, uri);
+        vm.stopPrank();
+        vm.startPrank(owner);
+        vm.expectEmit(true, true, false, true);
+        emit ApprovalForAll(owner, operator, !approved);
+        ERC721Extended.setApprovalForAll(operator, !approved);
+        assertTrue(!ERC721Extended.isApprovedForAll(owner, operator));
+
+        vm.expectEmit(true, true, false, true);
+        emit ApprovalForAll(owner, operator, approved);
+        ERC721Extended.setApprovalForAll(operator, approved);
+        assertTrue(ERC721Extended.isApprovedForAll(owner, operator));
+
+        vm.expectEmit(true, true, false, true);
+        emit ApprovalForAll(owner, operator, !approved);
+        ERC721Extended.setApprovalForAll(operator, !approved);
+        assertTrue(!ERC721Extended.isApprovedForAll(owner, operator));
+        vm.stopPrank();
+    }
+
+    function testSetApprovalForAllSuccessCase3() public {
+        address deployer = address(vyperDeployer);
+        address owner = vm.addr(1);
+        address operator = vm.addr(2);
+        bool approved = true;
+        string memory uri = "my_awesome_nft_uri";
+        vm.startPrank(deployer);
+        ERC721Extended.safe_mint(owner, uri);
+        vm.stopPrank();
+        vm.startPrank(owner);
+        vm.expectEmit(true, true, false, true);
+        emit ApprovalForAll(owner, operator, approved);
+        ERC721Extended.setApprovalForAll(operator, approved);
+        assertTrue(ERC721Extended.isApprovedForAll(owner, operator));
+
+        vm.expectEmit(true, true, false, true);
+        emit ApprovalForAll(owner, operator, approved);
+        ERC721Extended.setApprovalForAll(operator, approved);
+        assertTrue(ERC721Extended.isApprovedForAll(owner, operator));
+        vm.stopPrank();
+    }
+
+    function testSetApprovalForAllOperatorIsOwner() public {
+        address deployer = address(vyperDeployer);
+        address owner = vm.addr(1);
+        string memory uri = "my_awesome_nft_uri";
+        vm.startPrank(deployer);
+        ERC721Extended.safe_mint(owner, uri);
+        vm.stopPrank();
+        vm.startPrank(owner);
+        vm.expectRevert(bytes("ERC721: approve to caller"));
+        ERC721Extended.setApprovalForAll(owner, true);
         vm.stopPrank();
     }
 
