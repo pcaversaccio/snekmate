@@ -19,7 +19,6 @@ import {IERC721Extended} from "../../test/tokens/interfaces/IERC721Extended.sol"
 
 /**
  * Missing unit tests:
- *   - totalSupply
  *   - tokenByIndex
  *   - tokenOfOwnerByIndex
  *   - burn
@@ -1164,6 +1163,18 @@ contract ERC721Test is Test {
         vm.stopPrank();
         vm.expectRevert(bytes("ERC721: invalid token ID"));
         ERC721Extended.tokenURI(0);
+    }
+
+    function testTotalSupply() public {
+        address deployer = address(vyperDeployer);
+        address owner = vm.addr(1);
+        string memory uri1 = "my_awesome_nft_uri_1";
+        string memory uri2 = "my_awesome_nft_uri_2";
+        vm.startPrank(deployer);
+        ERC721Extended.safe_mint(owner, uri1);
+        ERC721Extended.safe_mint(owner, uri2);
+        vm.stopPrank();
+        assertEq(ERC721Extended.totalSupply(), 2);
     }
 
     function testSetMinterSuccess() public {
