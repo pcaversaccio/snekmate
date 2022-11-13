@@ -19,9 +19,6 @@ import {IERC721Extended} from "../../test/tokens/interfaces/IERC721Extended.sol"
 
 /**
  * Missing unit tests:
- *   - getApproved
- *   - isApprovedForAll
- *   - tokenURI
  *   - totalSupply
  *   - tokenByIndex
  *   - tokenOfOwnerByIndex
@@ -51,6 +48,8 @@ contract ERC721Test is Test {
 
     // solhint-disable-next-line var-name-mixedcase
     IERC721Extended private ERC721Extended;
+    // solhint-disable-next-line var-name-mixedcase
+    IERC721Extended private ERC721ExtendedNoBaseURI;
     // solhint-disable-next-line var-name-mixedcase
     bytes32 private _CACHED_DOMAIN_SEPARATOR;
 
@@ -1078,6 +1077,93 @@ contract ERC721Test is Test {
         vm.expectRevert(bytes("ERC721: approve to caller"));
         ERC721Extended.setApprovalForAll(owner, true);
         vm.stopPrank();
+    }
+
+    function testGetApprovedInvalidTokenId() public {
+        vm.expectRevert(bytes("ERC721: invalid token ID"));
+        ERC721Extended.getApproved(0);
+    }
+
+    function testGetApprovedNotApprovedTokenId() public {
+        address deployer = address(vyperDeployer);
+        address owner = vm.addr(1);
+        string memory uri = "my_awesome_nft_uri";
+        vm.startPrank(deployer);
+        ERC721Extended.safe_mint(owner, uri);
+        vm.stopPrank();
+        assertEq(ERC721Extended.getApproved(0), address(0));
+    }
+
+    function testGetApprovedApprovedTokenId() public {
+        address deployer = address(vyperDeployer);
+        address owner = vm.addr(1);
+        address spender = vm.addr(2);
+        string memory uri = "my_awesome_nft_uri";
+        vm.startPrank(deployer);
+        ERC721Extended.safe_mint(owner, uri);
+        vm.stopPrank();
+        vm.startPrank(owner);
+        ERC721Extended.approve(spender, 0);
+        assertEq(ERC721Extended.getApproved(0), spender);
+        vm.stopPrank();
+    }
+
+    function testTokenURIDefault() public {
+        address deployer = address(vyperDeployer);
+        address owner = vm.addr(1);
+        string memory uri = "my_awesome_nft_uri";
+        vm.startPrank(deployer);
+        ERC721Extended.safe_mint(owner, uri);
+        vm.stopPrank();
+        assertEq(ERC721Extended.tokenURI(0), string.concat(_BASE_URI, uri));
+    }
+
+    function testTokenURINoTokenUri() public {
+        address deployer = address(vyperDeployer);
+        address owner = vm.addr(1);
+        vm.startPrank(deployer);
+        ERC721Extended.safe_mint(owner, "");
+        vm.stopPrank();
+        assertEq(ERC721Extended.tokenURI(0), string.concat(_BASE_URI, "0"));
+    }
+
+    function testTokenURINoBaseURI() public {
+        bytes memory args = abi.encode(
+            _NAME,
+            _SYMBOL,
+            "",
+            _NAME_EIP712,
+            _VERSION_EIP712
+        );
+        ERC721ExtendedNoBaseURI = IERC721Extended(
+            vyperDeployer.deployContract("src/tokens/", "ERC721", args)
+        );
+        address deployer = address(vyperDeployer);
+        address owner = vm.addr(1);
+        string memory uri = "my_awesome_nft_uri";
+        vm.startPrank(deployer);
+        ERC721ExtendedNoBaseURI.safe_mint(owner, uri);
+        vm.stopPrank();
+        assertEq(ERC721ExtendedNoBaseURI.tokenURI(0), uri);
+    }
+
+    function testTokenURIInvalidTokenId() public {
+        vm.expectRevert(bytes("ERC721: invalid token ID"));
+        ERC721Extended.tokenURI(0);
+    }
+
+    function testTokenURIAfterBurning() public {
+        address deployer = address(vyperDeployer);
+        address owner = vm.addr(1);
+        string memory uri = "my_awesome_nft_uri";
+        vm.startPrank(deployer);
+        ERC721Extended.safe_mint(owner, uri);
+        vm.stopPrank();
+        vm.startPrank(owner);
+        ERC721Extended.burn(0);
+        vm.stopPrank();
+        vm.expectRevert(bytes("ERC721: invalid token ID"));
+        ERC721Extended.tokenURI(0);
     }
 
     function testSetMinterSuccess() public {
