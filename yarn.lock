@@ -1172,10 +1172,10 @@ md5.js@^1.3.4:
     inherits "^2.0.1"
     safe-buffer "^5.1.2"
 
-merkletreejs@^0.3.0:
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/merkletreejs/-/merkletreejs-0.3.0.tgz#886e4d709cdf8bfd317dfdf9531699c38f258af7"
-  integrity sha512-kkv3AayjcsgglUOSMqfh2tNs6rMmd6/2kv9HtoVf7kIcUBsPCC8hJuuW5EIgprKmWMFXwLgj3TH/zO2sHIigGA==
+merkletreejs@^0.3.2:
+  version "0.3.2"
+  resolved "https://registry.yarnpkg.com/merkletreejs/-/merkletreejs-0.3.2.tgz#57efa34ed1005abb71b5949ec0459d9a9650f722"
+  integrity sha512-R1/ybVITjErKq2w5jmNQc0Ao9yMEeowTTrzz3nEh6ZDrwUkXDzaMT5EbwvgiJ/cQemf3Bp5PtLGoOTgZpVOPxA==
   dependencies:
     bignumber.js "^9.0.1"
     buffer-reverse "^1.0.1"
@@ -1524,9 +1524,9 @@ util-deprecate@^1.0.1:
   integrity sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==
 
 web3-utils@^1.3.4:
-  version "1.8.0"
-  resolved "https://registry.yarnpkg.com/web3-utils/-/web3-utils-1.8.0.tgz#0a506f8c6af9a2ad6ba79689892662769534fc03"
-  integrity sha512-7nUIl7UWpLVka2f09CMbKOSEvorvHnaugIabU4mj7zfMvm0tSByLcEu3eyV9qgS11qxxLuOkzBIwCstTflhmpQ==
+  version "1.8.1"
+  resolved "https://registry.yarnpkg.com/web3-utils/-/web3-utils-1.8.1.tgz#f2f7ca7eb65e6feb9f3d61056d0de6bbd57125ff"
+  integrity sha512-LgnM9p6V7rHHUGfpMZod+NST8cRfGzJ1BTXAyNo7A9cJX9LczBfSRxJp+U/GInYe9mby40t3v22AJdlELibnsQ==
   dependencies:
     bn.js "^5.2.1"
     ethereum-bloom-filters "^1.0.6"
