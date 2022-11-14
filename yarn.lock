@@ -1172,10 +1172,10 @@ md5.js@^1.3.4:
     inherits "^2.0.1"
     safe-buffer "^5.1.2"
 
-merkletreejs@^0.3.2:
-  version "0.3.2"
-  resolved "https://registry.yarnpkg.com/merkletreejs/-/merkletreejs-0.3.2.tgz#57efa34ed1005abb71b5949ec0459d9a9650f722"
-  integrity sha512-R1/ybVITjErKq2w5jmNQc0Ao9yMEeowTTrzz3nEh6ZDrwUkXDzaMT5EbwvgiJ/cQemf3Bp5PtLGoOTgZpVOPxA==
+merkletreejs@^0.3.3:
+  version "0.3.3"
+  resolved "https://registry.yarnpkg.com/merkletreejs/-/merkletreejs-0.3.3.tgz#ec527079a230bae0fb9b0693844d6384945d7c09"
+  integrity sha512-u17CAmpQq0sv5BoLX9X9ciZ5ps/Bk3YnGD5O7MiHnOHgWkXPg8Mxa8NSs+VS/XVAfBYkewhSnA5VnNzaYoZe8Q==
   dependencies:
     bignumber.js "^9.0.1"
     buffer-reverse "^1.0.1"
