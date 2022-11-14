@@ -1380,6 +1380,185 @@ contract ERC721Test is Test {
         assertEq(ERC721Extended.balanceOf(other), 0);
     }
 
+    function testSafeMintSuccess() public {
+        address deployer = address(vyperDeployer);
+        address owner = vm.addr(1);
+        string memory uri1 = "my_awesome_nft_uri_1";
+        string memory uri2 = "my_awesome_nft_uri_2";
+        string memory uri3 = "my_awesome_nft_uri_3";
+        uint256 tokenId = 0;
+        vm.startPrank(deployer);
+        vm.expectEmit(true, true, true, false);
+        emit Transfer(address(0), owner, tokenId);
+        ERC721Extended.safe_mint(owner, uri1);
+        vm.expectEmit(true, true, true, false);
+        emit Transfer(address(0), owner, tokenId + 1);
+        ERC721Extended.safe_mint(owner, uri2);
+        vm.expectEmit(true, true, true, false);
+        emit Transfer(address(0), owner, tokenId + 2);
+        ERC721Extended.safe_mint(owner, uri3);
+        vm.stopPrank();
+
+        vm.startPrank(owner);
+        vm.expectEmit(true, true, true, false);
+        emit Transfer(owner, address(0), tokenId + 2);
+        ERC721Extended.burn(tokenId + 2);
+        vm.stopPrank();
+
+        vm.startPrank(deployer);
+        vm.expectEmit(true, true, true, false);
+        emit Transfer(address(0), owner, tokenId + 3);
+        ERC721Extended.safe_mint(owner, "");
+        vm.stopPrank();
+        assertEq(ERC721Extended.balanceOf(owner), 3);
+        assertEq(ERC721Extended.totalSupply(), 3);
+        assertEq(ERC721Extended.ownerOf(tokenId), owner);
+        assertEq(ERC721Extended.ownerOf(tokenId + 1), owner);
+        assertEq(ERC721Extended.ownerOf(tokenId + 3), owner);
+    }
+
+    function testSafeMintTokenAlreadyMinted() public {
+        address deployer = address(vyperDeployer);
+        address owner = vm.addr(1);
+        string memory uri1 = "my_awesome_nft_uri_1";
+        string memory uri2 = "my_awesome_nft_uri_2";
+        uint256 tokenId = 0;
+        vm.startPrank(deployer);
+        vm.expectEmit(true, true, true, false);
+        emit Transfer(address(0), owner, tokenId);
+        ERC721Extended.safe_mint(owner, uri1);
+        vm.expectEmit(true, true, true, false);
+        emit Transfer(address(0), owner, tokenId + 1);
+        ERC721Extended.safe_mint(owner, uri2);
+
+        /**
+         * @dev To display the default storage layout for a contract
+         * in Vyper, use `vyper -f layout yourFileName.vy`.
+         */
+        vm.store(
+            address(ERC721Extended),
+            bytes32(uint256(18446744073709551627)),
+            bytes32(0)
+        );
+        vm.expectRevert(bytes("ERC721: token already minted"));
+        ERC721Extended.safe_mint(owner, "");
+        vm.stopPrank();
+    }
+
+    function testSafeMintReceiverContract() public {
+        address deployer = address(vyperDeployer);
+        bytes4 receiverMagicValue = type(IERC721Receiver).interfaceId;
+        ERC721ReceiverMock erc721ReceiverMock = new ERC721ReceiverMock(
+            receiverMagicValue,
+            ERC721ReceiverMock.Error.None
+        );
+        address owner = address(erc721ReceiverMock);
+        string memory uri = "my_awesome_nft_uri";
+        uint256 tokenId = 0;
+        vm.startPrank(deployer);
+        ERC721Extended.safe_mint(owner, uri);
+        vm.stopPrank();
+        assertEq(ERC721Extended.balanceOf(owner), 1);
+        assertEq(ERC721Extended.totalSupply(), 1);
+        assertEq(ERC721Extended.ownerOf(tokenId), owner);
+    }
+
+    function testSafeMintReceiverContractInvalidReturnIdentifier() public {
+        address deployer = address(vyperDeployer);
+        ERC721ReceiverMock erc721ReceiverMock = new ERC721ReceiverMock(
+            0x00bb8833,
+            ERC721ReceiverMock.Error.None
+        );
+        address owner = address(erc721ReceiverMock);
+        string memory uri = "my_awesome_nft_uri";
+        vm.startPrank(deployer);
+        vm.expectRevert(
+            bytes("ERC721: transfer to non-ERC721Receiver implementer")
+        );
+        ERC721Extended.safe_mint(owner, uri);
+        vm.stopPrank();
+    }
+
+    function testSafeMintReceiverContractRevertsWithMessage() public {
+        address deployer = address(vyperDeployer);
+        bytes4 receiverMagicValue = type(IERC721Receiver).interfaceId;
+        ERC721ReceiverMock erc721ReceiverMock = new ERC721ReceiverMock(
+            receiverMagicValue,
+            ERC721ReceiverMock.Error.RevertWithMessage
+        );
+        address owner = address(erc721ReceiverMock);
+        string memory uri = "my_awesome_nft_uri";
+        vm.startPrank(deployer);
+        vm.expectRevert(bytes("ERC721ReceiverMock: reverting"));
+        ERC721Extended.safe_mint(owner, uri);
+        vm.stopPrank();
+    }
+
+    function testSafeMintReceiverContractRevertsWithoutMessage() public {
+        address deployer = address(vyperDeployer);
+        bytes4 receiverMagicValue = type(IERC721Receiver).interfaceId;
+        ERC721ReceiverMock erc721ReceiverMock = new ERC721ReceiverMock(
+            receiverMagicValue,
+            ERC721ReceiverMock.Error.RevertWithoutMessage
+        );
+        address owner = address(erc721ReceiverMock);
+        string memory uri = "my_awesome_nft_uri";
+        vm.startPrank(deployer);
+        vm.expectRevert();
+        ERC721Extended.safe_mint(owner, uri);
+        vm.stopPrank();
+    }
+
+    function testSafeMintReceiverContractRevertsWithPanic() public {
+        address deployer = address(vyperDeployer);
+        bytes4 receiverMagicValue = type(IERC721Receiver).interfaceId;
+        ERC721ReceiverMock erc721ReceiverMock = new ERC721ReceiverMock(
+            receiverMagicValue,
+            ERC721ReceiverMock.Error.Panic
+        );
+        address owner = address(erc721ReceiverMock);
+        string memory uri = "my_awesome_nft_uri";
+        vm.startPrank(deployer);
+        vm.expectRevert(stdError.divisionError);
+        ERC721Extended.safe_mint(owner, uri);
+        vm.stopPrank();
+    }
+
+    function testSafeMintReceiverContractFunctionNotImplemented() public {
+        address deployer = address(vyperDeployer);
+        string memory uri = "my_awesome_nft_uri";
+        vm.startPrank(deployer);
+        vm.expectRevert();
+        ERC721Extended.safe_mint(deployer, uri);
+        vm.stopPrank();
+    }
+
+    function testSafeMintNonMinter() public {
+        vm.expectRevert(bytes("AccessControl: access is denied"));
+        ERC721Extended.safe_mint(vm.addr(1), "my_awesome_nft_uri");
+    }
+
+    function testSafeMintToZeroAddress() public {
+        vm.prank(address(vyperDeployer));
+        vm.expectRevert(bytes("ERC721: mint to the zero address"));
+        ERC721Extended.safe_mint(address(0), "my_awesome_nft_uri");
+    }
+
+    function testSafeMintOverflow() public {
+        /**
+         * @dev To display the default storage layout for a contract
+         * in Vyper, use `vyper -f layout yourFileName.vy`.
+         */
+        vm.store(
+            address(ERC721Extended),
+            bytes32(uint256(18446744073709551627)),
+            bytes32(type(uint256).max)
+        );
+        vm.prank(address(vyperDeployer));
+        vm.expectRevert();
+        ERC721Extended.safe_mint(vm.addr(1), "my_awesome_nft_uri");
+    }
+
     function testSetMinterSuccess() public {
         address owner = address(vyperDeployer);
         address minter = vm.addr(1);
