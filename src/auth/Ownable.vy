@@ -6,6 +6,8 @@
 @notice These functions can be used to implement a basic access
         control mechanism, where there is an account (an owner)
         that can be granted exclusive access to specific functions.
+        By default, the owner account will be the one that deploys
+        the contract. This can later be changed with `transfer_ownership`.
         An exemplary integration can be found in the ERC-20 implementation here:
         https://github.com/pcaversaccio/snekmate/blob/main/src/tokens/ERC20.vy.
         The implementation is inspired by OpenZeppelin's implementation here:
@@ -48,7 +50,7 @@ def transfer_ownership(new_owner: address):
     @param new_owner The 20-byte address of the new owner.
     """
     self._check_owner()
-    assert new_owner != empty(address), "AccessControl: new owner is the zero address"
+    assert new_owner != empty(address), "Ownable: new owner is the zero address"
     self._transfer_ownership(new_owner)
 
 
@@ -70,7 +72,7 @@ def _check_owner():
     """
     @dev Throws if the sender is not the owner.
     """
-    assert msg.sender == self.owner, "AccessControl: caller is not the owner"
+    assert msg.sender == self.owner, "Ownable: caller is not the owner"
 
 
 @internal

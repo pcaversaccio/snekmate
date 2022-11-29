@@ -42,13 +42,13 @@ contract OwnableTest is Test {
     }
 
     function testTransferOwnershipNonOwner() public {
-        vm.expectRevert(bytes("AccessControl: caller is not the owner"));
+        vm.expectRevert(bytes("Ownable: caller is not the owner"));
         ownable.transfer_ownership(vm.addr(1));
     }
 
     function testTransferOwnershipToZeroAddress() public {
         vm.prank(address(vyperDeployer));
-        vm.expectRevert(bytes("AccessControl: new owner is the zero address"));
+        vm.expectRevert(bytes("Ownable: new owner is the zero address"));
         ownable.transfer_ownership(address(0));
     }
 
@@ -64,7 +64,7 @@ contract OwnableTest is Test {
     }
 
     function testRenounceOwnershipNonOwner() public {
-        vm.expectRevert(bytes("AccessControl: caller is not the owner"));
+        vm.expectRevert(bytes("Ownable: caller is not the owner"));
         ownable.renounce_ownership();
     }
 }
