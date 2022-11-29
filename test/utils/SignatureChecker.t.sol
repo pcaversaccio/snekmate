@@ -4,8 +4,8 @@ pragma solidity ^0.8.17;
 import {Test} from "../../lib/forge-std/src/Test.sol";
 import {VyperDeployer} from "../../lib/utils/VyperDeployer.sol";
 
-import {SignatureCheckerMock} from "../../lib/openzeppelin-contracts/contracts/mocks/SignatureCheckerMock.sol";
-import {ERC1271WalletMock, ERC1271MaliciousMock} from "../../lib/openzeppelin-contracts/contracts/mocks/ERC1271WalletMock.sol";
+import {ERC1271WalletMock} from "./mocks/ERC1271WalletMock.sol";
+import {ERC1271MaliciousMock} from "./mocks/ERC1271MaliciousMock.sol";
 
 import {ISignatureChecker} from "./interfaces/ISignatureChecker.sol";
 

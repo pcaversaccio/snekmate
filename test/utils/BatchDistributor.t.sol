@@ -4,7 +4,7 @@ pragma solidity ^0.8.17;
 import {Test} from "../../lib/forge-std/src/Test.sol";
 import {VyperDeployer} from "../../lib/utils/VyperDeployer.sol";
 
-import {ERC20Mock} from "../../lib/openzeppelin-contracts/contracts/mocks/ERC20Mock.sol";
+import {ERC20Mock} from "./mocks/ERC20Mock.sol";
 
 import {IBatchDistributor} from "./interfaces/IBatchDistributor.sol";
 

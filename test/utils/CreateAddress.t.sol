@@ -5,7 +5,7 @@ import {Test} from "../../lib/forge-std/src/Test.sol";
 import {VyperDeployer} from "../../lib/utils/VyperDeployer.sol";
 
 import {Create} from "../../lib/create-util/contracts/Create.sol";
-import {ERC20Mock} from "../../lib/openzeppelin-contracts/contracts/mocks/ERC20Mock.sol";
+import {ERC20Mock} from "./mocks/ERC20Mock.sol";
 
 import {ICreateAddress} from "./interfaces/ICreateAddress.sol";
 
