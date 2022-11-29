@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
 
-import {IERC721Receiver} from "../../../lib/openzeppelin-contracts/contracts/token/ERC721/IERC721Receiver.sol";
+import {IERC721Receiver} from "openzeppelin/token/ERC721/IERC721Receiver.sol";
 
 /**
  * @title ERC721ReceiverMock

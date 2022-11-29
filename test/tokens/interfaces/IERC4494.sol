@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: WTFPL
 pragma solidity ^0.8.17;
 
-import {IERC165} from "../../../lib/openzeppelin-contracts/contracts/utils/introspection/IERC165.sol";
+import {IERC165} from "openzeppelin/utils/introspection/IERC165.sol";
 
 interface IERC4494 is IERC165 {
     function permit(

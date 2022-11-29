@@ -1,18 +1,18 @@
 // SPDX-License-Identifier: WTFPL
 pragma solidity ^0.8.17;
 
-import {Test} from "../../lib/forge-std/src/Test.sol";
-import {stdError} from "../../lib/forge-std/src/StdError.sol";
-import {VyperDeployer} from "../../lib/utils/VyperDeployer.sol";
+import {Test} from "forge-std/Test.sol";
+import {stdError} from "forge-std/StdError.sol";
+import {VyperDeployer} from "utils/VyperDeployer.sol";
 
-import {IERC165} from "../../lib/openzeppelin-contracts/contracts/utils/introspection/IERC165.sol";
-import {IERC721} from "../../lib/openzeppelin-contracts/contracts/token/ERC721/IERC721.sol";
-import {IERC721Receiver} from "../../lib/openzeppelin-contracts/contracts/token/ERC721/IERC721Receiver.sol";
-import {IERC721Metadata} from "../../lib/openzeppelin-contracts/contracts/token/ERC721/extensions/IERC721Metadata.sol";
-import {IERC721Enumerable} from "../../lib/openzeppelin-contracts/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
+import {IERC165} from "openzeppelin/utils/introspection/IERC165.sol";
+import {IERC721} from "openzeppelin/token/ERC721/IERC721.sol";
+import {IERC721Receiver} from "openzeppelin/token/ERC721/IERC721Receiver.sol";
+import {IERC721Metadata} from "openzeppelin/token/ERC721/extensions/IERC721Metadata.sol";
+import {IERC721Enumerable} from "openzeppelin/token/ERC721/extensions/IERC721Enumerable.sol";
 import {IERC4494} from "./interfaces/IERC4494.sol";
 
-import {Address} from "../../lib/openzeppelin-contracts/contracts/utils/Address.sol";
+import {Address} from "openzeppelin/utils/Address.sol";
 import {ERC721ReceiverMock} from "./mocks/ERC721ReceiverMock.sol";
 
 import {IERC721Extended} from "./interfaces/IERC721Extended.sol";

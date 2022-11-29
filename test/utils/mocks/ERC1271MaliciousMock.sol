@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
 
-import {IERC1271} from "../../../lib/openzeppelin-contracts/contracts/interfaces/IERC1271.sol";
+import {IERC1271} from "openzeppelin/interfaces/IERC1271.sol";
 
 /**
  * @title ERC1271MaliciousMock

@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: WTFPL
 pragma solidity ^0.8.17;
 
-import {Test} from "../../lib/forge-std/src/Test.sol";
-import {VyperDeployer} from "../../lib/utils/VyperDeployer.sol";
+import {Test} from "forge-std/Test.sol";
+import {VyperDeployer} from "utils/VyperDeployer.sol";
 
 import {ERC1271WalletMock} from "./mocks/ERC1271WalletMock.sol";
 import {ERC1271MaliciousMock} from "./mocks/ERC1271MaliciousMock.sol";

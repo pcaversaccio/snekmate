@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
 
-import {Create2} from "../../../lib/openzeppelin-contracts/contracts/utils/Create2.sol";
-import {ERC1820Implementer} from "../../../lib/openzeppelin-contracts/contracts/utils/introspection/ERC1820Implementer.sol";
+import {Create2} from "openzeppelin/utils/Create2.sol";
+import {ERC1820Implementer} from "openzeppelin/utils/introspection/ERC1820Implementer.sol";
 
 /**
  * @title Create2Impl

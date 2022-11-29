@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: WTFPL
 pragma solidity ^0.8.17;
 
-import {IERC20Metadata} from "../../../lib/openzeppelin-contracts/contracts/token/ERC20/extensions/IERC20Metadata.sol";
-import {IERC20Permit} from "../../../lib/openzeppelin-contracts/contracts/token/ERC20/extensions/IERC20Permit.sol";
+import {IERC20Metadata} from "openzeppelin/token/ERC20/extensions/IERC20Metadata.sol";
+import {IERC20Permit} from "openzeppelin/token/ERC20/extensions/IERC20Permit.sol";
 
 interface IERC20Extended is IERC20Metadata, IERC20Permit {
     function increase_allowance(

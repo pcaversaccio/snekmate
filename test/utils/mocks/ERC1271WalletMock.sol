@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
 
-import {Ownable} from "../../../lib/openzeppelin-contracts/contracts/access/Ownable.sol";
-import {IERC1271} from "../../../lib/openzeppelin-contracts/contracts/interfaces/IERC1271.sol";
-import {ECDSA} from "../../../lib/openzeppelin-contracts/contracts/utils/cryptography/ECDSA.sol";
+import {Ownable} from "openzeppelin/access/Ownable.sol";
+import {IERC1271} from "openzeppelin/interfaces/IERC1271.sol";
+import {ECDSA} from "openzeppelin/utils/cryptography/ECDSA.sol";
 
 /**
  * @title ERC1271WalletMock

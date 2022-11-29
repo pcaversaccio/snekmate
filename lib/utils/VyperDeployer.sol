@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: WTFPL
 pragma solidity ^0.8.17;
 
-import {Create} from "../../lib/create-util/contracts/Create.sol";
+import {Create} from "create-util/Create.sol";
 
 /**
  * @dev Error that occurs when deploying a contract has failed.

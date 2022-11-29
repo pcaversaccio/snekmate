@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: WTFPL
 pragma solidity ^0.8.17;
 
-import {IERC721Metadata} from "../../../lib/openzeppelin-contracts/contracts/token/ERC721/extensions/IERC721Metadata.sol";
-import {IERC721Enumerable} from "../../../lib/openzeppelin-contracts/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
+import {IERC721Metadata} from "openzeppelin/token/ERC721/extensions/IERC721Metadata.sol";
+import {IERC721Enumerable} from "openzeppelin/token/ERC721/extensions/IERC721Enumerable.sol";
 import {IERC4494} from "./IERC4494.sol";
 
 interface IERC721Extended is IERC721Metadata, IERC721Enumerable, IERC4494 {

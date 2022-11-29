@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: WTFPL
 pragma solidity ^0.8.17;
 
-import {Test} from "../../lib/forge-std/src/Test.sol";
-import {VyperDeployer} from "../../lib/utils/VyperDeployer.sol";
+import {Test} from "forge-std/Test.sol";
+import {VyperDeployer} from "utils/VyperDeployer.sol";
 
-import {BytesLib} from "../../lib/solidity-bytes-utils/contracts/BytesLib.sol";
+import {BytesLib} from "solidity-bytes-utils/BytesLib.sol";
 
 import {IECDSA} from "./interfaces/IECDSA.sol";
 
