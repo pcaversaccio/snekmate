@@ -11,7 +11,7 @@
 
 ```ml
 auth
-├─ Ownable — "Owner-Based Access Control Functions (TBD)"
+├─ Ownable — "Owner-Based Access Control Functions"
 ├─ Ownable2Step — "2-Step Ownership Transfer Functions (TBD)"
 ├─ AccessControl — "Multi-Role-Based Access Control Functions (TBD)"
 mixins
