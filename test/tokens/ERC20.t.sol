@@ -749,7 +749,7 @@ contract ERC20Test is Test {
     }
 
     function testSetMinterNonOwner() public {
-        vm.expectRevert(bytes("AccessControl: caller is not the owner"));
+        vm.expectRevert(bytes("Ownable: caller is not the owner"));
         ERC20Extended.set_minter(vm.addr(1), true);
     }
 
@@ -999,13 +999,13 @@ contract ERC20Test is Test {
     }
 
     function testTransferOwnershipNonOwner() public {
-        vm.expectRevert(bytes("AccessControl: caller is not the owner"));
+        vm.expectRevert(bytes("Ownable: caller is not the owner"));
         ERC20Extended.transfer_ownership(vm.addr(1));
     }
 
     function testTransferOwnershipToZeroAddress() public {
         vm.prank(address(vyperDeployer));
-        vm.expectRevert(bytes("AccessControl: new owner is the zero address"));
+        vm.expectRevert(bytes("Ownable: new owner is the zero address"));
         ERC20Extended.transfer_ownership(address(0));
     }
 
@@ -1022,7 +1022,7 @@ contract ERC20Test is Test {
     }
 
     function testRenounceOwnershipNonOwner() public {
-        vm.expectRevert(bytes("AccessControl: caller is not the owner"));
+        vm.expectRevert(bytes("Ownable: caller is not the owner"));
         ERC20Extended.renounce_ownership();
     }
 }

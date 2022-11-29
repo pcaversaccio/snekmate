@@ -437,15 +437,12 @@ def DOMAIN_SEPARATOR() -> bytes32:
 @external
 def transfer_ownership(new_owner: address):
     """
-    @dev Transfers the ownership of the contract
-         to a new account `new_owner`.
-    @notice Note that this function can only be
-            called by the current `owner`. Also,
-            the `new_owner` cannot be the zero address.
-    @param new_owner The 20-byte address of the new owner.
+    @dev Sourced from {Ownable-transfer_ownership}.
+    @notice See {Ownable-transfer_ownership} for
+            the function docstring.
     """
     self._check_owner()
-    assert new_owner != empty(address), "AccessControl: new owner is the zero address"
+    assert new_owner != empty(address), "Ownable: new owner is the zero address"
     self._transfer_ownership(new_owner)
 
 
@@ -456,7 +453,7 @@ def renounce_ownership():
     @notice Renouncing ownership will leave the
             contract without an owner, thereby
             removing any functionality that is
-            only available to the owner. Notice,
+            only available to the owner. Note
             that the `owner` is also removed from
             the list of allowed minters.
 
@@ -629,19 +626,19 @@ def _after_token_transfer(owner: address, to: address, amount: uint256):
 @internal
 def _check_owner():
     """
-    @dev Throws if the sender is not the owner.
+    @dev Sourced from {Ownable-_check_owner}.
+    @notice See {Ownable-_check_owner} for
+            the function docstring.
     """
-    assert msg.sender == self.owner, "AccessControl: caller is not the owner"
+    assert msg.sender == self.owner, "Ownable: caller is not the owner"
 
 
 @internal
 def _transfer_ownership(new_owner: address):
     """
-    @dev Transfers the ownership of the contract
-         to a new account `new_owner`.
-    @notice This is an `internal` function without
-            access restriction.
-    @param new_owner The 20-byte address of the new owner.
+    @dev Sourced from {Ownable-_transfer_ownership}.
+    @notice See {Ownable-_transfer_ownership} for
+            the function docstring.
     """
     old_owner: address = self.owner
     self.owner = new_owner
