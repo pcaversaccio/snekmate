@@ -7,7 +7,7 @@ import {VyperDeployer} from "../../lib/utils/VyperDeployer.sol";
 import {EtherReceiver} from "./mocks/EtherReceiver.sol";
 import {MockCallee, Reverted} from "./mocks/MockCallee.sol";
 
-import {IMulticall} from "../../test/utils/interfaces/IMulticall.sol";
+import {IMulticall} from "./interfaces/IMulticall.sol";
 
 contract MulticallsTest is Test {
     VyperDeployer private vyperDeployer = new VyperDeployer();

@@ -6,7 +6,7 @@ import {VyperDeployer} from "../../lib/utils/VyperDeployer.sol";
 
 import {ERC20Mock} from "../../lib/openzeppelin-contracts/contracts/mocks/ERC20Mock.sol";
 
-import {IBatchDistributor} from "../../test/utils/interfaces/IBatchDistributor.sol";
+import {IBatchDistributor} from "./interfaces/IBatchDistributor.sol";
 
 contract BatchDistributorTest is Test {
     VyperDeployer private vyperDeployer = new VyperDeployer();

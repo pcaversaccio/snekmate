@@ -4,7 +4,7 @@ pragma solidity ^0.8.17;
 import {Test} from "../../lib/forge-std/src/Test.sol";
 import {VyperDeployer} from "../../lib/utils/VyperDeployer.sol";
 
-import {IOwnable} from "../../test/auth/interfaces/IOwnable.sol";
+import {IOwnable} from "./Interfaces/IOwnable.sol";
 
 contract OwnableTest is Test {
     VyperDeployer private vyperDeployer = new VyperDeployer();

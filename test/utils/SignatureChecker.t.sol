@@ -7,7 +7,7 @@ import {VyperDeployer} from "../../lib/utils/VyperDeployer.sol";
 import {SignatureCheckerMock} from "../../lib/openzeppelin-contracts/contracts/mocks/SignatureCheckerMock.sol";
 import {ERC1271WalletMock, ERC1271MaliciousMock} from "../../lib/openzeppelin-contracts/contracts/mocks/ERC1271WalletMock.sol";
 
-import {ISignatureChecker} from "../../test/utils/interfaces/ISignatureChecker.sol";
+import {ISignatureChecker} from "./interfaces/ISignatureChecker.sol";
 
 contract SignatureCheckerTest is Test {
     VyperDeployer private vyperDeployer = new VyperDeployer();

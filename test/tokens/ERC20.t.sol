@@ -4,7 +4,7 @@ pragma solidity ^0.8.17;
 import {Test} from "../../lib/forge-std/src/Test.sol";
 import {VyperDeployer} from "../../lib/utils/VyperDeployer.sol";
 
-import {IERC20Extended} from "../../test/tokens/interfaces/IERC20Extended.sol";
+import {IERC20Extended} from "./interfaces/IERC20Extended.sol";
 
 contract ERC20Test is Test {
     string private constant _NAME = "MyToken";

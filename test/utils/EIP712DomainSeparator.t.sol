@@ -4,7 +4,7 @@ pragma solidity ^0.8.17;
 import {Test} from "../../lib/forge-std/src/Test.sol";
 import {VyperDeployer} from "../../lib/utils/VyperDeployer.sol";
 
-import {IEIP712DomainSeparator} from "../../test/utils/interfaces/IEIP712DomainSeparator.sol";
+import {IEIP712DomainSeparator} from "./interfaces/IEIP712DomainSeparator.sol";
 
 contract EIP712DomainSeparatorTest is Test {
     string private constant _NAME = "WAGMI";

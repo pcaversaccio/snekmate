@@ -15,7 +15,7 @@ import {IERC4494} from "./interfaces/IERC4494.sol";
 import {Address} from "../../lib/openzeppelin-contracts/contracts/utils/Address.sol";
 import {ERC721ReceiverMock} from "./mocks/ERC721ReceiverMock.sol";
 
-import {IERC721Extended} from "../../test/tokens/interfaces/IERC721Extended.sol";
+import {IERC721Extended} from "./interfaces/IERC721Extended.sol";
 
 contract ERC721Test is Test {
     string private constant _NAME = "MyNFT";

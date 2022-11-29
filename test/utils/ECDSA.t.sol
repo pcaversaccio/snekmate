@@ -6,7 +6,7 @@ import {VyperDeployer} from "../../lib/utils/VyperDeployer.sol";
 
 import {BytesLib} from "../../lib/solidity-bytes-utils/contracts/BytesLib.sol";
 
-import {IECDSA} from "../../test/utils/interfaces/IECDSA.sol";
+import {IECDSA} from "./interfaces/IECDSA.sol";
 
 /**
  * @dev Error that occurs when the signature length is invalid.
