@@ -14,7 +14,7 @@ auth
 ├─ Ownable — "Owner-Based Access Control Functions"
 ├─ Ownable2Step — "2-Step Ownership Transfer Functions (TBD)"
 ├─ AccessControl — "Multi-Role-Based Access Control Functions (TBD)"
-mixins
+extensions
 ├─ ERC4626 — "ERC-4626 Tokenised Vault Implementation (TBD)"
 tokens
 ├─ ERC20 — "Modern and Gas-Efficient ERC-20 + EIP-2612 Implementation"
