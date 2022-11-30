@@ -40,6 +40,9 @@
         WARNING: The `DEFAULT_ADMIN_ROLE` is also its own admin! It has
         permission to grant and revoke this role. Extra precautions should be
         taken to secure accounts that have been granted it.
+
+        The implementation is inspired by OpenZeppelin's implementation here:
+        https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/AccessControl.sol.
 """
 
 
