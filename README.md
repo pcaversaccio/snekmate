@@ -10,25 +10,26 @@
 ## 📜 Contracts
 
 ```ml
-auth
-├─ Ownable — "Owner-Based Access Control Functions"
-├─ Ownable2Step — "2-Step Ownership Transfer Functions"
-├─ AccessControl — "Multi-Role-Based Access Control Functions (TBD)"
-extensions
-├─ ERC4626 — "ERC-4626 Tokenised Vault Implementation (TBD)"
-tokens
-├─ ERC20 — "Modern and Gas-Efficient ERC-20 + EIP-2612 Implementation"
-├─ ERC721 — "Modern and Gas-Efficient ERC-721 + EIP-4494 Implementation"
-├─ ERC1155 — "Modern and Gas-Efficient ERC-1155 Implementation (TBD)"
-utils
-├─ ECDSA — "Elliptic Curve Digital Signature Algorithm (ECDSA) Functions"
-├─ CreateAddress — "`CREATE` EVM Opcode Utility Function for Address Calculation"
-├─ Create2Address — "`CREATE2` EVM Opcode Utility Functions for Address Calculations"
-├─ EIP712DomainSeparator — "EIP-712 Domain Separator"
-├─ MerkleProofVerification — "Merkle Tree Proof Verification Functions"
-├─ Multicall — "Multicall Functions"
-├─ SignatureChecker — "ECDSA and EIP-1271 Signature Verification Function"
-├─ BatchDistributor — "Batch Sending Both Native and ERC-20 Tokens"
+src
+├─ auth
+|  ├─ Ownable — "Owner-Based Access Control Functions"
+|  ├─ Ownable2Step — "2-Step Ownership Transfer Functions"
+|  ├─ AccessControl — "Multi-Role-Based Access Control Functions (TBD)"
+├─ extensions
+|  ├─ ERC4626 — "ERC-4626 Tokenised Vault Implementation (TBD)"
+├─ tokens
+|  ├─ ERC20 — "Modern and Gas-Efficient ERC-20 + EIP-2612 Implementation"
+|  ├─ ERC721 — "Modern and Gas-Efficient ERC-721 + EIP-4494 Implementation"
+|  ├─ ERC1155 — "Modern and Gas-Efficient ERC-1155 Implementation (TBD)"
+├─ utils
+   ├─ ECDSA — "Elliptic Curve Digital Signature Algorithm (ECDSA) Functions"
+   ├─ CreateAddress — "`CREATE` EVM Opcode Utility Function for Address Calculation"
+   ├─ Create2Address — "`CREATE2` EVM Opcode Utility Functions for Address Calculations"
+   ├─ EIP712DomainSeparator — "EIP-712 Domain Separator"
+   ├─ MerkleProofVerification — "Merkle Tree Proof Verification Functions"
+   ├─ Multicall — "Multicall Functions"
+   ├─ SignatureChecker — "ECDSA and EIP-1271 Signature Verification Function"
+   ├─ BatchDistributor — "Batch Sending Both Native and ERC-20 Tokens"
 ```
 
 ## 🙏🏼 Acknowledgements
