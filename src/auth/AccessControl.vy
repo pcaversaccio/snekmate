@@ -60,7 +60,7 @@ implements: IAccessControl
 
 
 # @dev The default 32-byte admin role.
-DEFAULT_ADMIN_ROLE: public(constant(bytes32)) = 0x0000000000000000000000000000000000000000000000000000000000000000
+DEFAULT_ADMIN_ROLE: public(constant(bytes32)) = empty(bytes32)
 
 
 # @dev An additional 32-byte access role.

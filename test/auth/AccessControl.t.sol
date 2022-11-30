@@ -10,8 +10,7 @@ import {IAccessControl} from "openzeppelin/access/IAccessControl.sol";
 import {IAccessControlExtended} from "./interfaces/IAccessControlExtended.sol";
 
 contract AccessControlTest is Test {
-    bytes32 public constant DEFAULT_ADMIN_ROLE =
-        0x0000000000000000000000000000000000000000000000000000000000000000;
+    bytes32 public constant DEFAULT_ADMIN_ROLE = bytes32(0);
     bytes32 public constant ADDITIONAL_ROLE_1 = keccak256("ADDITIONAL_ROLE_1");
     bytes32 public constant ADDITIONAL_ROLE_2 = keccak256("ADDITIONAL_ROLE_2");
 
