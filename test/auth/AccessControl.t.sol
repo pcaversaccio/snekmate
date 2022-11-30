@@ -4,7 +4,10 @@ pragma solidity ^0.8.17;
 import {Test} from "forge-std/Test.sol";
 import {VyperDeployer} from "utils/VyperDeployer.sol";
 
-import {IAccessControl} from "./interfaces/IAccessControl.sol";
+import {IERC165} from "openzeppelin/utils/introspection/IERC165.sol";
+import {IAccessControl} from "openzeppelin/access/IAccessControl.sol";
+
+import {IAccessControlExtended} from "./interfaces/IAccessControlExtended.sol";
 
 contract AccessControlTest is Test {
     bytes32 public constant DEFAULT_ADMIN_ROLE =
@@ -14,7 +17,7 @@ contract AccessControlTest is Test {
 
     VyperDeployer private vyperDeployer = new VyperDeployer();
 
-    IAccessControl private accessControl;
+    IAccessControlExtended private accessControl;
 
     event RoleAdminChanged(
         bytes32 indexed role,
@@ -35,7 +38,7 @@ contract AccessControlTest is Test {
     );
 
     function setUp() public {
-        accessControl = IAccessControl(
+        accessControl = IAccessControlExtended(
             vyperDeployer.deployContract("src/auth/", "AccessControl")
         );
     }
@@ -57,5 +60,23 @@ contract AccessControlTest is Test {
             accessControl.getRoleAdmin(ADDITIONAL_ROLE_2),
             DEFAULT_ADMIN_ROLE
         );
+    }
+
+    function testSupportsInterfaceSuccess() public {
+        assertTrue(accessControl.supportsInterface(type(IERC165).interfaceId));
+        assertTrue(
+            accessControl.supportsInterface(type(IAccessControl).interfaceId)
+        );
+    }
+
+    function testSupportsInterfaceGasCost() public {
+        uint256 startGas = gasleft();
+        accessControl.supportsInterface(type(IERC165).interfaceId);
+        uint256 gasUsed = startGas - gasleft();
+        assertTrue(gasUsed < 30_000);
+    }
+
+    function testSupportsInterfaceInvalidInterfaceId() public {
+        assertTrue(!accessControl.supportsInterface(0x0011bbff));
     }
 }
