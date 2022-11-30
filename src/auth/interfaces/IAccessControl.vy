@@ -69,7 +69,7 @@ def getRoleAdmin(role: bytes32) -> bytes32:
          `role`.
     @notice See `grantRole` and `revokeRole`.
             To change a role's admin, use
-            {AccessControl-_set_role_admin}.
+            {AccessControl-set_role_admin}.
     @param role The 32-byte role definition.
     @return bytes32 The 32-byte admin role
             that controls `role`.

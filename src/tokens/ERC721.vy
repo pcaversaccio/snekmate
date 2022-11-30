@@ -81,11 +81,11 @@ import interfaces.IERC721Receiver as IERC721Receiver
 # is defined as the XOR of all function selectors in the
 # interface.
 _SUPPORTED_INTERFACES: constant(bytes4[5]) = [
-    0x01ffc9a7, # The ERC-165 identifier for ERC-165.
-    0x80ac58cd, # The ERC-165 identifier for ERC-721.
-    0x5b5e139f, # The ERC-165 identifier for ERC-721 metadata extension.
-    0x780e9d63, # The ERC-165 identifier for ERC-721 enumeration extension.
-    0x589c5ce2, # The ERC-165 identifier for ERC-4494.
+    0x01FFC9A7, # The ERC-165 identifier for ERC-165.
+    0x80AC58CD, # The ERC-165 identifier for ERC-721.
+    0x5B5E139F, # The ERC-165 identifier for ERC-721 metadata extension.
+    0x780E9D63, # The ERC-165 identifier for ERC-721 enumeration extension.
+    0x589C5CE2, # The ERC-165 identifier for ERC-4494.
 ]
 
 
