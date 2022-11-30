@@ -3,7 +3,43 @@
 @title Multi-Role-Based Access Control Functions
 @license GNU Affero General Public License v3.0
 @author pcaversaccio
-@notice TBD
+@notice These functions can be used to implement role-based access
+        control mechanisms. Roles are referred to by their `bytes32`
+        identifier. These should be exposed in the external API and
+        be unique. The best way to achieve this is by using `public
+        constant` hash digests:
+        ```vy
+        MY_ROLE: public(constant(bytes32)) = keccak256("MY_ROLE");
+        ```
+
+        Roles can be used to represent a set of permissions. To restrict
+        access to a function call, use the `external` function `hasRole`
+        or the `internal` function `_check_role`:
+        ```vy
+        @external
+        def foo():
+            assert self.hasRole[MY_ROLE][msg.sender], "AccessControl: account is missing role"
+            ...
+
+        OR
+
+        @external
+        def foo():
+            self._check_role(MY_ROLE, msg.sender)
+            ...
+        ```
+
+        Roles can be granted and revoked dynamically via the `grantRole`
+        and `revokeRole` functions. Each role has an associated admin role,
+        and only accounts that have a role's admin role can call `grantRole`
+        and `revokeRole`. Also, by default, the admin role for all roles is
+        `DEFAULT_ADMIN_ROLE`, which means that only accounts with this role
+        will be able to grant or revoke other roles. More complex role
+        relationships can be created by using `set_role_admin`.
+
+        WARNING: The `DEFAULT_ADMIN_ROLE` is also its own admin! It has
+        permission to grant and revoke this role. Extra precautions should be
+        taken to secure accounts that have been granted it.
 """
 
 
@@ -152,19 +188,6 @@ def revokeRole(role: bytes32, account: address):
 
 
 @external
-def set_role_admin(role: bytes32, admin_role: bytes32):
-    """
-    @dev Sets `admin_role` as `role`'s admin role.
-    @notice Note that the caller must have `role`'s
-            admin role.
-    @param role The 32-byte role definition.
-    @param admin_role The new 32-byte admin role definition.
-    """
-    self._check_role(self.getRoleAdmin[role], msg.sender)
-    self._set_role_admin(role, admin_role)
-
-
-@external
 def renounceRole(role: bytes32, account: address):
     """
     @dev Revokes `role` from the calling account.
@@ -181,6 +204,19 @@ def renounceRole(role: bytes32, account: address):
     """
     assert account == msg.sender, "AccessControl: can only renounce roles for itself"
     self._revoke_role(role, account)
+
+
+@external
+def set_role_admin(role: bytes32, admin_role: bytes32):
+    """
+    @dev Sets `admin_role` as `role`'s admin role.
+    @notice Note that the caller must have `role`'s
+            admin role.
+    @param role The 32-byte role definition.
+    @param admin_role The new 32-byte admin role definition.
+    """
+    self._check_role(self.getRoleAdmin[role], msg.sender)
+    self._set_role_admin(role, admin_role)
 
 
 @internal
@@ -231,6 +267,6 @@ def _revoke_role(role: bytes32, account: address):
     @param role The 32-byte role definition.
     @param account The 20-byte address of the account.
     """
-    if (self.hasRole[role][account]):
-        self.hasRole[role][account] = False
-        log RoleRevoked(role, account, msg.sender)
+    self._check_role(role, account)
+    self.hasRole[role][account] = False
+    log RoleRevoked(role, account, msg.sender)
