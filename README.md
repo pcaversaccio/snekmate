@@ -12,15 +12,15 @@
 ```ml
 src
 ├─ auth
-║  ├─ Ownable — "Owner-Based Access Control Functions"
-║  ├─ Ownable2Step — "2-Step Ownership Transfer Functions"
-║  ├─ AccessControl — "Multi-Role-Based Access Control Functions (TBD)"
+│  ├─ Ownable — "Owner-Based Access Control Functions"
+│  ├─ Ownable2Step — "2-Step Ownership Transfer Functions"
+│  ├─ AccessControl — "Multi-Role-Based Access Control Functions (TBD)"
 ├─ extensions
-║  ├─ ERC4626 — "ERC-4626 Tokenised Vault Implementation (TBD)"
+│  ├─ ERC4626 — "ERC-4626 Tokenised Vault Implementation (TBD)"
 ├─ tokens
-║  ├─ ERC20 — "Modern and Gas-Efficient ERC-20 + EIP-2612 Implementation"
-║  ├─ ERC721 — "Modern and Gas-Efficient ERC-721 + EIP-4494 Implementation"
-║  ├─ ERC1155 — "Modern and Gas-Efficient ERC-1155 Implementation (TBD)"
+│  ├─ ERC20 — "Modern and Gas-Efficient ERC-20 + EIP-2612 Implementation"
+│  ├─ ERC721 — "Modern and Gas-Efficient ERC-721 + EIP-4494 Implementation"
+│  ├─ ERC1155 — "Modern and Gas-Efficient ERC-1155 Implementation (TBD)"
 ├─ utils
    ├─ ECDSA — "Elliptic Curve Digital Signature Algorithm (ECDSA) Functions"
    ├─ CreateAddress — "`CREATE` EVM Opcode Utility Function for Address Calculation"
