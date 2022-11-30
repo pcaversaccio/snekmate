@@ -55,14 +55,16 @@ def transfer_ownership(new_owner: address):
     @dev Starts the ownership transfer of the contract
          to a new account `new_owner`.
     @notice Note that this function can only be
-            called by the current `owner`. Also,
-            the `new_owner` cannot be the zero address.
-            Eventually, the function replaces the pending
-            transfer if there is one.
+            called by the current `owner`. Also, there is
+            no security risk in setting `new_owner` to the
+            zero address as the default value of `pending_owner`
+            is in fact already the zero address and the zero
+            address cannot call `accept_ownership`. Eventually,
+            the function replaces the pending transfer if
+            there is one.
     @param new_owner The 20-byte address of the new owner.
     """
     self._check_owner()
-    assert new_owner != empty(address), "Ownable2Step: new owner is the zero address"
     self.pending_owner = new_owner
     log OwnershipTransferStarted(self.owner, new_owner)
 

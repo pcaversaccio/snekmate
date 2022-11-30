@@ -54,12 +54,6 @@ contract Ownable2StepTest is Test {
         ownable2Step.transfer_ownership(vm.addr(1));
     }
 
-    function testTransferOwnershipToZeroAddress() public {
-        vm.prank(address(vyperDeployer));
-        vm.expectRevert(bytes("Ownable2Step: new owner is the zero address"));
-        ownable2Step.transfer_ownership(address(0));
-    }
-
     function testAcceptOwnershipSuccess() public {
         address oldOwner = address(vyperDeployer);
         address newOwner = vm.addr(1);
