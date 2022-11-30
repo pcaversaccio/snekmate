@@ -33,7 +33,7 @@ def __init__():
 @pure
 def verify(proof: DynArray[bytes32, max_value(uint16)], root: bytes32, leaf: bytes32) -> bool:
     """
-    @dev Returns true if it can be proved that a `leaf` is
+    @dev Returns `True` if it can be proved that a `leaf` is
          part of a Merkle tree defined by `root`.
     @notice Each pair of leaves and each pair of pre-images
             are assumed to be sorted.

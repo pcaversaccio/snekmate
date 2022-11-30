@@ -24,7 +24,7 @@ def name() -> String[25]:
             user-readable string name of the
             token collection.
     """
-    return ""
+    return empty(String[25])
 
 
 @external
@@ -36,7 +36,7 @@ def symbol() -> String[5]:
             user-readable string symbol of the
             token collection.
     """
-    return ""
+    return empty(String[5])
 
 
 @external
@@ -50,4 +50,4 @@ def tokenURI(_tokenId: uint256) -> String[512]:
     @return String The maximum 512-character user-readable
             string token URI of the `_tokenId` token.
     """
-    return ""
+    return empty(String[512])

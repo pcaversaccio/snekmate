@@ -19,7 +19,7 @@ def totalSupply() -> uint256:
     @dev Returns the amount of tokens in existence.
     @return uint256 The 32-byte token supply.
     """
-    return 0
+    return empty(uint256)
 
 
 @external
@@ -35,7 +35,7 @@ def tokenByIndex(_index: uint256) -> uint256:
     @return uint256 The 32-byte token ID at index
             `_index`.
     """
-    return 0
+    return empty(uint256)
 
 
 @external
@@ -52,4 +52,4 @@ def tokenOfOwnerByIndex(_owner: address, _index: uint256) -> uint256:
     @return uint256 The 32-byte token ID owned by
             `_owner` at index `_index`.
     """
-    return 0
+    return empty(uint256)

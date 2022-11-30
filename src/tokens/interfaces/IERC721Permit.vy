@@ -58,7 +58,7 @@ def nonces(tokenId: uint256) -> uint256:
     @param tokenId The 32-byte identifier of the token.
     @return uint256 The 32-byte `tokenId` nonce.
     """
-    return 0
+    return empty(uint256)
 
 
 @external
@@ -68,4 +68,4 @@ def DOMAIN_SEPARATOR() -> bytes32:
     @dev Returns the domain separator for the current chain.
     @return bytes32 The 32-byte domain separator.
     """
-    return convert(0, bytes32)
+    return empty(bytes32)

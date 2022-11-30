@@ -43,7 +43,7 @@ def is_valid_signature_now(signer: address, hash: bytes32, signature: Bytes[65])
     @notice Unlike ECDSA signatures, contract signatures
             are revocable and the result of this function
             can therefore change over time. It could return
-            true in block N and false in block N+1 (or the opposite).
+            `True` in block N and `False` in block N+1 (or the opposite).
     @param hash The 32-byte message digest that was signed.
     @param signature The secp256k1 64/65-byte signature of `hash`.
     @return bool The verification whether `signature` is valid

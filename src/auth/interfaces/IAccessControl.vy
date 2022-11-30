@@ -1,17 +1,17 @@
 # @version ^0.3.7
 """
-@title Multi-Role-Based Access Control Functions
+@title AccessControl Interface Definition
 @license GNU Affero General Public License v3.0
 @author pcaversaccio
-@notice TBD
+@notice The interface definition of `AccessControl`
+        to support the ERC-165 detection. In order
+        to ensure consistency and interoperability,
+        we follow OpenZeppelin's definition here:
+        https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/IAccessControl.sol.
+
+        On how to use interfaces in Vyper, please visit:
+        https://vyper.readthedocs.io/en/latest/interfaces.html#interfaces.
 """
-
-
-# @dev We import and implement the `IAccessControl`
-# interface, which is written using standard Vyper
-# syntax.
-import interfaces.IAccessControl as IAccessControl
-implements: IAccessControl
 
 
 # @dev Emitted when `newAdminRole` is set as

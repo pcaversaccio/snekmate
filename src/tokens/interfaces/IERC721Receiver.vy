@@ -31,4 +31,4 @@ def onERC721Received(_operator: address, _from: address, _tokenId: uint256, _dat
            with no specified format.
     @return bytes4 The 4-byte function selector of `onERC721Received`.
     """
-    return convert(0, bytes4)
+    return empty(bytes4)

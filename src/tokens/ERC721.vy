@@ -284,7 +284,7 @@ def __init__(name_: String[25], symbol_: String[5], base_uri_: String[80], name_
 @pure
 def supportsInterface(interface_id: bytes4) -> bool:
     """
-    @dev Returns true if this contract implements the
+    @dev Returns `True` if this contract implements the
          interface defined by `interface_id`.
     @param interface_id The 4-byte interface identifier.
     @return bool The verification whether the contract

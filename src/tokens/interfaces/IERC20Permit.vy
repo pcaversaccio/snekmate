@@ -53,7 +53,7 @@ def nonces(owner: address) -> uint256:
     @param owner The 20-byte owner address.
     @return uint256 The 32-byte owner nonce.
     """
-    return 0
+    return empty(uint256)
 
 
 @external
@@ -63,4 +63,4 @@ def DOMAIN_SEPARATOR() -> bytes32:
     @dev Returns the domain separator for the current chain.
     @return bytes32 The 32-byte domain separator.
     """
-    return convert(0, bytes32)
+    return empty(bytes32)
