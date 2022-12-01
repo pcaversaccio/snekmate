@@ -2,7 +2,7 @@
 
 ## 📬 Reporting a Vulnerability
 
-Please report any security issues you find to [pascal.caversaccio@hotmail.ch](mailto:pascal.caversaccio@hotmail.ch). My PGP public key is:
+Please report any security issues you find to [pascal.caversaccio@hotmail.ch](mailto:pascal.caversaccio@hotmail.ch). My public PGP key is:
 
 ```sh
 -----BEGIN PGP PUBLIC KEY BLOCK-----
