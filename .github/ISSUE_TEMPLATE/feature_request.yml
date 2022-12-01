@@ -2,7 +2,7 @@ name: Feature Request
 description: Suggest an idea for snekmate.
 title: "[Feature-Request]: "
 labels:
-  - "enhancement"
+  - feature 💥
 assignees:
   - pcaversaccio
 body:
