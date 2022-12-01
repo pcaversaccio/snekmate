@@ -6,7 +6,7 @@ Please report any security issues you find to [pascal.caversaccio@hotmail.ch](ma
 
 ```sh
 -----BEGIN PGP PUBLIC KEY BLOCK-----
-Comment: Type:	3,072-bit RSA (secret key available)
+Comment: Type:	3,072-bit RSA
 Comment: Fingerprint:	063E966C93AB4356492FE0327C3B4B4B7725111F
 
 
