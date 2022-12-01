@@ -14,7 +14,7 @@ src
 ├─ auth
 │  ├─ Ownable — "Owner-Based Access Control Functions"
 │  ├─ Ownable2Step — "2-Step Ownership Transfer Functions"
-│  ├─ AccessControl — "Multi-Role-Based Access Control Functions (TBD)"
+│  ├─ AccessControl — "Multi-Role-Based Access Control Functions"
 ├─ extensions
 │  ├─ ERC4626 — "ERC-4626 Tokenised Vault Implementation (TBD)"
 ├─ tokens
