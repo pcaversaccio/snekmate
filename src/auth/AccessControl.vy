@@ -270,6 +270,6 @@ def _revoke_role(role: bytes32, account: address):
     @param role The 32-byte role definition.
     @param account The 20-byte address of the account.
     """
-    self._check_role(role, account)
-    self.hasRole[role][account] = False
-    log RoleRevoked(role, account, msg.sender)
+    if (self.hasRole[role][account]):
+        self.hasRole[role][account] = False
+        log RoleRevoked(role, account, msg.sender)
