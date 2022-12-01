@@ -3,15 +3,21 @@
 @title Merkle Tree Proof Verification Functions
 @license GNU Affero General Public License v3.0
 @author pcaversaccio
-@notice The proofs can be generated using the JavaScript library:
-        https://github.com/miguelmota/merkletreejs. You must select
-        `keccak256` as the hashing algorithm and pair sorting should
-        be enabled. You should avoid using 64-byte leaf values before
-        hashing or using a hash function other than `keccak256` for
-        hashing leaves. The reason for this is that the concatenation
+@notice The tree and the proofs can be generated can be generated
+        using the JavaScript libraries:
+        - https://github.com/OpenZeppelin/merkle-tree (recommended),
+        - https://github.com/miguelmota/merkletreejs (deprecated).
+        In case you use the JavaScript library https://github.com/miguelmota/merkletreejs,
+        you must select `keccak256` as the hashing algorithm and pair
+        sorting should be enabled. You should avoid using 64-byte leaf
+        values before hashing or using a hash function other than `keccak256`
+        for hashing leaves. The reason for this is that the concatenation
         of a sorted pair of internal nodes in the Merkle tree could be
-        reinterpreted as a leaf value. OpenZeppelin provides some good
-        examples of how to construct Merkle tree proofs correctly:
+        reinterpreted as a leaf value. OpenZeppelin's JavaScript library
+        generates merkle trees that are safe against this attack out of
+        the box. You will find a quick start guide in the README.
+        OpenZeppelin provides some good examples of how to construct Merkle tree
+        proofs correctly:
         https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/test/utils/cryptography/MerkleProof.test.js.
         The implementation is inspired by OpenZeppelin's implementation here:
         https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/cryptography/MerkleProof.sol.
