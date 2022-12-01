@@ -1,10 +1,13 @@
-const { MerkleTree } = require("merkletreejs");
+const { StandardMerkleTree } = require("@openzeppelin/merkle-tree");
 const ethers = require("ethers");
 
 const badElements = ["d", "e", "f"];
-const badMerkleTree = new MerkleTree(badElements);
+const merkleTree = StandardMerkleTree.of(
+  badElements.map((c) => [c]),
+  ["string"]
+);
 
-const badProof = badMerkleTree.getHexProof(badElements[0]);
+const badProof = merkleTree.getProof([badElements[0]]);
 
 // eslint-disable-next-line no-undef
 process.stdout.write(
