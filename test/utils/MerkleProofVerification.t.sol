@@ -23,8 +23,8 @@ contract MerkleProofVerificationTest is Test {
     function decode(
         bool flag
     ) internal returns (bytes32[] memory, bytes32[] memory) {
-        bytes32[] memory proofDecoded = new bytes32[](7);
-        bytes32[] memory proofDecodedSliced = new bytes32[](6);
+        bytes32[] memory proofDecoded = new bytes32[](6);
+        bytes32[] memory proofDecodedSliced = new bytes32[](5);
 
         if (flag) {
             string[] memory cmdsProof = new string[](2);
@@ -37,19 +37,10 @@ contract MerkleProofVerificationTest is Test {
                 bytes32 arg3,
                 bytes32 arg4,
                 bytes32 arg5,
-                bytes32 arg6,
-                bytes32 arg7
+                bytes32 arg6
             ) = abi.decode(
                     proof,
-                    (
-                        bytes32,
-                        bytes32,
-                        bytes32,
-                        bytes32,
-                        bytes32,
-                        bytes32,
-                        bytes32
-                    )
+                    (bytes32, bytes32, bytes32, bytes32, bytes32, bytes32)
                 );
             proofDecoded[0] = arg1;
             proofDecoded[1] = arg2;
@@ -57,14 +48,12 @@ contract MerkleProofVerificationTest is Test {
             proofDecoded[3] = arg4;
             proofDecoded[4] = arg5;
             proofDecoded[5] = arg6;
-            proofDecoded[6] = arg7;
 
             proofDecodedSliced[0] = arg2;
             proofDecodedSliced[1] = arg3;
             proofDecodedSliced[2] = arg4;
             proofDecodedSliced[3] = arg5;
             proofDecodedSliced[4] = arg6;
-            proofDecodedSliced[5] = arg7;
 
             return (proofDecoded, proofDecodedSliced);
         } else {
@@ -79,6 +68,34 @@ contract MerkleProofVerificationTest is Test {
         }
     }
 
+    function decodeVulnerable() internal returns (bytes32[] memory) {
+        bytes32[] memory proofDecodedSliced = new bytes32[](6);
+        string[] memory cmdsProof = new string[](2);
+        cmdsProof[0] = "node";
+        cmdsProof[1] = "test/utils/scripts/generate-proof-vulnerable.js";
+        bytes memory proof = vm.ffi(cmdsProof);
+        (
+            ,
+            bytes32 arg2,
+            bytes32 arg3,
+            bytes32 arg4,
+            bytes32 arg5,
+            bytes32 arg6,
+            bytes32 arg7
+        ) = abi.decode(
+                proof,
+                (bytes32, bytes32, bytes32, bytes32, bytes32, bytes32, bytes32)
+            );
+        proofDecodedSliced[0] = arg2;
+        proofDecodedSliced[1] = arg3;
+        proofDecodedSliced[2] = arg4;
+        proofDecodedSliced[3] = arg5;
+        proofDecodedSliced[4] = arg6;
+        proofDecodedSliced[5] = arg7;
+
+        return proofDecodedSliced;
+    }
+
     function testVerify() public {
         string[] memory cmdsRoot = new string[](2);
         cmdsRoot[0] = "node";
@@ -90,15 +107,23 @@ contract MerkleProofVerificationTest is Test {
         cmdsLeaf[1] = "test/utils/scripts/generate-leaf.js";
         bytes memory leaf = vm.ffi(cmdsLeaf);
 
+        string[] memory cmdsRootVulnerable = new string[](2);
+        cmdsRootVulnerable[0] = "node";
+        cmdsRootVulnerable[
+            1
+        ] = "test/utils/scripts/generate-root-vulnerable.js";
+        bytes memory rootVulnerable = vm.ffi(cmdsRootVulnerable);
+
         string[] memory cmdsNoSuchLeaf = new string[](2);
         cmdsNoSuchLeaf[0] = "node";
         cmdsNoSuchLeaf[1] = "test/utils/scripts/generate-no-such-leaf.js";
         bytes memory noSuchLeaf = vm.ffi(cmdsNoSuchLeaf);
-
         (
             bytes32[] memory proofDecoded,
             bytes32[] memory proofDecodedSliced
         ) = decode(true);
+
+        bytes32[] memory proofDecodedSlicedVulnerable = decodeVulnerable();
 
         assertTrue(
             merkleProofVerification.verify(
@@ -109,8 +134,8 @@ contract MerkleProofVerificationTest is Test {
         );
         assertTrue(
             merkleProofVerification.verify(
-                proofDecodedSliced,
-                bytes32(root),
+                proofDecodedSlicedVulnerable,
+                bytes32(rootVulnerable),
                 bytes32(noSuchLeaf)
             )
         );
