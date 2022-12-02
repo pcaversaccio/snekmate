@@ -125,6 +125,14 @@ contract MerkleProofVerificationTest is Test {
 
         bytes32[] memory proofDecoded = decodeCorrectProofPayload();
 
+        assertTrue(
+            merkleProofVerification.verify(
+                proofDecoded,
+                bytes32(root),
+                bytes32(leaf)
+            )
+        );
+
         string[] memory cmdsRootNoSuchLeaf = new string[](2);
         cmdsRootNoSuchLeaf[0] = "node";
         cmdsRootNoSuchLeaf[
@@ -139,13 +147,6 @@ contract MerkleProofVerificationTest is Test {
 
         bytes32[] memory proofDecodedSliced = decodeNoSuchLeafProofPayload();
 
-        assertTrue(
-            merkleProofVerification.verify(
-                proofDecoded,
-                bytes32(root),
-                bytes32(leaf)
-            )
-        );
         assertTrue(
             merkleProofVerification.verify(
                 proofDecodedSliced,
