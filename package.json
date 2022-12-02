@@ -30,6 +30,7 @@
     "lint:fix": "yarn prettier:fix && yarn solhint:fix && eslint --ext .js . --fix"
   },
   "devDependencies": {
+    "@openzeppelin/merkle-tree": "^1.0.1",
     "eslint": "^8.28.0",
     "eslint-config-prettier": "^8.5.0",
     "ethers": "^5.7.2",

@@ -1,13 +1,12 @@
-const { MerkleTree } = require("merkletreejs");
-const keccak256 = require("keccak256");
+const { StandardMerkleTree } = require("@openzeppelin/merkle-tree");
 
 const elements = require("./elements.js");
-const merkleTree = new MerkleTree(elements, keccak256, {
-  hashLeaves: true,
-  sortPairs: true,
-});
+const merkleTree = StandardMerkleTree.of(
+  elements.map((c) => [c]),
+  ["string"]
+);
 
-const root = merkleTree.getHexRoot();
+const root = merkleTree.root;
 
 // eslint-disable-next-line no-undef
 process.stdout.write(root);
