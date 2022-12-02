@@ -2,7 +2,7 @@ const keccak256 = require("keccak256");
 
 const elements = require("./elements.js");
 
-// For demonstration, it is also possible to create valid proofs for certain 64-byte values *not* in elements
+// For demonstration, it is also possible to create valid proofs for certain 64-byte values *not* in `elements`
 const noSuchLeaf =
   "0x" +
   keccak256(
