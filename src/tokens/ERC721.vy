@@ -459,12 +459,12 @@ def tokenURI(token_id: uint256) -> String[512]:
 
     # If both are set, concatenate the base URI
     # and token URI.
-    if (len(token_uri) > empty(uint256)):
+    if (len(token_uri) != empty(uint256)):
         return concat(_BASE_URI, token_uri)
 
     # If there is no token URI but a base URI,
     # concatenate the base URI and token ID.
-    if (len(_BASE_URI) > empty(uint256)):
+    if (len(_BASE_URI) != empty(uint256)):
         return concat(_BASE_URI, uint2str(token_id))
     else:
         return ""
@@ -868,7 +868,7 @@ def _burn(token_id: uint256):
 
     # Checks whether a token-specific URI has been set for the token
     # and deletes the token URI from the storage mapping.
-    if (len(self._token_uris[token_id]) > 0):
+    if (len(self._token_uris[token_id]) != empty(uint256)):
         self._token_uris[token_id] = ""
 
 

@@ -140,6 +140,14 @@ def _process_multi_proof(proof: DynArray[bytes32, max_value(uint16)], proof_flag
     leaves_len: uint256 = len(leaves)
     total_hashes: uint256 = len(proof_flags)
 
+    # @dev Checks the validity of the proof. We do not check for
+    # an overflow or underflow as `leaves_len` and `len(proof)`
+    # are bounded by `max_value(uint16)` and therefore cannot
+    # overflow the `uint256` type. An underflow is theoretically
+    # possible if the length of `leaves` and `proof` is zero and
+    # the result would wrap to `max_value(uint256)`. However, since
+    # `total_hashes` is implicitly bounded by `max_value(uint16)`,
+    # the assertion will therefore fail.
     assert unsafe_sub(unsafe_add(leaves_len, len(proof)), 1) == total_hashes, "MerkleProof: invalid multiproof"
 
     hashes: DynArray[bytes32, max_value(uint16)] = []
@@ -149,24 +157,36 @@ def _process_multi_proof(proof: DynArray[bytes32, max_value(uint16)], proof_flag
     a: bytes32 = empty(bytes32)
     b: bytes32 = empty(bytes32)
 
+    # @dev At each step, the next hash is calculated from two values:
+    # - a value from the "main queue". If not all leaves have been used,
+    #   the next leaf is picked up, otherwise the next hash.
+    # - depending on the flag, either another value from the "main queue"
+    #   (merging branches) or an element from the `proof` array.
     for flag in proof_flags:
         if (leaf_pos < leaves_len):
-            a = leaves[++leaf_pos]
+            a = leaves[leaf_pos]
+            leaf_pos += 1
+        else:
+            a = hashes[hash_pos]
+            hash_pos += 1
         if (flag):
             if (leaf_pos < leaves_len):
-                b = leaves[++leaf_pos]
+                b = leaves[leaf_pos]
+                leaf_pos += 1
             else:
-                b = hashes[++hash_pos]
+                b = hashes[hash_pos]
+                hash_pos += 1
         else:
-            b = proof[++proof_pos]
+            b = proof[proof_pos]
+            proof_pos += 1
         hashes.append(self._hash_pair(a, b))
 
-    if (total_hashes > 0):
+    if (total_hashes != empty(uint256)):
         return hashes[total_hashes - 1]
-    elif (leaves_len > 0):
-        return leaves[0]
+    elif (leaves_len != empty(uint256)):
+        return leaves[empty(uint256)]
     else:
-        return proof[0]
+        return proof[empty(uint256)]
 
 
 @internal
