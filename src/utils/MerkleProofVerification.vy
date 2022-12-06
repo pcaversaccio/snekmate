@@ -141,14 +141,11 @@ def _process_multi_proof(proof: DynArray[bytes32, max_value(uint16)], proof_flag
     total_hashes: uint256 = len(proof_flags)
 
     # @dev Checks the validity of the proof. We do not check for
-    # an overflow or underflow as `leaves_len` and `len(proof)`
-    # are bounded by `max_value(uint16)` and therefore cannot
-    # overflow the `uint256` type. An underflow is theoretically
-    # possible if the length of `leaves` and `proof` is zero and
-    # the result would wrap to `max_value(uint256)`. However, since
-    # `total_hashes` is implicitly bounded by `max_value(uint16)`,
-    # the assertion will therefore fail.
-    assert unsafe_sub(unsafe_add(leaves_len, len(proof)), 1) == total_hashes, "MerkleProof: invalid multiproof"
+    # an overflow (nor underflow) as `leaves_len`, `proof`, and
+    # `total_hashes` are bounded by the value `max_value(uint16)`
+    # and therefore cannot overflow the `uint256` type when they
+    # are added together or incremented by 1.
+    assert unsafe_add(leaves_len, len(proof)) == unsafe_add(total_hashes, 1), "MerkleProof: invalid multiproof"
 
     hashes: DynArray[bytes32, max_value(uint16)] = []
     leaf_pos: uint256 = empty(uint256)
