@@ -74,7 +74,7 @@ def multicall(data: DynArray[Batch, max_value(uint8)]) -> DynArray[Result, max_v
     """
     results: DynArray[Result, max_value(uint8)] = []
     return_data: Bytes[max_value(uint8)] = b""
-    success: bool = False
+    success: bool = empty(bool)
     for batch in data:
         if (batch.allow_failure == False):
             return_data = raw_call(batch.target, batch.call_data, max_outsize=max_value(uint8))
@@ -99,10 +99,10 @@ def multicall_value(data: DynArray[BatchValue, max_value(uint8)]) -> DynArray[Re
     @param data The array of `BatchValue` structs.
     @return DynArray The array of `Result` structs.
     """
-    value_accumulator: uint256 = 0
+    value_accumulator: uint256 = empty(uint256)
     results: DynArray[Result, max_value(uint8)] = []
     return_data: Bytes[max_value(uint8)] = b""
-    success: bool = False
+    success: bool = empty(bool)
     for batch in data:
         msg_value: uint256 = batch.value
         value_accumulator = unsafe_add(value_accumulator, msg_value)
@@ -136,7 +136,7 @@ def multicall_self(data: DynArray[BatchSelf, max_value(uint8)]) -> DynArray[Resu
     """
     results: DynArray[Result, max_value(uint8)] = []
     return_data: Bytes[max_value(uint8)] = b""
-    success: bool = False
+    success: bool = empty(bool)
     for batch in data:
         if (batch.allow_failure == False):
             return_data = raw_call(self, batch.call_data, max_outsize=max_value(uint8), is_delegate_call=True)
@@ -167,10 +167,10 @@ def multicall_value_self(data: DynArray[BatchValueSelf, max_value(uint8)]) -> Dy
     @param data The array of `BatchValueSelf` structs.
     @return DynArray The array of `Result` structs.
     """
-    value_accumulator: uint256 = 0
+    value_accumulator: uint256 = empty(uint256)
     results: DynArray[Result, max_value(uint8)] = []
     return_data: Bytes[max_value(uint8)] = b""
-    success: bool = False
+    success: bool = empty(bool)
     for batch in data:
         msg_value: uint256 = batch.value
         value_accumulator = unsafe_add(value_accumulator, msg_value)
@@ -197,7 +197,7 @@ def multistaticcall(data: DynArray[Batch, max_value(uint8)]) -> DynArray[Result,
     """
     results: DynArray[Result, max_value(uint8)] = []
     return_data: Bytes[max_value(uint8)] = b""
-    success: bool = False
+    success: bool = empty(bool)
     for batch in data:
         if (batch.allow_failure == False):
             return_data = raw_call(batch.target, batch.call_data, max_outsize=max_value(uint8), is_static_call=True)

@@ -56,6 +56,12 @@ def verify(proof: DynArray[bytes32, max_value(uint16)], root: bytes32, leaf: byt
     return self._process_proof(proof, leaf) == root
 
 
+@external
+@pure
+def multi_proof_verify(proof: DynArray[bytes32, max_value(uint16)], proof_flags: DynArray[bool, max_value(uint16)], root: bytes32, leaves: DynArray[bytes32, max_value(uint16)]) -> bool:
+    return self._process_multi_proof(proof, proof_flags, leaves) == root
+
+
 @internal
 @pure
 def _process_proof(proof: DynArray[bytes32, max_value(uint16)], leaf: bytes32) -> bytes32:
@@ -75,6 +81,41 @@ def _process_proof(proof: DynArray[bytes32, max_value(uint16)], leaf: bytes32) -
     for i in proof:
         computed_hash = self._hash_pair(computed_hash, i)
     return computed_hash
+
+
+@internal
+@pure
+def _process_multi_proof(proof: DynArray[bytes32, max_value(uint16)], proof_flags: DynArray[bool, max_value(uint16)], leaves: DynArray[bytes32, max_value(uint16)]) -> bytes32:
+    leaves_len: uint256 = len(leaves)
+    total_hashes: uint256 = len(proof_flags)
+
+    assert unsafe_sub(unsafe_add(leaves_len, len(proof)), 1) == total_hashes, "MerkleProof: invalid multiproof"
+
+    hashes: DynArray[bytes32, max_value(uint16)] = []
+    leaf_pos: uint256 = empty(uint256)
+    hash_pos: uint256 = empty(uint256)
+    proof_pos: uint256 = empty(uint256)
+    a: bytes32 = empty(bytes32)
+    b: bytes32 = empty(bytes32)
+
+    for flag in proof_flags:
+        if (leaf_pos < leaves_len):
+            a = leaves[++leaf_pos]
+        if (flag):
+            if (leaf_pos < leaves_len):
+                b = leaves[++leaf_pos]
+            else:
+                b = hashes[++hash_pos]
+        else:
+            b = proof[++proof_pos]
+        hashes.append(self._hash_pair(a, b))
+
+    if (total_hashes > 0):
+        return hashes[total_hashes - 1]
+    elif (leaves_len > 0):
+        return leaves[0]
+    else:
+        return proof[0]
 
 
 @internal
