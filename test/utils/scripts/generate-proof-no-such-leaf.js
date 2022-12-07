@@ -13,16 +13,5 @@ const proof = merkleTree.getHexProof(leaf);
 
 // eslint-disable-next-line no-undef
 process.stdout.write(
-  ethers.utils.defaultAbiCoder.encode(
-    [
-      "bytes32",
-      "bytes32",
-      "bytes32",
-      "bytes32",
-      "bytes32",
-      "bytes32",
-      "bytes32",
-    ],
-    proof
-  )
+  ethers.utils.defaultAbiCoder.encode(Array(7).fill("bytes32"), proof)
 );
