@@ -58,7 +58,8 @@ def verify(proof: DynArray[bytes32, max_value(uint16)], root: bytes32, leaf: byt
 
 @external
 @pure
-def multi_proof_verify(proof: DynArray[bytes32, max_value(uint16)], proof_flags: DynArray[bool, max_value(uint16)], root: bytes32, leaves: DynArray[bytes32, max_value(uint16)]) -> bool:
+def multi_proof_verify(proof: DynArray[bytes32, max_value(uint16)], proof_flags: DynArray[bool, max_value(uint16)],
+                       root: bytes32, leaves: DynArray[bytes32, max_value(uint16)]) -> bool:
     """
     @dev Returns `True` if it can be simultaneously proved that
          `leaves` are part of a Merkle tree defined by `root`
@@ -103,7 +104,8 @@ def _process_proof(proof: DynArray[bytes32, max_value(uint16)], leaf: bytes32) -
 
 @internal
 @pure
-def _process_multi_proof(proof: DynArray[bytes32, max_value(uint16)], proof_flags: DynArray[bool, max_value(uint16)], leaves: DynArray[bytes32, max_value(uint16)]) -> bytes32:
+def _process_multi_proof(proof: DynArray[bytes32, max_value(uint16)], proof_flags: DynArray[bool, max_value(uint16)],
+                         leaves: DynArray[bytes32, max_value(uint16)]) -> bytes32:
     """
     @dev Returns the recovered hash obtained by traversing
          a Merkle tree from `leaves` using `proof` and a
