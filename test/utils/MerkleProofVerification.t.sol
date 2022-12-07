@@ -502,13 +502,14 @@ contract MerkleProofVerificationTest is Test {
         );
     }
 
-    function testMultiProofLimitCase1() public {
+    function testMultiProofEdgeCase1() public {
         bytes32[] memory leaves = new bytes32[](1);
         bytes32[] memory multiProof = new bytes32[](0);
         bool[] memory proofFlags = new bool[](0);
 
         leaves[0] = keccak256(bytes.concat(keccak256(abi.encode("a"))));
 
+        /// @dev Works for a Merkle tree containing a single leaf.
         assertTrue(
             merkleProofVerification.multi_proof_verify(
                 multiProof,
@@ -519,7 +520,7 @@ contract MerkleProofVerificationTest is Test {
         );
     }
 
-    function testMultiProofLimitCase2() public {
+    function testMultiProofEdgeCase2() public {
         bytes32[] memory leaves = new bytes32[](0);
         bytes32[] memory multiProof = new bytes32[](1);
         bool[] memory proofFlags = new bool[](0);
@@ -529,6 +530,7 @@ contract MerkleProofVerificationTest is Test {
         );
         multiProof[0] = root;
 
+        /// @dev Can prove empty leaves.
         assertTrue(
             merkleProofVerification.multi_proof_verify(
                 multiProof,
