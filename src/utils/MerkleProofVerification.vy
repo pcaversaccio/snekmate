@@ -64,8 +64,7 @@ def multi_proof_verify(proof: DynArray[bytes32, max_value(uint16)], proof_flags:
          `leaves` are part of a Merkle tree defined by `root`
          and a given set of `proof_flags`.
     @notice Note that not all Merkle trees allow for multiproofs.
-            See {MerkleProofVerification-_process_multi_proof}
-            for further details.
+            See `_process_multi_proof` for further details.
     @param proof The 32-byte array containing sibling hashes
            on the branches from `leaves` to the `root` of the
            Merkle tree.
