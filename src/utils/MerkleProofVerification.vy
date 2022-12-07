@@ -141,8 +141,8 @@ def _process_multi_proof(proof: DynArray[bytes32, max_value(uint16)], proof_flag
     leaves_len: uint256 = len(leaves)
     total_hashes: uint256 = len(proof_flags)
 
-    # @dev Checks the validity of the proof. We do not check for
-    # an overflow (nor underflow) as `leaves_len`, `proof`, and
+    # Checks the validity of the proof. We do not check for an
+    # overflow (nor underflow) as `leaves_len`, `proof`, and
     # `total_hashes` are bounded by the value `max_value(uint16)`
     # and therefore cannot overflow the `uint256` type when they
     # are added together or incremented by 1.
@@ -155,7 +155,7 @@ def _process_multi_proof(proof: DynArray[bytes32, max_value(uint16)], proof_flag
     a: bytes32 = empty(bytes32)
     b: bytes32 = empty(bytes32)
 
-    # @dev At each step, the next hash is calculated from two values:
+    # At each step, the next hash is calculated from two values:
     # - a value from the "main queue". If not all leaves have been used,
     #   the next leaf is picked up, otherwise the next hash.
     # - depending on the flag, either another value from the "main queue"
