@@ -163,24 +163,26 @@ def _process_multi_proof(proof: DynArray[bytes32, max_value(uint16)], proof_flag
     for flag in proof_flags:
         if (leaf_pos < leaves_len):
             a = leaves[leaf_pos]
-            leaf_pos += 1
+            leaf_pos = unsafe_add(leaf_pos, 1)
         else:
             a = hashes[hash_pos]
-            hash_pos += 1
+            hash_pos = unsafe_add(hash_pos, 1)
         if (flag):
             if (leaf_pos < leaves_len):
                 b = leaves[leaf_pos]
-                leaf_pos += 1
+                leaf_pos = unsafe_add(leaf_pos, 1)
             else:
                 b = hashes[hash_pos]
-                hash_pos += 1
+                hash_pos = unsafe_add(hash_pos, 1)
         else:
             b = proof[proof_pos]
-            proof_pos += 1
+            proof_pos = unsafe_add(proof_pos, 1)
         hashes.append(self._hash_pair(a, b))
 
     if (total_hashes != empty(uint256)):
-        return hashes[total_hashes - 1]
+        # Whilst Vyper supports negative indexing (similar to Python),
+        # the array index cannot become negative here by design.
+        return hashes[unsafe_sub(total_hashes, 1)]
     elif (leaves_len != empty(uint256)):
         return leaves[empty(uint256)]
     else:

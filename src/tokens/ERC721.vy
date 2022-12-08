@@ -541,9 +541,10 @@ def safe_mint(owner: address, uri: String[432]):
     """
     assert self.is_minter[msg.sender], "AccessControl: access is denied"
     # New tokens will be automatically assigned an incremental ID.
-    # The first token ID will be zero.
+    # The first token ID will be zero. Please also see the comment
+    # below on why `_counter` cannot even theoretically overflow.
     token_id: uint256 = self._counter
-    self._counter += 1
+    self._counter = unsafe_add(self._counter, 1)
     # Theoretically, the following line could overflow
     # if all 2**256 token IDs were minted. However,
     # since we have bounded the dynamic array `_all_tokens`
