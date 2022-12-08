@@ -180,7 +180,8 @@ def _process_multi_proof(proof: DynArray[bytes32, max_value(uint16)], proof_flag
         hashes.append(self._hash_pair(a, b))
 
     if (total_hashes != empty(uint256)):
-        # Whilst Vyper supports negative indexing (similar to Python),
+        # Vyper, unlike Python, does not support negative
+        # indexing and would revert in such a case. In any event,
         # the array index cannot become negative here by design.
         return hashes[unsafe_sub(total_hashes, 1)]
     elif (leaves_len != empty(uint256)):
