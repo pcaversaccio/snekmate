@@ -197,7 +197,7 @@ def __init__(name_: String[25], symbol_: String[5], initial_supply_: uint256, na
 
     self._transfer_ownership(msg.sender)
     self.is_minter[msg.sender] = True
-    if (initial_supply > 0):
+    if (initial_supply != empty(uint256)):
         self.balanceOf[msg.sender] = initial_supply
         self.totalSupply = initial_supply
 

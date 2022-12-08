@@ -57,7 +57,7 @@ def distribute_ether(data: Batch):
         # safety measure, a reentrancy guard is used.
         raw_call(txn.recipient, b"", value=txn.amount)
 
-    if (self.balance != 0):
+    if (self.balance != empty(uint256)):
         raw_call(msg.sender, b"", value=self.balance)
 
 
@@ -81,7 +81,7 @@ def distribute_token(token: ERC20, data: Batch):
            of tuples that contain each a recipient address &
            token amount.
     """
-    total: uint256 = 0
+    total: uint256 = empty(uint256)
     for txn in data.txns:
         total += txn.amount
 

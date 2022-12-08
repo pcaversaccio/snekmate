@@ -7,9 +7,10 @@ const merkleTree = StandardMerkleTree.of(
   ["string"]
 );
 
-const proof = merkleTree.getProof([elements[0]]);
+const idx = require("./multiproof-indices.js");
+const { proofFlags } = merkleTree.getMultiProof(idx);
 
 // eslint-disable-next-line no-undef
 process.stdout.write(
-  ethers.utils.defaultAbiCoder.encode(Array(6).fill("bytes32"), proof)
+  ethers.utils.defaultAbiCoder.encode(Array(10).fill("bool"), proofFlags)
 );

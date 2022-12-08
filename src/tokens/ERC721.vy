@@ -260,7 +260,7 @@ def __init__(name_: String[25], symbol_: String[5], base_uri_: String[80], name_
            main version of the signing domain. Signatures
            from different versions are not compatible.
     """
-    self._counter = 0
+    self._counter = empty(uint256)
 
     name = name_
     symbol = symbol_
@@ -454,17 +454,17 @@ def tokenURI(token_id: uint256) -> String[512]:
     token_uri: String[432] = self._token_uris[token_id]
 
     # If there is no base URI, return the token URI.
-    if (len(_BASE_URI) == 0):
+    if (len(_BASE_URI) == empty(uint256)):
         return token_uri
 
     # If both are set, concatenate the base URI
     # and token URI.
-    if (len(token_uri) > 0):
+    if (len(token_uri) != empty(uint256)):
         return concat(_BASE_URI, token_uri)
 
     # If there is no token URI but a base URI,
     # concatenate the base URI and token ID.
-    if (len(_BASE_URI) > 0):
+    if (len(_BASE_URI) != empty(uint256)):
         return concat(_BASE_URI, uint2str(token_id))
     else:
         return ""
@@ -868,7 +868,7 @@ def _burn(token_id: uint256):
 
     # Checks whether a token-specific URI has been set for the token
     # and deletes the token URI from the storage mapping.
-    if (len(self._token_uris[token_id]) > 0):
+    if (len(self._token_uris[token_id]) != empty(uint256)):
         self._token_uris[token_id] = ""
 
 
@@ -1001,8 +1001,8 @@ def _remove_token_from_owner_enumeration(owner: address, token_id:uint256):
     
     # This also deletes the contents at the
     # last position of the array.
-    self._owned_tokens_index[token_id] = 0
-    self._owned_tokens[owner][last_token_index] = 0
+    self._owned_tokens_index[token_id] = empty(uint256)
+    self._owned_tokens[owner][last_token_index] = empty(uint256)
 
 
 @internal
@@ -1036,7 +1036,7 @@ def _remove_token_from_all_tokens_enumeration(token_id: uint256):
 
     # This also deletes the contents at the
     # last position of the array.
-    self._all_tokens_index[token_id] = 0
+    self._all_tokens_index[token_id] = empty(uint256)
     self._all_tokens.pop()
 
 

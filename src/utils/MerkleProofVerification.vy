@@ -56,6 +56,31 @@ def verify(proof: DynArray[bytes32, max_value(uint16)], root: bytes32, leaf: byt
     return self._process_proof(proof, leaf) == root
 
 
+@external
+@pure
+def multi_proof_verify(proof: DynArray[bytes32, max_value(uint16)], proof_flags: DynArray[bool, max_value(uint16)],
+                       root: bytes32, leaves: DynArray[bytes32, max_value(uint16)]) -> bool:
+    """
+    @dev Returns `True` if it can be simultaneously proved that
+         `leaves` are part of a Merkle tree defined by `root`
+         and a given set of `proof_flags`.
+    @notice Note that not all Merkle trees allow for multiproofs.
+            See `_process_multi_proof` for further details.
+    @param proof The 32-byte array containing sibling hashes
+           on the branches from `leaves` to the `root` of the
+           Merkle tree.
+    @param proof_flags The Boolean array of flags indicating
+           whether another value from the "main queue" (merging
+           branches) or an element from the `proof` array is used
+           to calculate the next hash.
+    @param root The 32-byte Merkle root hash.
+    @param leaves The 32-byte array containing the leaf hashes.
+    @return bool The verification whether `leaves` are simultaneously
+            part of a Merkle tree defined by `root`.
+    """
+    return self._process_multi_proof(proof, proof_flags, leaves) == root
+
+
 @internal
 @pure
 def _process_proof(proof: DynArray[bytes32, max_value(uint16)], leaf: bytes32) -> bytes32:
@@ -75,6 +100,91 @@ def _process_proof(proof: DynArray[bytes32, max_value(uint16)], leaf: bytes32) -
     for i in proof:
         computed_hash = self._hash_pair(computed_hash, i)
     return computed_hash
+
+
+@internal
+@pure
+def _process_multi_proof(proof: DynArray[bytes32, max_value(uint16)], proof_flags: DynArray[bool, max_value(uint16)],
+                         leaves: DynArray[bytes32, max_value(uint16)]) -> bytes32:
+    """
+    @dev Returns the recovered hash obtained by traversing
+         a Merkle tree from `leaves` using `proof` and a
+         a given set of `proof_flags`.
+    @notice The reconstruction is performed by incrementally
+            reconstructing all inner nodes by combining a
+            leaf/inner node with either another leaf/inner node
+            or a proof sibling node, depending on whether each
+            `proof_flags` element is `True` or `False`.
+
+            IMPORTANT: Note that not all Merkle trees allow for
+            multiproofs. In order to use multiproofs, it is
+            sufficient to ensure that:
+            1) the Merkle tree is complete (but not necessarily
+               perfect),
+            2) the `leaves` to be proved are in the reverse order
+               in which they are in the Merkle tree (i.e. from right
+               to left, starting with the deepest layer and moving
+               on to the next layer). For the definition of the
+               generalised Merkle tree index, please visit:
+               https://github.com/ethereum/consensus-specs/blob/dev/ssz/merkle-proofs.md#generalized-merkle-tree-index.
+    @param proof The 32-byte array containing sibling hashes
+           on the branches from `leaves` to the `root` of the
+           Merkle tree.
+    @param proof_flags The Boolean array of flags indicating
+           whether another value from the "main queue" (merging
+           branches) or an element from the `proof` array is used
+           to calculate the next hash.
+    @param leaves The 32-byte array containing the leaf hashes.
+    @return bytes32 The 32-byte recovered hash by using `leaves`
+            and `proof` with a given set of `proof_flags`.
+    """
+    leaves_len: uint256 = len(leaves)
+    total_hashes: uint256 = len(proof_flags)
+
+    # Checks the validity of the proof. We do not check for an
+    # overflow (nor underflow) as `leaves_len`, `proof`, and
+    # `total_hashes` are bounded by the value `max_value(uint16)`
+    # and therefore cannot overflow the `uint256` type when they
+    # are added together or incremented by 1.
+    assert unsafe_add(leaves_len, len(proof)) == unsafe_add(total_hashes, 1), "MerkleProof: invalid multiproof"
+
+    hashes: DynArray[bytes32, max_value(uint16)] = []
+    leaf_pos: uint256 = empty(uint256)
+    hash_pos: uint256 = empty(uint256)
+    proof_pos: uint256 = empty(uint256)
+    a: bytes32 = empty(bytes32)
+    b: bytes32 = empty(bytes32)
+
+    # At each step, the next hash is calculated from two values:
+    # - a value from the "main queue". If not all leaves have been used,
+    #   the next leaf is picked up, otherwise the next hash.
+    # - depending on the flag, either another value from the "main queue"
+    #   (merging branches) or an element from the `proof` array.
+    for flag in proof_flags:
+        if (leaf_pos < leaves_len):
+            a = leaves[leaf_pos]
+            leaf_pos += 1
+        else:
+            a = hashes[hash_pos]
+            hash_pos += 1
+        if (flag):
+            if (leaf_pos < leaves_len):
+                b = leaves[leaf_pos]
+                leaf_pos += 1
+            else:
+                b = hashes[hash_pos]
+                hash_pos += 1
+        else:
+            b = proof[proof_pos]
+            proof_pos += 1
+        hashes.append(self._hash_pair(a, b))
+
+    if (total_hashes != empty(uint256)):
+        return hashes[total_hashes - 1]
+    elif (leaves_len != empty(uint256)):
+        return leaves[empty(uint256)]
+    else:
+        return proof[empty(uint256)]
 
 
 @internal

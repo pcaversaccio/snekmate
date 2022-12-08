@@ -46,6 +46,102 @@ contract MerkleProofVerificationTest is Test {
 
     /**
      * @dev An `internal` helper function that converts the JavaScript-based
+     * multiproof after calling the foreign function interface (ffi) cheatcode
+     * `vm.ffi` into a Solidity-compatible 32-byte array type.
+     * @return bytes32[] The 32-byte array containing sibling hashes
+     * on the branches from `leaves` to the `root` of the Merkle tree.
+     */
+    function decodeCorrectMultiProofPayload()
+        internal
+        returns (bytes32[] memory)
+    {
+        bytes32[] memory multiProofDecoded = new bytes32[](8);
+        string[] memory cmdsMultiProof = new string[](2);
+        cmdsMultiProof[0] = "node";
+        cmdsMultiProof[1] = "test/utils/scripts/generate-multiproof.js";
+        bytes memory multiProof = vm.ffi(cmdsMultiProof);
+        (
+            bytes32 arg1,
+            bytes32 arg2,
+            bytes32 arg3,
+            bytes32 arg4,
+            bytes32 arg5,
+            bytes32 arg6,
+            bytes32 arg7,
+            bytes32 arg8
+        ) = abi.decode(
+                multiProof,
+                (
+                    bytes32,
+                    bytes32,
+                    bytes32,
+                    bytes32,
+                    bytes32,
+                    bytes32,
+                    bytes32,
+                    bytes32
+                )
+            );
+        multiProofDecoded[0] = arg1;
+        multiProofDecoded[1] = arg2;
+        multiProofDecoded[2] = arg3;
+        multiProofDecoded[3] = arg4;
+        multiProofDecoded[4] = arg5;
+        multiProofDecoded[5] = arg6;
+        multiProofDecoded[6] = arg7;
+        multiProofDecoded[7] = arg8;
+        return multiProofDecoded;
+    }
+
+    /**
+     * @dev An `internal` helper function that converts the JavaScript-based
+     * proof flags after calling the foreign function interface (ffi) cheatcode
+     * `vm.ffi` into a Solidity-compatible Boolean array type.
+     * @return bool[] The Boolean array of flags indicating whether another
+     * value from the "main queue" (merging branches) or an element from the
+     * `proof` array is used to calculate the next hash.
+     */
+    function decodeCorrectMultiProofProofFlags()
+        internal
+        returns (bool[] memory)
+    {
+        bool[] memory multiProofProofFlagsDecoded = new bool[](10);
+        string[] memory cmdsMultiProofProofFlags = new string[](2);
+        cmdsMultiProofProofFlags[0] = "node";
+        cmdsMultiProofProofFlags[
+            1
+        ] = "test/utils/scripts/generate-multiproof-proof-flags.js";
+        bytes memory multiProofProofFlags = vm.ffi(cmdsMultiProofProofFlags);
+        (
+            bool arg1,
+            bool arg2,
+            bool arg3,
+            bool arg4,
+            bool arg5,
+            bool arg6,
+            bool arg7,
+            bool arg8,
+            bool arg9,
+            bool arg10
+        ) = abi.decode(
+                multiProofProofFlags,
+                (bool, bool, bool, bool, bool, bool, bool, bool, bool, bool)
+            );
+        multiProofProofFlagsDecoded[0] = arg1;
+        multiProofProofFlagsDecoded[1] = arg2;
+        multiProofProofFlagsDecoded[2] = arg3;
+        multiProofProofFlagsDecoded[3] = arg4;
+        multiProofProofFlagsDecoded[4] = arg5;
+        multiProofProofFlagsDecoded[5] = arg6;
+        multiProofProofFlagsDecoded[6] = arg7;
+        multiProofProofFlagsDecoded[7] = arg8;
+        multiProofProofFlagsDecoded[8] = arg9;
+        multiProofProofFlagsDecoded[9] = arg10;
+        return multiProofProofFlagsDecoded;
+    }
+
+    /**
+     * @dev An `internal` helper function that converts the JavaScript-based
      * proof after calling the foreign function interface (ffi) cheatcode
      * `vm.ffi` into a Solidity-compatible 32-byte array type.
      * @notice This `internal` helper function is used to demonstrate that it
@@ -101,6 +197,78 @@ contract MerkleProofVerificationTest is Test {
         bytes32 arg = abi.decode(proof, (bytes32));
         proofDecoded[0] = arg;
         return proofDecoded;
+    }
+
+    /**
+     * @dev An `internal` helper function that converts the JavaScript-based
+     * multiproof after calling the foreign function interface (ffi) cheatcode
+     * `vm.ffi` into a Solidity-compatible 32-byte array type.
+     * @notice This `internal` helper function is used to decode a bad multiproof.
+     * @return bytes32[] The 32-byte array containing sibling hashes
+     * on the branches from `leaves` to the `root` of the Merkle tree.
+     */
+    function decodeBadMultiProofPayload() internal returns (bytes32[] memory) {
+        bytes32[] memory multiProofDecoded = new bytes32[](5);
+        string[] memory cmdsMultiProof = new string[](2);
+        cmdsMultiProof[0] = "node";
+        cmdsMultiProof[1] = "test/utils/scripts/generate-bad-multiproof.js";
+        bytes memory multiProof = vm.ffi(cmdsMultiProof);
+        (
+            bytes32 arg1,
+            bytes32 arg2,
+            bytes32 arg3,
+            bytes32 arg4,
+            bytes32 arg5
+        ) = abi.decode(
+                multiProof,
+                (bytes32, bytes32, bytes32, bytes32, bytes32)
+            );
+        multiProofDecoded[0] = arg1;
+        multiProofDecoded[1] = arg2;
+        multiProofDecoded[2] = arg3;
+        multiProofDecoded[3] = arg4;
+        multiProofDecoded[4] = arg5;
+        return multiProofDecoded;
+    }
+
+    /**
+     * @dev An `internal` helper function that converts the JavaScript-based
+     * proof flags after calling the foreign function interface (ffi) cheatcode
+     * `vm.ffi` into a Solidity-compatible Boolean array type.
+     * @notice This `internal` helper function is used to decode a bad multiproof
+     * proof flags array.
+     * @return bool[] The Boolean array of flags indicating whether another
+     * value from the "main queue" (merging branches) or an element from the
+     * `proof` array is used to calculate the next hash.
+     */
+    function decodeBadMultiProofProofFlags() internal returns (bool[] memory) {
+        bool[] memory multiProofProofFlagsDecoded = new bool[](7);
+        string[] memory cmdsMultiProofProofFlags = new string[](2);
+        cmdsMultiProofProofFlags[0] = "node";
+        cmdsMultiProofProofFlags[
+            1
+        ] = "test/utils/scripts/generate-bad-multiproof-proof-flags.js";
+        bytes memory multiProofProofFlags = vm.ffi(cmdsMultiProofProofFlags);
+        (
+            bool arg1,
+            bool arg2,
+            bool arg3,
+            bool arg4,
+            bool arg5,
+            bool arg6,
+            bool arg7
+        ) = abi.decode(
+                multiProofProofFlags,
+                (bool, bool, bool, bool, bool, bool, bool)
+            );
+        multiProofProofFlagsDecoded[0] = arg1;
+        multiProofProofFlagsDecoded[1] = arg2;
+        multiProofProofFlagsDecoded[2] = arg3;
+        multiProofProofFlagsDecoded[3] = arg4;
+        multiProofProofFlagsDecoded[4] = arg5;
+        multiProofProofFlagsDecoded[5] = arg6;
+        multiProofProofFlagsDecoded[6] = arg7;
+        return multiProofProofFlagsDecoded;
     }
 
     function setUp() public {
@@ -160,7 +328,7 @@ contract MerkleProofVerificationTest is Test {
         string[] memory cmdsCorrectRoot = new string[](2);
         cmdsCorrectRoot[0] = "node";
         cmdsCorrectRoot[1] = "test/utils/scripts/generate-root.js";
-        bytes memory root = vm.ffi(cmdsCorrectRoot);
+        bytes memory correctRoot = vm.ffi(cmdsCorrectRoot);
 
         string[] memory cmdsCorrectLeaf = new string[](2);
         cmdsCorrectLeaf[0] = "node";
@@ -172,7 +340,7 @@ contract MerkleProofVerificationTest is Test {
         assertTrue(
             !merkleProofVerification.verify(
                 badProofDecoded,
-                bytes32(root),
+                bytes32(correctRoot),
                 bytes32(leaf)
             )
         );
@@ -201,6 +369,174 @@ contract MerkleProofVerificationTest is Test {
                 proofInvalidLengthDecoded,
                 bytes32(root),
                 bytes32(leaf)
+            )
+        );
+    }
+
+    function testMultiProofVerify() public {
+        string[] memory cmdsRoot = new string[](2);
+        cmdsRoot[0] = "node";
+        cmdsRoot[1] = "test/utils/scripts/generate-root.js";
+        bytes memory root = vm.ffi(cmdsRoot);
+
+        string[] memory cmdsLeaves = new string[](2);
+        cmdsLeaves[0] = "node";
+        cmdsLeaves[1] = "test/utils/scripts/generate-multiproof-leaves.js";
+        bytes memory leaves = vm.ffi(cmdsLeaves);
+        bytes32[] memory leavesDecoded = new bytes32[](3);
+        (bytes32 arg1, bytes32 arg2, bytes32 arg3) = abi.decode(
+            leaves,
+            (bytes32, bytes32, bytes32)
+        );
+        leavesDecoded[0] = arg1;
+        leavesDecoded[1] = arg2;
+        leavesDecoded[2] = arg3;
+
+        bool[] memory proofFlags = decodeCorrectMultiProofProofFlags();
+        bytes32[] memory multiProofDecoded = decodeCorrectMultiProofPayload();
+
+        assertTrue(
+            merkleProofVerification.multi_proof_verify(
+                multiProofDecoded,
+                proofFlags,
+                bytes32(root),
+                leavesDecoded
+            )
+        );
+    }
+
+    function testInvalidMerkleMultiProof() public {
+        string[] memory cmdsCorrectRoot = new string[](2);
+        cmdsCorrectRoot[0] = "node";
+        cmdsCorrectRoot[1] = "test/utils/scripts/generate-root.js";
+        bytes memory correctRoot = vm.ffi(cmdsCorrectRoot);
+
+        string[] memory cmdsBadLeaves = new string[](2);
+        cmdsBadLeaves[0] = "node";
+        cmdsBadLeaves[
+            1
+        ] = "test/utils/scripts/generate-bad-multiproof-leaves.js";
+        bytes memory badLeaves = vm.ffi(cmdsBadLeaves);
+        bytes32[] memory badLeavesDecoded = new bytes32[](3);
+        (bytes32 arg1, bytes32 arg2, bytes32 arg3) = abi.decode(
+            badLeaves,
+            (bytes32, bytes32, bytes32)
+        );
+        badLeavesDecoded[0] = arg1;
+        badLeavesDecoded[1] = arg2;
+        badLeavesDecoded[2] = arg3;
+
+        bool[] memory badProofFlags = decodeBadMultiProofProofFlags();
+        bytes32[] memory badMultiProofDecoded = decodeBadMultiProofPayload();
+
+        assertTrue(
+            !merkleProofVerification.multi_proof_verify(
+                badMultiProofDecoded,
+                badProofFlags,
+                bytes32(correctRoot),
+                badLeavesDecoded
+            )
+        );
+    }
+
+    function testInvalidMultiProof() public {
+        string[] memory cmdsCorrectRoot = new string[](2);
+        cmdsCorrectRoot[0] = "node";
+        cmdsCorrectRoot[1] = "test/utils/scripts/generate-root.js";
+        bytes memory correctRoot = vm.ffi(cmdsCorrectRoot);
+
+        string[] memory cmdsBadLeaves = new string[](2);
+        cmdsBadLeaves[0] = "node";
+        cmdsBadLeaves[
+            1
+        ] = "test/utils/scripts/generate-bad-multiproof-leaves.js";
+        bytes memory badLeaves = vm.ffi(cmdsBadLeaves);
+        bytes32[] memory badLeavesDecoded = new bytes32[](3);
+        (bytes32 arg1, bytes32 arg2, bytes32 arg3) = abi.decode(
+            badLeaves,
+            (bytes32, bytes32, bytes32)
+        );
+        badLeavesDecoded[0] = arg1;
+        badLeavesDecoded[1] = arg2;
+        badLeavesDecoded[2] = arg3;
+
+        bool[] memory badProofFlags = decodeBadMultiProofProofFlags();
+        bytes32[] memory badMultiProofDecoded = decodeBadMultiProofPayload();
+
+        bool[] memory badProofFlagsSliced = new bool[](3);
+        badProofFlagsSliced[0] = badProofFlags[0];
+        badProofFlagsSliced[1] = badProofFlags[2];
+        badProofFlagsSliced[2] = badProofFlags[4];
+
+        bytes32[] memory badMultiProofDecodedSliced = new bytes32[](3);
+        badMultiProofDecodedSliced[0] = badMultiProofDecoded[0];
+        badMultiProofDecodedSliced[1] = badMultiProofDecoded[2];
+        badMultiProofDecodedSliced[2] = badMultiProofDecoded[4];
+
+        bytes32[] memory badLeavesDecodedSliced = new bytes32[](2);
+        badLeavesDecodedSliced[0] = badLeavesDecoded[0];
+        badLeavesDecodedSliced[1] = badLeavesDecoded[2];
+
+        vm.expectRevert(bytes("MerkleProof: invalid multiproof"));
+        merkleProofVerification.multi_proof_verify(
+            badMultiProofDecodedSliced,
+            badProofFlags,
+            bytes32(correctRoot),
+            badLeavesDecoded
+        );
+
+        vm.expectRevert(bytes("MerkleProof: invalid multiproof"));
+        merkleProofVerification.multi_proof_verify(
+            badMultiProofDecoded,
+            badProofFlagsSliced,
+            bytes32(correctRoot),
+            badLeavesDecoded
+        );
+
+        vm.expectRevert(bytes("MerkleProof: invalid multiproof"));
+        merkleProofVerification.multi_proof_verify(
+            badMultiProofDecoded,
+            badProofFlags,
+            bytes32(correctRoot),
+            badLeavesDecodedSliced
+        );
+    }
+
+    function testMultiProofEdgeCase1() public {
+        bytes32[] memory leaves = new bytes32[](1);
+        bytes32[] memory multiProof = new bytes32[](0);
+        bool[] memory proofFlags = new bool[](0);
+
+        leaves[0] = keccak256(bytes.concat(keccak256(abi.encode("a"))));
+
+        /// @dev Works for a Merkle tree containing a single leaf.
+        assertTrue(
+            merkleProofVerification.multi_proof_verify(
+                multiProof,
+                proofFlags,
+                leaves[0],
+                leaves
+            )
+        );
+    }
+
+    function testMultiProofEdgeCase2() public {
+        bytes32[] memory leaves = new bytes32[](0);
+        bytes32[] memory multiProof = new bytes32[](1);
+        bool[] memory proofFlags = new bool[](0);
+
+        bytes32 root = keccak256(
+            bytes.concat(keccak256(abi.encode("a", "b", "c")))
+        );
+        multiProof[0] = root;
+
+        /// @dev Can prove empty leaves.
+        assertTrue(
+            merkleProofVerification.multi_proof_verify(
+                multiProof,
+                proofFlags,
+                root,
+                leaves
             )
         );
     }
