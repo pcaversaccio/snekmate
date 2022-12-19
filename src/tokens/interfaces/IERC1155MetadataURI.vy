@@ -8,7 +8,7 @@
         be interrogated for the Uniform Resource Identifier
         (URI) details of a specific token type. For more
         details, please refer to:
-        https://eips.ethereum.org/EIPS/eip-1155.
+        https://eips.ethereum.org/EIPS/eip-1155#metadata.
 
         On how to use interfaces in Vyper, please visit:
         https://vyper.readthedocs.io/en/latest/interfaces.html#interfaces.
