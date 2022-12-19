@@ -33,8 +33,8 @@ event TransferBatch:
     _operator: indexed(address)
     _from: indexed(address)
     _to: indexed(address)
-    _ids: DynArray[uint256, max_value(uint16)]
-    _values: DynArray[uint256, max_value(uint16)]
+    _ids: DynArray[uint256, 255]
+    _values: DynArray[uint256, 255]
 
 
 # @dev Emitted when `_owner` grants or revokes permission
@@ -82,8 +82,7 @@ def safeTransferFrom(_from: address, _to: address, _id: uint256, _value: uint256
 
 
 @external
-def safeBatchTransferFrom(_from: address, _to: address, _ids: DynArray[uint256, max_value(uint16)],
-                          _values: DynArray[uint256, max_value(uint16)], _data: Bytes[1024]):
+def safeBatchTransferFrom(_from: address, _to: address, _ids: DynArray[uint256, 255], _values: DynArray[uint256, 255], _data: Bytes[1024]):
     """
     @dev Batched version of `safeTransferFrom`.
     @notice Note that `_ids` and `_values` must have the
@@ -123,17 +122,17 @@ def balanceOf(_owner: address, _id: uint256) -> uint256:
 
 @external
 @view
-def balanceOfBatch(_owners: DynArray[address, max_value(uint16)], _ids: DynArray[uint256, max_value(uint16)]) -> DynArray[uint256, max_value(uint16)]:
+def balanceOfBatch(_owners: DynArray[address, 255], _ids: DynArray[uint256, 255]) -> DynArray[uint256, 255]:
     """
     @dev Batched version of `balanceOf`.
-    @notice Note that `_ids` and `_values` must have the
+    @notice Note that `_owners` and `_ids` must have the
             same length.
     @param _owners The 20-byte array of owner addresses.
     @param _ids The 32-byte array of token identifiers.
     @return DynArray The 32-byte array of token amounts
             owned by `_owners`.
     """
-    return empty(DynArray[uint256, max_value(uint16)])
+    return empty(DynArray[uint256, 255])
 
 
 @external
