@@ -37,8 +37,8 @@ def onERC1155Received(_operator: address, _from: address, _id: uint256, _value: 
 
 
 @external
-def onERC1155BatchReceived(_operator: address, _from: address, _ids: DynArray[uint256, max_value(uint16)],
-                           _values: DynArray[uint256, max_value(uint16)], _data: Bytes[1024]) -> bytes4:
+def onERC1155BatchReceived(_operator: address, _from: address, _ids: DynArray[uint256, 255], _values: DynArray[uint256, 255],
+                           _data: Bytes[1024]) -> bytes4:
     """
     @dev Handles the receipt of multiple ERC-1155 token types.
          This function is called at the end of a `safeBatchTransferFrom`
