@@ -8,7 +8,8 @@
         https://eips.ethereum.org/EIPS/eip-1155. Note that
         smart contracts implementing the ERC-1155 standard
         must implement all of the functions in the ERC-1155
-        interface.
+        interface. For more details, please refer to:
+        https://eips.ethereum.org/EIPS/eip-1155#specification.
 
         On how to use interfaces in Vyper, please visit:
         https://vyper.readthedocs.io/en/latest/interfaces.html#interfaces.

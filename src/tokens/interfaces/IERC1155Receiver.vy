@@ -5,7 +5,9 @@
 @author pcaversaccio
 @notice The interface definition for any contract
         that wants to support safe transfers from
-        ERC-1155 asset contracts.
+        ERC-1155 asset contracts. For more details,
+        please refer to:
+        https://eips.ethereum.org/EIPS/eip-1155#erc-1155-token-receiver.
 
         On how to use interfaces in Vyper, please visit:
         https://vyper.readthedocs.io/en/latest/interfaces.html#interfaces.
