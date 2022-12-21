@@ -155,6 +155,12 @@ def __init__(base_uri_: String[80]):
         string base URI for computing `tokenURI`.
     """
     _BASE_URI = base_uri_
+    self.owner = msg.sender
+    self.is_minter[msg.sender] = True
+
+    # TODO: consider if these should be logged here for indexers
+    # log OwnershipTransferred(empty(address), msg.sender)
+    # log RoleMinterChanged(msg.sender, True)
 
 
 @external
