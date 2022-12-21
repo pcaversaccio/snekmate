@@ -319,6 +319,24 @@ def uri(id: uint256) -> String[512]:
 
 
 @external
+def set_uri(id: uint256, uri: String[432]):
+    """
+    @dev Sets token URI for a given `token_id`.
+    @notice This is decoupled from the `mint` function
+        since multiple of the same `token_id` may be
+        minted. However, permissions are shared with
+        `is_minter`. Only minters have authorization
+        to change token URIs.
+    @param token_id The 32-byte token identifier.
+    @param uri The maximum 432-character user-readable
+        string URI for computing `tokenURI`.
+    """
+    assert self.is_minter[msg.sender], "ERC1155: not authorized to set token URI"
+    self._token_uris[id] = uri
+    log URI(uri, id)
+
+
+@external
 def transfer_ownership(new_owner: address):
     """
     @dev Sourced from {Ownable-transfer_ownership}.
