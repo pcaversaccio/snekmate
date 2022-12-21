@@ -8,7 +8,6 @@
     - https://eips.ethereum.org/EIPS/eip-1155.
     In addition, the following functions have
     been added for convenience:
-    - `burn` (`external` function),
     - `is_minter` (`external` function),
     - `safe_mint` (`external` function),
     - `set_minter` (`external` function),
@@ -136,6 +135,13 @@ event URI:
 event OwnershipTransferred:
     previous_owner: indexed(address)
     new_owner: indexed(address)
+
+
+# @dev Emitted when the status of a `minter`
+# address is changed.
+event RoleMinterChanged:
+    minter: indexed(address)
+    status: bool
 
 
 @external
@@ -372,6 +378,25 @@ def renounce_ownership():
     old_owner: address = self.owner
     self.owner = empty(address)
     log OwnershipTransferred(old_owner, empty(address))
+
+
+@external
+def set_minter(minter: address, status: bool):
+    """
+    @dev Adds or removes an address `minter` to/from the
+         list of allowed minters. Note that only the
+         `owner` can add or remove `minter` addresses.
+         Also, the `minter` cannot be the zero address.
+         Eventually, the `owner` cannot remove himself
+         from the list of allowed minters.
+    @param minter The 20-byte minter address.
+    @param status The Boolean variable that sets the status.
+    """
+    assert msg.sender == self.owner, "AccessControl: caller is not the owner"
+    assert minter != empty(address), "AccessControl: minter is the zero address"
+    assert minter != msg.sender, "AccessControl: minter is owner address"
+    self.is_minter[minter] = status
+    log RoleMinterChanged(minter, status)
 
 
 @external
