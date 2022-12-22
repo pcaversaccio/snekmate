@@ -46,7 +46,7 @@ This repository is inspired by or directly modified from many sources, primarily
 
 ## 🫡 Contributing
 
-🐍 Snekmate only exists thanks to its [contributors](https://github.com/pcaversaccio/snekmate/graphs/contributors). There are many ways to get involved and contribute to our high-quality and secure smart contracts. Check out the [contribution guide](./CONTRIBUTING.md)!
+🐍 snekmate only exists thanks to its [contributors](https://github.com/pcaversaccio/snekmate/graphs/contributors). There are many ways to get involved and contribute to our high-quality and secure smart contracts. Check out our [Contribution Guidelines](./CONTRIBUTING.md)!
 
 ## 💢 Disclaimer
 

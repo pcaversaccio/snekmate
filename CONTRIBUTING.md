@@ -1,4 +1,4 @@
-# 🫡 Contributing to 🐍 Snekmate Contracts
+# 🫡 Contributing to 🐍 snekmate
 
 🙏 Thank you so much for your help in improving the project and pushing 🐍Vyper's long-term success! Many folks will be grateful to you. We are so glad to have you!
 
@@ -18,7 +18,7 @@ We particularly welcome support in the following areas:
 
 ## 🛠 Creating a Pull Request (PR)
 
-As a contributor, you are expected to fork the `main` branch of this repository, work on your own fork and then submit pull requests. The pull requests are reviewed and eventually merged into the main repository. See ["Fork-a-Repo"](https://help.github.com/articles/fork-a-repo) for how this works.
+As a contributor, you are expected to fork the `main` branch of this repository, work on your own fork, and then submit pull requests. The pull requests are reviewed and eventually merged into the main repository. See ["Fork-a-Repo"](https://help.github.com/articles/fork-a-repo) for how this works.
 
 ## 🌀 Dependencies
 
@@ -26,8 +26,9 @@ You will need the following dependencies:
 
 - [Git](https://git-scm.com)
 - [Node.js](https://nodejs.org)
-- [Foundry](https://github.com/foundry-rs/foundry)
 - [Yarn](https://classic.yarnpkg.com)
+- [🐍Vyper](https://github.com/vyperlang/vyper)
+- [Foundry](https://github.com/foundry-rs/foundry)
 
 ## ⚙️ Installation
 
