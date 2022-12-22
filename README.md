@@ -44,6 +44,10 @@ This repository is inspired by or directly modified from many sources, primarily
 - [OpenZeppelin](https://github.com/OpenZeppelin/openzeppelin-contracts)
 - [Solmate](https://github.com/transmissions11/solmate)
 
+## 🫡 Contributing
+
+🐍 snekmate only exists thanks to its [contributors](https://github.com/pcaversaccio/snekmate/graphs/contributors). There are many ways to get involved and contribute to our high-quality and secure smart contracts. Check out our [Contribution Guidelines](./CONTRIBUTING.md)!
+
 ## 💢 Disclaimer
 
 <img src=https://user-images.githubusercontent.com/25297591/167394075-1813e258-3b03-4bc8-9305-69126a07d57e.png width="1050"/>

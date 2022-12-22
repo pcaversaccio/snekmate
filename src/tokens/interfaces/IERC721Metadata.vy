@@ -8,7 +8,7 @@
         be interrogated for its name and for details about
         the asset(s) which a non-fungible token (NFT)
         represents. For more details, please refer to:
-        https://eips.ethereum.org/EIPS/eip-721.
+        https://eips.ethereum.org/EIPS/eip-721#specification.
 
         On how to use interfaces in Vyper, please visit:
         https://vyper.readthedocs.io/en/latest/interfaces.html#interfaces.
