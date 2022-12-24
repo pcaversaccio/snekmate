@@ -76,7 +76,7 @@ contract ERC1155Test is Test {
 
     // https://eips.ethereum.org/EIPS/eip-1155#safe-transfer-rules
     function testSafeTransferFromScenario1() public {
-        // transfser to EOA
+        //transfer to EOA
         address deployer = address(vyperDeployer);
         address owner = vm.addr(1);
         address receiver = vm.addr(2);
