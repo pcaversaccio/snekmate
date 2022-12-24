@@ -149,10 +149,10 @@ event RoleMinterChanged:
 def __init__(base_uri_: String[80]):
     """
     @dev To omit the opcodes for checking the `msg.value`
-        in the creation-time EVM bytecode, the constructor
-        is declared as `payable`.
+         in the creation-time EVM bytecode, the constructor
+         is declared as `payable`.
     @param base_uri_ The maximum 80-character user-readable
-        string base URI for computing `tokenURI`.
+           string base URI for computing `tokenURI`.
     """
     _BASE_URI = base_uri_
     self.owner = msg.sender
@@ -168,10 +168,10 @@ def __init__(base_uri_: String[80]):
 def supportsInterface(interface_id: bytes4) -> bool:
     """
     @dev Returns `True` if this contract implements the
-        interface defined by `interface_id`.
+         interface defined by `interface_id`.
     @param interface_id The 4-byte interface identifier.
     @return bool The verification whether the contract
-        implements the interface or not.
+            implements the interface or not.
     """
     return interface_id in _SUPPORTED_INTERFACES
 
@@ -180,23 +180,23 @@ def supportsInterface(interface_id: bytes4) -> bool:
 def safeTransferFrom(owner: address, to: address, id: uint256, amount: uint256, data: Bytes[1024]):
     """
     @dev Transfers `amount` tokens of token type `id` from
-        `owner` to `to`.
+         `owner` to `to`.
     @notice Note that `to` cannot be the zero address. Also,
-        if the caller is not `owner`, it must have been
-        approved to spend `owner`'s tokens via `setApprovalForAll`.
-        Furthermore, `owner` must have a balance of tokens
-        of type `id` of at least `amount`. Eventually, if
-        `to` refers to a smart contract, it must implement
-        {IERC1155Receiver-onERC1155Received} and return the
-        acceptance magic value.
+            if the caller is not `owner`, it must have been
+            approved to spend `owner`'s tokens via `setApprovalForAll`.
+            Furthermore, `owner` must have a balance of tokens
+            of type `id` of at least `amount`. Eventually, if
+            `to` refers to a smart contract, it must implement
+            {IERC1155Receiver-onERC1155Received} and return the
+            acceptance magic value.
     @param owner The 20-byte address which previously
-        owned the token.
+            owned the token.
     @param to The 20-byte receiver address.
     @param id The 32-byte identifier of the token.
     @param amount The 32-byte token amount that is
-        being transferred.
+            being transferred.
     @param data The maximum 1024-byte additional data
-        with no specified format.
+            with no specified format.
     """
     assert owner == msg.sender or self.isApprovedForAll[owner][msg.sender], "ERC1155: caller is not token owner or approved"
     assert to != empty(address), "ERC1155: transfer to the zero address"
@@ -220,20 +220,20 @@ def safeBatchTransferFrom(
     """
     @dev Batched version of `safeTransferFrom`.
     @notice Note that `ids` and `amounts` must have the
-        same length. Also, if `to` refers to a smart
-        contract, it must implement {IERC1155Receiver-onERC1155Received}
-        and return the acceptance magic value.
+            same length. Also, if `to` refers to a smart
+            contract, it must implement {IERC1155Receiver-onERC1155Received}
+            and return the acceptance magic value.
     @param owner The 20-byte address which previously
-        owned the token.
+           owned the token.
     @param to The 20-byte receiver address.
     @param ids The 32-byte array of token identifiers. Note
-        that the order and length must match the 32-byte
-        `amounts` array.
+           that the order and length must match the 32-byte
+           `amounts` array.
     @param amounts The 32-byte array of token amounts that are being
-        transferred. Note that the order and length must match
-        the 32-byte `ids` array.
+           transferred. Note that the order and length must match
+           the 32-byte `ids` array.
     @param data The maximum 1024-byte additional data
-        with no specified format.
+           with no specified format.
     """
     assert owner == msg.sender or self.isApprovedForAll[owner][msg.sender], "ERC1155: caller is not token owner or approved"
     assert to != empty(address), "ERC1155: transfer to the zero address"
@@ -270,11 +270,11 @@ def balanceOfBatch(owners: DynArray[address, max_value(uint8)], ids: DynArray[ui
     """
     @dev Batched version of `balanceOf`.
     @notice Note that `owners` and `ids` must have the
-        same length.
+            same length.
     @param owners The 20-byte array of owner addresses.
     @param ids The 32-byte array of token identifiers.
     @return DynArray The 32-byte array of token amounts
-        owned by `owners`.
+            owned by `owners`.
     """
     assert len(owners) == len(ids), "ERC1155: batch lengths mismatch"
     batch_balances: DynArray[uint256, max_value(uint16)] = []
@@ -289,11 +289,11 @@ def balanceOfBatch(owners: DynArray[address, max_value(uint8)], ids: DynArray[ui
 def setApprovalForAll(operator: address, approved: bool):
     """
     @dev Grants or revokes permission to `operator` to
-        transfer the caller's tokens, according to `approved`.
+         transfer the caller's tokens, according to `approved`.
     @notice Note that `operator` cannot be the caller.
     @param operator The 20-byte operator address.
     @param approved The Boolean variable that sets the
-        approval status.
+           approval status.
     """
     assert msg.sender != operator, "ERC1155: approve to caller"
     self.isApprovedForAll[msg.sender][operator] = approved
@@ -305,16 +305,16 @@ def setApprovalForAll(operator: address, approved: bool):
 def uri(id: uint256) -> String[512]:
     """
     @dev Returns the Uniform Resource Identifier (URI)
-        for token type `id`.
+         for token type `id`.
     @notice If the `id` substring is present in the URI,
-        it must be replaced by clients with the actual
-        token type ID. Note that the `uri` function must
-        not be used to check for the existence of a token
-        as it is possible for an implementation to return
-        a valid string even if the token does not exist.
+            it must be replaced by clients with the actual
+            token type ID. Note that the `uri` function must
+            not be used to check for the existence of a token
+            as it is possible for an implementation to return
+            a valid string even if the token does not exist.
     @param id The 32-byte identifier of the token type `id`.
     @return String The maximum 512-character user-readable
-        string token URI of the token type `id`.
+            string token URI of the token type `id`.
     """
     assert self._supply_of_token_id[id] != empty(uint256), "ERC1155: invalid token ID"
 
@@ -335,13 +335,13 @@ def set_uri(id: uint256, uri: String[432]):
     """
     @dev Sets token URI for a given `token_id`.
     @notice This is decoupled from the `mint` function
-        since multiple of the same `token_id` may be
-        minted. However, permissions are shared with
-        `is_minter`. Only minters have authorization
-        to change token URIs.
+            since multiple of the same `token_id` may be
+            minted. However, permissions are shared with
+            `is_minter`. Only minters have authorization
+            to change token URIs.
     @param token_id The 32-byte token identifier.
     @param uri The maximum 432-character user-readable
-        string URI for computing `tokenURI`.
+           string URI for computing `tokenURI`.
     """
     assert self.is_minter[msg.sender], "ERC1155: not authorized to set token URI"
     self._token_uris[id] = uri
@@ -431,17 +431,17 @@ def safe_mint(owner: address, id: uint256, amount: uint256, data: Bytes[1024]):
 def _check_on_erc1155_received(owner: address, to: address, token_id: uint256, amount: uint256, data: Bytes[1024]) -> bool:
     """
     @dev An `internal` function that invokes {IERC1155Receiver-onERC1155Received}
-        on a target address. The call is not executed
-        if the target address is not a contract.
+         on a target address. The call is not executed
+         if the target address is not a contract.
     @param owner The 20-byte address which previously
-        owned the token.
+           owned the token.
     @param to The 20-byte receiver address.
     @param token_id The 32-byte identifier of the token.
     @param amount The 32-byte token amount to be transferred.
     @param data The maximum 1024-byte additional data
-        with no specified format.
+           with no specified format.
     @return The verification whether the call correctly
-        returned the expected magic value.
+            returned the expected magic value.
     """
     # Contract case.
     if (to.is_contract):
@@ -455,17 +455,17 @@ def _check_on_erc1155_received(owner: address, to: address, token_id: uint256, a
 def _check_on_erc1155_batch_received(owner: address, to: address, token_ids: DynArray[uint256, max_value(uint8)], amounts: DynArray[uint256, max_value(uint8)], data: Bytes[1024]) -> bool:
     """
     @dev An `internal` function that invokes {IERC1155Receiver-onERC1155BatchReceived}
-        on a target address. The call is not executed
-        if the target address is not a contract.
+         on a target address. The call is not executed
+         if the target address is not a contract.
     @param owner: The 20-byte address which previously
-        owned the tokens.
+           owned the tokens.
     @param to The 20-byte receiver address.
     @param token_ids The array of 32-byte identifiers of the tokens.
     @param amounts The array of 32-byte token amounts to be transferred.
     @param data The maximum 1024-byte additional data
-        with no specified format.
+           with no specified format.
     @return The verification whether the call correctly
-        returned the expected magic value.
+            returned the expected magic value.
     """
     # Contract case.
     if (to.is_contract):
