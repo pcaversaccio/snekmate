@@ -420,7 +420,7 @@ def safe_mint(owner: address, id: uint256, amount: uint256, data: Bytes[1024]):
     """
     assert self.is_minter[msg.sender], "AccessControl: access is denied"
     assert owner != empty(address), "ERC1155: mint to the zero address"
-    # checked addition here prevents all OVERflows on balance tranfsers
+    # checked addition here prevents all overflows on balance transfers
     self._supply_of_token_id[id] += amount
     self._balances[owner][id] = unsafe_add(self._balances[owner][id], amount)
     log TransferSingle(msg.sender, empty(address), owner, id, amount)
