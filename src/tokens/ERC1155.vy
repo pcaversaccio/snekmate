@@ -67,7 +67,7 @@ _balances: HashMap[address, HashMap[uint256, uint256]]
 
 # @dev Mapping from token ID to token URI.
 # @notice Since the Vyper design requires
-# strings of fixed size, we abitrarily set
+# strings of fixed size, we arbitrarily set
 # the maximum length for `_token_uris` to 432
 # characters. Since we have set the maximu,
 # length for `_BASE_URI` to 80 characters,
@@ -198,9 +198,9 @@ def safeTransferFrom(owner: address, to: address, id: uint256, amount: uint256, 
     @param data The maximum 1024-byte additional data
         with no specified format.
     """
-    assert owner == msg.sender or self.isApprovedForAll[owner][msg.sender], "ERC1155: Not authorized to transfer"
+    assert owner == msg.sender or self.isApprovedForAll[owner][msg.sender], "ERC1155: caller is not token owner or approved"
     assert to != empty(address), "ERC1155: transfer to the zero address"
-    assert self._balances[owner][id] >= amount, "ERC1155: insufficient balance"
+    assert self._balances[owner][id] >= amount, "ERC1155: insufficient balance for transfer"
 
     self._balances[owner][id] = unsafe_sub(self._balances[owner][id], amount)
     self._balances[to][id] = unsafe_add(self._balances[to][id], amount)
@@ -235,9 +235,9 @@ def safeBatchTransferFrom(
     @param data The maximum 1024-byte additional data
         with no specified format.
     """
-    assert owner == msg.sender or self.isApprovedForAll[owner][msg.sender], "ERC1155: Not authorized to transfer"
+    assert owner == msg.sender or self.isApprovedForAll[owner][msg.sender], "ERC1155: caller is not token owner or approved"
     assert to != empty(address), "ERC1155: transfer to the zero address"
-    assert len(ids) == len(amounts), "ERC1155: batch lengths mismatch"
+    assert len(ids) == len(amounts), "ERC1155: ids and amounts length mismatch"
 
     for i in range(max_value(uint16)):
         amount: uint256 = amounts[i]
