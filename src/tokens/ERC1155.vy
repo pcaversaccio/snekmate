@@ -468,7 +468,7 @@ def _check_on_erc1155_batch_received(owner: address, to: address, token_ids: Dyn
         returned the expected magic value.
     """
     # Contract case.
-    if to.is_contract:
+    if (to.is_contract):
         return_value: bytes4 = IERC1155Receiver(to).onERC1155BatchReceived(msg.sender, owner, token_ids, amounts, data)
         return return_value == method_id("onERC1155BatchReceived(address,address,uint256[],uint256[],bytes)", output_type=bytes4)
     # EOA case.
