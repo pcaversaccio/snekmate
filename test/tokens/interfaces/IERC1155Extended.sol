@@ -8,6 +8,6 @@ interface IERC1155Extended is IERC1155MetadataURI {
     function safe_mint(address owner, uint256 id, uint256 amount, bytes memory data) external;
     function set_minter(address minter, bool status) external;
     function owner() external view returns (address);
-    function transfer_ownership(address new_owner) external;
+    function transfer_ownership(address newOwner) external;
     function renounce_ownership() external; 
 }
