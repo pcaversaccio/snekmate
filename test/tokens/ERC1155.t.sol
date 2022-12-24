@@ -12,6 +12,7 @@ import {IERC1155MetadataURI} from "openzeppelin/token/ERC1155/extensions/IERC115
 
 import {Address} from "openzeppelin/utils/Address.sol";
 import {ERC115ReceiverMock, ShouldRevert} from "./mocks/ERC1155ReceiverMock.sol";
+import {ERC1155InvalidReceiverMock} from "./mocks/ERC1155InvalidReceiverMock.sol";
 import {IERC1155Extended} from "./interfaces/IERC1155Extended.sol";
 
 contract ERC1155Test is Test {
@@ -97,13 +98,67 @@ contract ERC1155Test is Test {
         assertEq(erc1155.balanceof(receiver, id), amount);
     }
 
-    function testSafeTransferFromScenario2() public {}
+    // noop
+    // function testSafeTransferFromScenario2() public {}
 
-    function testSafeTransferFromScenario3() public {}
+    function testSafeTransferFromScenario3() public {
+        address deployer = address(vyperDeployer);
+        address owner = vm.addr(1);
+        address receiver = vm.addr(2);
+        uint256 id = 1;
+        uint256 amount = 1;
+        bytes memory data = new bytes(0);
 
-    function testSafeTransferFromScenario4() public {}
+        // etch minimal executable to receiver
+        // ```
+        // returndatasize
+        // returndatasize
+        // return
+        // ```
+        vm.etch(receiver, hex"3d_3d_f3");
 
-    function testSafeTransferFromScenario5() public {}
+        vm.prank(deployer);
+        erc1155.safe_mint(owner, id, amount, data);
+
+        vm.expectRevert(bytes("ERC1155: transfer to non-ERC1155Receiver implementer"));
+
+        vm.prank(owner);
+        erc1155.safeTransferFrom(owner, receiever, id, amount, data);
+    }
+
+    function testSafeTransferFromScenario4() public {
+        address deployer = address(vyperDeployer);
+        address owner = vm.addr(1);
+        address receiver = address(new ERC1155InvalidReceiverMock({ shouldThrow: false }));
+        uint256 id = 1;
+        uint256 amount = 1;
+        bytes memory data = new bytes(0);
+
+        vm.prank(deployer);
+        erc1155.safe_mint(owner, id, amount, data);
+
+        vm.expectRevert(bytes("ERC1155: transfer to non-ERC1155Receiver implementer"));
+
+        vm.prank(owner);
+        erc1155.safeTransferFrom(owner, receiver, id, amount, data);
+    }
+
+    function testSafeTransferFromScenario5() public {
+        address deployer = address(vyperDeployer);
+        address owner = vm.addr(1);
+        address receiver = address(new ERC1155InvalidReceiverMock({ shouldThrow: true }));
+        uint256 id = 1;
+        uint256 amount = 1;
+        bytes memory data = new bytes(0);
+
+        vm.prank(deployer);
+        erc1155.safe_mint(owner, id, amount, data);
+
+        vm.expectRevert(bytes("ERC1155: transfer to non-ERC1155Receiver implementer"));
+
+        vm.prank(owner);
+        erc1155.safeTransferFrom(owner, receiver, id, amount, data);
+    }
 
     function testSafeTransferFromScenario6() public {}
 
@@ -119,25 +174,8 @@ contract ERC1155Test is Test {
 
     function testSafeTransferFromTransferInsufficientBalance() public {}
 
+    // TODO: may not need this
     function testSafeBatchTransferFrom() public {}
-
-    function testSafeBatchTransferFromScenario1() public {}
-
-    function testSafeBatchTransferFromScenario2() public {}
-
-    function testSafeBatchTransferFromScenario3() public {}
-
-    function testSafeBatchTransferFromScenario4() public {}
-
-    function testSafeBatchTransferFromScenario5() public {}
-
-    function testSafeBatchTransferFromScenario6() public {}
-
-    function testSafeBatchTransferFromScenario7() public {}
-
-    function testSafeBatchTransferFromScenario8() public {}
-
-    function testSafeBatchTransferFromScenario9() public {}
 
     function testSafeBatchTransferFromBatchLengthsMismatch() public {}
 

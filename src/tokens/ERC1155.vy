@@ -213,8 +213,8 @@ def safeTransferFrom(owner: address, to: address, id: uint256, amount: uint256, 
 def safeBatchTransferFrom(
     owner: address,
     to: address,
-    ids: DynArray[uint256, max_value(uint16)],
-    amounts: DynArray[uint256, max_value(uint16)],
+    ids: DynArray[uint256, max_value(uint8)],
+    amounts: DynArray[uint256, max_value(uint8)],
     data: Bytes[1024]
 ):
     """
@@ -266,7 +266,7 @@ def balanceOf(owner: address, id: uint256) -> uint256:
 
 @external
 @view
-def balanceOfBatch(owners: DynArray[address, max_value(uint16)], ids: DynArray[uint256, max_value(uint16)]) -> DynArray[uint256, max_value(uint16)]:
+def balanceOfBatch(owners: DynArray[address, max_value(uint8)], ids: DynArray[uint256, max_value(uint8)]) -> DynArray[uint256, max_value(uint16)]:
     """
     @dev Batched version of `balanceOf`.
     @notice Note that `owners` and `ids` must have the
@@ -452,7 +452,7 @@ def _check_on_erc1155_received(owner: address, to: address, token_id: uint256, a
 
 
 @internal
-def _check_on_erc1155_batch_received(owner: address, to: address, token_ids: DynArray[uint256, max_value(uint16)], amounts: DynArray[uint256, max_value(uint16)], data: Bytes[1024]) -> bool:
+def _check_on_erc1155_batch_received(owner: address, to: address, token_ids: DynArray[uint256, max_value(uint8)], amounts: DynArray[uint256, max_value(uint8)], data: Bytes[1024]) -> bool:
     """
     @dev An `internal` function that invokes {IERC1155Receiver-onERC1155BatchReceived}
         on a target address. The call is not executed
