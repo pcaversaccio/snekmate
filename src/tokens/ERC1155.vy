@@ -444,7 +444,7 @@ def _check_on_erc1155_received(owner: address, to: address, token_id: uint256, a
         returned the expected magic value.
     """
     # Contract case.
-    if to.is_contract:
+    if (to.is_contract):
         return_value: bytes4 = IERC1155Receiver(to).onERC1155Received(msg.sender, owner, token_id, amount, data)
         return return_value == method_id("onERC1155Received(address,address,uint256,uint256,bytes)", output_type=bytes4)
     # EOA case.
