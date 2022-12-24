@@ -4,7 +4,7 @@
 @license GNU Affero General Public License v3.0
 @author pcaversaccio, jtriley.eth
 @notice These functions implement the ERC-1155
-    standrd interface:
+    standard interface:
     - https://eips.ethereum.org/EIPS/eip-1155.
     In addition, the following functions have
     been added for convenience:
