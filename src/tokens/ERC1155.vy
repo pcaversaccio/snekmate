@@ -198,23 +198,14 @@ def safeTransferFrom(owner: address, to: address, id: uint256, amount: uint256, 
     @param data The maximum 1024-byte additional data
             with no specified format.
     """
-    assert owner == msg.sender or self.isApprovedForAll[owner][msg.sender], "ERC1155: caller is not token owner or approved"
-    assert to != empty(address), "ERC1155: transfer to the zero address"
-    assert self._balances[owner][id] >= amount, "ERC1155: insufficient balance for transfer"
-
-    self._balances[owner][id] = unsafe_sub(self._balances[owner][id], amount)
-    self._balances[to][id] = unsafe_add(self._balances[to][id], amount)
-
-    log TransferSingle(msg.sender, owner, to, id, amount)
-    assert self._check_on_erc1155_received(owner, to, id, amount, data), "ERC1155: transfer to non-ERC1155Receiver implementer"
-
+    self._safe_transfer_from(owner, to, id, amount, data)
 
 @external
 def safeBatchTransferFrom(
     owner: address,
     to: address,
-    ids: DynArray[uint256, max_value(uint8)],
-    amounts: DynArray[uint256, max_value(uint8)],
+    ids: DynArray[uint256, max_value(uint16)],
+    amounts: DynArray[uint256, max_value(uint16)],
     data: Bytes[1024]
 ):
     """
@@ -235,19 +226,7 @@ def safeBatchTransferFrom(
     @param data The maximum 1024-byte additional data
            with no specified format.
     """
-    assert owner == msg.sender or self.isApprovedForAll[owner][msg.sender], "ERC1155: caller is not token owner or approved"
-    assert to != empty(address), "ERC1155: transfer to the zero address"
-    assert len(ids) == len(amounts), "ERC1155: ids and amounts length mismatch"
-
-    for i in range(max_value(uint16)):
-        amount: uint256 = amounts[i]
-        id: uint256 = ids[i]
-        assert self._balances[owner][id] >= amount, "ERC1155: insufficient balance"
-        self._balances[owner][id] = unsafe_sub(self._balances[owner][id], amount)
-        self._balances[to][id] = unsafe_add(self._balances[to][id], amount)
-
-    log TransferBatch(msg.sender, owner, to, ids, amounts)
-    assert self._check_on_erc1155_batch_received(owner, to, ids, amounts, data), "ERC1155: transfer to non-ERC1155Receiver implementer"
+    self._safe_batch_transfer_from(owner, to, ids, amounts, data)
 
 
 @external
@@ -261,12 +240,13 @@ def balanceOf(owner: address, id: uint256) -> uint256:
     @return uint256 The 32-byte token amount owned
         by `owner`.
     """
+    assert owner != empty(address), "ERC1155: address zero is not a valid owner"
     return self._balances[owner][id]
 
 
 @external
 @view
-def balanceOfBatch(owners: DynArray[address, max_value(uint8)], ids: DynArray[uint256, max_value(uint8)]) -> DynArray[uint256, max_value(uint16)]:
+def balanceOfBatch(owners: DynArray[address, max_value(uint16)], ids: DynArray[uint256, max_value(uint16)]) -> DynArray[uint256, max_value(uint16)]:
     """
     @dev Batched version of `balanceOf`.
     @notice Note that `owners` and `ids` must have the
@@ -278,10 +258,13 @@ def balanceOfBatch(owners: DynArray[address, max_value(uint8)], ids: DynArray[ui
     """
     assert len(owners) == len(ids), "ERC1155: batch lengths mismatch"
     batch_balances: DynArray[uint256, max_value(uint16)] = []
-    for i in range(max_value(uint16)):
-        # if the owner address is zero address, we break the loop to save gas
-        if owners[i] == empty(address): break
-        batch_balances[i] = self._balances[owners[i]][ids[i]]
+    idx: uint256 = 0
+    for owner in owners:
+        id: uint256 = ids[idx]
+        batch_balances[idx] = IERC1155(self).balanceOf(owner, id)
+        # can never overflow, as the max length of the
+        # owners array is less than max uint256
+        idx = unsafe_add(idx, 1)
     return batch_balances
 
 
@@ -411,6 +394,120 @@ def safe_mint(owner: address, id: uint256, amount: uint256, data: Bytes[1024]):
     @dev Safely mints `token_id` and transfers it to `owner`.
     @notice Only authorised minters can access this function.
             Note that `owner` cannot be the zero address.
+    @param owner The 20-byte owner address.
+    @param id The 32-byte identifier of the token.
+    @param amount The 32-byte amount that is being minted.
+    @param data The maximum 1024-byte additional data
+           with no specified format.
+    """
+    self._mint(owner, id, amount, data)
+
+
+@external
+def safe_mint_batch(
+    owner: address,
+    ids: DynArray[uint256, max_value(uint16)],
+    amounts: DynArray[uint256, max_value(uint16)],
+    data: Bytes[1024]
+):
+    """
+    @dev Safely mints an array of `token_ids` and transfers them to `owner`.
+    @notice Only authorized minters can access this function.
+            Note that `owner` cannot be the zero address.
+    @param owner The 20-byte owner address.
+    @param ids The array of 32-byte identifiers of the tokens.
+    @param amounts The array of 32-byte amounts that are being minted.
+    @param data The maximum 1024-byte additional data
+           with no specified format.
+    """
+    self._mint_batch(owner, ids, amounts, data)
+
+
+@internal
+def _safe_transfer_from(owner: address, to: address, id: uint256, amount: uint256, data: Bytes[1024]):
+    """
+    @dev Transfers `amount` tokens of token type `id` from
+         `owner` to `to`.
+    @notice Note that `to` cannot be the zero address. Also,
+            if the caller is not `owner`, it must have been
+            approved to spend `owner`'s tokens via `setApprovalForAll`.
+            Furthermore, `owner` must have a balance of tokens
+            of type `id` of at least `amount`. Eventually, if
+            `to` refers to a smart contract, it must implement
+            {IERC1155Receiver-onERC1155Received} and return the
+            acceptance magic value.
+    @param owner The 20-byte address which previously
+            owned the token.
+    @param to The 20-byte receiver address.
+    @param id The 32-byte identifier of the token.
+    @param amount The 32-byte token amount that is
+            being transferred.
+    @param data The maximum 1024-byte additional data
+            with no specified format.
+    """
+    assert owner == msg.sender or self.isApprovedForAll[owner][msg.sender], "ERC1155: caller is not token owner or approved"
+    assert to != empty(address), "ERC1155: transfer to the zero address"
+    assert self._balances[owner][id] >= amount, "ERC1155: insufficient balance for transfer"
+    # cannot underflow due to above check.
+    self._balances[owner][id] = unsafe_sub(self._balances[owner][id], amount)
+    # cannot overflow due to total token supply check in `mint` function.
+    self._balances[to][id] = unsafe_add(self._balances[to][id], amount)
+    log TransferSingle(msg.sender, owner, to, id, amount)
+    assert self._check_on_erc1155_received(owner, to, id, amount, data), "ERC1155: transfer to non-ERC1155Receiver implementer"
+
+
+@internal
+def _safe_batch_transfer_from(
+    owner: address,
+    to: address,
+    ids: DynArray[uint256, max_value(uint16)],
+    amounts: DynArray[uint256, max_value(uint16)],
+    data: Bytes[1024]
+):
+    """
+    @dev Batched version of `safeTransferFrom`.
+    @notice Note that `ids` and `amounts` must have the
+            same length. Also, if `to` refers to a smart
+            contract, it must implement {IERC1155Receiver-onERC1155Received}
+            and return the acceptance magic value.
+    @param owner The 20-byte address which previously
+           owned the token.
+    @param to The 20-byte receiver address.
+    @param ids The 32-byte array of token identifiers. Note
+           that the order and length must match the 32-byte
+           `amounts` array.
+    @param amounts The 32-byte array of token amounts that are being
+           transferred. Note that the order and length must match
+           the 32-byte `ids` array.
+    @param data The maximum 1024-byte additional data
+           with no specified format.
+    """
+    assert owner == msg.sender or self.isApprovedForAll[owner][msg.sender], "ERC1155: caller is not token owner or approved"
+    assert to != empty(address), "ERC1155: transfer to the zero address"
+    assert len(ids) == len(amounts), "ERC1155: ids and amounts length mismatch"
+
+    idx: uint256 = 0
+    for id in ids:
+        amount: uint256 = amounts[idx]
+        assert self._balances[owner][id] >= amount, "ERC1155: insufficient balance"
+        # cannot underflow due to above check.
+        self._balances[owner][id] = unsafe_sub(self._balances[owner][id], amount)
+        # cannot overflow due to total token supply check in `mint` function.
+        self._balances[to][id] = unsafe_add(self._balances[to][id], amount)
+        # can never overflow, as the max length of the
+        # ids array is less than max uint256
+        idx = unsafe_add(idx, 1)
+
+    log TransferBatch(msg.sender, owner, to, ids, amounts)
+    assert self._check_on_erc1155_batch_received(owner, to, ids, amounts, data), "ERC1155: transfer to non-ERC1155Receiver implementer"
+
+
+@internal
+def _mint(owner: address, id: uint256, amount: uint256, data: Bytes[1024]):
+    """
+    @dev Safely mints `token_id` and transfers it to `owner`.
+    @notice Only authorised minters can access this function.
+            Note that `owner` cannot be the zero address.
             Also, new tokens will be automatically assigned
             an incremental ID.
     @param owner The 20-byte owner address.
@@ -422,9 +519,46 @@ def safe_mint(owner: address, id: uint256, amount: uint256, data: Bytes[1024]):
     assert owner != empty(address), "ERC1155: mint to the zero address"
     # checked addition here prevents all overflows on balance transfers
     self._supply_of_token_id[id] += amount
+    # cannot overflow due to total token supply check above
     self._balances[owner][id] = unsafe_add(self._balances[owner][id], amount)
     log TransferSingle(msg.sender, empty(address), owner, id, amount)
     assert self._check_on_erc1155_received(empty(address), owner, id, amount, data), "ERC1155: mint to non-ERC1155Receiver implementer"
+
+
+@internal
+def _mint_batch(
+    owner: address,
+    ids: DynArray[uint256, max_value(uint16)],
+    amounts: DynArray[uint256, max_value(uint16)],
+    data: Bytes[1024]
+):
+    """
+    @dev Safely mints an array of `token_ids` and transfers them to `owner`.
+    @notice Only authorized minters can access this function.
+            Note that `owner` cannot be the zero address.
+    @param owner The 20-byte owner address.
+    @param ids The array of 32-byte identifiers of the tokens.
+    @param amounts The array of 32-byte amounts that are being minted.
+    @param data The maximum 1024-byte additional data
+           with no specified format.
+    """
+    assert self.is_minter[msg.sender], "AccessControl: access is denied"
+    assert owner != empty(address), "ERC1155: mint to the zero address"
+    assert len(ids) == len(amounts), "ERC1155: ids and amounts length mismatch"
+
+    idx: uint256 = 0
+    for id in ids:
+        amount: uint256 = amounts[idx]
+        # checked addition here prevents all overflows on balance transfers
+        self._supply_of_token_id[id] += amount
+        # cannot overflow due to total token supply check above
+        self._balances[owner][id] = unsafe_add(self._balances[owner][id], amount)
+        # can never overflow, as the max length of the
+        # ids array is less than max uint256
+        idx = unsafe_add(idx, 1)
+
+    log TransferBatch(msg.sender, empty(address), owner, ids, amounts)
+    assert self._check_on_erc1155_batch_received(empty(address), owner, ids, amounts, data), "ERC1155: transfer to non-ERC1155Receiver implementer"
 
 
 @internal
@@ -452,7 +586,7 @@ def _check_on_erc1155_received(owner: address, to: address, token_id: uint256, a
 
 
 @internal
-def _check_on_erc1155_batch_received(owner: address, to: address, token_ids: DynArray[uint256, max_value(uint8)], amounts: DynArray[uint256, max_value(uint8)], data: Bytes[1024]) -> bool:
+def _check_on_erc1155_batch_received(owner: address, to: address, token_ids: DynArray[uint256, max_value(uint16)], amounts: DynArray[uint256, max_value(uint16)], data: Bytes[1024]) -> bool:
     """
     @dev An `internal` function that invokes {IERC1155Receiver-onERC1155BatchReceived}
          on a target address. The call is not executed
