@@ -17,7 +17,6 @@
     - `_check_on_erc1155_received` (`internal` function),
     - `_check_on_erc1155_batch_received` (`internal` function),
 """
-# TODO FIX Error message capitalization
 
 # @dev We import and implement the `ERC165` interface,
 # which is a built-in interface of the Vyper compiler.
