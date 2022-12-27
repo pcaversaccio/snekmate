@@ -198,6 +198,7 @@ def safeTransferFrom(owner: address, to: address, id: uint256, amount: uint256, 
     @param data The maximum 1024-byte additional data
             with no specified format.
     """
+    assert owner == msg.sender or self.isApprovedForAll[owner][msg.sender], "ERC1155: caller is not token owner or approved"
     self._safe_transfer_from(owner, to, id, amount, data)
 
 @external
@@ -226,6 +227,7 @@ def safeBatchTransferFrom(
     @param data The maximum 1024-byte additional data
            with no specified format.
     """
+    assert owner == msg.sender or self.isApprovedForAll[owner][msg.sender], "ERC1155: caller is not token owner or approved"
     self._safe_batch_transfer_from(owner, to, ids, amounts, data)
 
 
@@ -400,6 +402,7 @@ def safe_mint(owner: address, id: uint256, amount: uint256, data: Bytes[1024]):
     @param data The maximum 1024-byte additional data
            with no specified format.
     """
+    assert self.is_minter[msg.sender], "AccessControl: access is denied"
     self._mint(owner, id, amount, data)
 
 
@@ -420,6 +423,7 @@ def safe_mint_batch(
     @param data The maximum 1024-byte additional data
            with no specified format.
     """
+    assert self.is_minter[msg.sender], "AccessControl: access is denied"
     self._mint_batch(owner, ids, amounts, data)
 
 
@@ -445,7 +449,6 @@ def _safe_transfer_from(owner: address, to: address, id: uint256, amount: uint25
     @param data The maximum 1024-byte additional data
             with no specified format.
     """
-    assert owner == msg.sender or self.isApprovedForAll[owner][msg.sender], "ERC1155: caller is not token owner or approved"
     assert to != empty(address), "ERC1155: transfer to the zero address"
     assert self._balances[owner][id] >= amount, "ERC1155: insufficient balance for transfer"
     # cannot underflow due to above check.
@@ -482,7 +485,6 @@ def _safe_batch_transfer_from(
     @param data The maximum 1024-byte additional data
            with no specified format.
     """
-    assert owner == msg.sender or self.isApprovedForAll[owner][msg.sender], "ERC1155: caller is not token owner or approved"
     assert to != empty(address), "ERC1155: transfer to the zero address"
     assert len(ids) == len(amounts), "ERC1155: ids and amounts length mismatch"
 
@@ -515,7 +517,6 @@ def _mint(owner: address, id: uint256, amount: uint256, data: Bytes[1024]):
     @param uri The maximum 432-character user-readable
            string URI for computing `tokenURI`.
     """
-    assert self.is_minter[msg.sender], "AccessControl: access is denied"
     assert owner != empty(address), "ERC1155: mint to the zero address"
     # checked addition here prevents all overflows on balance transfers
     self._supply_of_token_id[id] += amount
@@ -542,7 +543,6 @@ def _mint_batch(
     @param data The maximum 1024-byte additional data
            with no specified format.
     """
-    assert self.is_minter[msg.sender], "AccessControl: access is denied"
     assert owner != empty(address), "ERC1155: mint to the zero address"
     assert len(ids) == len(amounts), "ERC1155: ids and amounts length mismatch"
 
