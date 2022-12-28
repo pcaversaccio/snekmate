@@ -606,4 +606,3 @@ def _check_on_erc1155_batch_received(owner: address, to: address, token_ids: Dyn
         return return_value == method_id("onERC1155BatchReceived(address,address,uint256[],uint256[],bytes)", output_type=bytes4)
     # EOA case.
     return True
-

@@ -90,7 +90,8 @@ def safeTransferFrom(_from: address, _to: address, _id: uint256, _value: uint256
 
 
 @external
-def safeBatchTransferFrom(_from: address, _to: address, _ids: DynArray[uint256, 65535], _values: DynArray[uint256, 65535], _data: Bytes[1024]):
+def safeBatchTransferFrom(_from: address, _to: address, _ids: DynArray[uint256, 65535], _values: DynArray[uint256, 65535],
+                          _data: Bytes[1024]):
     """
     @dev Batched version of `safeTransferFrom`.
     @notice Note that `_ids` and `_values` must have the
