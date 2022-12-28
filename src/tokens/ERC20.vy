@@ -200,8 +200,13 @@ def __init__(name_: String[25], symbol_: String[5], initial_supply_: uint256, na
     log RoleMinterChanged(msg.sender, True)
 
     if (initial_supply != empty(uint256)):
-        self.balanceOf[msg.sender] = initial_supply
+        self._before_token_transfer(empty(address), msg.sender, initial_supply)
+
         self.totalSupply = initial_supply
+        self.balanceOf[msg.sender] = initial_supply
+        log Transfer(empty(address), msg.sender, initial_supply)
+
+        self._after_token_transfer(empty(address), msg.sender, initial_supply)
 
     hashed_name: bytes32 = keccak256(convert(name_eip712_, Bytes[50]))
     hashed_version: bytes32 = keccak256(convert(version_eip712_, Bytes[20]))
