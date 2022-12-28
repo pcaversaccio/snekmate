@@ -11,6 +11,13 @@
         interface. For more details, please refer to:
         https://eips.ethereum.org/EIPS/eip-1155#specification.
 
+        Note that Vyper interfaces that implement functions
+        with return values that require an upper bound (e.g.
+        `Bytes`, `DynArray`, or `String`), the upper bound
+        defined in the interface represents the lower bound
+        of the implementation:
+        https://github.com/vyperlang/vyper/pull/3205.
+
         On how to use interfaces in Vyper, please visit:
         https://vyper.readthedocs.io/en/latest/interfaces.html#interfaces.
 """
