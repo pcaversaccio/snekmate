@@ -2,21 +2,34 @@
 """
 @title Modern and Gas-Efficient ERC-1155 Implementation
 @license GNU Affero General Public License v3.0
-@author pcaversaccio, jtriley.eth
+@author pcaversaccio
+@custom:coauthor jtriley.eth
 @notice These functions implement the ERC-1155
-    standard interface:
-    - https://eips.ethereum.org/EIPS/eip-1155.
-    In addition, the following functions have
-    been added for convenience:
-    - `is_minter` (`external` function),
-    - `safe_mint` (`external` function),
-    - `set_minter` (`external` function),
-    - `owner` (`external` function),
-    - `transfer_ownership` (`external` function),
-    - `renounce_ownership` (`external` function),
-    - `_check_on_erc1155_received` (`internal` function),
-    - `_check_on_erc1155_batch_received` (`internal` function),
+        standard interface:
+        - https://eips.ethereum.org/EIPS/eip-1155.
+        In addition, the following functions have
+        been added for convenience:
+        - `uri` (`external` `view` function),
+        - `set_uri` (`external` function),
+        - `total_supply` (`external` `view` function),
+        - `exists` (`external` `view` function),
+        - `burn` (`external` function),
+        - `burn_batch` (`external` function),
+        - `is_minter` (`external` `view` function),
+        - `safe_mint` (`external` function),
+        - `safe_mint_batch` (`external` function),
+        - `set_minter` (`external` function),
+        - `owner` (`external` `view` function),
+        - `transfer_ownership` (`external` function),
+        - `renounce_ownership` (`external` function),
+        - `_check_on_erc1155_received` (`internal` function),
+        - `_check_on_erc1155_batch_received` (`internal` function),
+        - `_before_token_transfer` (`internal` function),
+        - `_after_token_transfer` (`internal` function).
+        The implementation is inspired by OpenZeppelin's implementation here:
+        https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC1155/ERC1155.sol.
 """
+
 
 # @dev We import and implement the `ERC165` interface,
 # which is a built-in interface of the Vyper compiler.
@@ -49,34 +62,20 @@ import interfaces.IERC1155Receiver as IERC1155Receiver
 _SUPPORTED_INTERFACES: constant(bytes4[3]) = [
     0x01FFC9A7, # The ERC-165 identifier for ERC-165.
     0xD9B67A26, # The ERC-165 identifier for ERC-1155.
-    0x0E89341C, # The ERC-165 identifier for ERC-1155 metadata extension.
+    0x0E89341C, # The ERC-165 identifier for the ERC-1155 metadata extension.
 ]
 
-# @dev Stores the base URI for computing `tokenURI`.
+
+# @dev Stores the base URI for computing `uri`.
 _BASE_URI: immutable(String[80])
 
 
-# @dev Mapping from token ID to token supply.
-_supply_of_token_id: HashMap[uint256, uint256]
-
-
-# @dev Mapping from owner address to token ID to token count.
-_balances: HashMap[address, HashMap[uint256, uint256]]
-
-
-# @dev Mapping from token ID to token URI.
-# @notice Since the Vyper design requires
-# strings of fixed size, we arbitrarily set
-# the maximum length for `_token_uris` to 432
-# characters. Since we have set the maximu,
-# length for `_BASE_URI` to 80 characters,
-# which implies a maximum character length
-# for `tokenURI` of 512.
-_token_uris: HashMap[uint256, String[432]]
-
-
-# @dev Mapping from owner to operator to boolean indicating permission.
+# @dev Mapping from owner to operator approvals.
 isApprovedForAll: public(HashMap[address, HashMap[address, bool]])
+
+
+# @dev Mapping from token ID to token supply.
+total_supply: public(HashMap[uint256, uint256])
 
 
 # @dev Returns `True` if an `address` has been
@@ -86,6 +85,21 @@ is_minter: public(HashMap[address, bool])
 
 # @dev Returns address of the current owner.
 owner: public(address)
+
+
+# @dev Mapping from token ID to owner balance.
+_balances: HashMap[uint256, HashMap[address, uint256]]
+
+
+# @dev Mapping from token ID to token URI.
+# @notice Since the Vyper design requires
+# strings of fixed size, we arbitrarily set
+# the maximum length for `_token_uris` to 432
+# characters. Since we have set the maximum
+# length for `_BASE_URI` to 80 characters,
+# which implies a maximum character length
+# for `uri` of 512.
+_token_uris: HashMap[uint256, String[432]]
 
 
 # @dev Emitted when `amount` tokens of token type
@@ -120,10 +134,10 @@ event ApprovalForAll:
 
 
 # @dev Emitted when the Uniform Resource Identifier (URI)
-# for token type `id` changes to `amount`, if it is a
+# for token type `id` changes to `value`, if it is a
 # non-programmatic URI. Note that if an `URI` event was
 # emitted for `id`, the EIP-1155 standard guarantees that
-# `amount` will equal the value returned by `uri`.
+# `value` will equal the value returned by `uri`.
 event URI:
     value: String[512]
     id: indexed(uint256)
@@ -151,15 +165,13 @@ def __init__(base_uri_: String[80]):
          in the creation-time EVM bytecode, the constructor
          is declared as `payable`.
     @param base_uri_ The maximum 80-character user-readable
-           string base URI for computing `tokenURI`.
+           string base URI for computing `uri`.
     """
     _BASE_URI = base_uri_
-    self.owner = msg.sender
-    self.is_minter[msg.sender] = True
 
-    # TODO: consider if these should be logged here for indexers
-    # log OwnershipTransferred(empty(address), msg.sender)
-    # log RoleMinterChanged(msg.sender, True)
+    self._transfer_ownership(msg.sender)
+    self.is_minter[msg.sender] = True
+    log RoleMinterChanged(msg.sender, True)
 
 
 @external
@@ -242,7 +254,7 @@ def balanceOf(owner: address, id: uint256) -> uint256:
         by `owner`.
     """
     assert owner != empty(address), "ERC1155: address zero is not a valid owner"
-    return self._balances[owner][id]
+    return self._balances[id][owner]
 
 
 @external
@@ -300,7 +312,7 @@ def uri(id: uint256) -> String[512]:
     @return String The maximum 512-character user-readable
             string token URI of the token type `id`.
     """
-    assert self._supply_of_token_id[id] != empty(uint256), "ERC1155: invalid token ID"
+    assert self.total_supply[id] != empty(uint256), "ERC1155: invalid token ID"
 
     token_uri: String[432] = self._token_uris[id]
 
@@ -339,11 +351,9 @@ def transfer_ownership(new_owner: address):
     @notice See {Ownable-transfer_ownership} for
             the function docstring.
     """
-    assert msg.sender == self.owner, "Ownable: caller is not the owner"
+    self._check_owner()
     assert new_owner != empty(address), "Ownable: new owner is the zero address"
-    old_owner: address = self.owner
-    self.owner = new_owner
-    log OwnershipTransferred(old_owner, new_owner)
+    self._transfer_ownership(new_owner)
 
 
 @external
@@ -363,11 +373,9 @@ def renounce_ownership():
             minter addresses first via `set_minter`
             before calling `renounce_ownership`.
     """
-    assert msg.sender == self.owner, "Ownable: caller is not the owner"
+    self._check_owner()
     self.is_minter[msg.sender] = False
-    old_owner: address = self.owner
-    self.owner = empty(address)
-    log OwnershipTransferred(old_owner, empty(address))
+    self._transfer_ownership(empty(address))
 
 
 @external
@@ -449,11 +457,11 @@ def _safe_transfer_from(owner: address, to: address, id: uint256, amount: uint25
             with no specified format.
     """
     assert to != empty(address), "ERC1155: transfer to the zero address"
-    assert self._balances[owner][id] >= amount, "ERC1155: insufficient balance for transfer"
+    assert self._balances[id][owner] >= amount, "ERC1155: insufficient balance for transfer"
     # cannot underflow due to above check.
-    self._balances[owner][id] = unsafe_sub(self._balances[owner][id], amount)
+    self._balances[id][owner] = unsafe_sub(self._balances[id][owner], amount)
     # cannot overflow due to total token supply check in `mint` function.
-    self._balances[to][id] = unsafe_add(self._balances[to][id], amount)
+    self._balances[id][to] = unsafe_add(self._balances[id][to], amount)
     log TransferSingle(msg.sender, owner, to, id, amount)
     assert self._check_on_erc1155_received(owner, to, id, amount, data), "ERC1155: transfer to non-ERC1155Receiver implementer"
 
@@ -490,11 +498,11 @@ def _safe_batch_transfer_from(
     idx: uint256 = 0
     for id in ids:
         amount: uint256 = amounts[idx]
-        assert self._balances[owner][id] >= amount, "ERC1155: insufficient balance"
+        assert self._balances[id][owner] >= amount, "ERC1155: insufficient balance"
         # cannot underflow due to above check.
-        self._balances[owner][id] = unsafe_sub(self._balances[owner][id], amount)
+        self._balances[id][owner] = unsafe_sub(self._balances[id][owner], amount)
         # cannot overflow due to total token supply check in `mint` function.
-        self._balances[to][id] = unsafe_add(self._balances[to][id], amount)
+        self._balances[id][to] = unsafe_add(self._balances[id][to], amount)
         # can never overflow, as the max length of the
         # ids array is less than max uint256
         idx = unsafe_add(idx, 1)
@@ -518,9 +526,9 @@ def _mint(owner: address, id: uint256, amount: uint256, data: Bytes[1024]):
     """
     assert owner != empty(address), "ERC1155: mint to the zero address"
     # checked addition here prevents all overflows on balance transfers
-    self._supply_of_token_id[id] += amount
+    self.total_supply[id] += amount
     # cannot overflow due to total token supply check above
-    self._balances[owner][id] = unsafe_add(self._balances[owner][id], amount)
+    self._balances[id][owner] = unsafe_add(self._balances[id][owner], amount)
     log TransferSingle(msg.sender, empty(address), owner, id, amount)
     assert self._check_on_erc1155_received(empty(address), owner, id, amount, data), "ERC1155: mint to non-ERC1155Receiver implementer"
 
@@ -549,9 +557,9 @@ def _mint_batch(
     for id in ids:
         amount: uint256 = amounts[idx]
         # checked addition here prevents all overflows on balance transfers
-        self._supply_of_token_id[id] += amount
+        self.total_supply[id] += amount
         # cannot overflow due to total token supply check above
-        self._balances[owner][id] = unsafe_add(self._balances[owner][id], amount)
+        self._balances[id][owner] = unsafe_add(self._balances[id][owner], amount)
         # can never overflow, as the max length of the
         # ids array is less than max uint256
         idx = unsafe_add(idx, 1)
@@ -606,3 +614,24 @@ def _check_on_erc1155_batch_received(owner: address, to: address, token_ids: Dyn
         return return_value == method_id("onERC1155BatchReceived(address,address,uint256[],uint256[],bytes)", output_type=bytes4)
     # EOA case.
     return True
+
+@internal
+def _check_owner():
+    """
+    @dev Sourced from {Ownable-_check_owner}.
+    @notice See {Ownable-_check_owner} for
+            the function docstring.
+    """
+    assert msg.sender == self.owner, "Ownable: caller is not the owner"
+
+
+@internal
+def _transfer_ownership(new_owner: address):
+    """
+    @dev Sourced from {Ownable-_transfer_ownership}.
+    @notice See {Ownable-_transfer_ownership} for
+            the function docstring.
+    """
+    old_owner: address = self.owner
+    self.owner = new_owner
+    log OwnershipTransferred(old_owner, new_owner)
