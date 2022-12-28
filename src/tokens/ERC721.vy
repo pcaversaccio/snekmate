@@ -8,20 +8,20 @@
         - https://eips.ethereum.org/EIPS/eip-721.
         In addition, the following functions have
         been added for convenience:
-        - `name` (`external` function),
-        - `symbol` (`external` function),
-        - `tokenURI` (`external` function),
-        - `totalSupply` (`external` function),
-        - `tokenByIndex` (`external` function),
-        - `tokenOfOwnerByIndex` (`external` function),
+        - `name` (`external` `view` function),
+        - `symbol` (`external` `view` function),
+        - `tokenURI` (`external` `view` function),
+        - `totalSupply` (`external` `view` function),
+        - `tokenByIndex` (`external` `view` function),
+        - `tokenOfOwnerByIndex` (`external` `view` function),
         - `burn` (`external` function),
-        - `is_minter` (`external` function),
+        - `is_minter` (`external` `view` function),
         - `safe_mint` (`external` function),
         - `set_minter` (`external` function),
         - `permit` (`external` function),
-        - `nonces` (`external` function),
-        - `DOMAIN_SEPARATOR` (`external` function),
-        - `owner` (`external` function),
+        - `nonces` (`external` `view` function),
+        - `DOMAIN_SEPARATOR` (`external` `view` function),
+        - `owner` (`external` `view` function),
         - `transfer_ownership` (`external` function),
         - `renounce_ownership` (`external` function),
         - `_check_on_erc721_received` (`internal` function),
@@ -83,8 +83,8 @@ import interfaces.IERC721Receiver as IERC721Receiver
 _SUPPORTED_INTERFACES: constant(bytes4[5]) = [
     0x01FFC9A7, # The ERC-165 identifier for ERC-165.
     0x80AC58CD, # The ERC-165 identifier for ERC-721.
-    0x5B5E139F, # The ERC-165 identifier for ERC-721 metadata extension.
-    0x780E9D63, # The ERC-165 identifier for ERC-721 enumeration extension.
+    0x5B5E139F, # The ERC-165 identifier for the ERC-721 metadata extension.
+    0x780E9D63, # The ERC-165 identifier for the ERC-721 enumeration extension.
     0x589C5CE2, # The ERC-165 identifier for ERC-4494.
 ]
 
@@ -268,6 +268,7 @@ def __init__(name_: String[25], symbol_: String[5], base_uri_: String[80], name_
 
     self._transfer_ownership(msg.sender)
     self.is_minter[msg.sender] = True
+    log RoleMinterChanged(msg.sender, True)
 
     hashed_name: bytes32 = keccak256(convert(name_eip712_, Bytes[50]))
     hashed_version: bytes32 = keccak256(convert(version_eip712_, Bytes[20]))
