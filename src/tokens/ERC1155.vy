@@ -247,11 +247,13 @@ def safeBatchTransferFrom(owner: address, to: address, ids: DynArray[uint256, _B
 def balanceOf(owner: address, id: uint256) -> uint256:
     """
     @dev Returns the amount of tokens of token type
-        `id` owned by `owner`.
+         `id` owned by `owner`.
+    @notice Note that `owner` cannot be the zero
+            address.
     @param owner The 20-byte owner address.
     @param id The 32-byte identifier of the token.
     @return uint256 The 32-byte token amount owned
-        by `owner`.
+            by `owner`.
     """
     assert owner != empty(address), "ERC1155: address zero is not a valid owner"
     return self._balances[id][owner]
@@ -269,14 +271,11 @@ def balanceOfBatch(owners: DynArray[address, _BATCH_SIZE], ids: DynArray[uint256
     @return DynArray The 32-byte array of token amounts
             owned by `owners`.
     """
-    assert len(owners) == len(ids), "ERC1155: batch lengths mismatch"
+    assert len(owners) == len(ids), "ERC1155: owners and ids length mismatch"
     batch_balances: DynArray[uint256, _BATCH_SIZE] = []
     idx: uint256 = 0
     for owner in owners:
-        id: uint256 = ids[idx]
-        batch_balances[idx] = IERC1155(self).balanceOf(owner, id)
-        # can never overflow, as the max length of the
-        # owners array is less than max uint256
+        batch_balances.append(IERC1155(self).balanceOf(owner, ids[idx]))
         idx = unsafe_add(idx, 1)
     return batch_balances
 
@@ -291,9 +290,7 @@ def setApprovalForAll(operator: address, approved: bool):
     @param approved The Boolean variable that sets the
            approval status.
     """
-    assert msg.sender != operator, "ERC1155: approve to caller"
-    self.isApprovedForAll[msg.sender][operator] = approved
-    log ApprovalForAll(msg.sender, operator, approved)
+    self._set_approval_for_all(msg.sender, operator, approved)
 
 
 @external
@@ -345,40 +342,6 @@ def set_uri(id: uint256, uri: String[432]):
 
 
 @external
-def transfer_ownership(new_owner: address):
-    """
-    @dev Sourced from {Ownable-transfer_ownership}.
-    @notice See {Ownable-transfer_ownership} for
-            the function docstring.
-    """
-    self._check_owner()
-    assert new_owner != empty(address), "Ownable: new owner is the zero address"
-    self._transfer_ownership(new_owner)
-
-
-@external
-def renounce_ownership():
-    """
-    @dev Leaves the contract without an owner.
-    @notice Renouncing ownership will leave the
-            contract without an owner, thereby
-            removing any functionality that is
-            only available to the owner. Note
-            that the `owner` is also removed from
-            the list of allowed minters.
-
-            WARNING: All other existing `minter`
-            addresses will still be able to create
-            new tokens. Consider removing all non-owner
-            minter addresses first via `set_minter`
-            before calling `renounce_ownership`.
-    """
-    self._check_owner()
-    self.is_minter[msg.sender] = False
-    self._transfer_ownership(empty(address))
-
-
-@external
 def set_minter(minter: address, status: bool):
     """
     @dev Adds or removes an address `minter` to/from the
@@ -414,12 +377,7 @@ def safe_mint(owner: address, id: uint256, amount: uint256, data: Bytes[1024]):
 
 
 @external
-def safe_mint_batch(
-    owner: address,
-    ids: DynArray[uint256, _BATCH_SIZE],
-    amounts: DynArray[uint256, _BATCH_SIZE],
-    data: Bytes[1024]
-):
+def safe_mint_batch(owner: address, ids: DynArray[uint256, _BATCH_SIZE], amounts: DynArray[uint256, _BATCH_SIZE], data: Bytes[1024]):
     """
     @dev Safely mints an array of `token_ids` and transfers them to `owner`.
     @notice Only authorised minters can access this function.
@@ -432,6 +390,55 @@ def safe_mint_batch(
     """
     assert self.is_minter[msg.sender], "AccessControl: access is denied"
     self._mint_batch(owner, ids, amounts, data)
+
+
+@external
+def transfer_ownership(new_owner: address):
+    """
+    @dev Sourced from {Ownable-transfer_ownership}.
+    @notice See {Ownable-transfer_ownership} for
+            the function docstring.
+    """
+    self._check_owner()
+    assert new_owner != empty(address), "Ownable: new owner is the zero address"
+    self._transfer_ownership(new_owner)
+
+
+@external
+def renounce_ownership():
+    """
+    @dev Leaves the contract without an owner.
+    @notice Renouncing ownership will leave the
+            contract without an owner, thereby
+            removing any functionality that is
+            only available to the owner. Note
+            that the `owner` is also removed from
+            the list of allowed minters.
+
+            WARNING: All other existing `minter`
+            addresses will still be able to create
+            new tokens. Consider removing all non-owner
+            minter addresses first via `set_minter`
+            before calling `renounce_ownership`.
+    """
+    self._check_owner()
+    self.is_minter[msg.sender] = False
+    self._transfer_ownership(empty(address))
+
+
+@internal
+def _set_approval_for_all(owner: address, operator: address, approved: bool):
+    """
+    @dev Grants or revokes permission to `operator` to
+         transfer the `owner`'s tokens, according to `approved`.
+    @notice Note that `operator` cannot be the `owner`.
+    @param operator The 20-byte operator address.
+    @param approved The Boolean variable that sets the
+           approval status.
+    """
+    assert owner != operator, "ERC1155: setting approval status for self"
+    self.isApprovedForAll[owner][operator] = approved
+    log ApprovalForAll(owner, operator, approved)
 
 
 @internal
@@ -539,12 +546,7 @@ def _mint(owner: address, id: uint256, amount: uint256, data: Bytes[1024]):
 
 
 @internal
-def _mint_batch(
-    owner: address,
-    ids: DynArray[uint256, _BATCH_SIZE],
-    amounts: DynArray[uint256, _BATCH_SIZE],
-    data: Bytes[1024]
-):
+def _mint_batch(owner: address, ids: DynArray[uint256, _BATCH_SIZE], amounts: DynArray[uint256, _BATCH_SIZE], data: Bytes[1024]):
     """
     @dev Safely mints an array of `token_ids` and transfers them to `owner`.
     @notice Only authorised minters can access this function.
@@ -602,8 +604,8 @@ def _check_on_erc1155_received(owner: address, to: address, id: uint256, amount:
 
 
 @internal
-def _check_on_erc1155_batch_received(owner: address, to: address, ids: DynArray[uint256, _BATCH_SIZE],
-                                     amounts: DynArray[uint256, _BATCH_SIZE], data: Bytes[1024]) -> bool:
+def _check_on_erc1155_batch_received(owner: address, to: address, ids: DynArray[uint256, _BATCH_SIZE], amounts: DynArray[uint256, _BATCH_SIZE],
+                                     data: Bytes[1024]) -> bool:
     """
     @dev An `internal` function that invokes {IERC1155Receiver-onERC1155BatchReceived}
          on a target address. The call is not executed
