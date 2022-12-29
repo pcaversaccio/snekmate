@@ -303,67 +303,84 @@ def uri(id: uint256) -> String[512]:
             it must be replaced by clients with the actual
             token type ID. Note that the `uri` function must
             not be used to check for the existence of a token
-            as it is possible for an implementation to return
+            as it is possible for the implementation to return
             a valid string even if the token does not exist.
     @param id The 32-byte identifier of the token type `id`.
     @return String The maximum 512-character user-readable
             string token URI of the token type `id`.
     """
-    assert self.total_supply[id] != empty(uint256), "ERC1155: invalid token ID"
-
     token_uri: String[432] = self._token_uris[id]
 
     # If there is no base URI, return the token URI.
     if (len(_BASE_URI) == empty(uint256)):
         return token_uri
-    # If both are set, concatenate the base URI and token URI.
-    elif (len(token_uri) != empty(uint256)):
+
+    # If both are set, concatenate the base URI
+    # and token URI.
+    if (len(token_uri) != empty(uint256)):
         return concat(_BASE_URI, token_uri)
-    # If there is no token URI but a base URI, concatenate the base URI and token ID.
-    return concat(_BASE_URI, uint2str(id))
+
+    # If there is no token URI but a base URI,
+    # concatenate the base URI and token ID.
+    if (len(_BASE_URI) != empty(uint256)):
+        return concat(_BASE_URI, uint2str(id))
+    else:
+        return ""
 
 
 @external
-def set_uri(id: uint256, uri: String[432]):
+def set_uri(id: uint256, token_uri: String[432]):
     """
-    @dev Sets token URI for a given `token_id`.
-    @notice This is decoupled from the `mint` function
-            since multiple of the same `token_id` may be
-            minted. However, permissions are shared with
-            `is_minter`. Only minters have authorisation
-            to change token URIs.
-    @param token_id The 32-byte token identifier.
-    @param uri The maximum 432-character user-readable
-           string URI for computing `tokenURI`.
+    @dev Sets the Uniform Resource Identifier (URI)
+         for token type `id`.
+    @notice This function is decoupled from `safe_mint`
+            and `safe_mint_batch`, as multiple of the same
+            `id` can be minted. However, the permissions
+            are shared with `is_minter`. Only minters have
+            the authorisation to change token URIs.
+    @param id The 32-byte identifier of the token.
+    @param token_uri The maximum 432-character user-readable
+           string URI for computing `uri`.
     """
-    assert self.is_minter[msg.sender], "ERC1155: not authorised to set token URI"
-    self._token_uris[id] = uri
-    log URI(uri, id)
+    assert self.is_minter[msg.sender], "AccessControl: access is denied"
+    self._set_uri(id, token_uri)
 
 
 @external
-def set_minter(minter: address, status: bool):
+@view
+def exists(id: uint256) -> bool:
     """
-    @dev Adds or removes an address `minter` to/from the
-         list of allowed minters. Note that only the
-         `owner` can add or remove `minter` addresses.
-         Also, the `minter` cannot be the zero address.
-         Eventually, the `owner` cannot remove himself
-         from the list of allowed minters.
-    @param minter The 20-byte minter address.
-    @param status The Boolean variable that sets the status.
+    @dev Indicates whether any token exist with a
+         given `id` or not.
+    @param id The 32-byte identifier of the token.
+    @return bool The verification whether `id` exists
+            or not.
     """
-    assert msg.sender == self.owner, "AccessControl: caller is not the owner"
-    assert minter != empty(address), "AccessControl: minter is the zero address"
-    assert minter != msg.sender, "AccessControl: minter is owner address"
-    self.is_minter[minter] = status
-    log RoleMinterChanged(minter, status)
+    return self.total_supply[id] > 0
+
+
+@external
+def burn(owner: address, id: uint256, amount: uint256):
+    """
+    TBD
+    """
+    assert owner == msg.sender or self.isApprovedForAll[owner][msg.sender], "ERC1155: caller is not token owner or approved"
+    self._burn(owner, id, amount)
+
+
+@external
+def burn_batch(owner: address, ids: DynArray[uint256, _BATCH_SIZE], amounts: DynArray[uint256, _BATCH_SIZE]):
+    """
+    TBD
+    """
+    assert owner == msg.sender or self.isApprovedForAll[owner][msg.sender], "ERC1155: caller is not token owner or approved"
+    self._burn_batch(owner, ids, amounts)
 
 
 @external
 def safe_mint(owner: address, id: uint256, amount: uint256, data: Bytes[1024]):
     """
-    @dev Safely mints `token_id` and transfers it to `owner`.
+    @dev Safely mints `id` and transfers it to `owner`.
     @notice Only authorised minters can access this function.
             Note that `owner` cannot be the zero address.
     @param owner The 20-byte owner address.
@@ -379,7 +396,7 @@ def safe_mint(owner: address, id: uint256, amount: uint256, data: Bytes[1024]):
 @external
 def safe_mint_batch(owner: address, ids: DynArray[uint256, _BATCH_SIZE], amounts: DynArray[uint256, _BATCH_SIZE], data: Bytes[1024]):
     """
-    @dev Safely mints an array of `token_ids` and transfers them to `owner`.
+    @dev Safely mints an array of `ids` and transfers them to `owner`.
     @notice Only authorised minters can access this function.
             Note that `owner` cannot be the zero address.
     @param owner The 20-byte owner address.
@@ -390,6 +407,25 @@ def safe_mint_batch(owner: address, ids: DynArray[uint256, _BATCH_SIZE], amounts
     """
     assert self.is_minter[msg.sender], "AccessControl: access is denied"
     self._mint_batch(owner, ids, amounts, data)
+
+
+@external
+def set_minter(minter: address, status: bool):
+    """
+    @dev Adds or removes an address `minter` to/from the
+         list of allowed minters. Note that only the
+         `owner` can add or remove `minter` addresses.
+         Also, the `minter` cannot be the zero address.
+         Eventually, the `owner` cannot remove himself
+         from the list of allowed minters.
+    @param minter The 20-byte minter address.
+    @param status The Boolean variable that sets the status.
+    """
+    self._check_owner()
+    assert minter != empty(address), "AccessControl: minter is the zero address"
+    assert minter != self.owner, "AccessControl: minter is owner address"
+    self.is_minter[minter] = status
+    log RoleMinterChanged(minter, status)
 
 
 @external
@@ -526,7 +562,7 @@ def _safe_batch_transfer_from(owner: address, to: address, ids: DynArray[uint256
 @internal
 def _mint(owner: address, id: uint256, amount: uint256, data: Bytes[1024]):
     """
-    @dev Safely mints `token_id` and transfers it to `owner`.
+    @dev Safely mints `id` and transfers it to `owner`.
     @notice Only authorised minters can access this function.
             Note that `owner` cannot be the zero address.
             Also, new tokens will be automatically assigned
@@ -548,7 +584,7 @@ def _mint(owner: address, id: uint256, amount: uint256, data: Bytes[1024]):
 @internal
 def _mint_batch(owner: address, ids: DynArray[uint256, _BATCH_SIZE], amounts: DynArray[uint256, _BATCH_SIZE], data: Bytes[1024]):
     """
-    @dev Safely mints an array of `token_ids` and transfers them to `owner`.
+    @dev Safely mints an array of `ids` and transfers them to `owner`.
     @notice Only authorised minters can access this function.
             Note that `owner` cannot be the zero address.
     @param owner The 20-byte owner address.
@@ -573,6 +609,63 @@ def _mint_batch(owner: address, ids: DynArray[uint256, _BATCH_SIZE], amounts: Dy
 
     log TransferBatch(msg.sender, empty(address), owner, ids, amounts)
     assert self._check_on_erc1155_batch_received(empty(address), owner, ids, amounts, data), "ERC1155: transfer to non-ERC1155Receiver implementer"
+
+
+@internal
+def _set_uri(id: uint256, token_uri: String[432]):
+    """
+    @dev Sets the Uniform Resource Identifier (URI)
+         for token type `id`.
+    @notice This is an `internal` function without access
+            restriction. This function is decoupled from
+            `_mint`, as multiple of the same `id` can be
+            minted.
+    @param id The 32-byte identifier of the token.
+    @param token_uri The maximum 432-character user-readable
+           string URI for computing `uri`.
+    """
+    self._token_uris[id] = token_uri
+    log URI(IERC1155MetadataURI(self).uri(id), id)
+
+
+@internal
+def _burn(owner: address, id: uint256, amount: uint256):
+    """
+    TBD
+    """
+    assert owner != empty(address), "ERC1155: burn from the zero address"
+
+    self._before_token_transfer(owner, empty(address), self._as_singleton_array(id), self._as_singleton_array(amount), b"")
+
+    owner_balance: uint256 = self._balances[id][owner]
+    assert owner_balance >= amount, "ERC1155: burn amount exceeds balance"
+    self._balances[id][owner] = unsafe_sub(owner_balance, amount)
+    log TransferSingle(msg.sender, owner, empty(address), id, amount)
+
+    self._after_token_transfer(owner, empty(address), self._as_singleton_array(id), self._as_singleton_array(amount), b"")
+
+
+@internal
+def _burn_batch(owner: address, ids: DynArray[uint256, _BATCH_SIZE], amounts: DynArray[uint256, _BATCH_SIZE]):
+    """
+    TBD
+    """
+    assert len(ids) == len(amounts), "ERC1155: ids and amounts length mismatch"
+    assert owner != empty(address), "ERC1155: burn from the zero address"
+
+    self._before_token_transfer(owner, empty(address), ids, amounts, b"")
+
+    idx: uint256 = 0
+    for id in ids:
+        amount: uint256 = amounts[idx]
+        owner_balance: uint256 = self._balances[id][owner]
+        assert owner_balance >= amount, "ERC1155: burn amount exceeds balance"
+        self._balances[id][owner] = unsafe_sub(owner_balance, amount)
+        idx = unsafe_add(idx, 1)
+
+    log TransferBatch(msg.sender, owner, empty(address), ids, amounts)
+
+    self._after_token_transfer(owner, empty(address), ids, amounts, b"")
 
 
 @internal
