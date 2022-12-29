@@ -56,9 +56,9 @@ def onERC1155BatchReceived(_operator: address, _from: address, _ids: DynArray[ui
     @param _ids The 32-byte array of token identifiers. Note
            that the order and length must match the 32-byte
            `_values` array.
-    @param _values The 32-byte array of token amounts that are being
-           transferred. Note that the order and length must match
-           the 32-byte `_ids` array.
+    @param _values The 32-byte array of token amounts that are
+           being transferred. Note that the order and length must
+           match the 32-byte `_ids` array.
     @param _data The maximum 1024-byte additional data
            with no specified format.
     @return bytes4 The 4-byte function selector of `onERC1155BatchReceived`.

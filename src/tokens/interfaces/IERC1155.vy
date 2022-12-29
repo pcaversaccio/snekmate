@@ -41,8 +41,8 @@ event TransferBatch:
     _operator: indexed(address)
     _from: indexed(address)
     _to: indexed(address)
-    _ids: DynArray[uint256, 65535]
-    _values: DynArray[uint256, 65535]
+    _ids: DynArray[uint256, 128]
+    _values: DynArray[uint256, 128]
 
 
 # @dev Emitted when `_owner` grants or revokes permission
@@ -90,13 +90,12 @@ def safeTransferFrom(_from: address, _to: address, _id: uint256, _value: uint256
 
 
 @external
-def safeBatchTransferFrom(_from: address, _to: address, _ids: DynArray[uint256, 65535], _values: DynArray[uint256, 65535],
-                          _data: Bytes[1024]):
+def safeBatchTransferFrom(_from: address, _to: address, _ids: DynArray[uint256, 128], _values: DynArray[uint256, 128], _data: Bytes[1024]):
     """
     @dev Batched version of `safeTransferFrom`.
     @notice Note that `_ids` and `_values` must have the
             same length. Also, if `_to` refers to a smart
-            contract, it must implement {IERC1155Receiver-onERC1155Received}
+            contract, it must implement {IERC1155Receiver-onERC1155BatchReceived}
             and return the acceptance magic value.
     @param _from The 20-byte address which previously
            owned the token.
@@ -131,7 +130,7 @@ def balanceOf(_owner: address, _id: uint256) -> uint256:
 
 @external
 @view
-def balanceOfBatch(_owners: DynArray[address, 65535], _ids: DynArray[uint256, 65535]) -> DynArray[uint256, 65535]:
+def balanceOfBatch(_owners: DynArray[address, 128], _ids: DynArray[uint256, 128]) -> DynArray[uint256, 128]:
     """
     @dev Batched version of `balanceOf`.
     @notice Note that `_owners` and `_ids` must have the
@@ -141,7 +140,7 @@ def balanceOfBatch(_owners: DynArray[address, 65535], _ids: DynArray[uint256, 65
     @return DynArray The 32-byte array of token amounts
             owned by `_owners`.
     """
-    return empty(DynArray[uint256, 65535])
+    return empty(DynArray[uint256, 128])
 
 
 @external
