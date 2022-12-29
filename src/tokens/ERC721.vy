@@ -543,7 +543,7 @@ def safe_mint(owner: address, uri: String[432]):
     # New tokens will be automatically assigned an incremental ID.
     # The first token ID will be zero.
     token_id: uint256 = self._counter
-    self._counter += 1
+    self._counter = token_id + 1
     # Theoretically, the following line could overflow
     # if all 2**256 token IDs were minted. However,
     # since we have bounded the dynamic array `_all_tokens`
