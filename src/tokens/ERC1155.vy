@@ -362,7 +362,14 @@ def exists(id: uint256) -> bool:
 @external
 def burn(owner: address, id: uint256, amount: uint256):
     """
-    TBD
+    @dev Destroys `amount` tokens of token type `id`
+         from `owner`.
+    @notice Note that `owner` cannot be the zero
+            address. Also, `owner` must have at least
+            `amount` tokens of token type `id`.
+    @param owner The 20-byte owner address.
+    @param id The 32-byte identifier of the token.
+    @param amount The 32-byte token amount to be destroyed.
     """
     assert owner == msg.sender or self.isApprovedForAll[owner][msg.sender], "ERC1155: caller is not token owner or approved"
     self._burn(owner, id, amount)
@@ -371,7 +378,16 @@ def burn(owner: address, id: uint256, amount: uint256):
 @external
 def burn_batch(owner: address, ids: DynArray[uint256, _BATCH_SIZE], amounts: DynArray[uint256, _BATCH_SIZE]):
     """
-    TBD
+    @dev Batched version of `burn`.
+    @notice Note that `ids` and `amounts` must have the
+            same length.
+    @param owner The 20-byte owner address.
+    @param ids The 32-byte array of token identifiers. Note
+           that the order and length must match the 32-byte
+           `amounts` array.
+    @param amounts The 32-byte array of token amounts that are
+           being destroyed. Note that the order and length must
+           match the 32-byte `ids` array.
     """
     assert owner == msg.sender or self.isApprovedForAll[owner][msg.sender], "ERC1155: caller is not token owner or approved"
     self._burn_batch(owner, ids, amounts)
@@ -631,7 +647,14 @@ def _set_uri(id: uint256, token_uri: String[432]):
 @internal
 def _burn(owner: address, id: uint256, amount: uint256):
     """
-    TBD
+    @dev Destroys `amount` tokens of token type `id`
+         from `owner`.
+    @notice Note that `owner` cannot be the zero
+            address. Also, `owner` must have at least
+            `amount` tokens of token type `id`.
+    @param owner The 20-byte owner address.
+    @param id The 32-byte identifier of the token.
+    @param amount The 32-byte token amount to be destroyed.
     """
     assert owner != empty(address), "ERC1155: burn from the zero address"
 
@@ -648,7 +671,16 @@ def _burn(owner: address, id: uint256, amount: uint256):
 @internal
 def _burn_batch(owner: address, ids: DynArray[uint256, _BATCH_SIZE], amounts: DynArray[uint256, _BATCH_SIZE]):
     """
-    TBD
+    @dev Batched version of `burn`.
+    @notice Note that `ids` and `amounts` must have the
+            same length.
+    @param owner The 20-byte owner address.
+    @param ids The 32-byte array of token identifiers. Note
+           that the order and length must match the 32-byte
+           `amounts` array.
+    @param amounts The 32-byte array of token amounts that are
+           being destroyed. Note that the order and length must
+           match the 32-byte `ids` array.
     """
     assert len(ids) == len(amounts), "ERC1155: ids and amounts length mismatch"
     assert owner != empty(address), "ERC1155: burn from the zero address"
