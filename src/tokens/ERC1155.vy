@@ -396,12 +396,16 @@ def burn_batch(owner: address, ids: DynArray[uint256, _BATCH_SIZE], amounts: Dyn
 @external
 def safe_mint(owner: address, id: uint256, amount: uint256, data: Bytes[1024]):
     """
-    @dev Safely mints `id` and transfers it to `owner`.
+    @dev Safely mints `amount` tokens of token type `id` and
+         transfers them to `owner`.
     @notice Only authorised minters can access this function.
-            Note that `owner` cannot be the zero address.
+            Note that `owner` cannot be the zero address. Also,
+            if `owner` refers to a smart contract, it must implement
+            {IERC1155Receiver-onERC1155Received}, which is called
+            upon a safe transfer.
     @param owner The 20-byte owner address.
     @param id The 32-byte identifier of the token.
-    @param amount The 32-byte amount that is being minted.
+    @param amount The 32-byte token amount to be created.
     @param data The maximum 1024-byte additional data
            with no specified format.
     """
@@ -412,12 +416,18 @@ def safe_mint(owner: address, id: uint256, amount: uint256, data: Bytes[1024]):
 @external
 def safe_mint_batch(owner: address, ids: DynArray[uint256, _BATCH_SIZE], amounts: DynArray[uint256, _BATCH_SIZE], data: Bytes[1024]):
     """
-    @dev Safely mints an array of `ids` and transfers them to `owner`.
-    @notice Only authorised minters can access this function.
-            Note that `owner` cannot be the zero address.
+    @dev Batched version of `safe_mint`.
+    @notice Note that `ids` and `amounts` must have the
+            same length. Also, if `owner` refers to a smart contract,
+            it must implement {IERC1155Receiver-onERC1155BatchReceived},
+            which is called upon a safe transfer.
     @param owner The 20-byte owner address.
-    @param ids The array of 32-byte identifiers of the tokens.
-    @param amounts The array of 32-byte amounts that are being minted.
+    @param ids The 32-byte array of token identifiers. Note
+           that the order and length must match the 32-byte
+           `amounts` array.
+    @param amounts The 32-byte array of token amounts that are
+           being created. Note that the order and length must
+           match the 32-byte `ids` array.
     @param data The maximum 1024-byte additional data
            with no specified format.
     """
@@ -578,52 +588,69 @@ def _safe_batch_transfer_from(owner: address, to: address, ids: DynArray[uint256
 @internal
 def _mint(owner: address, id: uint256, amount: uint256, data: Bytes[1024]):
     """
-    @dev Safely mints `id` and transfers it to `owner`.
-    @notice Only authorised minters can access this function.
-            Note that `owner` cannot be the zero address.
-            Also, new tokens will be automatically assigned
-            an incremental ID.
+    @dev Safely mints `amount` tokens of token type `id` and
+         transfers them to `owner`.
+    @notice This is an `internal` function without access
+            restriction. Note that `owner` cannot be the zero address.
+            Also, if `owner` refers to a smart contract, it must implement
+            {IERC1155Receiver-onERC1155Received}, which is called
+            upon a safe transfer.
     @param owner The 20-byte owner address.
     @param id The 32-byte identifier of the token.
-    @param uri The maximum 432-character user-readable
-           string URI for computing `tokenURI`.
+    @param amount The 32-byte token amount to be created.
+    @param data The maximum 1024-byte additional data
+           with no specified format.
     """
     assert owner != empty(address), "ERC1155: mint to the zero address"
-    # checked addition here prevents all overflows on balance transfers
-    self.total_supply[id] += amount
-    # cannot overflow due to total token supply check above
+
+    self._before_token_transfer(empty(address), owner, self._as_singleton_array(id), self._as_singleton_array(amount), data)
+
+    # In the next line, an overflow is not possible
+    # due to an arithmetic check of the entire token
+    # supply in the function `_before_token_transfer`.
     self._balances[id][owner] = unsafe_add(self._balances[id][owner], amount)
     log TransferSingle(msg.sender, empty(address), owner, id, amount)
+
+    self._after_token_transfer(empty(address), owner, self._as_singleton_array(id), self._as_singleton_array(amount), data)
+
     assert self._check_on_erc1155_received(empty(address), owner, id, amount, data), "ERC1155: mint to non-ERC1155Receiver implementer"
 
 
 @internal
 def _mint_batch(owner: address, ids: DynArray[uint256, _BATCH_SIZE], amounts: DynArray[uint256, _BATCH_SIZE], data: Bytes[1024]):
     """
-    @dev Safely mints an array of `ids` and transfers them to `owner`.
-    @notice Only authorised minters can access this function.
-            Note that `owner` cannot be the zero address.
+    @dev Batched version of `safe_mint`.
+    @notice Note that `ids` and `amounts` must have the
+            same length. Also, if `owner` refers to a smart contract,
+            it must implement {IERC1155Receiver-onERC1155BatchReceived},
+            which is called upon a safe transfer.
     @param owner The 20-byte owner address.
-    @param ids The array of 32-byte identifiers of the tokens.
-    @param amounts The array of 32-byte amounts that are being minted.
+    @param ids The 32-byte array of token identifiers. Note
+           that the order and length must match the 32-byte
+           `amounts` array.
+    @param amounts The 32-byte array of token amounts that are
+           being created. Note that the order and length must
+           match the 32-byte `ids` array.
     @param data The maximum 1024-byte additional data
            with no specified format.
     """
-    assert owner != empty(address), "ERC1155: mint to the zero address"
     assert len(ids) == len(amounts), "ERC1155: ids and amounts length mismatch"
+    assert owner != empty(address), "ERC1155: mint to the zero address"
+
+    self._before_token_transfer(empty(address), owner, ids, amounts, data)
 
     idx: uint256 = 0
     for id in ids:
-        amount: uint256 = amounts[idx]
-        # checked addition here prevents all overflows on balance transfers
-        self.total_supply[id] += amount
-        # cannot overflow due to total token supply check above
-        self._balances[id][owner] = unsafe_add(self._balances[id][owner], amount)
-        # can never overflow, as the max length of the
-        # ids array is less than max uint256
+        # In the next line, an overflow is not possible
+        # due to an arithmetic check of the entire token
+        # supply in the function `_before_token_transfer`.
+        self._balances[id][owner] = unsafe_add(self._balances[id][owner], amounts[idx])
         idx = unsafe_add(idx, 1)
 
     log TransferBatch(msg.sender, empty(address), owner, ids, amounts)
+
+    self._after_token_transfer(empty(address), owner, ids, amounts, data)
+
     assert self._check_on_erc1155_batch_received(empty(address), owner, ids, amounts, data), "ERC1155: transfer to non-ERC1155Receiver implementer"
 
 
@@ -793,10 +820,7 @@ def _before_token_transfer(owner: address, to: address, ids: DynArray[uint256, _
     if (owner == empty(address)):
         idx: uint256 = 0
         for id in ids:
-            # In the next line, an overflow is not possible
-            # due to an arithmetic check of the entire token
-            # supply in the function `_mint`.
-            self.total_supply[id] = unsafe_add(self.total_supply[id], amounts[idx])
+            self.total_supply[id] += amounts[idx]
             idx = unsafe_add(idx, 1)
 
     if (to == empty(address)):
