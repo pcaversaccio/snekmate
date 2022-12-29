@@ -519,11 +519,11 @@ def tokenOfOwnerByIndex(owner: address, index: uint256) -> uint256:
 def burn(token_id: uint256):
     """
     @dev Burns the `token_id` token.
-    @notice Note that the caller must own `token_id`
-            or be an approved operator.
+    @notice Note that the caller must own `token_id`.
     @param token_id The 32-byte identifier of the token.
     """
-    assert self._is_approved_or_owner(msg.sender, token_id), "ERC721: caller is not token owner or approved"
+    owner: address = ERC721(self).ownerOf(token_id)
+    assert msg.sender == owner, "ERC721: caller is not token owner"
     self._burn(token_id)
 
 
