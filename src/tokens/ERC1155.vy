@@ -276,6 +276,10 @@ def balanceOfBatch(owners: DynArray[address, _BATCH_SIZE], ids: DynArray[uint256
     idx: uint256 = 0
     for owner in owners:
         batch_balances.append(IERC1155(self).balanceOf(owner, ids[idx]))
+        # The following line cannot overflow because we have
+        # limited the dynamic array `owners` by the `constant`
+        # parameter `_BATCH_SIZE`, which is bounded by the
+        # maximum value of `uint16`.
         idx = unsafe_add(idx, 1)
     return batch_balances
 
@@ -356,7 +360,7 @@ def exists(id: uint256) -> bool:
     @return bool The verification whether `id` exists
             or not.
     """
-    return self.total_supply[id] > 0
+    return self.total_supply[id] != 0
 
 
 @external
@@ -531,7 +535,7 @@ def _safe_transfer_from(owner: address, to: address, id: uint256, amount: uint25
     self._balances[id][owner] = unsafe_sub(owner_balance, amount)
     # In the next line, an overflow is not possible
     # due to an arithmetic check of the entire token
-    # supply in the function `_mint`.
+    # supply in the functions `_mint` and `_mint_batch`.
     self._balances[id][to] = unsafe_add(self._balances[id][to], amount)
     log TransferSingle(msg.sender, owner, to, id, amount)
 
@@ -574,8 +578,12 @@ def _safe_batch_transfer_from(owner: address, to: address, ids: DynArray[uint256
         self._balances[id][owner] = unsafe_sub(owner_balance, amount)
         # In the next line, an overflow is not possible
         # due to an arithmetic check of the entire token
-        # supply in the function `_mint`.
+        # supply in the functions `_mint` and `_mint_batch`.
         self._balances[id][to] = unsafe_add(self._balances[id][to], amount)
+        # The following line cannot overflow because we have
+        # limited the dynamic array `ids` by the `constant`
+        # parameter `_BATCH_SIZE`, which is bounded by the
+        # maximum value of `uint16`.
         idx = unsafe_add(idx, 1)
 
     log TransferBatch(msg.sender, owner, to, ids, amounts)
@@ -645,6 +653,10 @@ def _mint_batch(owner: address, ids: DynArray[uint256, _BATCH_SIZE], amounts: Dy
         # due to an arithmetic check of the entire token
         # supply in the function `_before_token_transfer`.
         self._balances[id][owner] = unsafe_add(self._balances[id][owner], amounts[idx])
+        # The following line cannot overflow because we have
+        # limited the dynamic array `ids` by the `constant`
+        # parameter `_BATCH_SIZE`, which is bounded by the
+        # maximum value of `uint16`.
         idx = unsafe_add(idx, 1)
 
     log TransferBatch(msg.sender, empty(address), owner, ids, amounts)
@@ -720,6 +732,10 @@ def _burn_batch(owner: address, ids: DynArray[uint256, _BATCH_SIZE], amounts: Dy
         owner_balance: uint256 = self._balances[id][owner]
         assert owner_balance >= amount, "ERC1155: burn amount exceeds balance"
         self._balances[id][owner] = unsafe_sub(owner_balance, amount)
+        # The following line cannot overflow because we have
+        # limited the dynamic array `ids` by the `constant`
+        # parameter `_BATCH_SIZE`, which is bounded by the
+        # maximum value of `uint16`.
         idx = unsafe_add(idx, 1)
 
     log TransferBatch(msg.sender, owner, empty(address), ids, amounts)
@@ -820,7 +836,14 @@ def _before_token_transfer(owner: address, to: address, ids: DynArray[uint256, _
     if (owner == empty(address)):
         idx: uint256 = 0
         for id in ids:
+            # The following line uses intentionally checked arithmetic
+            # to ensure that the total supply for each token type `id`
+            # never overflows.
             self.total_supply[id] += amounts[idx]
+            # The following line cannot overflow because we have
+            # limited the dynamic array `ids` by the `constant`
+            # parameter `_BATCH_SIZE`, which is bounded by the
+            # maximum value of `uint16`.
             idx = unsafe_add(idx, 1)
 
     if (to == empty(address)):
@@ -830,6 +853,10 @@ def _before_token_transfer(owner: address, to: address, ids: DynArray[uint256, _
             supply: uint256 = self.total_supply[id]
             assert supply >= amount, "ERC1155: burn amount exceeds total_supply"
             self.total_supply[id] = unsafe_sub(supply, amount)
+            # The following line cannot overflow because we have
+            # limited the dynamic array `ids` by the `constant`
+            # parameter `_BATCH_SIZE`, which is bounded by the
+            # maximum value of `uint16`.
             idx = unsafe_add(idx, 1)
 
 
@@ -873,9 +900,9 @@ def _after_token_transfer(owner: address, to: address, ids: DynArray[uint256, _B
 @pure
 def _as_singleton_array(element: uint256) -> DynArray[uint256, 1]:
     """
-    @dev An `internal` helper function that converts a 20-byte
+    @dev An `internal` helper function that converts a 32-byte
          element into an array of length 1.
-    @param element The 20-byte non-array element.
+    @param element The 32-byte non-array element.
     @return DynArray The array of length 1 containing `element`.
     """
     return [element]
