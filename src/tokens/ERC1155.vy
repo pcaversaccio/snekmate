@@ -414,7 +414,7 @@ def safe_mint(owner: address, id: uint256, amount: uint256, data: Bytes[1024]):
            with no specified format.
     """
     assert self.is_minter[msg.sender], "AccessControl: access is denied"
-    self._mint(owner, id, amount, data)
+    self._safe_mint(owner, id, amount, data)
 
 
 @external
@@ -436,7 +436,7 @@ def safe_mint_batch(owner: address, ids: DynArray[uint256, _BATCH_SIZE], amounts
            with no specified format.
     """
     assert self.is_minter[msg.sender], "AccessControl: access is denied"
-    self._mint_batch(owner, ids, amounts, data)
+    self._safe_mint_batch(owner, ids, amounts, data)
 
 
 @external
@@ -535,7 +535,7 @@ def _safe_transfer_from(owner: address, to: address, id: uint256, amount: uint25
     self._balances[id][owner] = unsafe_sub(owner_balance, amount)
     # In the next line, an overflow is not possible
     # due to an arithmetic check of the entire token
-    # supply in the functions `_mint` and `_mint_batch`.
+    # supply in the functions `_safe_mint` and `_safe_mint_batch`.
     self._balances[id][to] = unsafe_add(self._balances[id][to], amount)
     log TransferSingle(msg.sender, owner, to, id, amount)
 
@@ -548,7 +548,7 @@ def _safe_transfer_from(owner: address, to: address, id: uint256, amount: uint25
 def _safe_batch_transfer_from(owner: address, to: address, ids: DynArray[uint256, _BATCH_SIZE], amounts: DynArray[uint256, _BATCH_SIZE],
                               data: Bytes[1024]):
     """
-    @dev Batched version of `safeTransferFrom`.
+    @dev Batched version of `_safe_transfer_from`.
     @notice Note that `ids` and `amounts` must have the
             same length. Also, if `to` refers to a smart
             contract, it must implement {IERC1155Receiver-onERC1155BatchReceived}
@@ -578,7 +578,7 @@ def _safe_batch_transfer_from(owner: address, to: address, ids: DynArray[uint256
         self._balances[id][owner] = unsafe_sub(owner_balance, amount)
         # In the next line, an overflow is not possible
         # due to an arithmetic check of the entire token
-        # supply in the functions `_mint` and `_mint_batch`.
+        # supply in the functions `_safe_mint` and `_safe_mint_batch`.
         self._balances[id][to] = unsafe_add(self._balances[id][to], amount)
         # The following line cannot overflow because we have
         # limited the dynamic array `ids` by the `constant`
@@ -594,7 +594,7 @@ def _safe_batch_transfer_from(owner: address, to: address, ids: DynArray[uint256
 
 
 @internal
-def _mint(owner: address, id: uint256, amount: uint256, data: Bytes[1024]):
+def _safe_mint(owner: address, id: uint256, amount: uint256, data: Bytes[1024]):
     """
     @dev Safely mints `amount` tokens of token type `id` and
          transfers them to `owner`.
@@ -625,9 +625,9 @@ def _mint(owner: address, id: uint256, amount: uint256, data: Bytes[1024]):
 
 
 @internal
-def _mint_batch(owner: address, ids: DynArray[uint256, _BATCH_SIZE], amounts: DynArray[uint256, _BATCH_SIZE], data: Bytes[1024]):
+def _safe_mint_batch(owner: address, ids: DynArray[uint256, _BATCH_SIZE], amounts: DynArray[uint256, _BATCH_SIZE], data: Bytes[1024]):
     """
-    @dev Batched version of `safe_mint`.
+    @dev Batched version of `_safe_mint`.
     @notice Note that `ids` and `amounts` must have the
             same length. Also, if `owner` refers to a smart contract,
             it must implement {IERC1155Receiver-onERC1155BatchReceived},
@@ -710,7 +710,7 @@ def _burn(owner: address, id: uint256, amount: uint256):
 @internal
 def _burn_batch(owner: address, ids: DynArray[uint256, _BATCH_SIZE], amounts: DynArray[uint256, _BATCH_SIZE]):
     """
-    @dev Batched version of `burn`.
+    @dev Batched version of `_burn`.
     @notice Note that `ids` and `amounts` must have the
             same length.
     @param owner The 20-byte owner address.
