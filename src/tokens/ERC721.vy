@@ -718,39 +718,39 @@ def _is_approved_or_owner(spender: address, token_id: uint256) -> bool:
 
 
 @internal
-def _safe_mint(to: address, token_id: uint256, data: Bytes[1024]):
+def _safe_mint(owner: address, token_id: uint256, data: Bytes[1024]):
     """
-    @dev Safely mints `token_id` and transfers it to `to`.
-    @notice Note that `token_id` must not exist. Also, if `to`
+    @dev Safely mints `token_id` and transfers it to `owner`.
+    @notice Note that `token_id` must not exist. Also, if `owner`
             refers to a smart contract, it must implement
             {IERC721Receiver-onERC721Received}, which is called
             upon a safe transfer.
-    @param to The 20-byte receiver address.
+    @param owner The 20-byte owner address.
     @param token_id The 32-byte identifier of the token.
     @param data The maximum 1024-byte additional data
            with no specified format that is sent
-           to `to`.
+           to `owner`.
     """
-    self._mint(to, token_id)
-    assert self._check_on_erc721_received(empty(address), to, token_id, data), "ERC721: transfer to non-ERC721Receiver implementer"
+    self._mint(owner, token_id)
+    assert self._check_on_erc721_received(empty(address), owner, token_id, data), "ERC721: transfer to non-ERC721Receiver implementer"
 
 
 @internal
-def _mint(to: address, token_id: uint256):
+def _mint(owner: address, token_id: uint256):
     """
-    @dev Mints `token_id` and transfers it to `to`.
+    @dev Mints `token_id` and transfers it to `owner`.
     @notice Note that `token_id` must not exist and
-            `to` cannot be the zero address.
+            `owner` cannot be the zero address.
 
             WARNING: Usage of this method is discouraged,
             use `_safe_mint` whenever possible.
-    @param to The 20-byte receiver address.
+    @param owner The 20-byte owner address.
     @param token_id The 32-byte identifier of the token.
     """
-    assert to != empty(address), "ERC721: mint to the zero address"
+    assert owner != empty(address), "ERC721: mint to the zero address"
     assert not(self._exists(token_id)), "ERC721: token already minted"
 
-    self._before_token_transfer(empty(address), to, token_id)
+    self._before_token_transfer(empty(address), owner, token_id)
     # Checks that the `token_id` was not minted by the
     # `_before_token_transfer` hook.
     assert not(self._exists(token_id)), "ERC721: token already minted"
@@ -760,11 +760,11 @@ def _mint(to: address, token_id: uint256):
     # However, since we have bounded the dynamic array
     # `_all_tokens` by the maximum value of `uint64`,
     # this is no longer even theoretically possible.
-    self._balances[to] = unsafe_add(self._balances[to], 1)
-    self._owners[token_id] = to
-    log Transfer(empty(address), to, token_id)
+    self._balances[owner] = unsafe_add(self._balances[owner], 1)
+    self._owners[token_id] = owner
+    log Transfer(empty(address), owner, token_id)
 
-    self._after_token_transfer(empty(address), to, token_id)
+    self._after_token_transfer(empty(address), owner, token_id)
 
 
 @internal
