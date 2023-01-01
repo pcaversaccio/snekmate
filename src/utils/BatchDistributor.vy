@@ -58,6 +58,9 @@ def distribute_ether(data: Batch):
         raw_call(txn.recipient, b"", value=txn.amount)
 
     if (self.balance != empty(uint256)):
+        # IMPORTANT: Any wei amount previously forced into this
+        # contract (e.g. by using the `SELFDESTRUCT` opcode) will
+        # be part of the refund transaction.
         raw_call(msg.sender, b"", value=self.balance)
 
 
