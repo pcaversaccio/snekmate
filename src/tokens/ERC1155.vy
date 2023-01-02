@@ -315,8 +315,9 @@ def uri(id: uint256) -> String[512]:
     """
     token_uri: String[432] = self._token_uris[id]
 
+    base_uri_length: uint256 = len(_BASE_URI)
     # If there is no base URI, return the token URI.
-    if (len(_BASE_URI) == empty(uint256)):
+    if (base_uri_length == empty(uint256)):
         return token_uri
 
     # If both are set, concatenate the base URI
@@ -326,7 +327,7 @@ def uri(id: uint256) -> String[512]:
 
     # If there is no token URI but a base URI,
     # concatenate the base URI and token ID.
-    if (len(_BASE_URI) != empty(uint256)):
+    if (base_uri_length != empty(uint256)):
         return concat(_BASE_URI, uint2str(id))
     else:
         return ""
