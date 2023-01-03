@@ -36,9 +36,11 @@ def encode(data: Bytes[_DATA_INPUT_BOUND], base64_url: bool) -> DynArray[String[
          binary-to-text encoding scheme.
     @notice Due to the Vyper design with fixed-size
             string parameters, string concatenations
-            in a loop can lead to length mismatches.
-            To circumvent this issue, we choose a
-            dynamic array as the return type.
+            with itself in a loop can lead to length
+            mismatches (the underlying issue is that
+            Vyper does not support a mutable `Bytes`
+            type). To circumvent this issue, we choose
+            a dynamic array as the return type.
     @param data The maximum 1024-byte data to be
            Base64-encoded.
     @param base64_url The Boolean variable that specifies
