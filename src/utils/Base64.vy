@@ -16,12 +16,12 @@
 # @dev Sets the maximum input and output length
 # allowed. For an n-byte input to be encoded, the
 # space required for the Base64-encoded content
-# (without line breaks) is 4 * ceil(n/3) characters.
+# (without line breaks) is "4 * ceil(n/3)" characters.
 _DATA_INPUT_BOUND: constant(uint256) = 1024
 _DATA_OUTPUT_BOUND: constant(uint256) = 1368
 
 
-# @dev Defines the Base64 encoding table. For encoding
+# @dev Defines the Base64 encoding tables. For encoding
 # with a URL and filename-safe alphabet, please refer to:
 # https://www.rfc-editor.org/rfc/rfc4648#section-5.
 _TABLE_STD_CHARS: constant(String[64]) = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
@@ -38,8 +38,8 @@ def encode(data: Bytes[_DATA_INPUT_BOUND], base64_url: bool) -> DynArray[String[
             string parameters, string concatenations
             in a loop can lead to length mismatches.
             To circumvent this issue, we choose a
-            dynamic array as the return type.  
-    @param data The maximum 1024-byte data to be 
+            dynamic array as the return type.
+    @param data The maximum 1024-byte data to be
            Base64-encoded.
     @param base64_url The Boolean variable that specifies
            whether to use a URL and filename-safe alphabet
@@ -101,11 +101,11 @@ def encode(data: Bytes[_DATA_INPUT_BOUND], base64_url: bool) -> DynArray[String[
         if idx == len(data_padded):
             break
 
-    # Case 1: padding of "==" added. 
+    # Case 1: padding of "==" added.
     if (padding == 1):
         last_chunk: String[2] = slice(char_chunks.pop(), 0, 2)
         char_chunks.append(concat(last_chunk, "=="))
-    # Case 2: padding of "=" added. 
+    # Case 2: padding of "=" added.
     elif (padding == 2):
         last_chunk: String[3] = slice(char_chunks.pop(), 0, 3)
         char_chunks.append(concat(last_chunk, "="))
@@ -115,8 +115,8 @@ def encode(data: Bytes[_DATA_INPUT_BOUND], base64_url: bool) -> DynArray[String[
 
 @external
 @pure
-def decode(data: String[1368]) -> Bytes[1024]:
+def decode(data: DynArray[String[4], _DATA_OUTPUT_BOUND]) -> Bytes[_DATA_INPUT_BOUND]:
     """
     @dev TBD
-    """
-    return empty(Bytes[1024])
+    """    
+    return empty(Bytes[_DATA_INPUT_BOUND])
