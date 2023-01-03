@@ -673,7 +673,7 @@ def _exists(token_id: uint256) -> bool:
             Tokens start existing when they are minted (`_mint`),
             and stop existing when they are burned (`_burn`).
     @param token_id The 32-byte identifier of the token.
-    @return The verification whether `token_id` exists
+    @return bool The verification whether `token_id` exists
             or not.
     """
     return self._owners[token_id] != empty(address)
