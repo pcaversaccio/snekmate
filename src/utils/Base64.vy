@@ -73,9 +73,9 @@ def encode(data: Bytes[_DATA_INPUT_BOUND], base64_url: bool) -> DynArray[String[
         # four 6-bit blocks.
         chunk: uint256 = convert(slice(data_padded, idx, 3), uint256)
 
-        # To write each character, we shift the 3-byte chunk
-        # (= 24 bits) four times in blocks of six bits for
-        # each character (18, 12, 6, 0).
+        # To write each character, we right shift the 3-byte
+        # chunk (= 24 bits) four times in blocks of six bits
+        # for each character (18, 12, 6, 0).
         c1: uint256 = shift(chunk, -18) & 63
         c2: uint256 = shift(chunk, -12) & 63
         c3: uint256 = shift(chunk, -6) & 63
