@@ -133,6 +133,10 @@ contract Base64Test is PRBTest {
         bytes[] memory outputUrl = base64.decode(data, true);
         bytes memory returnDataStd = bytes.concat(outputStd[0], outputStd[1]);
         bytes memory returnDataUrl = bytes.concat(outputUrl[0], outputUrl[1]);
+        /**
+         * @dev We remove the one trailing zero byte that stems from
+         * the padding to ensure byte-level equality.
+         */
         assertEq(
             string(returnDataStd.slice(0, returnDataStd.length - 1)),
             text
@@ -150,6 +154,10 @@ contract Base64Test is PRBTest {
         bytes[] memory outputUrl = base64.decode(data, true);
         bytes memory returnDataStd = bytes.concat(outputStd[0], outputStd[1]);
         bytes memory returnDataUrl = bytes.concat(outputUrl[0], outputUrl[1]);
+        /**
+         * @dev We remove the two trailing zero bytes that stem from
+         * the padding to ensure byte-level equality.
+         */
         assertEq(
             string(returnDataStd.slice(0, returnDataStd.length - 2)),
             text
@@ -165,6 +173,10 @@ contract Base64Test is PRBTest {
         string memory data = "TQ==";
         bytes[] memory outputStd = base64.decode(data, false);
         bytes[] memory outputUrl = base64.decode(data, true);
+        /**
+         * @dev We remove the two trailing zero bytes that stem from
+         * the padding to ensure byte-level equality.
+         */
         assertEq(string(outputStd[0].slice(0, outputStd[0].length - 2)), text);
         assertEq(string(outputUrl[0].slice(0, outputUrl[0].length - 2)), text);
     }
@@ -196,6 +208,10 @@ contract Base64Test is PRBTest {
             outputUrl[7],
             outputUrl[8]
         );
+        /**
+         * @dev We remove the two trailing zero bytes that stem from
+         * the padding to ensure byte-level equality.
+         */
         assertEq(
             string(returnDataStd.slice(0, returnDataStd.length - 2)),
             text
