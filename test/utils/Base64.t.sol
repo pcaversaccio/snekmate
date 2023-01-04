@@ -131,16 +131,16 @@ contract Base64Test is PRBTest {
         string memory data = "dGVzdDE=";
         bytes[] memory outputStd = base64.decode(data, false);
         bytes[] memory outputUrl = base64.decode(data, true);
-        bytes memory returnDataStd = bytes.concat(
-            outputStd[0],
-            outputStd[1]
+        bytes memory returnDataStd = bytes.concat(outputStd[0], outputStd[1]);
+        bytes memory returnDataUrl = bytes.concat(outputUrl[0], outputUrl[1]);
+        assertEq(
+            string(returnDataStd.slice(0, returnDataStd.length - 1)),
+            text
         );
-        bytes memory returnDataUrl = bytes.concat(
-            outputUrl[0],
-            outputUrl[1]
+        assertEq(
+            string(returnDataUrl.slice(0, returnDataUrl.length - 1)),
+            text
         );
-        assertEq(string(returnDataStd.slice(0, returnDataStd.length - 1)), text);
-        assertEq(string(returnDataUrl.slice(0, returnDataUrl.length - 1)), text);
     }
 
     function testDecodeWithDoublePadding() public {
@@ -148,16 +148,16 @@ contract Base64Test is PRBTest {
         string memory data = "dGVzdA==";
         bytes[] memory outputStd = base64.decode(data, false);
         bytes[] memory outputUrl = base64.decode(data, true);
-        bytes memory returnDataStd = bytes.concat(
-            outputStd[0],
-            outputStd[1]
+        bytes memory returnDataStd = bytes.concat(outputStd[0], outputStd[1]);
+        bytes memory returnDataUrl = bytes.concat(outputUrl[0], outputUrl[1]);
+        assertEq(
+            string(returnDataStd.slice(0, returnDataStd.length - 2)),
+            text
         );
-        bytes memory returnDataUrl = bytes.concat(
-            outputUrl[0],
-            outputUrl[1]
+        assertEq(
+            string(returnDataUrl.slice(0, returnDataUrl.length - 2)),
+            text
         );
-        assertEq(string(returnDataStd.slice(0, returnDataStd.length - 2)), text);
-        assertEq(string(returnDataUrl.slice(0, returnDataUrl.length - 2)), text);
     }
 
     function testDecodeSingleCharacter() public {
@@ -196,8 +196,14 @@ contract Base64Test is PRBTest {
             outputUrl[7],
             outputUrl[8]
         );
-        assertEq(string(returnDataStd.slice(0, returnDataStd.length - 2)), text);
-        assertEq(string(returnDataUrl.slice(0, returnDataUrl.length - 2)), text);
+        assertEq(
+            string(returnDataStd.slice(0, returnDataStd.length - 2)),
+            text
+        );
+        assertEq(
+            string(returnDataUrl.slice(0, returnDataUrl.length - 2)),
+            text
+        );
     }
 
     function testDecodeSafeUrl() public {
