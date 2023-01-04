@@ -4,6 +4,8 @@ pragma solidity ^0.8.17;
 import {PRBTest} from "prb/test/PRBTest.sol";
 import {VyperDeployer} from "utils/VyperDeployer.sol";
 
+import {BytesLib} from "solidity-bytes-utils/BytesLib.sol";
+
 import {IBase64} from "./interfaces/IBase64.sol";
 
 /**
@@ -11,6 +13,8 @@ import {IBase64} from "./interfaces/IBase64.sol";
  * in this test suite since it supports equality assertions for arrays.
  */
 contract Base64Test is PRBTest {
+    using BytesLib for bytes;
+
     VyperDeployer private vyperDeployer = new VyperDeployer();
 
     IBase64 private base64;
@@ -104,5 +108,117 @@ contract Base64Test is PRBTest {
         string[] memory outputUrl = base64.encode(bytes(data), true);
         assertEq(outputStd, encodedStd);
         assertEq(outputUrl, encodedUrl);
+    }
+
+    function testDecodeEmptyString() public {
+        bytes[] memory outputStd = base64.decode("", false);
+        bytes[] memory outputUrl = base64.decode("", true);
+        assertEq(outputStd.length, 0);
+        assertEq(outputUrl.length, 0);
+    }
+
+    function testDecodeWithNoPadding() public {
+        string memory text = "test12";
+        string memory data = "dGVzdDEy";
+        bytes[] memory outputStd = base64.decode(data, false);
+        bytes[] memory outputUrl = base64.decode(data, true);
+        assertEq(string(bytes.concat(outputStd[0], outputStd[1])), text);
+        assertEq(string(bytes.concat(outputUrl[0], outputUrl[1])), text);
+    }
+
+    function testDecodeWithSinglePadding() public {
+        string memory text = "test1";
+        string memory data = "dGVzdDE=";
+        bytes[] memory outputStd = base64.decode(data, false);
+        bytes[] memory outputUrl = base64.decode(data, true);
+        bytes memory returnDataStd = bytes.concat(
+            outputStd[0],
+            outputStd[1]
+        );
+        bytes memory returnDataUrl = bytes.concat(
+            outputUrl[0],
+            outputUrl[1]
+        );
+        assertEq(string(returnDataStd.slice(0, returnDataStd.length - 1)), text);
+        assertEq(string(returnDataUrl.slice(0, returnDataUrl.length - 1)), text);
+    }
+
+    function testDecodeWithDoublePadding() public {
+        string memory text = "test";
+        string memory data = "dGVzdA==";
+        bytes[] memory outputStd = base64.decode(data, false);
+        bytes[] memory outputUrl = base64.decode(data, true);
+        bytes memory returnDataStd = bytes.concat(
+            outputStd[0],
+            outputStd[1]
+        );
+        bytes memory returnDataUrl = bytes.concat(
+            outputUrl[0],
+            outputUrl[1]
+        );
+        assertEq(string(returnDataStd.slice(0, returnDataStd.length - 2)), text);
+        assertEq(string(returnDataUrl.slice(0, returnDataUrl.length - 2)), text);
+    }
+
+    function testDecodeSingleCharacter() public {
+        string memory text = "M";
+        string memory data = "TQ==";
+        bytes[] memory outputStd = base64.decode(data, false);
+        bytes[] memory outputUrl = base64.decode(data, true);
+        assertEq(string(outputStd[0].slice(0, outputStd[0].length - 2)), text);
+        assertEq(string(outputUrl[0].slice(0, outputUrl[0].length - 2)), text);
+    }
+
+    function testDecodeSentence() public {
+        string memory text = "Snakes are great animals!";
+        string memory data = "U25ha2VzIGFyZSBncmVhdCBhbmltYWxzIQ==";
+        bytes[] memory outputStd = base64.decode(data, false);
+        bytes[] memory outputUrl = base64.decode(data, true);
+        bytes memory returnDataStd = bytes.concat(
+            outputStd[0],
+            outputStd[1],
+            outputStd[2],
+            outputStd[3],
+            outputStd[4],
+            outputStd[5],
+            outputStd[6],
+            outputStd[7],
+            outputStd[8]
+        );
+        bytes memory returnDataUrl = bytes.concat(
+            outputUrl[0],
+            outputUrl[1],
+            outputUrl[2],
+            outputUrl[3],
+            outputUrl[4],
+            outputUrl[5],
+            outputUrl[6],
+            outputUrl[7],
+            outputUrl[8]
+        );
+        assertEq(string(returnDataStd.slice(0, returnDataStd.length - 2)), text);
+        assertEq(string(returnDataUrl.slice(0, returnDataUrl.length - 2)), text);
+    }
+
+    function testDecodeSafeUrl() public {
+        string memory text = "[]c!~?[]~";
+        string memory data = "W11jIX4_W11-";
+        vm.expectRevert(bytes("Base64: invalid string"));
+        base64.decode(data, false);
+        bytes[] memory outputUrl = base64.decode(data, true);
+        bytes memory returnDataUrl = bytes.concat(
+            outputUrl[0],
+            outputUrl[1],
+            outputUrl[2]
+        );
+        assertEq(string(returnDataUrl), text);
+    }
+
+    function testDataLengthMismatch() public {
+        string memory data = "W11jI";
+        vm.expectRevert(bytes("Base64: length mismatch"));
+        base64.decode(data, false);
+        vm.expectRevert(bytes("Base64: length mismatch"));
+        base64.decode(data, true);
     }
 }

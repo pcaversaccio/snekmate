@@ -6,4 +6,6 @@ interface IBase64 {
         bytes memory data,
         bool base64Url
     ) external pure returns (string[] memory);
+
+    function decode(string memory data, bool base64Url) external pure returns (bytes[] memory);
 }

@@ -24,8 +24,8 @@ _DATA_OUTPUT_BOUND: constant(uint256) = 1368
 # @dev Defines the Base64 encoding tables. For encoding
 # with a URL and filename-safe alphabet, please refer to:
 # https://www.rfc-editor.org/rfc/rfc4648#section-5.
-_TABLE_STD_CHARS: constant(String[64]) = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
-_TABLE_URL_CHARS: constant(String[64]) = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_"
+_TABLE_STD_CHARS: constant(String[65]) = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/="
+_TABLE_URL_CHARS: constant(String[65]) = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_="
 
 
 @external
@@ -100,7 +100,7 @@ def encode(data: Bytes[_DATA_INPUT_BOUND], base64_url: bool) -> DynArray[String[
 
         # We break the loop once we reach the end of `data`
         # (including padding).
-        if idx == len(data_padded):
+        if (idx == len(data_padded)):
             break
 
     # Case 1: padding of "==" added.
@@ -117,8 +117,82 @@ def encode(data: Bytes[_DATA_INPUT_BOUND], base64_url: bool) -> DynArray[String[
 
 @external
 @pure
-def decode(data: DynArray[String[4], _DATA_OUTPUT_BOUND]) -> Bytes[_DATA_INPUT_BOUND]:
+def decode(data: String[_DATA_OUTPUT_BOUND], base64_url: bool) -> DynArray[Bytes[3], _DATA_INPUT_BOUND]:
     """
     @dev TBD
-    """    
-    return empty(Bytes[_DATA_INPUT_BOUND])
+    """
+    data_length: uint256 = len(data)
+    if (data_length == empty(uint256)):
+        return empty(DynArray[Bytes[3], _DATA_INPUT_BOUND])
+
+    assert data_length % 4 == 0, "Base64: length mismatch"
+
+    result: DynArray[Bytes[3], _DATA_INPUT_BOUND] = []
+    idx: uint256 = 0
+    for _ in range(_DATA_OUTPUT_BOUND):
+        chunk: String[4] = slice(data, idx, 4)
+
+        if (base64_url):
+            c1: uint256 = self._index_of(slice(chunk, 0, 1), True)
+            c2: uint256 = self._index_of(slice(chunk, 1, 1), True)
+            c3: uint256 = self._index_of(slice(chunk, 2, 1), True)
+            c4: uint256 = self._index_of(slice(chunk, 3, 1), True)
+
+            chunk_bytes: uint256 = shift(c1, 18) | shift(c2, 12) | shift(c3, 6) | c4
+
+            b1: bytes1 = convert(convert(shift(chunk_bytes, -16) & 255, uint8), bytes1)
+            b2: bytes1 = convert(convert(shift(chunk_bytes, -8) & 255, uint8), bytes1)
+            b3: bytes1 = convert(convert(chunk_bytes & 255, uint8), bytes1)
+
+            if (c4 == 64):
+                result.append(concat(b1, b2, b"\x00"))
+            elif (c3 == 63):
+                result.append(concat(b1, b"\x00\x00"))
+            else:
+                result.append(concat(b1, b2, b3))
+
+            idx = unsafe_add(idx, 4)
+
+            if (idx == data_length):
+                break
+        else:
+            c1: uint256 = self._index_of(slice(chunk, 0, 1), False)
+            c2: uint256 = self._index_of(slice(chunk, 1, 1), False)
+            c3: uint256 = self._index_of(slice(chunk, 2, 1), False)
+            c4: uint256 = self._index_of(slice(chunk, 3, 1), False)
+
+            chunk_bytes: uint256 = shift(c1, 18) | shift(c2, 12) | shift(c3, 6) | c4
+
+            b1: bytes1 = convert(convert(shift(chunk_bytes, -16) & 255, uint8), bytes1)
+            b2: bytes1 = convert(convert(shift(chunk_bytes, -8) & 255, uint8), bytes1)
+            b3: bytes1 = convert(convert(chunk_bytes & 255, uint8), bytes1)
+
+            if (c4 == 64):
+                result.append(concat(b1, b2, b"\x00"))
+            elif (c3 == 63):
+                result.append(concat(b1, b"\x00\x00"))
+            else:
+                result.append(concat(b1, b2, b3))
+
+            idx = unsafe_add(idx, 4)
+
+            if (idx == data_length):
+                break
+
+    return result
+
+
+@internal
+@pure
+def _index_of(char: String[1], base64_url: bool) -> uint256:
+    pos: uint256 = 0
+    for _ in range(len(_TABLE_URL_CHARS)):
+        if (base64_url):
+            if (char == slice(_TABLE_URL_CHARS, pos, 1)):
+                break
+        else:
+            if (char == slice(_TABLE_STD_CHARS, pos, 1)):
+                break
+        pos = unsafe_add(pos, 1)
+    assert pos < len(_TABLE_URL_CHARS), "Base64: invalid string"
+    return pos
