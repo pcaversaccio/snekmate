@@ -83,7 +83,8 @@ def encode(data: Bytes[_DATA_INPUT_BOUND], base64_url: bool) -> DynArray[String[
         c3: uint256 = shift(chunk, -6) & 63
         c4: uint256 = chunk & 63
 
-        # Base64 encoding with an URL and filename-safe alphabet.
+        # Base64 encoding with an URL and filename-safe
+        # alphabet.
         if (base64_url):
             char_chunks.append(concat(slice(_TABLE_URL_CHARS, c1, 1), slice(_TABLE_URL_CHARS, c2, 1), slice(_TABLE_URL_CHARS, c3, 1),\
                                       slice(_TABLE_URL_CHARS, c4, 1)))
@@ -119,19 +120,43 @@ def encode(data: Bytes[_DATA_INPUT_BOUND], base64_url: bool) -> DynArray[String[
 @pure
 def decode(data: String[_DATA_OUTPUT_BOUND], base64_url: bool) -> DynArray[Bytes[3], _DATA_INPUT_BOUND]:
     """
-    @dev TBD
+    @dev Decodes a `String` input using the Base64
+         binary-to-text encoding scheme.
+    @notice Due to the Vyper design with fixed-size
+            byte parameters, byte concatenations
+            with itself in a loop can lead to length
+            mismatches (the underlying issue is that
+            Vyper does not support a mutable `Bytes`
+            type). To circumvent this issue, we choose
+            a dynamic array as the return type. Note
+            that line breaks are not supported.
+    @param data The maximum 1368-byte data to be
+           Base64-decoded.
+    @param base64_url The Boolean variable that specifies
+           whether to use a URL and filename-safe alphabet
+           or not.
+    @return DynArray The maximum 3-byte array that combined
+            results in the Base64 decoding of `data`.
     """
     data_length: uint256 = len(data)
     if (data_length == empty(uint256)):
         return empty(DynArray[Bytes[3], _DATA_INPUT_BOUND])
 
+    # If the length of the encoded input is not a
+    # multiple of four, it is an invalid input.
     assert data_length % 4 == 0, "Base64: length mismatch"
 
     result: DynArray[Bytes[3], _DATA_INPUT_BOUND] = []
     idx: uint256 = 0
     for _ in range(_DATA_OUTPUT_BOUND):
+        # Each of these four characters represents
+        # a 6-bit index in the Base64 character list
+        # which, when concatenated, gives the 24-bit
+        # number for the original three characters.
         chunk: String[4] = slice(data, idx, 4)
 
+        # Base64 encoding with an URL and filename-safe
+        # alphabet.
         if (base64_url):
             c1: uint256 = self._index_of(slice(chunk, 0, 1), True)
             c2: uint256 = self._index_of(slice(chunk, 1, 1), True)
@@ -140,21 +165,35 @@ def decode(data: String[_DATA_OUTPUT_BOUND], base64_url: bool) -> DynArray[Bytes
 
             chunk_bytes: uint256 = shift(c1, 18) | shift(c2, 12) | shift(c3, 6) | c4
 
+            # We split the 24-bit number into the original
+            # three 8-bit characters.
             b1: bytes1 = convert(convert(shift(chunk_bytes, -16) & 255, uint8), bytes1)
             b2: bytes1 = convert(convert(shift(chunk_bytes, -8) & 255, uint8), bytes1)
             b3: bytes1 = convert(convert(chunk_bytes & 255, uint8), bytes1)
 
+            # Case 1: padding of "=" as part of the
+            # encoded input.
             if (c4 == 64):
                 result.append(concat(b1, b2, b"\x00"))
+            # Case 2: padding of "==" as part of the
+            # encoded input.
             elif (c3 == 63):
                 result.append(concat(b1, b"\x00\x00"))
+            # Case 3: no padding as part of the encoded
+            # input.
             else:
                 result.append(concat(b1, b2, b3))
 
+            # The following line cannot overflow because we have
+            # limited the for loop by the `constant` parameter
+            # `_DATA_OUTPUT_BOUND`, which is bounded by the
+            # maximum value of `1368`.
             idx = unsafe_add(idx, 4)
 
+            # We break the loop once we reach the end of `data`.
             if (idx == data_length):
                 break
+        # Base64 encoding using the standard characters.
         else:
             c1: uint256 = self._index_of(slice(chunk, 0, 1), False)
             c2: uint256 = self._index_of(slice(chunk, 1, 1), False)
@@ -163,19 +202,32 @@ def decode(data: String[_DATA_OUTPUT_BOUND], base64_url: bool) -> DynArray[Bytes
 
             chunk_bytes: uint256 = shift(c1, 18) | shift(c2, 12) | shift(c3, 6) | c4
 
+            # We split the 24-bit number into the original
+            # three 8-bit characters.
             b1: bytes1 = convert(convert(shift(chunk_bytes, -16) & 255, uint8), bytes1)
             b2: bytes1 = convert(convert(shift(chunk_bytes, -8) & 255, uint8), bytes1)
             b3: bytes1 = convert(convert(chunk_bytes & 255, uint8), bytes1)
 
+            # Case 1: padding of "=" as part of the
+            # encoded input.
             if (c4 == 64):
                 result.append(concat(b1, b2, b"\x00"))
+            # Case 2: padding of "==" as part of the
+            # encoded input.
             elif (c3 == 63):
                 result.append(concat(b1, b"\x00\x00"))
+            # Case 3: no padding as part of the encoded
+            # input.
             else:
                 result.append(concat(b1, b2, b3))
 
+            # The following line cannot overflow because we have
+            # limited the for loop by the `constant` parameter
+            # `_DATA_OUTPUT_BOUND`, which is bounded by the
+            # maximum value of `1368`.
             idx = unsafe_add(idx, 4)
 
+            # We break the loop once we reach the end of `data`.
             if (idx == data_length):
                 break
 
@@ -185,14 +237,36 @@ def decode(data: String[_DATA_OUTPUT_BOUND], base64_url: bool) -> DynArray[Bytes
 @internal
 @pure
 def _index_of(char: String[1], base64_url: bool) -> uint256:
+    """
+    @dev Returns the index position of the string `char`
+         in the Base64 encoding tables.
+    @param char The maximum 1-character user-readable string.
+    @param base64_url The Boolean variable that specifies
+           whether to use a URL and filename-safe alphabet
+           or not.
+    @return uint256 The 32-byte index position of the string
+            `char` in the Base64 encoding table.
+    """
     pos: uint256 = 0
     for _ in range(len(_TABLE_URL_CHARS)):
+        # Base64 encoding with an URL and filename-safe
+        # alphabet.
         if (base64_url):
             if (char == slice(_TABLE_URL_CHARS, pos, 1)):
                 break
+        # Base64 encoding using the standard characters.
         else:
             if (char == slice(_TABLE_STD_CHARS, pos, 1)):
                 break
+
+        # The following line cannot overflow because we have
+        # limited the for loop by the `constant` parameter
+        # `_TABLE_URL_CHARS`, which is bounded by the
+        # maximum value of `65`.
         pos = unsafe_add(pos, 1)
+
+    # If no matching character is found, it is an
+    # invalid input.
     assert pos < len(_TABLE_URL_CHARS), "Base64: invalid string"
+    
     return pos
