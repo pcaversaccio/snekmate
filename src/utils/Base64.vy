@@ -239,7 +239,7 @@ def decode(data: String[_DATA_OUTPUT_BOUND], base64_url: bool) -> DynArray[Bytes
 def _index_of(char: String[1], base64_url: bool) -> uint256:
     """
     @dev Returns the index position of the string `char`
-         in the Base64 encoding tables.
+         in the Base64 encoding table(s).
     @param char The maximum 1-character user-readable string.
     @param base64_url The Boolean variable that specifies
            whether to use a URL and filename-safe alphabet

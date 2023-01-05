@@ -10,7 +10,7 @@ import {IBase64} from "./interfaces/IBase64.sol";
 
 /**
  * @dev We make use of Paul's testing assertions (https://github.com/paulrberg/prb-test)
- * in this test suite since it supports equality assertions for arrays.
+ * in this test suite since it supports natively equality assertions for arrays.
  */
 contract Base64Test is PRBTest {
     using BytesLib for bytes;
