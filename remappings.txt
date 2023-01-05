@@ -1,4 +1,5 @@
 utils/=lib/utils/
+prb/test/=lib/prb-test/src/
 forge-std/=lib/forge-std/src/
 create-util/=lib/create-util/contracts/
 openzeppelin/=lib/openzeppelin-contracts/contracts/

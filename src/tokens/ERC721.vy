@@ -454,8 +454,9 @@ def tokenURI(token_id: uint256) -> String[512]:
     self._require_minted(token_id)
     token_uri: String[432] = self._token_uris[token_id]
 
+    base_uri_length: uint256 = len(_BASE_URI)
     # If there is no base URI, return the token URI.
-    if (len(_BASE_URI) == empty(uint256)):
+    if (base_uri_length == empty(uint256)):
         return token_uri
 
     # If both are set, concatenate the base URI
@@ -465,7 +466,7 @@ def tokenURI(token_id: uint256) -> String[512]:
 
     # If there is no token URI but a base URI,
     # concatenate the base URI and token ID.
-    if (len(_BASE_URI) != empty(uint256)):
+    if (base_uri_length != empty(uint256)):
         return concat(_BASE_URI, uint2str(token_id))
     else:
         return ""
@@ -673,7 +674,7 @@ def _exists(token_id: uint256) -> bool:
             Tokens start existing when they are minted (`_mint`),
             and stop existing when they are burned (`_burn`).
     @param token_id The 32-byte identifier of the token.
-    @return The verification whether `token_id` exists
+    @return bool The verification whether `token_id` exists
             or not.
     """
     return self._owners[token_id] != empty(address)

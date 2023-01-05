@@ -30,6 +30,7 @@ src
    ├─ Multicall — "Multicall Functions"
    ├─ SignatureChecker — "ECDSA and EIP-1271 Signature Verification Function"
    ├─ BatchDistributor — "Batch Sending Both Native and ERC-20 Tokens"
+   ├─ Base64 — "Base64 Encoding and Decoding Functions"
 ```
 
 ## 🙏🏼 Acknowledgements
