@@ -138,15 +138,15 @@ def _process_multi_proof(proof: DynArray[bytes32, max_value(uint16)], proof_flag
     @return bytes32 The 32-byte recovered hash by using `leaves`
             and `proof` with a given set of `proof_flags`.
     """
-    leaves_len: uint256 = len(leaves)
+    leaves_length: uint256 = len(leaves)
     total_hashes: uint256 = len(proof_flags)
 
     # Checks the validity of the proof. We do not check for an
-    # overflow (nor underflow) as `leaves_len`, `proof`, and
+    # overflow (nor underflow) as `leaves_length`, `proof`, and
     # `total_hashes` are bounded by the value `max_value(uint16)`
     # and therefore cannot overflow the `uint256` type when they
     # are added together or incremented by 1.
-    assert unsafe_add(leaves_len, len(proof)) == unsafe_add(total_hashes, 1), "MerkleProof: invalid multiproof"
+    assert unsafe_add(leaves_length, len(proof)) == unsafe_add(total_hashes, 1), "MerkleProof: invalid multiproof"
 
     hashes: DynArray[bytes32, max_value(uint16)] = []
     leaf_pos: uint256 = empty(uint256)
@@ -161,14 +161,14 @@ def _process_multi_proof(proof: DynArray[bytes32, max_value(uint16)], proof_flag
     # - depending on the flag, either another value from the "main queue"
     #   (merging branches) or an element from the `proof` array.
     for flag in proof_flags:
-        if (leaf_pos < leaves_len):
+        if (leaf_pos < leaves_length):
             a = leaves[leaf_pos]
             leaf_pos = unsafe_add(leaf_pos, 1)
         else:
             a = hashes[hash_pos]
             hash_pos = unsafe_add(hash_pos, 1)
         if (flag):
-            if (leaf_pos < leaves_len):
+            if (leaf_pos < leaves_length):
                 b = leaves[leaf_pos]
                 leaf_pos = unsafe_add(leaf_pos, 1)
             else:
@@ -184,7 +184,7 @@ def _process_multi_proof(proof: DynArray[bytes32, max_value(uint16)], proof_flag
         # indexing and would revert in such a case. In any event,
         # the array index cannot become negative here by design.
         return hashes[unsafe_sub(total_hashes, 1)]
-    elif (leaves_len != empty(uint256)):
+    elif (leaves_length != empty(uint256)):
         return leaves[empty(uint256)]
     else:
         return proof[empty(uint256)]
