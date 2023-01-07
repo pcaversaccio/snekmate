@@ -78,7 +78,11 @@ def encode(data: Bytes[_DATA_INPUT_BOUND], base64_url: bool) -> DynArray[String[
         # To write each character, we right shift the 3-byte
         # chunk (= 24 bits) four times in blocks of six bits
         # for each character (18, 12, 6, 0).
-        c1: uint256 = shift(chunk, -18) & 63
+
+        # For the first part of the block, masking is not required
+        # since 6 bits are already extracted when the chunk
+        # is right shifted by 18 (out of 24 bits).
+        c1: uint256 = shift(chunk, -18)
         c2: uint256 = shift(chunk, -12) & 63
         c3: uint256 = shift(chunk, -6) & 63
         c4: uint256 = chunk & 63
