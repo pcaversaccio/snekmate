@@ -77,8 +77,24 @@ def encode(data: Bytes[_DATA_INPUT_BOUND], base64_url: bool) -> DynArray[String[
 
         # To write each character, we right shift the 3-byte
         # chunk (= 24 bits) four times in blocks of six bits
-        # for each character (18, 12, 6, 0).
-        c1: uint256 = shift(chunk, -18) & 63
+        # for each character (18, 12, 6, 0). Note that masking
+        # is not required for the first part of the block, as
+        # 6 bits are already extracted when the chunk is shifted
+        # to the right by 18 bits (out of 24 bits). To illustrate
+        # why, here is an example:
+        # Example case for `c1`:
+        #   6bit   6bit   6bit   6bit
+        # │------│------│------│------│
+        #  011100 000111 100101 110100
+        #
+        # `>> 18` (right shift `c1` by 18 bits)
+        #   6bit   6bit   6bit   6bit
+        # │------│------│------│------│
+        #  000000 000000 000000 011100
+        #
+        # 63 (or `0x3F`) is `000000000000000000111111` in binary.
+        # Thus, the bitwise `AND` operation is redundant.
+        c1: uint256 = shift(chunk, -18)
         c2: uint256 = shift(chunk, -12) & 63
         c3: uint256 = shift(chunk, -6) & 63
         c4: uint256 = chunk & 63
@@ -163,6 +179,9 @@ def decode(data: String[_DATA_OUTPUT_BOUND], base64_url: bool) -> DynArray[Bytes
             c3: uint256 = self._index_of(slice(chunk, 2, 1), True)
             c4: uint256 = self._index_of(slice(chunk, 3, 1), True)
 
+            # We concatenate the 6-bit index in the Base64
+            # character list, which gives the 24-bit number
+            # for the original three characters.
             chunk_bytes: uint256 = shift(c1, 18) | shift(c2, 12) | shift(c3, 6) | c4
 
             # We split the 24-bit number into the original
