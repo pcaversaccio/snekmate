@@ -36,7 +36,7 @@
     "ethers": "^5.7.2",
     "keccak256": "^1.0.6",
     "merkletreejs": "^0.3.9",
-    "prettier": "^2.8.1",
+    "prettier": "^2.8.2",
     "prettier-plugin-solidity": "^1.1.1"
   }
 }
