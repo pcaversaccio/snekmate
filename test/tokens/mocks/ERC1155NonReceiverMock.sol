@@ -6,4 +6,6 @@ pragma solidity ^0.8.17;
  * @author jtriley.eth
  * @notice Does not implement callbacks
  */
-contract ERC1155NonReceiverMock {}
+contract ERC1155NonReceiverMock {
+
+}

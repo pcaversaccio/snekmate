@@ -32,7 +32,7 @@ contract ERC1155Test is Test {
     );
 
     event TransferBatch(
-        address indexed operator, 
+        address indexed operator,
         address indexed owner,
         address indexed to,
         uint256[] ids,
@@ -63,7 +63,10 @@ contract ERC1155Test is Test {
 
     event URI(string value, uint256 indexed id);
 
-    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
+    event OwnershipTransferred(
+        address indexed previousOwner,
+        address indexed newOwner
+    );
 
     event RoleMinterChanged(address indexed minter, bool status);
 
@@ -78,7 +81,9 @@ contract ERC1155Test is Test {
     function testSupportsInterfaceSuccess() public {
         assertTrue(erc1155.supportsInterface(type(IERC165).interfaceId));
         assertTrue(erc1155.supportsInterface(type(IERC1155).interfaceId));
-        assertTrue(erc1155.supportsInterface(type(IERC1155MetadataURI).interfaceId));
+        assertTrue(
+            erc1155.supportsInterface(type(IERC1155MetadataURI).interfaceId)
+        );
     }
 
     function testSupportsInterfaceGasCost() public {
@@ -162,7 +167,9 @@ contract ERC1155Test is Test {
         //transfer to contract that implements onERC1155Received but returns invalid value
         address deployer = address(vyperDeployer);
         address owner = vm.addr(1);
-        address receiver = address(new ERC1155InvalidReceiverMock({ shouldThrow: false }));
+        address receiver = address(
+            new ERC1155InvalidReceiverMock({shouldThrow: false})
+        );
         uint256 id = 1;
         uint256 amount = 1;
         bytes memory data = new bytes(0);
@@ -170,7 +177,9 @@ contract ERC1155Test is Test {
         vm.prank(deployer);
         erc1155.safe_mint(owner, id, amount, data);
 
-        vm.expectRevert(bytes("ERC1155: transfer to non-ERC1155Receiver implementer"));
+        vm.expectRevert(
+            bytes("ERC1155: transfer to non-ERC1155Receiver implementer")
+        );
 
         vm.prank(owner);
         erc1155.safeTransferFrom(owner, receiver, id, amount, data);
@@ -180,7 +189,9 @@ contract ERC1155Test is Test {
         //transfer to contract that implements onERC1155Received but reverts
         address deployer = address(vyperDeployer);
         address owner = vm.addr(1);
-        address receiver = address(new ERC1155InvalidReceiverMock({ shouldThrow: true }));
+        address receiver = address(
+            new ERC1155InvalidReceiverMock({shouldThrow: true})
+        );
         uint256 id = 1;
         uint256 amount = 1;
         bytes memory data = new bytes(0);
@@ -189,7 +200,10 @@ contract ERC1155Test is Test {
         erc1155.safe_mint(owner, id, amount, data);
 
         vm.expectRevert(
-            abi.encodeWithSelector(ERC1155InvalidReceiverMock.Throw.selector, receiver)
+            abi.encodeWithSelector(
+                ERC1155InvalidReceiverMock.Throw.selector,
+                receiver
+            )
         );
 
         vm.prank(owner);
@@ -310,30 +324,9 @@ contract ERC1155Test is Test {
         //batch transfer to contract that implements onERC1155Received but returns invalid value
         address deployer = address(vyperDeployer);
         address owner = vm.addr(1);
-        address receiver = address(new ERC1155InvalidReceiverMock({ shouldThrow: false }));
-        uint256[] memory ids = new uint256[](2);
-        uint256[] memory amounts = new uint256[](2);
-        bytes memory data = new bytes(0);
-
-        ids[0] = 0;
-        ids[1] = 1;
-        amounts[0] = 1;
-        amounts[1] = 2;
-
-        vm.prank(deployer);
-        erc1155.safe_mint_batch(owner, ids, amounts, data);
-
-        vm.expectRevert(bytes("ERC1155: transfer to non-ERC1155Receiver implementer"));
-
-        vm.prank(owner);
-        erc1155.safeBatchTransferFrom(owner, receiver, ids, amounts, data);
-    }
-
-    function testSafeBatchTransferFromReceiverRevertsInHook() public {
-        //batch transfer to contract that implements onERC1155Received but reverts
-        address deployer = address(vyperDeployer);
-        address owner = vm.addr(1);
-        address receiver = address(new ERC1155InvalidReceiverMock({ shouldThrow: true }));
+        address receiver = address(
+            new ERC1155InvalidReceiverMock({shouldThrow: false})
+        );
         uint256[] memory ids = new uint256[](2);
         uint256[] memory amounts = new uint256[](2);
         bytes memory data = new bytes(0);
@@ -347,7 +340,37 @@ contract ERC1155Test is Test {
         erc1155.safe_mint_batch(owner, ids, amounts, data);
 
         vm.expectRevert(
-            abi.encodeWithSelector(ERC1155InvalidReceiverMock.Throw.selector, receiver)
+            bytes("ERC1155: transfer to non-ERC1155Receiver implementer")
+        );
+
+        vm.prank(owner);
+        erc1155.safeBatchTransferFrom(owner, receiver, ids, amounts, data);
+    }
+
+    function testSafeBatchTransferFromReceiverRevertsInHook() public {
+        //batch transfer to contract that implements onERC1155Received but reverts
+        address deployer = address(vyperDeployer);
+        address owner = vm.addr(1);
+        address receiver = address(
+            new ERC1155InvalidReceiverMock({shouldThrow: true})
+        );
+        uint256[] memory ids = new uint256[](2);
+        uint256[] memory amounts = new uint256[](2);
+        bytes memory data = new bytes(0);
+
+        ids[0] = 0;
+        ids[1] = 1;
+        amounts[0] = 1;
+        amounts[1] = 2;
+
+        vm.prank(deployer);
+        erc1155.safe_mint_batch(owner, ids, amounts, data);
+
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                ERC1155InvalidReceiverMock.Throw.selector,
+                receiver
+            )
         );
 
         vm.prank(owner);
@@ -428,7 +451,9 @@ contract ERC1155Test is Test {
         vm.prank(deployer);
         erc1155.safe_mint_batch(owner, ids, amounts, data);
 
-        vm.expectRevert(bytes("ERC1155: caller is not token owner or approved"));
+        vm.expectRevert(
+            bytes("ERC1155: caller is not token owner or approved")
+        );
 
         vm.prank(receiver);
         erc1155.safeBatchTransferFrom(owner, receiver, ids, amounts, data);
@@ -599,7 +624,11 @@ contract ERC1155Test is Test {
         string memory testUri = "test_uri";
 
         IERC1155Extended _erc1155 = IERC1155Extended(
-            vyperDeployer.deployContract("src/tokens/", "ERC1155", abi.encode(""))
+            vyperDeployer.deployContract(
+                "src/tokens/",
+                "ERC1155",
+                abi.encode("")
+            )
         );
 
         vm.prank(deployer);
@@ -617,7 +646,10 @@ contract ERC1155Test is Test {
         vm.prank(deployer);
         erc1155.set_uri(id, testUri);
 
-        assertEq(bytes(erc1155.uri(id)), bytes(string.concat(_BASE_URI, testUri)));
+        assertEq(
+            bytes(erc1155.uri(id)),
+            bytes(string.concat(_BASE_URI, testUri))
+        );
     }
 
     function testUriBaseUriNoTokenUriSet() public {
@@ -632,7 +664,11 @@ contract ERC1155Test is Test {
         uint256 id = 1;
 
         IERC1155Extended _erc1155 = IERC1155Extended(
-            vyperDeployer.deployContract("src/tokens/", "ERC1155", abi.encode(""))
+            vyperDeployer.deployContract(
+                "src/tokens/",
+                "ERC1155",
+                abi.encode("")
+            )
         );
 
         assertEq(bytes(_erc1155.uri(id)), bytes(""));
@@ -843,12 +879,16 @@ contract ERC1155Test is Test {
     function testSafeMintReceiverReturnsInvalidvalue() public {
         //mint receiver implements onERC1155Received but returns invalid value
         address deployer = address(vyperDeployer);
-        address receiver = address(new ERC1155InvalidReceiverMock({ shouldThrow: false }));
+        address receiver = address(
+            new ERC1155InvalidReceiverMock({shouldThrow: false})
+        );
         uint256 id = 1;
         uint256 amount = 1;
         bytes memory data = new bytes(0);
 
-        vm.expectRevert(bytes("ERC1155: transfer to non-ERC1155Receiver implementer"));
+        vm.expectRevert(
+            bytes("ERC1155: transfer to non-ERC1155Receiver implementer")
+        );
 
         vm.prank(deployer);
         erc1155.safe_mint(receiver, id, amount, data);
@@ -857,13 +897,18 @@ contract ERC1155Test is Test {
     function testSafeMintReceiverRevertsInHook() public {
         //mint receiver implements onERC1155Received but reverts
         address deployer = address(vyperDeployer);
-        address receiver = address(new ERC1155InvalidReceiverMock({ shouldThrow: true }));
+        address receiver = address(
+            new ERC1155InvalidReceiverMock({shouldThrow: true})
+        );
         uint256 id = 1;
         uint256 amount = 1;
         bytes memory data = new bytes(0);
 
         vm.expectRevert(
-            abi.encodeWithSelector(ERC1155InvalidReceiverMock.Throw.selector, receiver)
+            abi.encodeWithSelector(
+                ERC1155InvalidReceiverMock.Throw.selector,
+                receiver
+            )
         );
 
         vm.prank(deployer);
@@ -939,26 +984,9 @@ contract ERC1155Test is Test {
     function testSafeMintBatchReceiverReturnsInvalidValue() public {
         //mint batch receiver implements onERC1155BatchReceived but returns invalid value
         address deployer = address(vyperDeployer);
-        address receiver = address(new ERC1155InvalidReceiverMock({ shouldThrow: false }));
-        uint256[] memory ids = new uint256[](2);
-        uint256[] memory amounts = new uint256[](2);
-        bytes memory data = new bytes(0);
-
-        ids[0] = 0;
-        ids[1] = 1;
-        amounts[0] = 1;
-        amounts[1] = 2;
-
-        vm.expectRevert(bytes("ERC1155: transfer to non-ERC1155Receiver implementer"));
-
-        vm.prank(deployer);
-        erc1155.safe_mint_batch(receiver, ids, amounts, data);
-    }
-
-    function testSafeMintBatchReceiverRevertsInHook() public {
-        //mint batch receiver implements onERC1155BatchReceived but reverts
-        address deployer = address(vyperDeployer);
-        address receiver = address(new ERC1155InvalidReceiverMock({ shouldThrow: true }));
+        address receiver = address(
+            new ERC1155InvalidReceiverMock({shouldThrow: false})
+        );
         uint256[] memory ids = new uint256[](2);
         uint256[] memory amounts = new uint256[](2);
         bytes memory data = new bytes(0);
@@ -969,7 +997,33 @@ contract ERC1155Test is Test {
         amounts[1] = 2;
 
         vm.expectRevert(
-            abi.encodeWithSelector(ERC1155InvalidReceiverMock.Throw.selector, receiver)
+            bytes("ERC1155: transfer to non-ERC1155Receiver implementer")
+        );
+
+        vm.prank(deployer);
+        erc1155.safe_mint_batch(receiver, ids, amounts, data);
+    }
+
+    function testSafeMintBatchReceiverRevertsInHook() public {
+        //mint batch receiver implements onERC1155BatchReceived but reverts
+        address deployer = address(vyperDeployer);
+        address receiver = address(
+            new ERC1155InvalidReceiverMock({shouldThrow: true})
+        );
+        uint256[] memory ids = new uint256[](2);
+        uint256[] memory amounts = new uint256[](2);
+        bytes memory data = new bytes(0);
+
+        ids[0] = 0;
+        ids[1] = 1;
+        amounts[0] = 1;
+        amounts[1] = 2;
+
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                ERC1155InvalidReceiverMock.Throw.selector,
+                receiver
+            )
         );
 
         vm.prank(deployer);
@@ -1116,7 +1170,9 @@ contract ERC1155Test is Test {
         vm.prank(deployer);
         erc1155.safe_mint(owner, id, amount, data);
 
-        vm.expectRevert(bytes("ERC1155: caller is not token owner or approved"));
+        vm.expectRevert(
+            bytes("ERC1155: caller is not token owner or approved")
+        );
 
         vm.prank(unauthorized);
         erc1155.burn(owner, id, amount);
@@ -1232,7 +1288,9 @@ contract ERC1155Test is Test {
         vm.prank(deployer);
         erc1155.safe_mint_batch(owner, ids, amounts, data);
 
-        vm.expectRevert(bytes("ERC1155: caller is not token owner or approved"));
+        vm.expectRevert(
+            bytes("ERC1155: caller is not token owner or approved")
+        );
 
         vm.prank(unauthorized);
         erc1155.burn_batch(owner, ids, amounts);

@@ -35,7 +35,12 @@ contract ERC1155ReceiverMock {
         bytes calldata data
     ) external returns (bytes4) {
         emit Received(operator, from, id, amount, data);
-        return bytes4(keccak256("onERC1155Received(address,address,uint256,uint256,bytes)"));
+        return
+            bytes4(
+                keccak256(
+                    "onERC1155Received(address,address,uint256,uint256,bytes)"
+                )
+            );
     }
 
     /**
@@ -50,8 +55,11 @@ contract ERC1155ReceiverMock {
         bytes calldata data
     ) external returns (bytes4) {
         emit BatchReceived(operator, from, ids, amounts, data);
-        return bytes4(
-            keccak256("onERC1155BatchReceived(address,address,uint256[],uint256[],bytes)")
-        );
+        return
+            bytes4(
+                keccak256(
+                    "onERC1155BatchReceived(address,address,uint256[],uint256[],bytes)"
+                )
+            );
     }
 }

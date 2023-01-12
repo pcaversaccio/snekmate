@@ -5,7 +5,7 @@ pragma solidity ^0.8.17;
  * @title ERC1155InvalidReceiverMock
  * @author jtriley.eth
  * @notice Implements invalid responses from an `ERC1155Receiver`.
- * @dev param names are ommitted to avoid unused variable warnings.
+ * @dev param names are omitted to avoid unused variable warnings.
  */
 contract ERC1155InvalidReceiverMock {
     error Throw(address emitter);
@@ -20,11 +20,13 @@ contract ERC1155InvalidReceiverMock {
      * @dev Conditionally reverts OR returns an invalid value.
      * @return Invalid bytes4 data.
      */
-    function onERC1155Received(address,address,uint256,uint256,bytes memory)
-        external 
-        view
-        returns (bytes4)
-    {
+    function onERC1155Received(
+        address,
+        address,
+        uint256,
+        uint256,
+        bytes memory
+    ) external view returns (bytes4) {
         if (_shouldThrow) revert Throw(address(this));
 
         return 0x00112233;
