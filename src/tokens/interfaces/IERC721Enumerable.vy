@@ -6,6 +6,8 @@
 @notice The enumeration extension is optional for an ERC-721
         smart contract. This allows a contract to publish its
         full list of ERC-721 tokens and make them discoverable.
+        For more details, please refer to:
+        https://eips.ethereum.org/EIPS/eip-721#specification.
 
         On how to use interfaces in Vyper, please visit:
         https://vyper.readthedocs.io/en/latest/interfaces.html#interfaces.

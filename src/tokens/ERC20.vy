@@ -8,20 +8,20 @@
         - https://eips.ethereum.org/EIPS/eip-20.
         In addition, the following functions have
         been added for convenience:
-        - `name` (`external` function),
-        - `symbol` (`external` function),
-        - `decimals` (`external` function),
+        - `name` (`external` `view` function),
+        - `symbol` (`external` `view` function),
+        - `decimals` (`external` `view` function),
         - `increase_allowance` (`external` function),
         - `decrease_allowance` (`external` function),
         - `burn` (`external` function),
         - `burn_from` (`external` function),
-        - `is_minter` (`external` function),
+        - `is_minter` (`external` `view` function),
         - `mint` (`external` function),
         - `set_minter` (`external` function),
         - `permit` (`external` function),
-        - `nonces` (`external` function),
-        - `DOMAIN_SEPARATOR` (`external` function),
-        - `owner` (`external` function),
+        - `nonces` (`external` `view` function),
+        - `DOMAIN_SEPARATOR` (`external` `view` function),
+        - `owner` (`external` `view` function),
         - `transfer_ownership` (`external` function),
         - `renounce_ownership` (`external` function),
         - `_before_token_transfer` (`internal` function),
@@ -197,9 +197,14 @@ def __init__(name_: String[25], symbol_: String[5], initial_supply_: uint256, na
 
     self._transfer_ownership(msg.sender)
     self.is_minter[msg.sender] = True
+    log RoleMinterChanged(msg.sender, True)
+
     if (initial_supply != empty(uint256)):
-        self.balanceOf[msg.sender] = initial_supply
+        self._before_token_transfer(empty(address), msg.sender, initial_supply)
         self.totalSupply = initial_supply
+        self.balanceOf[msg.sender] = initial_supply
+        log Transfer(empty(address), msg.sender, initial_supply)
+        self._after_token_transfer(empty(address), msg.sender, initial_supply)
 
     hashed_name: bytes32 = keccak256(convert(name_eip712_, Bytes[50]))
     hashed_version: bytes32 = keccak256(convert(version_eip712_, Bytes[20]))
