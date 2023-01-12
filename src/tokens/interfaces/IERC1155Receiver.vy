@@ -15,6 +15,22 @@
 
 
 @external
+@view
+def supportsInterface(interface_id: bytes4) -> bool:
+    """
+    @dev Returns `True` if this contract implements the
+         interface defined by `interface_id`.
+    @notice For more details on how these identifiers are
+            created, please refer to:
+            https://eips.ethereum.org/EIPS/eip-165.
+    @param interface_id The 4-byte interface identifier.
+    @return bool The verification whether the contract
+            implements the interface or not.
+    """
+    return empty(bool)
+
+
+@external
 def onERC1155Received(_operator: address, _from: address, _id: uint256, _value: uint256, _data: Bytes[1024]) -> bytes4:
     """
     @dev Handles the receipt of a single ERC-1155 token type.
