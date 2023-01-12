@@ -22,6 +22,28 @@
 """
 
 
+# @dev We import and implement the `ERC165` interface,
+# which is a built-in interface of the Vyper compiler.
+from vyper.interfaces import ERC165
+implements: ERC165
+
+
+@external
+@view
+def supportsInterface(interface_id: bytes4) -> bool:
+    """
+    @dev Returns `True` if this contract implements the
+         interface defined by `interface_id`.
+    @notice For more details on how these identifiers are
+            created, please refer to:
+            https://eips.ethereum.org/EIPS/eip-165.
+    @param interface_id The 4-byte interface identifier.
+    @return bool The verification whether the contract
+            implements the interface or not.
+    """
+    return empty(bool)
+
+
 @external
 @view
 def uri(_id: uint256) -> String[512]:

@@ -14,6 +14,12 @@
 """
 
 
+# @dev We import and implement the `ERC165` interface,
+# which is a built-in interface of the Vyper compiler.
+from vyper.interfaces import ERC165
+implements: ERC165
+
+
 @external
 @view
 def supportsInterface(interface_id: bytes4) -> bool:
