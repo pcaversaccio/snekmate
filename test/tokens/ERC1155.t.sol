@@ -106,6 +106,166 @@ contract ERC1155Test is Test {
         assertTrue(!ERC1155Extended.supportsInterface(0x0011bbff));
     }
 
+    function testBalanceOfCase1() public {
+        address deployer = address(vyperDeployer);
+        address firstOwner = vm.addr(1);
+        address secondOwner = vm.addr(2);
+        bytes memory data = new bytes(0);
+        vm.startPrank(deployer);
+        ERC1155Extended.safe_mint(firstOwner, 0, 1, data);
+        ERC1155Extended.safe_mint(secondOwner, 1, 20, data);
+        assertEq(ERC1155Extended.balanceOf(firstOwner, 0), 1);
+        assertEq(ERC1155Extended.balanceOf(secondOwner, 1), 20);
+        assertEq(ERC1155Extended.balanceOf(firstOwner, 2), 0);
+        vm.stopPrank();
+    }
+
+    function testBalanceOfCase2() public {
+        assertEq(ERC1155Extended.balanceOf(vm.addr(1), 0), 0);
+        assertEq(ERC1155Extended.balanceOf(vm.addr(2), 1), 0);
+        assertEq(ERC1155Extended.balanceOf(vm.addr(3), 2), 0);
+    }
+
+    function testBalanceOfZeroAddress() public {
+        vm.expectRevert(bytes("ERC1155: address zero is not a valid owner"));
+        ERC1155Extended.balanceOf(address(0), 0);
+    }
+
+    function testBalanceOfBatchCase1() public {
+        address deployer = address(vyperDeployer);
+        address firstOwner = vm.addr(1);
+        address secondOwner = vm.addr(2);
+        address[] memory owners = new address[](6);
+        uint256[] memory ids = new uint256[](6);
+        uint256[] memory amounts = new uint256[](6);
+        bytes memory data = new bytes(0);
+
+        owners[0] = firstOwner;
+        owners[1] = firstOwner;
+        owners[2] = secondOwner;
+        owners[3] = secondOwner;
+        owners[4] = firstOwner;
+        owners[5] = secondOwner;
+        ids[0] = 0;
+        ids[1] = 1;
+        ids[2] = 2;
+        ids[3] = 3;
+        ids[4] = 4;
+        ids[5] = 5;
+        amounts[0] = 1;
+        amounts[1] = 2;
+        amounts[2] = 10;
+        amounts[3] = 20;
+        amounts[4] = 0;
+        amounts[5] = 0;
+
+        vm.startPrank(deployer);
+        ERC1155Extended.safe_mint(owners[0], ids[0], amounts[0], data);
+        ERC1155Extended.safe_mint(owners[1], ids[1], amounts[1], data);
+        ERC1155Extended.safe_mint(owners[2], ids[2], amounts[2], data);
+        ERC1155Extended.safe_mint(owners[3], ids[3], amounts[3], data);
+        uint256[] memory balances = ERC1155Extended.balanceOfBatch(owners, ids);
+        assertEq(balances.length, 6);
+        for (uint256 i; i < balances.length; ++i) {
+            assertEq(balances[i], amounts[i]);
+        }
+        vm.stopPrank();
+    }
+
+    function testBalanceOfBatchCase2() public {
+        address deployer = address(vyperDeployer);
+        address firstOwner = vm.addr(1);
+        address secondOwner = vm.addr(2);
+        address[] memory owners = new address[](6);
+        uint256[] memory ids = new uint256[](6);
+        uint256[] memory amounts = new uint256[](6);
+        bytes memory data = new bytes(0);
+
+        owners[0] = firstOwner;
+        owners[1] = firstOwner;
+        owners[2] = owners[0];
+        owners[3] = secondOwner;
+        owners[4] = firstOwner;
+        owners[5] = owners[3];
+        ids[0] = 0;
+        ids[1] = 1;
+        ids[2] = ids[0];
+        ids[3] = 3;
+        ids[4] = 4;
+        ids[5] = ids[3];
+        amounts[0] = 1;
+        amounts[1] = 2;
+        amounts[2] = amounts[0];
+        amounts[3] = 20;
+        amounts[4] = 0;
+        amounts[5] = amounts[3];
+
+        vm.startPrank(deployer);
+        ERC1155Extended.safe_mint(owners[0], ids[0], amounts[0] - 1, data);
+        ERC1155Extended.safe_mint(owners[1], ids[1], amounts[1], data);
+        ERC1155Extended.safe_mint(owners[2], ids[2], amounts[2], data);
+        ERC1155Extended.safe_mint(owners[3], ids[3], amounts[3], data);
+        uint256[] memory balances = ERC1155Extended.balanceOfBatch(owners, ids);
+        assertEq(balances.length, 6);
+        for (uint256 i; i < balances.length; ++i) {
+            assertEq(balances[i], amounts[i]);
+        }
+        vm.stopPrank();
+    }
+
+    function testBalanceOfBatchCase3() public {
+        address firstOwner = vm.addr(1);
+        address secondOwner = vm.addr(2);
+        address[] memory owners = new address[](6);
+        uint256[] memory ids = new uint256[](6);
+
+        owners[0] = firstOwner;
+        owners[1] = firstOwner;
+        owners[2] = secondOwner;
+        owners[3] = secondOwner;
+        owners[4] = firstOwner;
+        owners[5] = secondOwner;
+        ids[0] = 0;
+        ids[1] = 1;
+        ids[2] = 2;
+        ids[3] = 3;
+        ids[4] = 4;
+        ids[5] = 5;
+
+        uint256[] memory balances = ERC1155Extended.balanceOfBatch(owners, ids);
+        assertEq(balances.length, 6);
+        for (uint256 i; i < balances.length; ++i) {
+            assertEq(balances[i], 0);
+        }
+    }
+
+    function testBalanceOfBatchLengthsMismatch() public {
+        address[] memory owners1 = new address[](2);
+        uint256[] memory ids1 = new uint256[](1);
+        owners1[0] = vm.addr(1);
+        owners1[1] = vm.addr(2);
+        ids1[0] = 0;
+        vm.expectRevert(bytes("ERC1155: owners and ids length mismatch"));
+        ERC1155Extended.balanceOfBatch(owners1, ids1);
+
+        address[] memory owners2 = new address[](1);
+        uint256[] memory ids2 = new uint256[](2);
+        owners2[0] = vm.addr(3);
+        ids2[0] = 0;
+        ids2[1] = 1;
+        vm.expectRevert(bytes("ERC1155: owners and ids length mismatch"));
+        ERC1155Extended.balanceOfBatch(owners2, ids2);
+    }
+
+    function testBalanceOfBatchZeroAddress() public {
+        address[] memory owners = new address[](1);
+        uint256[] memory ids = new uint256[](1);
+        owners[0] = address(0);
+        ids[0] = 0;
+        vm.expectRevert(bytes("ERC1155: address zero is not a valid owner"));
+        ERC1155Extended.balanceOfBatch(owners, ids);
+    }
+
     // function testSafeTransferFromReceiverNotAContract() public {
     //     //transfer to EOA
     //     address deployer = address(vyperDeployer);
@@ -508,79 +668,6 @@ contract ERC1155Test is Test {
 
     //     vm.prank(owner);
     //     erc1155.safeBatchTransferFrom(owner, receiver, ids, amounts, data);
-    // }
-
-    // function testBalanceOf() public {
-    //     //balance read
-    //     address deployer = address(vyperDeployer);
-    //     address owner = vm.addr(1);
-    //     bytes memory data = new bytes(0);
-
-    //     vm.prank(deployer);
-    //     erc1155.safe_mint(owner, 0, 1, data);
-
-    //     assertEq(erc1155.balanceOf(owner, 0), 1);
-    //     assertEq(erc1155.balanceOf(owner, 1), 0);
-    // }
-
-    // function testBalanceOfAddressZero() public {
-    //     //balance read zero address
-    //     vm.expectRevert(bytes("ERC1155: address zero is not a valid owner"));
-
-    //     erc1155.balanceOf(address(0), 0);
-    // }
-
-    // function testBalanceOfBatch() public {
-    //     //batch balance read
-    //     address deployer = address(vyperDeployer);
-    //     address[] memory owners = new address[](2);
-    //     uint256[] memory ids = new uint256[](2);
-    //     uint256[] memory amounts = new uint256[](2);
-    //     bytes memory data = new bytes(0);
-
-    //     owners[0] = vm.addr(1);
-    //     owners[1] = vm.addr(1);
-    //     ids[0] = 0;
-    //     ids[1] = 1;
-    //     amounts[0] = 1;
-    //     amounts[1] = 2;
-
-    //     vm.prank(deployer);
-    //     erc1155.safe_mint_batch(owners[0], ids, amounts, data);
-
-    //     uint256[] memory balances = erc1155.balanceOfBatch(owners, ids);
-
-    //     assertEq(balances.length, 2);
-
-    //     for (uint256 i; i < balances.length; ++i) {
-    //         assertEq(balances[i], amounts[i]);
-    //     }
-    // }
-
-    // function testBalanceOfBatchBatchLengthsMismatch() public {
-    //     //batch balance read owners and ids lengths mismatch
-    //     address[] memory owners = new address[](2);
-    //     uint256[] memory ids = new uint256[](1);
-
-    //     owners[0] = vm.addr(1);
-    //     owners[1] = vm.addr(2);
-    //     ids[0] = 0;
-
-    //     vm.expectRevert(bytes("ERC1155: owners and ids length mismatch"));
-    //     erc1155.balanceOfBatch(owners, ids);
-    // }
-
-    // function testBalanceOfBatchZeroAddress() public {
-    //     //batch balance read owners includes zero address
-    //     address[] memory owners = new address[](1);
-    //     uint256[] memory ids = new uint256[](1);
-
-    //     owners[0] = address(0);
-    //     ids[0] = 0;
-
-    //     vm.expectRevert(bytes("ERC1155: address zero is not a valid owner"));
-
-    //     erc1155.balanceOfBatch(owners, ids);
     // }
 
     // function testSetApprovalForAll() public {
