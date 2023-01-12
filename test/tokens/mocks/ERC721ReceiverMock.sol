@@ -7,7 +7,7 @@ import {IERC721Receiver} from "openzeppelin/token/ERC721/IERC721Receiver.sol";
  * @title ERC721ReceiverMock
  * @author pcaversaccio
  * @notice Forked and adjusted accordingly from here:
- * https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/mocks/ERC721ReceiverMock.sol.
+ * https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/mocks/token/ERC721ReceiverMock.sol.
  * @dev Allows to test receiving ERC-721 tokens as a smart contract.
  */
 contract ERC721ReceiverMock is IERC721Receiver {
