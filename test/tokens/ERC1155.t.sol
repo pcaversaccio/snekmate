@@ -309,143 +309,363 @@ contract ERC1155Test is Test {
         ERC1155Extended.setApprovalForAll(owner, true);
     }
 
-    // function testSafeTransferFromReceiverNotAContract() public {
-    //     //transfer to EOA
-    //     address deployer = address(vyperDeployer);
-    //     address owner = vm.addr(1);
-    //     address receiver = vm.addr(2);
-    //     uint256 id = 1;
-    //     uint256 amount = 1;
-    //     bytes memory data = new bytes(0);
+    function testSafeTransferFromEOAReceiver() public {
+        address deployer = address(vyperDeployer);
+        address owner = vm.addr(1);
+        address receiver = vm.addr(2);
+        uint256 id1 = 1;
+        uint256 amount1 = 1;
+        uint256 id2 = 4;
+        uint256 amount2 = 15;
+        bytes memory data = new bytes(0);
+        vm.startPrank(deployer);
+        ERC1155Extended.safe_mint(owner, id1, amount1, data);
+        ERC1155Extended.safe_mint(owner, id2, amount2, data);
+        vm.stopPrank();
+        vm.startPrank(owner);
+        vm.expectEmit(true, true, true, true, address(ERC1155Extended));
+        emit TransferSingle(owner, owner, receiver, id1, amount1);
+        ERC1155Extended.safeTransferFrom(owner, receiver, id1, amount1, data);
+        assertEq(ERC1155Extended.balanceOf(owner, id1), 0);
+        assertEq(ERC1155Extended.balanceOf(owner, id2), amount2);
+        assertEq(ERC1155Extended.balanceOf(receiver, id1), amount1);
+        assertEq(ERC1155Extended.balanceOf(receiver, id2), 0);
+        vm.stopPrank();
+    }
 
-    //     vm.prank(deployer);
-    //     erc1155.safe_mint(owner, id, amount, data);
+    function testSafeTransferFromByApprovedOperator() public {
+        address deployer = address(vyperDeployer);
+        address owner = vm.addr(1);
+        address receiver = vm.addr(2);
+        address operator = vm.addr(3);
+        bool approved = true;
+        uint256 id1 = 1;
+        uint256 amount1 = 1;
+        uint256 id2 = 4;
+        uint256 amount2 = 15;
+        bytes memory data = new bytes(0);
+        vm.startPrank(deployer);
+        ERC1155Extended.safe_mint(owner, id1, amount1, data);
+        ERC1155Extended.safe_mint(owner, id2, amount2, data);
+        vm.stopPrank();
 
-    //     vm.expectEmit(true, true, true, true, address(erc1155));
-    //     emit TransferSingle(owner, owner, receiver, id, amount);
+        vm.startPrank(owner);
+        vm.expectEmit(true, true, false, true, address(ERC1155Extended));
+        emit ApprovalForAll(owner, operator, approved);
+        ERC1155Extended.setApprovalForAll(operator, approved);
+        vm.stopPrank();
 
-    //     vm.prank(owner);
-    //     erc1155.safeTransferFrom(owner, receiver, id, amount, data);
+        vm.startPrank(operator);
+        vm.expectEmit(true, true, true, true, address(ERC1155Extended));
+        emit TransferSingle(operator, owner, receiver, id1, amount1);
+        ERC1155Extended.safeTransferFrom(owner, receiver, id1, amount1, data);
+        assertEq(ERC1155Extended.balanceOf(owner, id1), 0);
+        assertEq(ERC1155Extended.balanceOf(owner, id2), amount2);
+        assertEq(ERC1155Extended.balanceOf(receiver, id1), amount1);
+        assertEq(ERC1155Extended.balanceOf(receiver, id2), 0);
+        assertEq(ERC1155Extended.balanceOf(operator, id1), 0);
+        assertEq(ERC1155Extended.balanceOf(operator, id2), 0);
+        vm.stopPrank();
+    }
 
-    //     assertEq(erc1155.balanceOf(owner, id), 0);
-    //     assertEq(erc1155.balanceOf(receiver, id), amount);
-    // }
+    function testSafeTransferFromByNotApprovedOperator() public {
+        address deployer = address(vyperDeployer);
+        address owner = vm.addr(1);
+        address receiver = vm.addr(2);
+        address operator = vm.addr(3);
+        uint256 id1 = 1;
+        uint256 amount1 = 1;
+        uint256 id2 = 4;
+        uint256 amount2 = 15;
+        bytes memory data = new bytes(0);
+        vm.startPrank(deployer);
+        ERC1155Extended.safe_mint(owner, id1, amount1, data);
+        ERC1155Extended.safe_mint(owner, id2, amount2, data);
+        vm.stopPrank();
+        vm.startPrank(operator);
+        vm.expectRevert(
+            bytes("ERC1155: caller is not token owner or approved")
+        );
+        ERC1155Extended.safeTransferFrom(owner, receiver, id1, amount1, data);
+        vm.stopPrank();
+    }
 
-    // function testSafeTransferFromByOperator() public {
-    //     //transfer to EOA
-    //     address deployer = address(vyperDeployer);
-    //     address owner = vm.addr(1);
-    //     address receiver = vm.addr(2);
-    //     uint256 id = 1;
-    //     uint256 amount = 1;
-    //     bytes memory data = new bytes(0);
+    function testSafeTransferFromNoData() public {
+        address deployer = address(vyperDeployer);
+        address owner = vm.addr(1);
+        bytes4 receiverSingleMagicValue = IERC1155Receiver
+            .onERC1155Received
+            .selector;
+        bytes4 receiverBatchMagicValue = IERC1155Receiver
+            .onERC1155BatchReceived
+            .selector;
+        ERC1155ReceiverMock erc1155ReceiverMock = new ERC1155ReceiverMock(
+            receiverSingleMagicValue,
+            false,
+            receiverBatchMagicValue,
+            false
+        );
+        address receiver = address(erc1155ReceiverMock);
+        uint256 id1 = 1;
+        uint256 amount1 = 1;
+        uint256 id2 = 4;
+        uint256 amount2 = 15;
+        bytes memory data = new bytes(0);
+        vm.startPrank(deployer);
+        ERC1155Extended.safe_mint(owner, id1, amount1, data);
+        ERC1155Extended.safe_mint(owner, id2, amount2, data);
+        vm.stopPrank();
+        vm.startPrank(owner);
+        vm.expectEmit(true, true, true, true, address(ERC1155Extended));
+        emit TransferSingle(owner, owner, receiver, id1, amount1);
+        vm.expectEmit(true, true, false, true, receiver);
+        emit Received(owner, owner, id1, amount1, data);
+        ERC1155Extended.safeTransferFrom(owner, receiver, id1, amount1, data);
+        assertEq(ERC1155Extended.balanceOf(owner, id1), 0);
+        assertEq(ERC1155Extended.balanceOf(owner, id2), amount2);
+        assertEq(ERC1155Extended.balanceOf(receiver, id1), amount1);
+        assertEq(ERC1155Extended.balanceOf(receiver, id2), 0);
+        vm.stopPrank();
 
-    //     vm.prank(deployer);
-    //     erc1155.safe_mint(owner, id, amount, data);
+        address operator = vm.addr(3);
+        bool approved = true;
+        vm.startPrank(owner);
+        vm.expectEmit(true, true, false, true, address(ERC1155Extended));
+        emit ApprovalForAll(owner, operator, approved);
+        ERC1155Extended.setApprovalForAll(operator, approved);
+        vm.stopPrank();
 
-    //     vm.prank(owner);
-    //     erc1155.setApprovalForAll(receiver, true);
+        vm.startPrank(operator);
+        vm.expectEmit(true, true, true, true, address(ERC1155Extended));
+        emit TransferSingle(operator, owner, receiver, id2, amount2);
+        vm.expectEmit(true, true, false, true, receiver);
+        emit Received(operator, owner, id2, amount2, data);
+        ERC1155Extended.safeTransferFrom(owner, receiver, id2, amount2, data);
+        assertEq(ERC1155Extended.balanceOf(owner, id1), 0);
+        assertEq(ERC1155Extended.balanceOf(owner, id2), 0);
+        assertEq(ERC1155Extended.balanceOf(receiver, id1), amount1);
+        assertEq(ERC1155Extended.balanceOf(receiver, id2), amount2);
+        assertEq(ERC1155Extended.balanceOf(operator, id1), 0);
+        assertEq(ERC1155Extended.balanceOf(operator, id2), 0);
+        vm.stopPrank();
+    }
 
-    //     vm.expectEmit(true, true, true, true, address(erc1155));
-    //     emit TransferSingle(receiver, owner, receiver, id, amount);
+    function testSafeTransferFromWithData() public {
+        address deployer = address(vyperDeployer);
+        address owner = vm.addr(1);
+        bytes4 receiverSingleMagicValue = IERC1155Receiver
+            .onERC1155Received
+            .selector;
+        bytes4 receiverBatchMagicValue = IERC1155Receiver
+            .onERC1155BatchReceived
+            .selector;
+        ERC1155ReceiverMock erc1155ReceiverMock = new ERC1155ReceiverMock(
+            receiverSingleMagicValue,
+            false,
+            receiverBatchMagicValue,
+            false
+        );
+        address receiver = address(erc1155ReceiverMock);
+        uint256 id1 = 1;
+        uint256 amount1 = 1;
+        uint256 id2 = 4;
+        uint256 amount2 = 15;
+        bytes memory data = new bytes(42);
+        vm.startPrank(deployer);
+        ERC1155Extended.safe_mint(owner, id1, amount1, data);
+        ERC1155Extended.safe_mint(owner, id2, amount2, data);
+        vm.stopPrank();
+        vm.startPrank(owner);
+        vm.expectEmit(true, true, true, true, address(ERC1155Extended));
+        emit TransferSingle(owner, owner, receiver, id1, amount1);
+        vm.expectEmit(true, true, false, true, receiver);
+        emit Received(owner, owner, id1, amount1, data);
+        ERC1155Extended.safeTransferFrom(owner, receiver, id1, amount1, data);
+        assertEq(ERC1155Extended.balanceOf(owner, id1), 0);
+        assertEq(ERC1155Extended.balanceOf(owner, id2), amount2);
+        assertEq(ERC1155Extended.balanceOf(receiver, id1), amount1);
+        assertEq(ERC1155Extended.balanceOf(receiver, id2), 0);
+        vm.stopPrank();
 
-    //     vm.prank(receiver);
-    //     erc1155.safeTransferFrom(owner, receiver, id, amount, data);
+        address operator = vm.addr(3);
+        bool approved = true;
+        vm.startPrank(owner);
+        vm.expectEmit(true, true, false, true, address(ERC1155Extended));
+        emit ApprovalForAll(owner, operator, approved);
+        ERC1155Extended.setApprovalForAll(operator, approved);
+        vm.stopPrank();
 
-    //     assertEq(erc1155.balanceOf(owner, id), 0);
-    //     assertEq(erc1155.balanceOf(receiver, id), amount);
-    // }
+        vm.startPrank(operator);
+        vm.expectEmit(true, true, true, true, address(ERC1155Extended));
+        emit TransferSingle(operator, owner, receiver, id2, amount2);
+        vm.expectEmit(true, true, false, true, receiver);
+        emit Received(operator, owner, id2, amount2, data);
+        ERC1155Extended.safeTransferFrom(owner, receiver, id2, amount2, data);
+        assertEq(ERC1155Extended.balanceOf(owner, id1), 0);
+        assertEq(ERC1155Extended.balanceOf(owner, id2), 0);
+        assertEq(ERC1155Extended.balanceOf(receiver, id1), amount1);
+        assertEq(ERC1155Extended.balanceOf(receiver, id2), amount2);
+        assertEq(ERC1155Extended.balanceOf(operator, id1), 0);
+        assertEq(ERC1155Extended.balanceOf(operator, id2), 0);
+        vm.stopPrank();
+    }
 
-    // function testSafeTransferFromReceiverDoesNotImplementHook() public {
-    //     //transfer to contract that does not implement onERC1155Received
-    //     address deployer = address(vyperDeployer);
-    //     address owner = vm.addr(1);
-    //     address receiver = address(new ERC1155NonReceiverMock());
-    //     uint256 id = 1;
-    //     uint256 amount = 1;
-    //     bytes memory data = new bytes(0);
+    function testSafeTransferFromReceiverInvalidReturnIdentifier() public {
+        address deployer = address(vyperDeployer);
+        address owner = vm.addr(1);
+        bytes4 receiverSingleMagicValue = 0x00bb8833;
+        bytes4 receiverBatchMagicValue = IERC1155Receiver
+            .onERC1155BatchReceived
+            .selector;
+        ERC1155ReceiverMock erc1155ReceiverMock = new ERC1155ReceiverMock(
+            receiverSingleMagicValue,
+            false,
+            receiverBatchMagicValue,
+            false
+        );
+        address receiver = address(erc1155ReceiverMock);
+        uint256 id1 = 1;
+        uint256 amount1 = 1;
+        uint256 id2 = 4;
+        uint256 amount2 = 15;
+        bytes memory data = new bytes(42);
+        vm.startPrank(deployer);
+        ERC1155Extended.safe_mint(owner, id1, amount1, data);
+        ERC1155Extended.safe_mint(owner, id2, amount2, data);
+        vm.stopPrank();
+        vm.startPrank(owner);
+        vm.expectRevert(
+            bytes("ERC1155: transfer to non-ERC1155Receiver implementer")
+        );
+        ERC1155Extended.safeTransferFrom(owner, receiver, id1, amount1, data);
+        vm.stopPrank();
 
-    //     vm.prank(deployer);
-    //     erc1155.safe_mint(owner, id, amount, data);
+        address operator = vm.addr(3);
+        bool approved = true;
+        vm.startPrank(owner);
+        vm.expectEmit(true, true, false, true, address(ERC1155Extended));
+        emit ApprovalForAll(owner, operator, approved);
+        ERC1155Extended.setApprovalForAll(operator, approved);
+        vm.stopPrank();
 
-    //     //Revert is due to `ERC1155NoneReceiverMock` dispatcher not matching the function signature.
-    //     vm.expectRevert();
+        vm.startPrank(operator);
+        vm.expectRevert(
+            bytes("ERC1155: transfer to non-ERC1155Receiver implementer")
+        );
+        ERC1155Extended.safeTransferFrom(owner, receiver, id2, amount2, data);
+        vm.stopPrank();
+    }
 
-    //     vm.prank(owner);
-    //     erc1155.safeTransferFrom(owner, receiver, id, amount, data);
-    // }
+    function testSafeTransferFromReceiverReverts() public {
+        address deployer = address(vyperDeployer);
+        address owner = vm.addr(1);
+        bytes4 receiverSingleMagicValue = IERC1155Receiver
+            .onERC1155Received
+            .selector;
+        bytes4 receiverBatchMagicValue = IERC1155Receiver
+            .onERC1155BatchReceived
+            .selector;
+        ERC1155ReceiverMock erc1155ReceiverMock = new ERC1155ReceiverMock(
+            receiverSingleMagicValue,
+            true,
+            receiverBatchMagicValue,
+            false
+        );
+        address receiver = address(erc1155ReceiverMock);
+        uint256 id1 = 1;
+        uint256 amount1 = 1;
+        uint256 id2 = 4;
+        uint256 amount2 = 15;
+        bytes memory data = new bytes(42);
+        vm.startPrank(deployer);
+        ERC1155Extended.safe_mint(owner, id1, amount1, data);
+        ERC1155Extended.safe_mint(owner, id2, amount2, data);
+        vm.stopPrank();
+        vm.startPrank(owner);
+        vm.expectRevert(bytes("ERC1155ReceiverMock: reverting on receive"));
+        ERC1155Extended.safeTransferFrom(owner, receiver, id1, amount1, data);
+        vm.stopPrank();
 
-    // function testSafeTransferFromReceiverReturnsInvalidValue() public {
-    //     //transfer to contract that implements onERC1155Received but returns invalid value
-    //     address deployer = address(vyperDeployer);
-    //     address owner = vm.addr(1);
-    //     address receiver = address(
-    //         new ERC1155InvalidReceiverMock({shouldThrow: false})
-    //     );
-    //     uint256 id = 1;
-    //     uint256 amount = 1;
-    //     bytes memory data = new bytes(0);
+        address operator = vm.addr(3);
+        bool approved = true;
+        vm.startPrank(owner);
+        vm.expectEmit(true, true, false, true, address(ERC1155Extended));
+        emit ApprovalForAll(owner, operator, approved);
+        ERC1155Extended.setApprovalForAll(operator, approved);
+        vm.stopPrank();
 
-    //     vm.prank(deployer);
-    //     erc1155.safe_mint(owner, id, amount, data);
+        vm.startPrank(operator);
+        vm.expectRevert(bytes("ERC1155ReceiverMock: reverting on receive"));
+        ERC1155Extended.safeTransferFrom(owner, receiver, id2, amount2, data);
+        vm.stopPrank();
+    }
 
-    //     vm.expectRevert(
-    //         bytes("ERC1155: transfer to non-ERC1155Receiver implementer")
-    //     );
+    function testSafeTransferFromReceiverFunctionNotImplemented() public {
+        address deployer = address(vyperDeployer);
+        address owner = vm.addr(1);
+        uint256 id1 = 1;
+        uint256 amount1 = 1;
+        uint256 id2 = 4;
+        uint256 amount2 = 15;
+        bytes memory data = new bytes(42);
+        vm.startPrank(deployer);
+        ERC1155Extended.safe_mint(owner, id1, amount1, data);
+        ERC1155Extended.safe_mint(owner, id2, amount2, data);
+        vm.stopPrank();
+        vm.startPrank(owner);
+        vm.expectRevert();
+        ERC1155Extended.safeTransferFrom(owner, deployer, id1, amount1, data);
+        vm.stopPrank();
 
-    //     vm.prank(owner);
-    //     erc1155.safeTransferFrom(owner, receiver, id, amount, data);
-    // }
+        address operator = vm.addr(3);
+        bool approved = true;
+        vm.startPrank(owner);
+        vm.expectEmit(true, true, false, true, address(ERC1155Extended));
+        emit ApprovalForAll(owner, operator, approved);
+        ERC1155Extended.setApprovalForAll(operator, approved);
+        vm.stopPrank();
 
-    // function testSafeTransferFromReceiverRevertsInHook() public {
-    //     //transfer to contract that implements onERC1155Received but reverts
-    //     address deployer = address(vyperDeployer);
-    //     address owner = vm.addr(1);
-    //     address receiver = address(
-    //         new ERC1155InvalidReceiverMock({shouldThrow: true})
-    //     );
-    //     uint256 id = 1;
-    //     uint256 amount = 1;
-    //     bytes memory data = new bytes(0);
+        vm.startPrank(operator);
+        vm.expectRevert();
+        ERC1155Extended.safeTransferFrom(owner, deployer, id2, amount2, data);
+        vm.stopPrank();
+    }
 
-    //     vm.prank(deployer);
-    //     erc1155.safe_mint(owner, id, amount, data);
+    function testSafeTransferFromInsufficientBalance() public {
+        address deployer = address(vyperDeployer);
+        address owner = vm.addr(1);
+        uint256 id = 2;
+        uint256 amount = 15;
+        bytes memory data = new bytes(0);
+        vm.startPrank(deployer);
+        ERC1155Extended.safe_mint(owner, id, amount, data);
+        vm.stopPrank();
+        vm.startPrank(owner);
+        vm.expectRevert(bytes("ERC1155: insufficient balance for transfer"));
+        ERC1155Extended.safeTransferFrom(
+            owner,
+            vm.addr(2),
+            id,
+            amount + 1,
+            data
+        );
+        vm.stopPrank();
+    }
 
-    //     vm.expectRevert(
-    //         abi.encodeWithSelector(
-    //             ERC1155InvalidReceiverMock.Throw.selector,
-    //             receiver
-    //         )
-    //     );
-
-    //     vm.prank(owner);
-    //     erc1155.safeTransferFrom(owner, receiver, id, amount, data);
-    // }
-
-    // function testSafeTransferFromReceiverImplementsHook() public {
-    //     //transfer to contract that implements onERC1155Received
-    //     address deployer = address(vyperDeployer);
-    //     address owner = vm.addr(1);
-    //     address receiver = address(new ERC1155ReceiverMock());
-    //     uint256 id = 1;
-    //     uint256 amount = 1;
-    //     bytes memory data = new bytes(0);
-
-    //     vm.prank(deployer);
-    //     erc1155.safe_mint(owner, id, amount, data);
-
-    //     vm.expectEmit(true, true, true, true, address(erc1155));
-    //     emit TransferSingle(owner, owner, receiver, id, amount);
-
-    //     vm.expectEmit(true, true, false, true, receiver);
-    //     emit Received(owner, owner, id, amount, data);
-
-    //     vm.prank(owner);
-    //     erc1155.safeTransferFrom(owner, receiver, id, amount, data);
-
-    //     assertEq(erc1155.balanceOf(owner, id), 0);
-    //     assertEq(erc1155.balanceOf(receiver, id), amount);
-    // }
+    function testSafeTransferFromToZeroAddress() public {
+        address deployer = address(vyperDeployer);
+        address owner = vm.addr(1);
+        uint256 id = 2;
+        uint256 amount = 15;
+        bytes memory data = new bytes(0);
+        vm.startPrank(deployer);
+        ERC1155Extended.safe_mint(owner, id, amount, data);
+        vm.stopPrank();
+        vm.startPrank(owner);
+        vm.expectRevert(bytes("ERC1155: transfer to the zero address"));
+        ERC1155Extended.safeTransferFrom(owner, address(0), id, amount, data);
+        vm.stopPrank();
+    }
 
     // function testSafeBatchTransferFromReceiverNotAContract() public {
     //     //batch transfer to EOA
