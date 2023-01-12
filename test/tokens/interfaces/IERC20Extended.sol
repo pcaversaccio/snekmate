@@ -19,13 +19,13 @@ interface IERC20Extended is IERC20Metadata, IERC20Permit {
 
     function burn_from(address owner, uint256 amount) external;
 
-    function owner() external view returns (address);
-
     function is_minter(address minter) external view returns (bool);
 
     function mint(address owner, uint256 amount) external;
 
     function set_minter(address minter, bool status) external;
+
+    function owner() external view returns (address);
 
     function transfer_ownership(address newOwner) external;
 
