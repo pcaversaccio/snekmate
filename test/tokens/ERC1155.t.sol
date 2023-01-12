@@ -269,26 +269,35 @@ contract ERC1155Test is Test {
     function testSetApprovalForAllSuccess() public {
         address owner = vm.addr(1);
         address operator = vm.addr(2);
+        bool approved = true;
         assertTrue(!ERC1155Extended.isApprovedForAll(owner, operator));
+        vm.startPrank(owner);
         vm.expectEmit(true, true, false, true, address(ERC1155Extended));
-        emit ApprovalForAll(owner, operator, true);
-        vm.prank(owner);
-        ERC1155Extended.setApprovalForAll(operator, true);
+        emit ApprovalForAll(owner, operator, approved);
+        ERC1155Extended.setApprovalForAll(operator, approved);
         assertTrue(ERC1155Extended.isApprovedForAll(owner, operator));
+
+        vm.expectEmit(true, true, false, true, address(ERC1155Extended));
+        emit ApprovalForAll(owner, operator, approved);
+        ERC1155Extended.setApprovalForAll(operator, approved);
+        assertTrue(ERC1155Extended.isApprovedForAll(owner, operator));
+        vm.stopPrank();
     }
 
     function testSetApprovalForAllRevoke() public {
         address owner = vm.addr(1);
         address operator = vm.addr(2);
+        bool approved = true;
         assertTrue(!ERC1155Extended.isApprovedForAll(owner, operator));
-        vm.expectEmit(true, true, false, true, address(ERC1155Extended));
-        emit ApprovalForAll(owner, operator, true);
         vm.startPrank(owner);
-        ERC1155Extended.setApprovalForAll(operator, true);
-        assertTrue(ERC1155Extended.isApprovedForAll(owner, operator));
         vm.expectEmit(true, true, false, true, address(ERC1155Extended));
-        emit ApprovalForAll(owner, operator, false);
-        ERC1155Extended.setApprovalForAll(operator, false);
+        emit ApprovalForAll(owner, operator, approved);
+        ERC1155Extended.setApprovalForAll(operator, approved);
+        assertTrue(ERC1155Extended.isApprovedForAll(owner, operator));
+
+        vm.expectEmit(true, true, false, true, address(ERC1155Extended));
+        emit ApprovalForAll(owner, operator, !approved);
+        ERC1155Extended.setApprovalForAll(operator, !approved);
         assertTrue(!ERC1155Extended.isApprovedForAll(owner, operator));
         vm.stopPrank();
     }
