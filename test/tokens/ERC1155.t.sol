@@ -266,6 +266,40 @@ contract ERC1155Test is Test {
         ERC1155Extended.balanceOfBatch(owners, ids);
     }
 
+    function testSetApprovalForAllSuccess() public {
+        address owner = vm.addr(1);
+        address operator = vm.addr(2);
+        assertTrue(!ERC1155Extended.isApprovedForAll(owner, operator));
+        vm.expectEmit(true, true, false, true, address(ERC1155Extended));
+        emit ApprovalForAll(owner, operator, true);
+        vm.prank(owner);
+        ERC1155Extended.setApprovalForAll(operator, true);
+        assertTrue(ERC1155Extended.isApprovedForAll(owner, operator));
+    }
+
+    function testSetApprovalForAllRevoke() public {
+        address owner = vm.addr(1);
+        address operator = vm.addr(2);
+        assertTrue(!ERC1155Extended.isApprovedForAll(owner, operator));
+        vm.expectEmit(true, true, false, true, address(ERC1155Extended));
+        emit ApprovalForAll(owner, operator, true);
+        vm.startPrank(owner);
+        ERC1155Extended.setApprovalForAll(operator, true);
+        assertTrue(ERC1155Extended.isApprovedForAll(owner, operator));
+        vm.expectEmit(true, true, false, true, address(ERC1155Extended));
+        emit ApprovalForAll(owner, operator, false);
+        ERC1155Extended.setApprovalForAll(operator, false);
+        assertTrue(!ERC1155Extended.isApprovedForAll(owner, operator));
+        vm.stopPrank();
+    }
+
+    function testSetApprovalForAllToSelf() public {
+        address owner = vm.addr(1);
+        vm.expectRevert(bytes("ERC1155: setting approval status for self"));
+        vm.prank(owner);
+        ERC1155Extended.setApprovalForAll(owner, true);
+    }
+
     // function testSafeTransferFromReceiverNotAContract() public {
     //     //transfer to EOA
     //     address deployer = address(vyperDeployer);
@@ -668,49 +702,6 @@ contract ERC1155Test is Test {
 
     //     vm.prank(owner);
     //     erc1155.safeBatchTransferFrom(owner, receiver, ids, amounts, data);
-    // }
-
-    // function testSetApprovalForAll() public {
-    //     //set operator status
-    //     address account = vm.addr(1);
-    //     address operator = vm.addr(2);
-
-    //     assertFalse(erc1155.isApprovedForAll(account, operator));
-
-    //     vm.expectEmit(true, true, false, true, address(erc1155));
-    //     emit ApprovalForAll(account, operator, true);
-
-    //     vm.prank(account);
-    //     erc1155.setApprovalForAll(operator, true);
-
-    //     assertTrue(erc1155.isApprovedForAll(account, operator));
-    // }
-
-    // function testSetApprovalForAllRevoke() public {
-    //     //set operator then revoke
-    //     address account = vm.addr(1);
-    //     address operator = vm.addr(2);
-
-    //     vm.prank(account);
-    //     erc1155.setApprovalForAll(operator, true);
-
-    //     vm.expectEmit(true, true, false, true, address(erc1155));
-    //     emit ApprovalForAll(account, operator, false);
-
-    //     vm.prank(account);
-    //     erc1155.setApprovalForAll(operator, false);
-
-    //     assertFalse(erc1155.isApprovedForAll(account, operator));
-    // }
-
-    // function testSetApprovalForAllApproveToCaller() public {
-    //     //set operator status to self
-    //     address account = vm.addr(1);
-
-    //     vm.expectRevert(bytes("ERC1155: setting approval status for self"));
-
-    //     vm.prank(account);
-    //     erc1155.setApprovalForAll(account, true);
     // }
 
     // function testUriEmptyBaseUri() public {
