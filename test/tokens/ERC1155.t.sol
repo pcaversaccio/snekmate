@@ -1664,10 +1664,16 @@ contract ERC1155Test is Test {
         address oldOwner = address(vyperDeployer);
         address newOwner = vm.addr(1);
         vm.startPrank(oldOwner);
+        vm.expectEmit(true, false, false, true);
+        emit RoleMinterChanged(oldOwner, false);
         vm.expectEmit(true, true, false, false);
         emit OwnershipTransferred(oldOwner, newOwner);
+        vm.expectEmit(true, false, false, true);
+        emit RoleMinterChanged(newOwner, true);
         ERC1155Extended.transfer_ownership(newOwner);
         assertEq(ERC1155Extended.owner(), newOwner);
+        assertTrue(!ERC1155Extended.is_minter(oldOwner));
+        assertTrue(ERC1155Extended.is_minter(newOwner));
         vm.stopPrank();
     }
 
@@ -1686,11 +1692,13 @@ contract ERC1155Test is Test {
         address oldOwner = address(vyperDeployer);
         address newOwner = address(0);
         vm.startPrank(oldOwner);
+        vm.expectEmit(true, false, false, true);
+        emit RoleMinterChanged(oldOwner, false);
         vm.expectEmit(true, true, false, false);
         emit OwnershipTransferred(oldOwner, newOwner);
         ERC1155Extended.renounce_ownership();
         assertEq(ERC1155Extended.owner(), newOwner);
-        assertTrue(ERC1155Extended.is_minter(oldOwner) == false);
+        assertTrue(!ERC1155Extended.is_minter(oldOwner));
         vm.stopPrank();
     }
 

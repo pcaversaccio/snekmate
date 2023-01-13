@@ -623,13 +623,26 @@ def DOMAIN_SEPARATOR() -> bytes32:
 @external
 def transfer_ownership(new_owner: address):
     """
-    @dev Sourced from {Ownable-transfer_ownership}.
-    @notice See {Ownable-transfer_ownership} for
-            the function docstring.
+    @dev Transfers the ownership of the contract
+         to a new account `new_owner`.
+    @notice Note that this function can only be
+            called by the current `owner`. Also,
+            the `new_owner` cannot be the zero address.
+
+            WARNING: The ownership transfer also removes
+            the previous owner's minter role and assigns
+            the minter role to `new_owner` accordingly.
+    @param new_owner The 20-byte address of the new owner.
     """
     self._check_owner()
     assert new_owner != empty(address), "Ownable: new owner is the zero address"
+
+    self.is_minter[msg.sender] = False
+    log RoleMinterChanged(msg.sender, False)
+
     self._transfer_ownership(new_owner)
+    self.is_minter[new_owner] = True
+    log RoleMinterChanged(new_owner, True)
 
 
 @external
@@ -651,6 +664,7 @@ def renounce_ownership():
     """
     self._check_owner()
     self.is_minter[msg.sender] = False
+    log RoleMinterChanged(msg.sender, False)
     self._transfer_ownership(empty(address))
 
 
