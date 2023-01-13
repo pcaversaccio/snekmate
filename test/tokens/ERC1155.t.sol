@@ -1235,7 +1235,7 @@ contract ERC1155Test is Test {
     }
 
     function testTotalSupplyAfterSingleMint() public {
-        uint id = 0;
+        uint256 id = 0;
         bytes memory data = new bytes(0);
         vm.startPrank(address(vyperDeployer));
         ERC1155Extended.safe_mint(vm.addr(1), id, 1, data);
@@ -1264,7 +1264,7 @@ contract ERC1155Test is Test {
 
     function testTotalSupplyAfterSingleBurn() public {
         address owner = vm.addr(1);
-        uint id = 0;
+        uint256 id = 0;
         bytes memory data = new bytes(0);
         vm.startPrank(address(vyperDeployer));
         ERC1155Extended.safe_mint(owner, id, 15, data);
@@ -1304,7 +1304,7 @@ contract ERC1155Test is Test {
     }
 
     function testExistsAfterSingleMint() public {
-        uint id = 0;
+        uint256 id = 0;
         bytes memory data = new bytes(0);
         vm.startPrank(address(vyperDeployer));
         ERC1155Extended.safe_mint(vm.addr(1), id, 1, data);
@@ -1333,7 +1333,7 @@ contract ERC1155Test is Test {
 
     function testExistsAfterSingleBurn() public {
         address owner = vm.addr(1);
-        uint id = 0;
+        uint256 id = 0;
         bytes memory data = new bytes(0);
         vm.startPrank(address(vyperDeployer));
         ERC1155Extended.safe_mint(owner, id, 15, data);
@@ -1367,6 +1367,292 @@ contract ERC1155Test is Test {
         assertTrue(ERC1155Extended.exists(0));
         assertTrue(!ERC1155Extended.exists(1));
         vm.stopPrank();
+    }
+
+    function testBurnSuccess() public {
+        address firstOwner = vm.addr(1);
+        address secondOwner = vm.addr(2);
+        uint256 id = 0;
+        uint256 burnAmount = 10;
+        bytes memory data = new bytes(0);
+        vm.startPrank(address(vyperDeployer));
+        ERC1155Extended.safe_mint(firstOwner, id, 15, data);
+        ERC1155Extended.safe_mint(secondOwner, id, 20, data);
+        vm.stopPrank();
+        vm.startPrank(firstOwner);
+        vm.expectEmit(true, true, true, true);
+        emit TransferSingle(firstOwner, firstOwner, address(0), id, burnAmount);
+        ERC1155Extended.burn(firstOwner, id, 10);
+        assertEq(ERC1155Extended.total_supply(0), 25);
+        assertEq(ERC1155Extended.balanceOf(firstOwner, id), 5);
+        assertEq(ERC1155Extended.balanceOf(secondOwner, id), 20);
+        vm.stopPrank();
+    }
+
+    function testBurnByApprovedOperator() public {
+        address deployer = address(vyperDeployer);
+        address owner = vm.addr(1);
+        address operator = vm.addr(2);
+        bool approved = true;
+        uint256 id1 = 1;
+        uint256 amount1 = 15;
+        uint256 id2 = 4;
+        uint256 amount2 = 15;
+        uint256 burnAmount = 10;
+        bytes memory data = new bytes(0);
+        vm.startPrank(deployer);
+        ERC1155Extended.safe_mint(owner, id1, amount1, data);
+        ERC1155Extended.safe_mint(owner, id2, amount2, data);
+        vm.stopPrank();
+
+        vm.startPrank(owner);
+        vm.expectEmit(true, true, false, true);
+        emit ApprovalForAll(owner, operator, approved);
+        ERC1155Extended.setApprovalForAll(operator, approved);
+        vm.stopPrank();
+
+        vm.startPrank(operator);
+        vm.expectEmit(true, true, true, true);
+        emit TransferSingle(operator, owner, address(0), id1, burnAmount);
+        ERC1155Extended.burn(owner, id1, burnAmount);
+        assertEq(ERC1155Extended.total_supply(id1), amount1 - burnAmount);
+        assertEq(ERC1155Extended.total_supply(id2), amount2);
+        assertEq(ERC1155Extended.balanceOf(owner, id1), amount1 - burnAmount);
+        assertEq(ERC1155Extended.balanceOf(owner, id2), amount2);
+        assertEq(ERC1155Extended.balanceOf(operator, id1), 0);
+        assertEq(ERC1155Extended.balanceOf(operator, id2), 0);
+        vm.stopPrank();
+    }
+
+    function testBurnByNotApprovedOperator() public {
+        address deployer = address(vyperDeployer);
+        address owner = vm.addr(1);
+        address operator = vm.addr(2);
+        uint256 id1 = 1;
+        uint256 amount1 = 15;
+        uint256 id2 = 4;
+        uint256 amount2 = 15;
+        uint256 burnAmount = 10;
+        bytes memory data = new bytes(0);
+        vm.startPrank(deployer);
+        ERC1155Extended.safe_mint(owner, id1, amount1, data);
+        ERC1155Extended.safe_mint(owner, id2, amount2, data);
+        vm.stopPrank();
+        vm.startPrank(operator);
+        vm.expectRevert(
+            bytes("ERC1155: caller is not token owner or approved")
+        );
+        ERC1155Extended.burn(owner, id1, burnAmount);
+        vm.stopPrank();
+    }
+
+    function testBurnFromZeroAddress() public {
+        address owner = address(0);
+        vm.prank(owner);
+        vm.expectRevert(bytes("ERC1155: burn from the zero address"));
+        ERC1155Extended.burn(owner, 1, 1);
+    }
+
+    function testBurnAmountExceedsBalance() public {
+        address firstOwner = vm.addr(1);
+        address secondOwner = vm.addr(2);
+        uint256 id = 0;
+        bytes memory data = new bytes(0);
+        vm.startPrank(address(vyperDeployer));
+        ERC1155Extended.safe_mint(firstOwner, id, 15, data);
+        ERC1155Extended.safe_mint(secondOwner, id, 20, data);
+        vm.stopPrank();
+        vm.startPrank(firstOwner);
+        vm.expectRevert(bytes("ERC1155: burn amount exceeds balance"));
+        ERC1155Extended.burn(firstOwner, id, 16);
+        vm.stopPrank();
+    }
+
+    function testBurnNonExistentTokenId() public {
+        address firstOwner = vm.addr(1);
+        vm.prank(vm.addr(1));
+        vm.expectRevert(bytes("ERC1155: burn amount exceeds total_supply"));
+        ERC1155Extended.burn(firstOwner, 1, 1);
+    }
+
+    function testBurnBatch() public {
+        address deployer = address(vyperDeployer);
+        address owner = vm.addr(1);
+        uint256[] memory ids = new uint256[](4);
+        uint256[] memory amounts = new uint256[](4);
+        bytes memory data = new bytes(0);
+
+        ids[0] = 0;
+        ids[1] = 1;
+        ids[2] = 5;
+        ids[3] = 8;
+        amounts[0] = 1;
+        amounts[1] = 2;
+        amounts[2] = 10;
+        amounts[3] = 20;
+
+        vm.startPrank(deployer);
+        ERC1155Extended.safe_mint_batch(owner, ids, amounts, data);
+        vm.stopPrank();
+        vm.startPrank(owner);
+        --amounts[2];
+        vm.expectEmit(true, true, true, true);
+        emit TransferBatch(owner, owner, address(0), ids, amounts);
+        ERC1155Extended.burn_batch(owner, ids, amounts);
+        assertEq(ERC1155Extended.total_supply(ids[0]), 0);
+        assertEq(ERC1155Extended.total_supply(ids[1]), 0);
+        assertEq(ERC1155Extended.total_supply(ids[2]), 1);
+        assertEq(ERC1155Extended.total_supply(ids[3]), 0);
+        assertEq(ERC1155Extended.balanceOf(owner, ids[0]), 0);
+        assertEq(ERC1155Extended.balanceOf(owner, ids[1]), 0);
+        assertEq(ERC1155Extended.balanceOf(owner, ids[2]), 1);
+        assertEq(ERC1155Extended.balanceOf(owner, ids[3]), 0);
+        vm.stopPrank();
+    }
+
+    function testBurnBatchByApprovedOperator() public {
+        address deployer = address(vyperDeployer);
+        address owner = vm.addr(1);
+        address operator = vm.addr(2);
+        bool approved = true;
+        uint256[] memory ids = new uint256[](4);
+        uint256[] memory amounts = new uint256[](4);
+        bytes memory data = new bytes(0);
+
+        ids[0] = 0;
+        ids[1] = 1;
+        ids[2] = 5;
+        ids[3] = 8;
+        amounts[0] = 1;
+        amounts[1] = 2;
+        amounts[2] = 10;
+        amounts[3] = 20;
+
+        vm.startPrank(deployer);
+        ERC1155Extended.safe_mint_batch(owner, ids, amounts, data);
+        vm.stopPrank();
+
+        vm.startPrank(owner);
+        vm.expectEmit(true, true, false, true);
+        emit ApprovalForAll(owner, operator, approved);
+        ERC1155Extended.setApprovalForAll(operator, approved);
+        vm.stopPrank();
+
+        vm.startPrank(operator);
+        --amounts[2];
+        vm.expectEmit(true, true, true, true);
+        emit TransferBatch(operator, owner, address(0), ids, amounts);
+        ERC1155Extended.burn_batch(owner, ids, amounts);
+        assertEq(ERC1155Extended.total_supply(ids[0]), 0);
+        assertEq(ERC1155Extended.total_supply(ids[1]), 0);
+        assertEq(ERC1155Extended.total_supply(ids[2]), 1);
+        assertEq(ERC1155Extended.total_supply(ids[3]), 0);
+        assertEq(ERC1155Extended.balanceOf(owner, ids[0]), 0);
+        assertEq(ERC1155Extended.balanceOf(owner, ids[1]), 0);
+        assertEq(ERC1155Extended.balanceOf(owner, ids[2]), 1);
+        assertEq(ERC1155Extended.balanceOf(owner, ids[3]), 0);
+        for (uint256 i; i < ids.length; ++i) {
+            assertEq(ERC1155Extended.balanceOf(operator, ids[i]), 0);
+        }
+        vm.stopPrank();
+    }
+
+    function testBurnBatchByNotApprovedOperator() public {
+        address owner = vm.addr(1);
+        address operator = vm.addr(2);
+        uint256[] memory ids = new uint256[](4);
+        uint256[] memory amounts = new uint256[](4);
+        amounts[0] = 1;
+        amounts[1] = 2;
+        amounts[2] = 10;
+        amounts[3] = 20;
+        vm.startPrank(operator);
+        vm.expectRevert(
+            bytes("ERC1155: caller is not token owner or approved")
+        );
+        ERC1155Extended.burn_batch(owner, ids, amounts);
+        vm.stopPrank();
+    }
+
+    function testBurnBatchLengthsMismatch() public {
+        address owner = vm.addr(1);
+        uint256[] memory ids1 = new uint256[](4);
+        uint256[] memory ids2 = new uint256[](3);
+        uint256[] memory amounts1 = new uint256[](3);
+        uint256[] memory amounts2 = new uint256[](4);
+
+        ids1[0] = 0;
+        ids1[1] = 1;
+        ids1[2] = 5;
+        ids1[3] = 8;
+        ids2[0] = 0;
+        ids2[1] = 1;
+        ids2[2] = 5;
+        amounts1[0] = 1;
+        amounts1[1] = 2;
+        amounts1[2] = 10;
+        amounts2[0] = 1;
+        amounts2[1] = 2;
+        amounts2[2] = 10;
+        amounts2[2] = 20;
+
+        vm.startPrank(owner);
+        vm.expectRevert(bytes("ERC1155: ids and amounts length mismatch"));
+        ERC1155Extended.burn_batch(owner, ids1, amounts1);
+        vm.expectRevert(bytes("ERC1155: ids and amounts length mismatch"));
+        ERC1155Extended.burn_batch(owner, ids2, amounts2);
+        vm.stopPrank();
+    }
+
+    function testBurnBatchFromZeroAddress() public {
+        address owner = address(0);
+        uint256[] memory ids = new uint256[](2);
+        uint256[] memory amounts = new uint256[](2);
+        ids[0] = 1;
+        ids[1] = 2;
+        amounts[0] = 1;
+        amounts[1] = 2;
+        vm.prank(owner);
+        vm.expectRevert(bytes("ERC1155: burn from the zero address"));
+        ERC1155Extended.burn_batch(owner, ids, amounts);
+    }
+
+    function testBurnBatchAmountExceedsBalance() public {
+        address deployer = address(vyperDeployer);
+        address owner = vm.addr(1);
+        address nonOwner = vm.addr(2);
+        uint256[] memory ids = new uint256[](2);
+        uint256[] memory amounts = new uint256[](2);
+        ids[0] = 1;
+        ids[1] = 2;
+        amounts[0] = 1;
+        amounts[1] = 2;
+        vm.startPrank(deployer);
+        ERC1155Extended.safe_mint_batch(owner, ids, amounts, new bytes(0));
+        vm.stopPrank();
+        vm.startPrank(nonOwner);
+        vm.expectRevert(bytes("ERC1155: burn amount exceeds balance"));
+        ERC1155Extended.burn_batch(nonOwner, ids, amounts);
+        vm.stopPrank();
+    }
+
+    function testBurnBatchNonExistentTokenIds() public {
+        address owner = vm.addr(1);
+        uint256[] memory ids = new uint256[](4);
+        uint256[] memory amounts = new uint256[](4);
+
+        ids[0] = 0;
+        ids[1] = 1;
+        ids[2] = 5;
+        ids[3] = 8;
+        amounts[0] = 1;
+        amounts[1] = 2;
+        amounts[2] = 10;
+        amounts[3] = 20;
+
+        vm.prank(owner);
+        vm.expectRevert(bytes("ERC1155: burn amount exceeds total_supply"));
+        ERC1155Extended.burn_batch(owner, ids, amounts);
     }
 
     // function testIsMinter() public {
@@ -1712,281 +1998,6 @@ contract ERC1155Test is Test {
 
     //     vm.prank(deployer);
     //     erc1155.safe_mint_batch(receiver, ids, amounts, data);
-    // }
-
-    // function testBurn() public {
-    //     //burn
-    //     address deployer = address(vyperDeployer);
-    //     address owner = vm.addr(1);
-    //     uint256 id = 1;
-    //     uint256 amount = 1;
-    //     bytes memory data = new bytes(0);
-
-    //     vm.prank(deployer);
-    //     erc1155.safe_mint(owner, id, amount, data);
-
-    //     assertEq(erc1155.total_supply(id), amount);
-    //     assertEq(erc1155.balanceOf(owner, id), amount);
-
-    //     vm.expectEmit(true, true, true, true, address(erc1155));
-    //     emit TransferSingle(owner, owner, address(0), id, amount);
-
-    //     vm.prank(owner);
-    //     erc1155.burn(owner, id, amount);
-
-    //     assertEq(erc1155.total_supply(id), 0);
-    //     assertEq(erc1155.balanceOf(owner, id), 0);
-    // }
-
-    // function testBurnByOperator() public {
-    //     //burn by operator
-    //     address deployer = address(vyperDeployer);
-    //     address owner = vm.addr(1);
-    //     address operator = vm.addr(2);
-    //     uint256 id = 1;
-    //     uint256 amount = 1;
-    //     bytes memory data = new bytes(0);
-
-    //     vm.prank(deployer);
-    //     erc1155.safe_mint(owner, id, amount, data);
-
-    //     vm.prank(owner);
-    //     erc1155.setApprovalForAll(operator, true);
-
-    //     vm.expectEmit(true, true, true, true, address(erc1155));
-    //     emit TransferSingle(operator, owner, address(0), id, amount);
-
-    //     vm.prank(operator);
-    //     erc1155.burn(owner, id, amount);
-
-    //     assertEq(erc1155.total_supply(id), 0);
-    //     assertEq(erc1155.balanceOf(owner, id), 0);
-    // }
-
-    // function testBurnCallerNotOwnerOrApproved() public {
-    //     //burn caller not owner or approved
-    //     address deployer = address(vyperDeployer);
-    //     address owner = vm.addr(1);
-    //     address unauthorized = vm.addr(2);
-    //     uint256 id = 1;
-    //     uint256 amount = 1;
-    //     bytes memory data = new bytes(0);
-
-    //     vm.prank(deployer);
-    //     erc1155.safe_mint(owner, id, amount, data);
-
-    //     vm.expectRevert(
-    //         bytes("ERC1155: caller is not token owner or approved")
-    //     );
-
-    //     vm.prank(unauthorized);
-    //     erc1155.burn(owner, id, amount);
-    // }
-
-    // function testBurnFromZeroAddress() public {
-    //     //burn from zero address
-    //     //NOTE this is the first check after authorization. so if this test
-    //     //fails in the future as a result of adding a check or reordering the
-    //     //checks, this is why. there appears to be no way to do this test
-    //     //without dependence on either the order of checks or the storage layout
-    //     address owner = address(0);
-    //     uint256 id = 1;
-    //     uint256 amount = 1;
-
-    //     vm.expectRevert(bytes("ERC1155: burn from the zero address"));
-
-    //     vm.prank(owner);
-    //     erc1155.burn(owner, id, amount);
-    // }
-
-    // function testBurnAmountExceedsBalance() public {
-    //     //burn amount exceeds balance
-    //     address deployer = address(vyperDeployer);
-    //     address owner = vm.addr(1);
-    //     address nonOwner = vm.addr(2);
-    //     uint256 id = 1;
-    //     uint256 amount = 1;
-    //     bytes memory data = new bytes(0);
-
-    //     vm.prank(deployer);
-    //     erc1155.safe_mint(owner, id, amount, data);
-
-    //     vm.expectRevert(bytes("ERC1155: burn amount exceeds balance"));
-
-    //     vm.prank(nonOwner);
-    //     erc1155.burn(nonOwner, id, amount);
-    // }
-
-    // function testBurnBatch() public {
-    //     //burn batch
-    //     address deployer = address(vyperDeployer);
-    //     address owner = vm.addr(1);
-    //     uint256[] memory ids = new uint256[](2);
-    //     uint256[] memory amounts = new uint256[](2);
-    //     bytes memory data = new bytes(0);
-
-    //     ids[0] = 1;
-    //     ids[1] = 2;
-    //     amounts[0] = 1;
-    //     amounts[1] = 2;
-
-    //     vm.prank(deployer);
-    //     erc1155.safe_mint_batch(owner, ids, amounts, data);
-
-    //     vm.expectEmit(true, true, true, true, address(erc1155));
-    //     emit TransferBatch(owner, owner, address(0), ids, amounts);
-
-    //     vm.prank(owner);
-    //     erc1155.burn_batch(owner, ids, amounts);
-
-    //     for (uint256 i; i < ids.length; ++i) {
-    //         assertEq(erc1155.total_supply(ids[i]), 0);
-    //         assertEq(erc1155.balanceOf(owner, ids[i]), 0);
-    //     }
-    // }
-
-    // function testBurnBatchByOperator() public {
-    //     //burn batch by operator
-    //     address deployer = address(vyperDeployer);
-    //     address owner = vm.addr(1);
-    //     uint256[] memory ids = new uint256[](2);
-    //     uint256[] memory amounts = new uint256[](2);
-    //     bytes memory data = new bytes(0);
-
-    //     ids[0] = 1;
-    //     ids[1] = 2;
-    //     amounts[0] = 1;
-    //     amounts[1] = 2;
-
-    //     vm.prank(deployer);
-    //     erc1155.safe_mint_batch(owner, ids, amounts, data);
-
-    //     vm.prank(owner);
-    //     erc1155.setApprovalForAll(deployer, true);
-
-    //     vm.expectEmit(true, true, true, true, address(erc1155));
-    //     emit TransferBatch(deployer, owner, address(0), ids, amounts);
-
-    //     vm.prank(deployer);
-    //     erc1155.burn_batch(owner, ids, amounts);
-
-    //     for (uint256 i; i < ids.length; ++i) {
-    //         assertEq(erc1155.total_supply(ids[i]), 0);
-    //         assertEq(erc1155.balanceOf(owner, ids[i]), 0);
-    //     }
-    // }
-
-    // function testBurnBatchCallerNotOwnerOrApproved() public {
-    //     //burn batch caller not owner or approved
-    //     address deployer = address(vyperDeployer);
-    //     address owner = vm.addr(1);
-    //     address unauthorized = vm.addr(2);
-    //     uint256[] memory ids = new uint256[](2);
-    //     uint256[] memory amounts = new uint256[](2);
-    //     bytes memory data = new bytes(0);
-
-    //     ids[0] = 1;
-    //     ids[1] = 2;
-    //     amounts[0] = 1;
-    //     amounts[1] = 2;
-
-    //     vm.prank(deployer);
-    //     erc1155.safe_mint_batch(owner, ids, amounts, data);
-
-    //     vm.expectRevert(
-    //         bytes("ERC1155: caller is not token owner or approved")
-    //     );
-
-    //     vm.prank(unauthorized);
-    //     erc1155.burn_batch(owner, ids, amounts);
-    // }
-
-    // function testBurnBatchLengthsMismatch() public {
-    //     //burn batch ids and amounts lengths mismatch
-    //     address deployer = address(vyperDeployer);
-    //     address owner = vm.addr(1);
-    //     uint256[] memory ids = new uint256[](2);
-    //     uint256[] memory amounts = new uint256[](1);
-    //     bytes memory data = new bytes(0);
-
-    //     ids[0] = 1;
-    //     ids[1] = 2;
-    //     amounts[0] = 1;
-
-    //     vm.prank(deployer);
-    //     erc1155.safe_mint(owner, ids[0], 1, data);
-
-    //     vm.prank(deployer);
-    //     erc1155.safe_mint(owner, ids[1], 1, data);
-
-    //     vm.expectRevert(bytes("ERC1155: ids and amounts length mismatch"));
-
-    //     vm.prank(owner);
-    //     erc1155.burn_batch(owner, ids, amounts);
-    // }
-
-    // function testBurnBatchFromZeroAddress() public {
-    //     //burn batch from zero address
-    //     //NOTE this is the first check after authorization and array length check.
-    //     //so if this test fails in the future as a result of adding a check or
-    //     //reordering the checks, this is why. there appears to be no way to do
-    //     //this test without dependence on either the order of checks or the
-    //     //storage layout
-    //     address owner = address(0);
-    //     uint256[] memory ids = new uint256[](2);
-    //     uint256[] memory amounts = new uint256[](2);
-
-    //     ids[0] = 1;
-    //     ids[1] = 2;
-    //     amounts[0] = 1;
-    //     amounts[1] = 2;
-
-    //     vm.expectRevert(bytes("ERC1155: burn from the zero address"));
-
-    //     vm.prank(owner);
-    //     erc1155.burn_batch(owner, ids, amounts);
-    // }
-
-    // function testBurnBatchAmountExceedsBalance() public {
-    //     //burn batch amount exceeds balance
-    //     address deployer = address(vyperDeployer);
-    //     address owner = vm.addr(1);
-    //     address nonOwner = vm.addr(2);
-    //     uint256[] memory ids = new uint256[](2);
-    //     uint256[] memory amounts = new uint256[](2);
-    //     bytes memory data = new bytes(0);
-
-    //     ids[0] = 1;
-    //     ids[1] = 2;
-    //     amounts[0] = 1;
-    //     amounts[1] = 2;
-
-    //     vm.prank(deployer);
-    //     erc1155.safe_mint_batch(owner, ids, amounts, data);
-
-    //     vm.expectRevert(bytes("ERC1155: burn amount exceeds balance"));
-
-    //     vm.prank(nonOwner);
-    //     erc1155.burn_batch(nonOwner, ids, amounts);
-    // }
-
-    // function testExists() public {
-    //     //test token id total supply is nonzero
-    //     address deployer = address(vyperDeployer);
-    //     address owner = vm.addr(1);
-    //     uint256 id = 1;
-    //     uint256 otherId = 2;
-    //     uint256 amount = 1;
-    //     bytes memory data = new bytes(0);
-
-    //     assertFalse(erc1155.exists(id));
-    //     assertFalse(erc1155.exists(otherId));
-
-    //     vm.prank(deployer);
-    //     erc1155.safe_mint(owner, id, amount, data);
-
-    //     assertTrue(erc1155.exists(id));
-    //     assertFalse(erc1155.exists(otherId));
     // }
 
     function testHasOwner() public {
