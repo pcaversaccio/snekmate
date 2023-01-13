@@ -990,69 +990,6 @@ contract ERC1155Test is Test {
     //     assertEq(bytes(_erc1155.uri(id)), bytes(""));
     // }
 
-    // function testOwner() public {
-    //     //owner read
-    //     assertEq(erc1155.owner(), address(vyperDeployer));
-    // }
-
-    // function testTransferOwnership() public {
-    //     //transfer ownership
-    //     address deployer = address(vyperDeployer);
-    //     address newOwner = vm.addr(1);
-
-    //     vm.expectEmit(true, true, false, false, address(erc1155));
-    //     emit OwnershipTransferred(deployer, newOwner);
-
-    //     vm.prank(deployer);
-    //     erc1155.transfer_ownership(newOwner);
-
-    //     assertEq(erc1155.owner(), newOwner);
-    // }
-
-    // function testTransferOwnershipNotOwner() public {
-    //     //transfer ownership by nauthorized
-    //     address unauthorized = vm.addr(1);
-
-    //     vm.expectRevert(bytes("Ownable: caller is not the owner"));
-
-    //     vm.prank(unauthorized);
-    //     erc1155.transfer_ownership(unauthorized);
-    // }
-
-    // function testTransferOwnershipZeroAddress() public {
-    //     //transfer ownership to zero address
-    //     address deployer = address(vyperDeployer);
-
-    //     vm.expectRevert(bytes("Ownable: new owner is the zero address"));
-
-    //     vm.prank(deployer);
-    //     erc1155.transfer_ownership(address(0));
-    // }
-
-    // function testRenounceOwnership() public {
-    //     //renounce ownership
-    //     address deployer = address(vyperDeployer);
-
-    //     vm.expectEmit(true, true, false, false, address(erc1155));
-    //     emit OwnershipTransferred(deployer, address(0));
-
-    //     vm.prank(deployer);
-    //     erc1155.renounce_ownership();
-
-    //     assertEq(erc1155.owner(), address(0));
-    //     assertFalse(erc1155.is_minter(deployer));
-    // }
-
-    // function testRenounceOwnershipNotOwner() public {
-    //     //renounce ownership unauthorized
-    //     address unauthorized = vm.addr(1);
-
-    //     vm.expectRevert(bytes("Ownable: caller is not the owner"));
-
-    //     vm.prank(unauthorized);
-    //     erc1155.renounce_ownership();
-    // }
-
     // function testIsMinter() public {
     //     //is minter read
     //     assertTrue(erc1155.is_minter(address(vyperDeployer)));
@@ -1718,4 +1655,47 @@ contract ERC1155Test is Test {
     //     assertEq(erc1155.total_supply(id), amount);
     //     assertEq(erc1155.total_supply(otherId), 0);
     // }
+
+    function testHasOwner() public {
+        assertEq(ERC1155Extended.owner(), address(vyperDeployer));
+    }
+
+    function testTransferOwnershipSuccess() public {
+        address oldOwner = address(vyperDeployer);
+        address newOwner = vm.addr(1);
+        vm.startPrank(oldOwner);
+        vm.expectEmit(true, true, false, false);
+        emit OwnershipTransferred(oldOwner, newOwner);
+        ERC1155Extended.transfer_ownership(newOwner);
+        assertEq(ERC1155Extended.owner(), newOwner);
+        vm.stopPrank();
+    }
+
+    function testTransferOwnershipNonOwner() public {
+        vm.expectRevert(bytes("Ownable: caller is not the owner"));
+        ERC1155Extended.transfer_ownership(vm.addr(1));
+    }
+
+    function testTransferOwnershipToZeroAddress() public {
+        vm.prank(address(vyperDeployer));
+        vm.expectRevert(bytes("Ownable: new owner is the zero address"));
+        ERC1155Extended.transfer_ownership(address(0));
+    }
+
+    function testRenounceOwnershipSuccess() public {
+        address oldOwner = address(vyperDeployer);
+        address newOwner = address(0);
+        vm.startPrank(oldOwner);
+        vm.expectEmit(true, true, false, false);
+        emit OwnershipTransferred(oldOwner, newOwner);
+        ERC1155Extended.renounce_ownership();
+        assertEq(ERC1155Extended.owner(), newOwner);
+        assertTrue(ERC1155Extended.is_minter(oldOwner) == false);
+        vm.stopPrank();
+    }
+
+    function testRenounceOwnershipNonOwner() public {
+        vm.expectRevert(bytes("Ownable: caller is not the owner"));
+        ERC1155Extended.renounce_ownership();
+    }
 }
