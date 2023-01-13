@@ -1247,6 +1247,7 @@ contract ERC1155Test is Test {
     function testTotalSupplyAfterBatchMint() public {
         uint256[] memory ids = new uint256[](4);
         uint256[] memory amounts = new uint256[](4);
+
         ids[0] = 0;
         ids[1] = 1;
         ids[2] = 0;
@@ -1255,6 +1256,7 @@ contract ERC1155Test is Test {
         amounts[1] = 2;
         amounts[2] = 10;
         amounts[3] = 20;
+
         vm.startPrank(address(vyperDeployer));
         ERC1155Extended.safe_mint_batch(vm.addr(1), ids, amounts, new bytes(0));
         assertEq(ERC1155Extended.total_supply(0), 11);
@@ -1280,6 +1282,7 @@ contract ERC1155Test is Test {
         address owner = vm.addr(1);
         uint256[] memory ids = new uint256[](4);
         uint256[] memory amounts = new uint256[](4);
+
         ids[0] = 0;
         ids[1] = 1;
         ids[2] = 0;
@@ -1288,6 +1291,7 @@ contract ERC1155Test is Test {
         amounts[1] = 2;
         amounts[2] = 10;
         amounts[3] = 20;
+
         vm.startPrank(address(vyperDeployer));
         ERC1155Extended.safe_mint_batch(owner, ids, amounts, new bytes(0));
         vm.stopPrank();
@@ -1316,6 +1320,7 @@ contract ERC1155Test is Test {
     function testExistsAfterBatchMint() public {
         uint256[] memory ids = new uint256[](4);
         uint256[] memory amounts = new uint256[](4);
+
         ids[0] = 0;
         ids[1] = 1;
         ids[2] = 0;
@@ -1324,6 +1329,7 @@ contract ERC1155Test is Test {
         amounts[1] = 2;
         amounts[2] = 10;
         amounts[3] = 20;
+
         vm.startPrank(address(vyperDeployer));
         ERC1155Extended.safe_mint_batch(vm.addr(1), ids, amounts, new bytes(0));
         assertTrue(ERC1155Extended.exists(0));
@@ -1350,6 +1356,7 @@ contract ERC1155Test is Test {
         address owner = vm.addr(1);
         uint256[] memory ids = new uint256[](4);
         uint256[] memory amounts = new uint256[](4);
+
         ids[0] = 0;
         ids[1] = 1;
         ids[2] = 0;
@@ -1358,6 +1365,7 @@ contract ERC1155Test is Test {
         amounts[1] = 2;
         amounts[2] = 10;
         amounts[3] = 20;
+
         vm.startPrank(address(vyperDeployer));
         ERC1155Extended.safe_mint_batch(owner, ids, amounts, new bytes(0));
         vm.stopPrank();
@@ -1562,10 +1570,12 @@ contract ERC1155Test is Test {
         address operator = vm.addr(2);
         uint256[] memory ids = new uint256[](4);
         uint256[] memory amounts = new uint256[](4);
+
         amounts[0] = 1;
         amounts[1] = 2;
         amounts[2] = 10;
         amounts[3] = 20;
+
         vm.startPrank(operator);
         vm.expectRevert(
             bytes("ERC1155: caller is not token owner or approved")
@@ -1606,12 +1616,18 @@ contract ERC1155Test is Test {
 
     function testBurnBatchFromZeroAddress() public {
         address owner = address(0);
-        uint256[] memory ids = new uint256[](2);
-        uint256[] memory amounts = new uint256[](2);
-        ids[0] = 1;
-        ids[1] = 2;
+        uint256[] memory ids = new uint256[](4);
+        uint256[] memory amounts = new uint256[](4);
+
+        ids[0] = 0;
+        ids[1] = 1;
+        ids[2] = 5;
+        ids[3] = 8;
         amounts[0] = 1;
         amounts[1] = 2;
+        amounts[2] = 10;
+        amounts[3] = 20;
+
         vm.prank(owner);
         vm.expectRevert(bytes("ERC1155: burn from the zero address"));
         ERC1155Extended.burn_batch(owner, ids, amounts);
@@ -1621,12 +1637,18 @@ contract ERC1155Test is Test {
         address deployer = address(vyperDeployer);
         address owner = vm.addr(1);
         address nonOwner = vm.addr(2);
-        uint256[] memory ids = new uint256[](2);
-        uint256[] memory amounts = new uint256[](2);
-        ids[0] = 1;
-        ids[1] = 2;
+        uint256[] memory ids = new uint256[](4);
+        uint256[] memory amounts = new uint256[](4);
+
+        ids[0] = 0;
+        ids[1] = 1;
+        ids[2] = 5;
+        ids[3] = 8;
         amounts[0] = 1;
         amounts[1] = 2;
+        amounts[2] = 10;
+        amounts[3] = 20;
+
         vm.startPrank(deployer);
         ERC1155Extended.safe_mint_batch(owner, ids, amounts, new bytes(0));
         vm.stopPrank();
@@ -1654,46 +1676,6 @@ contract ERC1155Test is Test {
         vm.expectRevert(bytes("ERC1155: burn amount exceeds total_supply"));
         ERC1155Extended.burn_batch(owner, ids, amounts);
     }
-
-    // function testIsMinter() public {
-    //     //is minter read
-    //     assertTrue(erc1155.is_minter(address(vyperDeployer)));
-    //     assertFalse(erc1155.is_minter(vm.addr(1)));
-    // }
-
-    // function testSetMinter() public {
-    //     //set minter
-    //     address deployer = address(vyperDeployer);
-    //     address minter = vm.addr(1);
-
-    //     vm.expectEmit(true, false, false, true, address(erc1155));
-    //     emit RoleMinterChanged(minter, true);
-
-    //     vm.prank(deployer);
-    //     erc1155.set_minter(minter, true);
-
-    //     assertTrue(erc1155.is_minter(minter));
-    // }
-
-    // function testSetMinterCallerIsNotOwner() public {
-    //     //set minter unauthorized
-    //     address unauthorized = vm.addr(1);
-
-    //     vm.expectRevert(bytes("Ownable: caller is not the owner"));
-
-    //     vm.prank(unauthorized);
-    //     erc1155.set_minter(unauthorized, true);
-    // }
-
-    // function testSetMinterMinterIsOwnerAddress() public {
-    //     //set minter to self
-    //     address deployer = address(vyperDeployer);
-
-    //     vm.expectRevert(bytes("AccessControl: minter is owner address"));
-
-    //     vm.prank(deployer);
-    //     erc1155.set_minter(deployer, true);
-    // }
 
     // function testSetMinterMinterIsZeroAddress() public {
     //     //set minter to zero address
@@ -1999,6 +1981,39 @@ contract ERC1155Test is Test {
     //     vm.prank(deployer);
     //     erc1155.safe_mint_batch(receiver, ids, amounts, data);
     // }
+
+    function testSetMinterSuccess() public {
+        address owner = address(vyperDeployer);
+        address minter = vm.addr(1);
+        vm.startPrank(owner);
+        vm.expectEmit(true, false, false, true);
+        emit RoleMinterChanged(minter, true);
+        ERC1155Extended.set_minter(minter, true);
+        assertTrue(ERC1155Extended.is_minter(minter));
+
+        vm.expectEmit(true, false, false, true);
+        emit RoleMinterChanged(minter, false);
+        ERC1155Extended.set_minter(minter, false);
+        assertTrue(!ERC1155Extended.is_minter(minter));
+        vm.stopPrank();
+    }
+
+    function testSetMinterNonOwner() public {
+        vm.expectRevert(bytes("Ownable: caller is not the owner"));
+        ERC1155Extended.set_minter(vm.addr(1), true);
+    }
+
+    function testSetMinterToZeroAddress() public {
+        vm.prank(address(vyperDeployer));
+        vm.expectRevert(bytes("AccessControl: minter is the zero address"));
+        ERC1155Extended.set_minter(address(0), true);
+    }
+
+    function testSetMinterRemoveOwnerAddress() public {
+        vm.prank(address(vyperDeployer));
+        vm.expectRevert(bytes("AccessControl: minter is owner address"));
+        ERC1155Extended.set_minter(address(vyperDeployer), false);
+    }
 
     function testHasOwner() public {
         assertEq(ERC1155Extended.owner(), address(vyperDeployer));
