@@ -1230,6 +1230,145 @@ contract ERC1155Test is Test {
         ERC1155Extended.set_uri(1, "my_awesome_uri");
     }
 
+    function testTotalSupplyBeforeMint() public {
+        assertEq(ERC1155Extended.total_supply(0), 0);
+    }
+
+    function testTotalSupplyAfterSingleMint() public {
+        uint id = 0;
+        bytes memory data = new bytes(0);
+        vm.startPrank(address(vyperDeployer));
+        ERC1155Extended.safe_mint(vm.addr(1), id, 1, data);
+        ERC1155Extended.safe_mint(vm.addr(2), id, 20, data);
+        assertEq(ERC1155Extended.total_supply(0), 21);
+        vm.stopPrank();
+    }
+
+    function testTotalSupplyAfterBatchMint() public {
+        uint256[] memory ids = new uint256[](4);
+        uint256[] memory amounts = new uint256[](4);
+        ids[0] = 0;
+        ids[1] = 1;
+        ids[2] = 0;
+        ids[3] = 1;
+        amounts[0] = 1;
+        amounts[1] = 2;
+        amounts[2] = 10;
+        amounts[3] = 20;
+        vm.startPrank(address(vyperDeployer));
+        ERC1155Extended.safe_mint_batch(vm.addr(1), ids, amounts, new bytes(0));
+        assertEq(ERC1155Extended.total_supply(0), 11);
+        assertEq(ERC1155Extended.total_supply(1), 22);
+        vm.stopPrank();
+    }
+
+    function testTotalSupplyAfterSingleBurn() public {
+        address owner = vm.addr(1);
+        uint id = 0;
+        bytes memory data = new bytes(0);
+        vm.startPrank(address(vyperDeployer));
+        ERC1155Extended.safe_mint(owner, id, 15, data);
+        ERC1155Extended.safe_mint(vm.addr(2), id, 20, data);
+        vm.stopPrank();
+        vm.startPrank(owner);
+        ERC1155Extended.burn(owner, id, 10);
+        assertEq(ERC1155Extended.total_supply(0), 25);
+        vm.stopPrank();
+    }
+
+    function testTotalSupplyAfterBatchBurn() public {
+        address owner = vm.addr(1);
+        uint256[] memory ids = new uint256[](4);
+        uint256[] memory amounts = new uint256[](4);
+        ids[0] = 0;
+        ids[1] = 1;
+        ids[2] = 0;
+        ids[3] = 1;
+        amounts[0] = 1;
+        amounts[1] = 2;
+        amounts[2] = 10;
+        amounts[3] = 20;
+        vm.startPrank(address(vyperDeployer));
+        ERC1155Extended.safe_mint_batch(owner, ids, amounts, new bytes(0));
+        vm.stopPrank();
+        vm.startPrank(owner);
+        --amounts[2];
+        ERC1155Extended.burn_batch(owner, ids, amounts);
+        assertEq(ERC1155Extended.total_supply(0), 1);
+        assertEq(ERC1155Extended.total_supply(1), 0);
+        vm.stopPrank();
+    }
+
+    function testExistsBeforeMint() public {
+        assertTrue(!ERC1155Extended.exists(0));
+    }
+
+    function testExistsAfterSingleMint() public {
+        uint id = 0;
+        bytes memory data = new bytes(0);
+        vm.startPrank(address(vyperDeployer));
+        ERC1155Extended.safe_mint(vm.addr(1), id, 1, data);
+        ERC1155Extended.safe_mint(vm.addr(2), id, 20, data);
+        assertTrue(ERC1155Extended.exists(0));
+        vm.stopPrank();
+    }
+
+    function testExistsAfterBatchMint() public {
+        uint256[] memory ids = new uint256[](4);
+        uint256[] memory amounts = new uint256[](4);
+        ids[0] = 0;
+        ids[1] = 1;
+        ids[2] = 0;
+        ids[3] = 1;
+        amounts[0] = 1;
+        amounts[1] = 2;
+        amounts[2] = 10;
+        amounts[3] = 20;
+        vm.startPrank(address(vyperDeployer));
+        ERC1155Extended.safe_mint_batch(vm.addr(1), ids, amounts, new bytes(0));
+        assertTrue(ERC1155Extended.exists(0));
+        assertTrue(ERC1155Extended.exists(1));
+        vm.stopPrank();
+    }
+
+    function testExistsAfterSingleBurn() public {
+        address owner = vm.addr(1);
+        uint id = 0;
+        bytes memory data = new bytes(0);
+        vm.startPrank(address(vyperDeployer));
+        ERC1155Extended.safe_mint(owner, id, 15, data);
+        ERC1155Extended.safe_mint(vm.addr(2), id, 20, data);
+        vm.stopPrank();
+        vm.startPrank(owner);
+        ERC1155Extended.burn(owner, id, 10);
+        assertTrue(ERC1155Extended.exists(0));
+        assertTrue(!ERC1155Extended.exists(1));
+        vm.stopPrank();
+    }
+
+    function testExistsAfterBatchBurn() public {
+        address owner = vm.addr(1);
+        uint256[] memory ids = new uint256[](4);
+        uint256[] memory amounts = new uint256[](4);
+        ids[0] = 0;
+        ids[1] = 1;
+        ids[2] = 0;
+        ids[3] = 1;
+        amounts[0] = 1;
+        amounts[1] = 2;
+        amounts[2] = 10;
+        amounts[3] = 20;
+        vm.startPrank(address(vyperDeployer));
+        ERC1155Extended.safe_mint_batch(owner, ids, amounts, new bytes(0));
+        vm.stopPrank();
+        vm.startPrank(owner);
+        --amounts[2];
+        ERC1155Extended.burn_batch(owner, ids, amounts);
+        assertTrue(ERC1155Extended.exists(0));
+        assertTrue(!ERC1155Extended.exists(1));
+        vm.stopPrank();
+    }
+
     // function testIsMinter() public {
     //     //is minter read
     //     assertTrue(erc1155.is_minter(address(vyperDeployer)));
@@ -1848,25 +1987,6 @@ contract ERC1155Test is Test {
 
     //     assertTrue(erc1155.exists(id));
     //     assertFalse(erc1155.exists(otherId));
-    // }
-
-    // function testTotalSupply() public {
-    //     //test total supply
-    //     address deployer = address(vyperDeployer);
-    //     address owner = vm.addr(1);
-    //     uint256 id = 1;
-    //     uint256 otherId = 2;
-    //     uint256 amount = 1;
-    //     bytes memory data = new bytes(0);
-
-    //     assertEq(erc1155.total_supply(id), 0);
-    //     assertEq(erc1155.total_supply(otherId), 0);
-
-    //     vm.prank(deployer);
-    //     erc1155.safe_mint(owner, id, amount, data);
-
-    //     assertEq(erc1155.total_supply(id), amount);
-    //     assertEq(erc1155.total_supply(otherId), 0);
     // }
 
     function testHasOwner() public {
