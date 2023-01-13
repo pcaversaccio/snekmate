@@ -1677,310 +1677,544 @@ contract ERC1155Test is Test {
         ERC1155Extended.burn_batch(owner, ids, amounts);
     }
 
-    // function testSetMinterMinterIsZeroAddress() public {
-    //     //set minter to zero address
-    //     address deployer = address(vyperDeployer);
+    function testSafeMintEOAReceiver() public {
+        address deployer = address(vyperDeployer);
+        address receiver = vm.addr(1);
+        uint256 id1 = 1;
+        uint256 amount1 = 1;
+        uint256 id2 = 4;
+        uint256 amount2 = 15;
+        bytes memory data = new bytes(0);
+        vm.startPrank(deployer);
+        vm.expectEmit(true, true, true, true);
+        emit TransferSingle(deployer, address(0), receiver, id1, amount1);
+        ERC1155Extended.safe_mint(receiver, id1, amount1, data);
+        vm.expectEmit(true, true, true, true);
+        emit TransferSingle(deployer, address(0), receiver, id2, amount2);
+        ERC1155Extended.safe_mint(receiver, id2, amount2, data);
+        assertEq(ERC1155Extended.total_supply(id1), amount1);
+        assertEq(ERC1155Extended.total_supply(id2), amount2);
+        assertEq(ERC1155Extended.balanceOf(receiver, id1), amount1);
+        assertEq(ERC1155Extended.balanceOf(receiver, id2), amount2);
+        vm.stopPrank();
+    }
 
-    //     vm.expectRevert(bytes("AccessControl: minter is the zero address"));
+    function testSafeMintNoData() public {
+        address deployer = address(vyperDeployer);
+        bytes4 receiverSingleMagicValue = IERC1155Receiver
+            .onERC1155Received
+            .selector;
+        bytes4 receiverBatchMagicValue = IERC1155Receiver
+            .onERC1155BatchReceived
+            .selector;
+        ERC1155ReceiverMock erc1155ReceiverMock = new ERC1155ReceiverMock(
+            receiverSingleMagicValue,
+            false,
+            receiverBatchMagicValue,
+            false
+        );
+        address receiver = address(erc1155ReceiverMock);
+        uint256 id1 = 1;
+        uint256 amount1 = 1;
+        uint256 id2 = 4;
+        uint256 amount2 = 15;
+        bytes memory data = new bytes(0);
+        vm.startPrank(deployer);
+        vm.expectEmit(true, true, true, true);
+        emit TransferSingle(deployer, address(0), receiver, id1, amount1);
+        ERC1155Extended.safe_mint(receiver, id1, amount1, data);
+        vm.expectEmit(true, true, true, true);
+        emit TransferSingle(deployer, address(0), receiver, id2, amount2);
+        ERC1155Extended.safe_mint(receiver, id2, amount2, data);
+        assertEq(ERC1155Extended.total_supply(id1), amount1);
+        assertEq(ERC1155Extended.total_supply(id2), amount2);
+        assertEq(ERC1155Extended.balanceOf(receiver, id1), amount1);
+        assertEq(ERC1155Extended.balanceOf(receiver, id2), amount2);
+        vm.stopPrank();
+    }
 
-    //     vm.prank(deployer);
-    //     erc1155.set_minter(address(0), true);
-    // }
+    function testSafeMintWithData() public {
+        address deployer = address(vyperDeployer);
+        bytes4 receiverSingleMagicValue = IERC1155Receiver
+            .onERC1155Received
+            .selector;
+        bytes4 receiverBatchMagicValue = IERC1155Receiver
+            .onERC1155BatchReceived
+            .selector;
+        ERC1155ReceiverMock erc1155ReceiverMock = new ERC1155ReceiverMock(
+            receiverSingleMagicValue,
+            false,
+            receiverBatchMagicValue,
+            false
+        );
+        address receiver = address(erc1155ReceiverMock);
+        uint256 id1 = 1;
+        uint256 amount1 = 1;
+        uint256 id2 = 4;
+        uint256 amount2 = 15;
+        bytes memory data = new bytes(42);
+        vm.startPrank(deployer);
+        vm.expectEmit(true, true, true, true);
+        emit TransferSingle(deployer, address(0), receiver, id1, amount1);
+        ERC1155Extended.safe_mint(receiver, id1, amount1, data);
+        vm.expectEmit(true, true, true, true);
+        emit TransferSingle(deployer, address(0), receiver, id2, amount2);
+        ERC1155Extended.safe_mint(receiver, id2, amount2, data);
+        assertEq(ERC1155Extended.total_supply(id1), amount1);
+        assertEq(ERC1155Extended.total_supply(id2), amount2);
+        assertEq(ERC1155Extended.balanceOf(receiver, id1), amount1);
+        assertEq(ERC1155Extended.balanceOf(receiver, id2), amount2);
+        vm.stopPrank();
+    }
 
-    // function testSafeMintReceiverNotAContract() public {
-    //     //mint to EOA
-    //     address deployer = address(vyperDeployer);
-    //     address receiver = vm.addr(1);
-    //     uint256 id = 1;
-    //     uint256 amount = 1;
-    //     bytes memory data = new bytes(0);
+    function testSafeMintReceiverInvalidReturnIdentifier() public {
+        address deployer = address(vyperDeployer);
+        bytes4 receiverSingleMagicValue = 0x00bb8833;
+        bytes4 receiverBatchMagicValue = IERC1155Receiver
+            .onERC1155BatchReceived
+            .selector;
+        ERC1155ReceiverMock erc1155ReceiverMock = new ERC1155ReceiverMock(
+            receiverSingleMagicValue,
+            false,
+            receiverBatchMagicValue,
+            false
+        );
+        address receiver = address(erc1155ReceiverMock);
+        uint256 id1 = 1;
+        uint256 amount1 = 1;
+        uint256 id2 = 4;
+        uint256 amount2 = 15;
+        bytes memory data = new bytes(0);
+        vm.startPrank(deployer);
+        vm.expectRevert(
+            bytes("ERC1155: transfer to non-ERC1155Receiver implementer")
+        );
+        ERC1155Extended.safe_mint(receiver, id1, amount1, data);
+        vm.expectRevert(
+            bytes("ERC1155: transfer to non-ERC1155Receiver implementer")
+        );
+        ERC1155Extended.safe_mint(receiver, id2, amount2, data);
+        vm.stopPrank();
+    }
 
-    //     assertEq(erc1155.total_supply(id), 0);
-    //     assertEq(erc1155.balanceOf(receiver, id), 0);
+    function testSafeMintReceiverReverts() public {
+        address deployer = address(vyperDeployer);
+        bytes4 receiverSingleMagicValue = IERC1155Receiver
+            .onERC1155Received
+            .selector;
+        bytes4 receiverBatchMagicValue = IERC1155Receiver
+            .onERC1155BatchReceived
+            .selector;
+        ERC1155ReceiverMock erc1155ReceiverMock = new ERC1155ReceiverMock(
+            receiverSingleMagicValue,
+            true,
+            receiverBatchMagicValue,
+            false
+        );
+        address receiver = address(erc1155ReceiverMock);
+        uint256 id1 = 1;
+        uint256 amount1 = 1;
+        uint256 id2 = 4;
+        uint256 amount2 = 15;
+        bytes memory data = new bytes(0);
+        vm.startPrank(deployer);
+        vm.expectRevert(bytes("ERC1155ReceiverMock: reverting on receive"));
+        ERC1155Extended.safe_mint(receiver, id1, amount1, data);
+        vm.expectRevert(bytes("ERC1155ReceiverMock: reverting on receive"));
+        ERC1155Extended.safe_mint(receiver, id2, amount2, data);
+        vm.stopPrank();
+    }
 
-    //     vm.expectEmit(true, true, true, true, address(erc1155));
-    //     emit TransferSingle(deployer, address(0), receiver, id, amount);
+    function testSafeMintReceiverFunctionNotImplemented() public {
+        address deployer = address(vyperDeployer);
+        uint256 id1 = 1;
+        uint256 amount1 = 1;
+        uint256 id2 = 4;
+        uint256 amount2 = 15;
+        bytes memory data = new bytes(0);
+        vm.startPrank(deployer);
+        vm.expectRevert();
+        ERC1155Extended.safe_mint(deployer, id1, amount1, data);
+        vm.expectRevert();
+        ERC1155Extended.safe_mint(deployer, id2, amount2, data);
+        vm.stopPrank();
+    }
 
-    //     vm.prank(deployer);
-    //     erc1155.safe_mint(receiver, id, amount, data);
+    function testSafeMintToZeroAddress() public {
+        address deployer = address(vyperDeployer);
+        address receiver = address(0);
+        uint256 id1 = 1;
+        uint256 amount1 = 1;
+        uint256 id2 = 4;
+        uint256 amount2 = 15;
+        bytes memory data = new bytes(0);
+        vm.startPrank(deployer);
+        vm.expectRevert(bytes("ERC1155: mint to the zero address"));
+        ERC1155Extended.safe_mint(receiver, id1, amount1, data);
+        vm.expectRevert(bytes("ERC1155: mint to the zero address"));
+        ERC1155Extended.safe_mint(receiver, id2, amount2, data);
+        vm.stopPrank();
+    }
 
-    //     assertEq(erc1155.total_supply(id), amount);
-    //     assertEq(erc1155.balanceOf(receiver, id), amount);
-    // }
+    function testSafeMintNonMinter() public {
+        address receiver = vm.addr(1);
+        uint256 id1 = 1;
+        uint256 amount1 = 1;
+        uint256 id2 = 4;
+        uint256 amount2 = 15;
+        bytes memory data = new bytes(0);
+        vm.startPrank(vm.addr(2));
+        vm.expectRevert(bytes("AccessControl: access is denied"));
+        ERC1155Extended.safe_mint(receiver, id1, amount1, data);
+        vm.expectRevert(bytes("AccessControl: access is denied"));
+        ERC1155Extended.safe_mint(receiver, id2, amount2, data);
+        vm.stopPrank();
+    }
 
-    // function testSafeMintNotMinter() public {
-    //     //mint unauthorized
-    //     address unauthorized = vm.addr(1);
-    //     uint256 id = 1;
-    //     uint256 amount = 1;
-    //     bytes memory data = new bytes(0);
+    function testSafeMintOverflow() public {
+        address deployer = address(vyperDeployer);
+        address receiver = vm.addr(1);
+        uint256 id = 1;
+        uint256 amount = type(uint256).max;
+        bytes memory data = new bytes(0);
+        vm.startPrank(deployer);
+        vm.expectEmit(true, true, true, true);
+        emit TransferSingle(deployer, address(0), receiver, id, amount);
+        ERC1155Extended.safe_mint(receiver, id, amount, data);
+        vm.expectRevert();
+        ERC1155Extended.safe_mint(receiver, id, amount, data);
+        vm.stopPrank();
+    }
 
-    //     vm.expectRevert(bytes("AccessControl: access is denied"));
+    function testSafeMintBatchEOAReceiver() public {
+        address deployer = address(vyperDeployer);
+        address receiver = vm.addr(1);
+        uint256[] memory ids = new uint256[](4);
+        uint256[] memory amounts = new uint256[](4);
+        bytes memory data = new bytes(0);
 
-    //     vm.prank(unauthorized);
-    //     erc1155.safe_mint(unauthorized, id, amount, data);
-    // }
+        ids[0] = 0;
+        ids[1] = 1;
+        ids[2] = 5;
+        ids[3] = 8;
+        amounts[0] = 1;
+        amounts[1] = 2;
+        amounts[2] = 10;
+        amounts[3] = 20;
 
-    // function testSafeMintMintToZeroAddress() public {
-    //     //mint to zero address
-    //     address deployer = address(vyperDeployer);
-    //     uint256 id = 1;
-    //     uint256 amount = 1;
-    //     bytes memory data = new bytes(0);
+        vm.startPrank(deployer);
+        vm.expectEmit(true, true, true, true);
+        emit TransferBatch(deployer, address(0), receiver, ids, amounts);
+        ERC1155Extended.safe_mint_batch(receiver, ids, amounts, data);
+        for (uint256 i; i < ids.length; ++i) {
+            assertEq(ERC1155Extended.balanceOf(receiver, ids[i]), amounts[i]);
+            assertEq(ERC1155Extended.total_supply(ids[i]), amounts[i]);
+        }
+        vm.stopPrank();
+    }
 
-    //     vm.expectRevert(bytes("ERC1155: mint to the zero address"));
+    function testSafeMintBatchNoData() public {
+        address deployer = address(vyperDeployer);
+        bytes4 receiverSingleMagicValue = IERC1155Receiver
+            .onERC1155Received
+            .selector;
+        bytes4 receiverBatchMagicValue = IERC1155Receiver
+            .onERC1155BatchReceived
+            .selector;
+        ERC1155ReceiverMock erc1155ReceiverMock = new ERC1155ReceiverMock(
+            receiverSingleMagicValue,
+            false,
+            receiverBatchMagicValue,
+            false
+        );
+        address receiver = address(erc1155ReceiverMock);
+        uint256[] memory ids = new uint256[](4);
+        uint256[] memory amounts = new uint256[](4);
+        bytes memory data = new bytes(0);
 
-    //     vm.prank(deployer);
-    //     erc1155.safe_mint(address(0), id, amount, data);
-    // }
+        ids[0] = 0;
+        ids[1] = 1;
+        ids[2] = 5;
+        ids[3] = 8;
+        amounts[0] = 1;
+        amounts[1] = 2;
+        amounts[2] = 10;
+        amounts[3] = 20;
 
-    // function testSafeMintReceiverDoesNotImplementHook() public {
-    //     //mint receiver does not implement onERC1155Received
-    //     address deployer = address(vyperDeployer);
-    //     address receiver = address(new ERC1155NonReceiverMock());
-    //     uint256 id = 1;
-    //     uint256 amount = 1;
-    //     bytes memory data = new bytes(0);
+        vm.startPrank(deployer);
+        vm.expectEmit(true, true, true, true);
+        emit TransferBatch(deployer, address(0), receiver, ids, amounts);
+        ERC1155Extended.safe_mint_batch(receiver, ids, amounts, data);
+        for (uint256 i; i < ids.length; ++i) {
+            assertEq(ERC1155Extended.total_supply(ids[i]), amounts[i]);
+            assertEq(ERC1155Extended.balanceOf(receiver, ids[i]), amounts[i]);
+        }
+        vm.stopPrank();
+    }
 
-    //     //Revert is due to `ERC1155NoneReceiverMock` dispatcher not matching the function signature.
-    //     vm.expectRevert();
+    function testSafeMintBatchWithData() public {
+        address deployer = address(vyperDeployer);
+        bytes4 receiverSingleMagicValue = IERC1155Receiver
+            .onERC1155Received
+            .selector;
+        bytes4 receiverBatchMagicValue = IERC1155Receiver
+            .onERC1155BatchReceived
+            .selector;
+        ERC1155ReceiverMock erc1155ReceiverMock = new ERC1155ReceiverMock(
+            receiverSingleMagicValue,
+            false,
+            receiverBatchMagicValue,
+            false
+        );
+        address receiver = address(erc1155ReceiverMock);
+        uint256[] memory ids = new uint256[](4);
+        uint256[] memory amounts = new uint256[](4);
+        bytes memory data = new bytes(42);
 
-    //     vm.prank(deployer);
-    //     erc1155.safe_mint(receiver, id, amount, data);
-    // }
+        ids[0] = 0;
+        ids[1] = 1;
+        ids[2] = 5;
+        ids[3] = 8;
+        amounts[0] = 1;
+        amounts[1] = 2;
+        amounts[2] = 10;
+        amounts[3] = 20;
 
-    // function testSafeMintReceiverReturnsInvalidvalue() public {
-    //     //mint receiver implements onERC1155Received but returns invalid value
-    //     address deployer = address(vyperDeployer);
-    //     address receiver = address(
-    //         new ERC1155InvalidReceiverMock({shouldThrow: false})
-    //     );
-    //     uint256 id = 1;
-    //     uint256 amount = 1;
-    //     bytes memory data = new bytes(0);
+        vm.startPrank(deployer);
+        vm.expectEmit(true, true, true, true);
+        emit TransferBatch(deployer, address(0), receiver, ids, amounts);
+        ERC1155Extended.safe_mint_batch(receiver, ids, amounts, data);
+        for (uint256 i; i < ids.length; ++i) {
+            assertEq(ERC1155Extended.total_supply(ids[i]), amounts[i]);
+            assertEq(ERC1155Extended.balanceOf(receiver, ids[i]), amounts[i]);
+        }
+        vm.stopPrank();
+    }
 
-    //     vm.expectRevert(
-    //         bytes("ERC1155: transfer to non-ERC1155Receiver implementer")
-    //     );
+    function testSafeMintBatchReceiverInvalidReturnIdentifier() public {
+        address deployer = address(vyperDeployer);
+        bytes4 receiverSingleMagicValue = IERC1155Receiver
+            .onERC1155Received
+            .selector;
+        bytes4 receiverBatchMagicValue = 0x00bb8833;
+        ERC1155ReceiverMock erc1155ReceiverMock = new ERC1155ReceiverMock(
+            receiverSingleMagicValue,
+            false,
+            receiverBatchMagicValue,
+            false
+        );
+        address receiver = address(erc1155ReceiverMock);
+        uint256[] memory ids = new uint256[](4);
+        uint256[] memory amounts = new uint256[](4);
+        bytes memory data = new bytes(0);
 
-    //     vm.prank(deployer);
-    //     erc1155.safe_mint(receiver, id, amount, data);
-    // }
+        ids[0] = 0;
+        ids[1] = 1;
+        ids[2] = 5;
+        ids[3] = 8;
+        amounts[0] = 1;
+        amounts[1] = 2;
+        amounts[2] = 10;
+        amounts[3] = 20;
 
-    // function testSafeMintReceiverRevertsInHook() public {
-    //     //mint receiver implements onERC1155Received but reverts
-    //     address deployer = address(vyperDeployer);
-    //     address receiver = address(
-    //         new ERC1155InvalidReceiverMock({shouldThrow: true})
-    //     );
-    //     uint256 id = 1;
-    //     uint256 amount = 1;
-    //     bytes memory data = new bytes(0);
+        vm.startPrank(deployer);
+        vm.expectRevert(
+            bytes("ERC1155: transfer to non-ERC1155Receiver implementer")
+        );
+        ERC1155Extended.safe_mint_batch(receiver, ids, amounts, data);
+        vm.stopPrank();
+    }
 
-    //     vm.expectRevert(
-    //         abi.encodeWithSelector(
-    //             ERC1155InvalidReceiverMock.Throw.selector,
-    //             receiver
-    //         )
-    //     );
+    function testSafeMintBatchReceiverReverts() public {
+        address deployer = address(vyperDeployer);
+        bytes4 receiverSingleMagicValue = IERC1155Receiver
+            .onERC1155Received
+            .selector;
+        bytes4 receiverBatchMagicValue = 0x00bb8833;
+        ERC1155ReceiverMock erc1155ReceiverMock = new ERC1155ReceiverMock(
+            receiverSingleMagicValue,
+            false,
+            receiverBatchMagicValue,
+            true
+        );
+        address receiver = address(erc1155ReceiverMock);
+        uint256[] memory ids = new uint256[](4);
+        uint256[] memory amounts = new uint256[](4);
+        bytes memory data = new bytes(0);
 
-    //     vm.prank(deployer);
-    //     erc1155.safe_mint(receiver, id, amount, data);
-    // }
+        ids[0] = 0;
+        ids[1] = 1;
+        ids[2] = 5;
+        ids[3] = 8;
+        amounts[0] = 1;
+        amounts[1] = 2;
+        amounts[2] = 10;
+        amounts[3] = 20;
 
-    // function testSafeMintReceiverImplementsHook() public {
-    //     //mint receiver implements onERC1155Received
-    //     address deployer = address(vyperDeployer);
-    //     address receiver = address(new ERC1155ReceiverMock());
-    //     uint256 id = 1;
-    //     uint256 amount = 1;
-    //     bytes memory data = new bytes(0);
+        vm.startPrank(deployer);
+        vm.expectRevert(
+            bytes("ERC1155ReceiverMock: reverting on batch receive")
+        );
+        ERC1155Extended.safe_mint_batch(receiver, ids, amounts, data);
+        vm.stopPrank();
+    }
 
-    //     vm.expectEmit(true, true, true, true, address(erc1155));
-    //     emit TransferSingle(deployer, address(0), receiver, id, amount);
+    function testSafeMintBatchReceiverFunctionNotImplemented() public {
+        address deployer = address(vyperDeployer);
+        uint256[] memory ids = new uint256[](4);
+        uint256[] memory amounts = new uint256[](4);
+        bytes memory data = new bytes(0);
 
-    //     vm.expectEmit(true, true, false, true, receiver);
-    //     emit Received(deployer, address(0), id, amount, data);
+        ids[0] = 0;
+        ids[1] = 1;
+        ids[2] = 5;
+        ids[3] = 8;
+        amounts[0] = 1;
+        amounts[1] = 2;
+        amounts[2] = 10;
+        amounts[3] = 20;
 
-    //     vm.prank(deployer);
-    //     erc1155.safe_mint(receiver, id, amount, data);
+        vm.startPrank(deployer);
+        vm.expectRevert();
+        ERC1155Extended.safe_mint_batch(deployer, ids, amounts, data);
+        vm.stopPrank();
+    }
 
-    //     assertEq(erc1155.total_supply(id), amount);
-    //     assertEq(erc1155.balanceOf(receiver, id), amount);
-    // }
+    function testSafeMintBatchReceiverRevertsOnlySingle() public {
+        address deployer = address(vyperDeployer);
+        bytes4 receiverSingleMagicValue = IERC1155Receiver
+            .onERC1155Received
+            .selector;
+        bytes4 receiverBatchMagicValue = IERC1155Receiver
+            .onERC1155BatchReceived
+            .selector;
+        ERC1155ReceiverMock erc1155ReceiverMock = new ERC1155ReceiverMock(
+            receiverSingleMagicValue,
+            true,
+            receiverBatchMagicValue,
+            false
+        );
+        address receiver = address(erc1155ReceiverMock);
+        uint256[] memory ids = new uint256[](4);
+        uint256[] memory amounts = new uint256[](4);
+        bytes memory data = new bytes(0);
 
-    // function testSafeMintBatchReceiverNotAContract() public {
-    //     //mint batch to EOA
-    //     address deployer = address(vyperDeployer);
-    //     address receiver = vm.addr(1);
-    //     uint256[] memory ids = new uint256[](2);
-    //     uint256[] memory amounts = new uint256[](2);
-    //     bytes memory data = new bytes(0);
+        ids[0] = 0;
+        ids[1] = 1;
+        ids[2] = 5;
+        ids[3] = 8;
+        amounts[0] = 1;
+        amounts[1] = 2;
+        amounts[2] = 10;
+        amounts[3] = 20;
 
-    //     ids[0] = 0;
-    //     ids[1] = 1;
-    //     amounts[0] = 1;
-    //     amounts[1] = 2;
+        vm.startPrank(deployer);
+        vm.expectEmit(true, true, true, true);
+        emit TransferBatch(deployer, address(0), receiver, ids, amounts);
+        ERC1155Extended.safe_mint_batch(receiver, ids, amounts, data);
+        for (uint256 i; i < ids.length; ++i) {
+            assertEq(ERC1155Extended.total_supply(ids[i]), amounts[i]);
+            assertEq(ERC1155Extended.balanceOf(receiver, ids[i]), amounts[i]);
+        }
+        vm.stopPrank();
+    }
 
-    //     vm.expectEmit(true, true, true, true, address(erc1155));
-    //     emit TransferBatch(deployer, address(0), receiver, ids, amounts);
+    function testSafeMintBatchLengthsMismatch() public {
+        address deployer = address(vyperDeployer);
+        uint256[] memory ids1 = new uint256[](3);
+        uint256[] memory ids2 = new uint256[](4);
+        uint256[] memory amounts1 = new uint256[](4);
+        uint256[] memory amounts2 = new uint256[](3);
+        bytes memory data = new bytes(0);
 
-    //     vm.prank(deployer);
-    //     erc1155.safe_mint_batch(receiver, ids, amounts, data);
+        ids1[0] = 0;
+        ids1[1] = 1;
+        ids1[2] = 5;
+        ids2[0] = 0;
+        ids2[1] = 1;
+        ids2[2] = 5;
+        ids2[3] = 8;
+        amounts1[0] = 1;
+        amounts1[1] = 2;
+        amounts1[2] = 10;
+        amounts1[3] = 20;
+        amounts2[0] = 1;
+        amounts2[1] = 2;
+        amounts2[2] = 10;
 
-    //     for (uint256 i; i < ids.length; ++i) {
-    //         assertEq(erc1155.balanceOf(receiver, ids[i]), amounts[i]);
-    //         assertEq(erc1155.total_supply(ids[i]), amounts[i]);
-    //     }
-    // }
+        vm.startPrank(deployer);
+        vm.expectRevert("ERC1155: ids and amounts length mismatch");
+        ERC1155Extended.safe_mint_batch(deployer, ids1, amounts1, data);
+        vm.expectRevert("ERC1155: ids and amounts length mismatch");
+        ERC1155Extended.safe_mint_batch(deployer, ids2, amounts2, data);
+        vm.stopPrank();
+    }
 
-    // function testSafeMintBatchReceiverDoesNotImplementHook() public {
-    //     //mint receiver does not implement onERC1155BatchReceived
-    //     address deployer = address(vyperDeployer);
-    //     address receiver = address(new ERC1155NonReceiverMock());
-    //     uint256[] memory ids = new uint256[](2);
-    //     uint256[] memory amounts = new uint256[](2);
-    //     bytes memory data = new bytes(0);
+    function testSafeMintBatchToZeroAddress() public {
+        address deployer = address(vyperDeployer);
+        uint256[] memory ids = new uint256[](4);
+        uint256[] memory amounts = new uint256[](4);
+        bytes memory data = new bytes(0);
 
-    //     ids[0] = 0;
-    //     ids[1] = 1;
-    //     amounts[0] = 1;
-    //     amounts[1] = 2;
+        ids[0] = 0;
+        ids[1] = 1;
+        ids[2] = 5;
+        ids[3] = 8;
+        amounts[0] = 1;
+        amounts[1] = 2;
+        amounts[2] = 10;
+        amounts[3] = 20;
 
-    //     //Revert is due to `ERC1155NoneReceiverMock` dispatcher not matching the function signature.
-    //     vm.expectRevert();
+        vm.startPrank(deployer);
+        vm.expectRevert(bytes("ERC1155: mint to the zero address"));
+        ERC1155Extended.safe_mint_batch(address(0), ids, amounts, data);
+        vm.stopPrank();
+    }
 
-    //     vm.prank(deployer);
-    //     erc1155.safe_mint_batch(receiver, ids, amounts, data);
-    // }
+    function testSafeMintBatchNonMinter() public {
+        uint256[] memory ids = new uint256[](4);
+        uint256[] memory amounts = new uint256[](4);
+        bytes memory data = new bytes(0);
 
-    // function testSafeMintBatchReceiverReturnsInvalidValue() public {
-    //     //mint batch receiver implements onERC1155BatchReceived but returns invalid value
-    //     address deployer = address(vyperDeployer);
-    //     address receiver = address(
-    //         new ERC1155InvalidReceiverMock({shouldThrow: false})
-    //     );
-    //     uint256[] memory ids = new uint256[](2);
-    //     uint256[] memory amounts = new uint256[](2);
-    //     bytes memory data = new bytes(0);
+        ids[0] = 0;
+        ids[1] = 1;
+        ids[2] = 5;
+        ids[3] = 8;
+        amounts[0] = 1;
+        amounts[1] = 2;
+        amounts[2] = 10;
+        amounts[3] = 20;
 
-    //     ids[0] = 0;
-    //     ids[1] = 1;
-    //     amounts[0] = 1;
-    //     amounts[1] = 2;
+        vm.startPrank(vm.addr(1));
+        vm.expectRevert(bytes("AccessControl: access is denied"));
+        ERC1155Extended.safe_mint_batch(vm.addr(2), ids, amounts, data);
+        vm.stopPrank();
+    }
 
-    //     vm.expectRevert(
-    //         bytes("ERC1155: transfer to non-ERC1155Receiver implementer")
-    //     );
+    function testSafeMintBatchOverflow() public {
+        address deployer = address(vyperDeployer);
+        address receiver = vm.addr(1);
+        uint256[] memory ids = new uint256[](4);
+        uint256[] memory amounts = new uint256[](4);
+        bytes memory data = new bytes(0);
 
-    //     vm.prank(deployer);
-    //     erc1155.safe_mint_batch(receiver, ids, amounts, data);
-    // }
+        ids[0] = 0;
+        ids[1] = 1;
+        ids[2] = 5;
+        ids[3] = 8;
+        amounts[0] = 1;
+        amounts[1] = 2;
+        amounts[2] = 10;
+        amounts[3] = type(uint256).max;
 
-    // function testSafeMintBatchReceiverRevertsInHook() public {
-    //     //mint batch receiver implements onERC1155BatchReceived but reverts
-    //     address deployer = address(vyperDeployer);
-    //     address receiver = address(
-    //         new ERC1155InvalidReceiverMock({shouldThrow: true})
-    //     );
-    //     uint256[] memory ids = new uint256[](2);
-    //     uint256[] memory amounts = new uint256[](2);
-    //     bytes memory data = new bytes(0);
-
-    //     ids[0] = 0;
-    //     ids[1] = 1;
-    //     amounts[0] = 1;
-    //     amounts[1] = 2;
-
-    //     vm.expectRevert(
-    //         abi.encodeWithSelector(
-    //             ERC1155InvalidReceiverMock.Throw.selector,
-    //             receiver
-    //         )
-    //     );
-
-    //     vm.prank(deployer);
-    //     erc1155.safe_mint_batch(receiver, ids, amounts, data);
-    // }
-
-    // function testSafeMintBatchReceiverImplementsHook() public {
-    //     //mint batch receiver implements onERC1155BatchReceived
-    //     address deployer = address(vyperDeployer);
-    //     address owner = vm.addr(1);
-    //     address receiver = address(new ERC1155ReceiverMock());
-    //     uint256[] memory ids = new uint256[](2);
-    //     uint256[] memory amounts = new uint256[](2);
-    //     bytes memory data = new bytes(0);
-
-    //     vm.expectEmit(true, true, true, true, address(erc1155));
-    //     emit TransferBatch(deployer, address(0), receiver, ids, amounts);
-
-    //     vm.expectEmit(true, true, false, true, receiver);
-    //     emit BatchReceived(deployer, address(0), ids, amounts, data);
-
-    //     vm.prank(deployer);
-    //     erc1155.safe_mint_batch(receiver, ids, amounts, data);
-
-    //     for (uint256 i; i < ids.length; ++i) {
-    //         assertEq(erc1155.total_supply(ids[i]), amounts[i]);
-    //         assertEq(erc1155.balanceOf(owner, ids[i]), amounts[i]);
-    //     }
-    // }
-
-    // function testSafeMintBatchAccessIsDenied() public {
-    //     //mint batch access denied
-    //     address unauthorized = vm.addr(1);
-    //     uint256[] memory ids = new uint256[](2);
-    //     uint256[] memory amounts = new uint256[](2);
-    //     bytes memory data = new bytes(0);
-
-    //     ids[0] = 0;
-    //     ids[1] = 1;
-    //     amounts[0] = 1;
-    //     amounts[1] = 2;
-
-    //     vm.expectRevert(bytes("AccessControl: access is denied"));
-
-    //     vm.prank(unauthorized);
-    //     erc1155.safe_mint_batch(unauthorized, ids, amounts, data);
-    // }
-
-    // function testSafeMintBatchLengthsMismatch() public {
-    //     //mint batch ids and amounts length mismatch
-    //     address deployer = address(vyperDeployer);
-    //     address receiver = vm.addr(1);
-    //     uint256[] memory ids = new uint256[](2);
-    //     uint256[] memory amounts = new uint256[](1);
-    //     bytes memory data = new bytes(0);
-
-    //     ids[0] = 0;
-    //     ids[1] = 1;
-    //     amounts[0] = 1;
-
-    //     vm.expectRevert(bytes("ERC1155: ids and amounts length mismatch"));
-
-    //     vm.prank(deployer);
-    //     erc1155.safe_mint_batch(receiver, ids, amounts, data);
-    // }
-
-    // function testSafeMintBatchMintToZeroAddress() public {
-    //     //mint batch to zero address
-    //     address deployer = address(vyperDeployer);
-    //     address receiver = address(0);
-    //     uint256[] memory ids = new uint256[](2);
-    //     uint256[] memory amounts = new uint256[](2);
-    //     bytes memory data = new bytes(0);
-
-    //     ids[0] = 0;
-    //     ids[1] = 1;
-    //     amounts[0] = 1;
-    //     amounts[1] = 2;
-
-    //     vm.expectRevert(bytes("ERC1155: mint to the zero address"));
-
-    //     vm.prank(deployer);
-    //     erc1155.safe_mint_batch(receiver, ids, amounts, data);
-    // }
+        vm.startPrank(deployer);
+        vm.expectEmit(true, true, true, true);
+        emit TransferBatch(deployer, address(0), receiver, ids, amounts);
+        ERC1155Extended.safe_mint_batch(receiver, ids, amounts, data);
+        vm.expectRevert();
+        ERC1155Extended.safe_mint_batch(receiver, ids, amounts, data);
+        vm.stopPrank();
+    }
 
     function testSetMinterSuccess() public {
         address owner = address(vyperDeployer);
