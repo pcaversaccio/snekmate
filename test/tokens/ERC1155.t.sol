@@ -20,6 +20,8 @@ contract ERC1155Test is Test {
 
     // solhint-disable-next-line var-name-mixedcase
     IERC1155Extended private ERC1155Extended;
+    // solhint-disable-next-line var-name-mixedcase
+    IERC1155Extended private ERC1155ExtendedNoBaseURI;
 
     event TransferSingle(
         address indexed operator,
@@ -79,6 +81,8 @@ contract ERC1155Test is Test {
         address deployer = address(vyperDeployer);
         assertTrue(ERC1155Extended.owner() == deployer);
         assertTrue(ERC1155Extended.is_minter(deployer));
+        assertEq(ERC1155Extended.uri(0), string.concat(_BASE_URI, "0"));
+        assertEq(ERC1155Extended.uri(1), string.concat(_BASE_URI, "1"));
     }
 
     function testSupportsInterfaceSuccess() public {
@@ -1166,62 +1170,65 @@ contract ERC1155Test is Test {
         vm.stopPrank();
     }
 
-    // function testUriEmptyBaseUri() public {
-    //     //uri read non-empty token uri, empty base uri
-    //     address deployer = address(vyperDeployer);
-    //     uint256 id = 1;
-    //     string memory testUri = "test_uri";
+    function testUriNoTokenUri() public {
+        assertEq(ERC1155Extended.uri(0), string.concat(_BASE_URI, "0"));
+        assertEq(ERC1155Extended.uri(1), string.concat(_BASE_URI, "1"));
+    }
 
-    //     IERC1155Extended _erc1155 = IERC1155Extended(
-    //         vyperDeployer.deployContract(
-    //             "src/tokens/",
-    //             "ERC1155",
-    //             abi.encode("")
-    //         )
-    //     );
+    function testUriNoBaseURI() public {
+        bytes memory args = abi.encode("");
+        ERC1155ExtendedNoBaseURI = IERC1155Extended(
+            vyperDeployer.deployContract("src/tokens/", "ERC1155", args)
+        );
+        string memory uri = "my_awesome_uri";
+        uint256 id = 1;
+        vm.prank(address(vyperDeployer));
+        ERC1155ExtendedNoBaseURI.set_uri(id, uri);
+        assertEq(ERC1155ExtendedNoBaseURI.uri(id), uri);
+    }
 
-    //     vm.prank(deployer);
-    //     _erc1155.set_uri(id, testUri);
+    function testUriBaseAndTokenUriSet() public {
+        string memory uri = "my_awesome_uri";
+        uint256 id = 1;
+        vm.prank(address(vyperDeployer));
+        ERC1155Extended.set_uri(id, uri);
+        assertEq(ERC1155Extended.uri(id), string.concat(_BASE_URI, uri));
+    }
 
-    //     assertEq(bytes(_erc1155.uri(id)), bytes(testUri));
-    // }
+    function testUriBaseAndTokenUriNotSet() public {
+        bytes memory args = abi.encode("");
+        ERC1155ExtendedNoBaseURI = IERC1155Extended(
+            vyperDeployer.deployContract("src/tokens/", "ERC1155", args)
+        );
+        uint256 id = 1;
+        assertEq(ERC1155ExtendedNoBaseURI.uri(id), "");
+    }
 
-    // function testUriBaseAndTokenUriSet() public {
-    //     //uri read non-empty token uri, non-empty base uri
-    //     address deployer = address(vyperDeployer);
-    //     uint256 id = 1;
-    //     string memory testUri = "test_uri";
+    function testSetUri() public {
+        string memory uri = "my_awesome_uri";
+        uint256 id = 1;
+        vm.prank(address(vyperDeployer));
+        vm.expectEmit(true, false, false, true);
+        emit URI(string.concat(_BASE_URI, uri), id);
+        ERC1155Extended.set_uri(id, uri);
+        assertEq(ERC1155Extended.uri(id), string.concat(_BASE_URI, uri));
+    }
 
-    //     vm.prank(deployer);
-    //     erc1155.set_uri(id, testUri);
+    function testSetUriEmpty() public {
+        string memory uri = "";
+        uint256 id = 1;
+        vm.prank(address(vyperDeployer));
+        vm.expectEmit(true, false, false, true);
+        emit URI(string.concat(_BASE_URI, "1"), id);
+        ERC1155Extended.set_uri(id, uri);
+        assertEq(ERC1155Extended.uri(id), string.concat(_BASE_URI, "1"));
+    }
 
-    //     assertEq(
-    //         bytes(erc1155.uri(id)),
-    //         bytes(string.concat(_BASE_URI, testUri))
-    //     );
-    // }
-
-    // function testUriBaseUriNoTokenUriSet() public {
-    //     //uri read empty token uri, non-empty base uri
-    //     uint256 id = 1;
-
-    //     assertEq(bytes(erc1155.uri(id)), bytes(string.concat(_BASE_URI, "1")));
-    // }
-
-    // function testUriEmptyBaseNoTokenUriSet() public {
-    //     //uri read empty token uri, empty base uri
-    //     uint256 id = 1;
-
-    //     IERC1155Extended _erc1155 = IERC1155Extended(
-    //         vyperDeployer.deployContract(
-    //             "src/tokens/",
-    //             "ERC1155",
-    //             abi.encode("")
-    //         )
-    //     );
-
-    //     assertEq(bytes(_erc1155.uri(id)), bytes(""));
-    // }
+    function testSetUriNonMinter() public {
+        vm.expectRevert(bytes("AccessControl: access is denied"));
+        vm.prank(vm.addr(1));
+        ERC1155Extended.set_uri(1, "my_awesome_uri");
+    }
 
     // function testIsMinter() public {
     //     //is minter read
@@ -1271,33 +1278,6 @@ contract ERC1155Test is Test {
 
     //     vm.prank(deployer);
     //     erc1155.set_minter(address(0), true);
-    // }
-
-    // function testSetUri() public {
-    //     //set uri
-    //     address deployer = address(vyperDeployer);
-    //     uint256 id = 1;
-    //     string memory testUri = "test_uri";
-
-    //     vm.expectEmit(true, false, false, true, address(erc1155));
-    //     emit URI(string(abi.encodePacked(_BASE_URI, testUri)), id);
-
-    //     vm.prank(deployer);
-    //     erc1155.set_uri(id, testUri);
-
-    //     assertEq(bytes(erc1155.uri(id)), abi.encodePacked(_BASE_URI, testUri));
-    // }
-
-    // function testSetUriAccessIsDenied() public {
-    //     //set uri unauthorized
-    //     address unauthorized = vm.addr(1);
-    //     uint256 id = 1;
-    //     string memory testUri = "test_uri";
-
-    //     vm.expectRevert(bytes("AccessControl: access is denied"));
-
-    //     vm.prank(unauthorized);
-    //     erc1155.set_uri(id, testUri);
     // }
 
     // function testSafeMintReceiverNotAContract() public {
