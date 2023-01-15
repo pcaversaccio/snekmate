@@ -7,4 +7,10 @@ interface ISignatureChecker {
         bytes32 hash,
         bytes memory signature
     ) external view returns (bool);
+
+    function is_valid_ERC1271_signature_now(
+        address signer,
+        bytes32 hash,
+        bytes memory signature
+    ) external view returns (bool);
 }
