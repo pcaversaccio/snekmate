@@ -8,13 +8,13 @@ import {IERC4494} from "./IERC4494.sol";
 interface IERC721Extended is IERC721Metadata, IERC721Enumerable, IERC4494 {
     function burn(uint256 tokenId) external;
 
-    function owner() external view returns (address);
-
     function is_minter(address minter) external view returns (bool);
 
     function safe_mint(address owner, string calldata uri) external;
 
     function set_minter(address minter, bool status) external;
+
+    function owner() external view returns (address);
 
     function transfer_ownership(address newOwner) external;
 

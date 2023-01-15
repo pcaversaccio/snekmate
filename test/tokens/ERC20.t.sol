@@ -991,10 +991,16 @@ contract ERC20Test is Test {
         address oldOwner = address(vyperDeployer);
         address newOwner = vm.addr(1);
         vm.startPrank(oldOwner);
+        vm.expectEmit(true, false, false, true);
+        emit RoleMinterChanged(oldOwner, false);
         vm.expectEmit(true, true, false, false);
         emit OwnershipTransferred(oldOwner, newOwner);
+        vm.expectEmit(true, false, false, true);
+        emit RoleMinterChanged(newOwner, true);
         ERC20Extended.transfer_ownership(newOwner);
         assertEq(ERC20Extended.owner(), newOwner);
+        assertTrue(!ERC20Extended.is_minter(oldOwner));
+        assertTrue(ERC20Extended.is_minter(newOwner));
         vm.stopPrank();
     }
 
@@ -1013,11 +1019,13 @@ contract ERC20Test is Test {
         address oldOwner = address(vyperDeployer);
         address newOwner = address(0);
         vm.startPrank(oldOwner);
+        vm.expectEmit(true, false, false, true);
+        emit RoleMinterChanged(oldOwner, false);
         vm.expectEmit(true, true, false, false);
         emit OwnershipTransferred(oldOwner, newOwner);
         ERC20Extended.renounce_ownership();
         assertEq(ERC20Extended.owner(), newOwner);
-        assertTrue(ERC20Extended.is_minter(oldOwner) == false);
+        assertTrue(!ERC20Extended.is_minter(oldOwner));
         vm.stopPrank();
     }
 

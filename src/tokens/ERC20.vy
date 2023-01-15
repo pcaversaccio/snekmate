@@ -8,20 +8,20 @@
         - https://eips.ethereum.org/EIPS/eip-20.
         In addition, the following functions have
         been added for convenience:
-        - `name` (`external` function),
-        - `symbol` (`external` function),
-        - `decimals` (`external` function),
+        - `name` (`external` `view` function),
+        - `symbol` (`external` `view` function),
+        - `decimals` (`external` `view` function),
         - `increase_allowance` (`external` function),
         - `decrease_allowance` (`external` function),
         - `burn` (`external` function),
         - `burn_from` (`external` function),
-        - `is_minter` (`external` function),
+        - `is_minter` (`external` `view` function),
         - `mint` (`external` function),
         - `set_minter` (`external` function),
         - `permit` (`external` function),
-        - `nonces` (`external` function),
-        - `DOMAIN_SEPARATOR` (`external` function),
-        - `owner` (`external` function),
+        - `nonces` (`external` `view` function),
+        - `DOMAIN_SEPARATOR` (`external` `view` function),
+        - `owner` (`external` `view` function),
         - `transfer_ownership` (`external` function),
         - `renounce_ownership` (`external` function),
         - `_before_token_transfer` (`internal` function),
@@ -197,9 +197,14 @@ def __init__(name_: String[25], symbol_: String[5], initial_supply_: uint256, na
 
     self._transfer_ownership(msg.sender)
     self.is_minter[msg.sender] = True
+    log RoleMinterChanged(msg.sender, True)
+
     if (initial_supply != empty(uint256)):
-        self.balanceOf[msg.sender] = initial_supply
+        self._before_token_transfer(empty(address), msg.sender, initial_supply)
         self.totalSupply = initial_supply
+        self.balanceOf[msg.sender] = initial_supply
+        log Transfer(empty(address), msg.sender, initial_supply)
+        self._after_token_transfer(empty(address), msg.sender, initial_supply)
 
     hashed_name: bytes32 = keccak256(convert(name_eip712_, Bytes[50]))
     hashed_version: bytes32 = keccak256(convert(version_eip712_, Bytes[20]))
@@ -437,13 +442,26 @@ def DOMAIN_SEPARATOR() -> bytes32:
 @external
 def transfer_ownership(new_owner: address):
     """
-    @dev Sourced from {Ownable-transfer_ownership}.
-    @notice See {Ownable-transfer_ownership} for
-            the function docstring.
+    @dev Transfers the ownership of the contract
+         to a new account `new_owner`.
+    @notice Note that this function can only be
+            called by the current `owner`. Also,
+            the `new_owner` cannot be the zero address.
+
+            WARNING: The ownership transfer also removes
+            the previous owner's minter role and assigns
+            the minter role to `new_owner` accordingly.
+    @param new_owner The 20-byte address of the new owner.
     """
     self._check_owner()
     assert new_owner != empty(address), "Ownable: new owner is the zero address"
+
+    self.is_minter[msg.sender] = False
+    log RoleMinterChanged(msg.sender, False)
+
     self._transfer_ownership(new_owner)
+    self.is_minter[new_owner] = True
+    log RoleMinterChanged(new_owner, True)
 
 
 @external
@@ -465,6 +483,7 @@ def renounce_ownership():
     """
     self._check_owner()
     self.is_minter[msg.sender] = False
+    log RoleMinterChanged(msg.sender, False)
     self._transfer_ownership(empty(address))
 
 

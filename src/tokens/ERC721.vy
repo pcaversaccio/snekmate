@@ -8,20 +8,20 @@
         - https://eips.ethereum.org/EIPS/eip-721.
         In addition, the following functions have
         been added for convenience:
-        - `name` (`external` function),
-        - `symbol` (`external` function),
-        - `tokenURI` (`external` function),
-        - `totalSupply` (`external` function),
-        - `tokenByIndex` (`external` function),
-        - `tokenOfOwnerByIndex` (`external` function),
+        - `name` (`external` `view` function),
+        - `symbol` (`external` `view` function),
+        - `tokenURI` (`external` `view` function),
+        - `totalSupply` (`external` `view` function),
+        - `tokenByIndex` (`external` `view` function),
+        - `tokenOfOwnerByIndex` (`external` `view` function),
         - `burn` (`external` function),
-        - `is_minter` (`external` function),
+        - `is_minter` (`external` `view` function),
         - `safe_mint` (`external` function),
         - `set_minter` (`external` function),
         - `permit` (`external` function),
-        - `nonces` (`external` function),
-        - `DOMAIN_SEPARATOR` (`external` function),
-        - `owner` (`external` function),
+        - `nonces` (`external` `view` function),
+        - `DOMAIN_SEPARATOR` (`external` `view` function),
+        - `owner` (`external` `view` function),
         - `transfer_ownership` (`external` function),
         - `renounce_ownership` (`external` function),
         - `_check_on_erc721_received` (`internal` function),
@@ -83,8 +83,8 @@ import interfaces.IERC721Receiver as IERC721Receiver
 _SUPPORTED_INTERFACES: constant(bytes4[5]) = [
     0x01FFC9A7, # The ERC-165 identifier for ERC-165.
     0x80AC58CD, # The ERC-165 identifier for ERC-721.
-    0x5B5E139F, # The ERC-165 identifier for ERC-721 metadata extension.
-    0x780E9D63, # The ERC-165 identifier for ERC-721 enumeration extension.
+    0x5B5E139F, # The ERC-165 identifier for the ERC-721 metadata extension.
+    0x780E9D63, # The ERC-165 identifier for the ERC-721 enumeration extension.
     0x589C5CE2, # The ERC-165 identifier for ERC-4494.
 ]
 
@@ -268,6 +268,7 @@ def __init__(name_: String[25], symbol_: String[5], base_uri_: String[80], name_
 
     self._transfer_ownership(msg.sender)
     self.is_minter[msg.sender] = True
+    log RoleMinterChanged(msg.sender, True)
 
     hashed_name: bytes32 = keccak256(convert(name_eip712_, Bytes[50]))
     hashed_version: bytes32 = keccak256(convert(version_eip712_, Bytes[20]))
@@ -281,7 +282,7 @@ def __init__(name_: String[25], symbol_: String[5], base_uri_: String[80], name_
 
 
 @external
-@pure
+@view
 def supportsInterface(interface_id: bytes4) -> bool:
     """
     @dev Returns `True` if this contract implements the
@@ -622,13 +623,26 @@ def DOMAIN_SEPARATOR() -> bytes32:
 @external
 def transfer_ownership(new_owner: address):
     """
-    @dev Sourced from {Ownable-transfer_ownership}.
-    @notice See {Ownable-transfer_ownership} for
-            the function docstring.
+    @dev Transfers the ownership of the contract
+         to a new account `new_owner`.
+    @notice Note that this function can only be
+            called by the current `owner`. Also,
+            the `new_owner` cannot be the zero address.
+
+            WARNING: The ownership transfer also removes
+            the previous owner's minter role and assigns
+            the minter role to `new_owner` accordingly.
+    @param new_owner The 20-byte address of the new owner.
     """
     self._check_owner()
     assert new_owner != empty(address), "Ownable: new owner is the zero address"
+
+    self.is_minter[msg.sender] = False
+    log RoleMinterChanged(msg.sender, False)
+
     self._transfer_ownership(new_owner)
+    self.is_minter[new_owner] = True
+    log RoleMinterChanged(new_owner, True)
 
 
 @external
@@ -650,6 +664,7 @@ def renounce_ownership():
     """
     self._check_owner()
     self.is_minter[msg.sender] = False
+    log RoleMinterChanged(msg.sender, False)
     self._transfer_ownership(empty(address))
 
 
@@ -718,39 +733,39 @@ def _is_approved_or_owner(spender: address, token_id: uint256) -> bool:
 
 
 @internal
-def _safe_mint(to: address, token_id: uint256, data: Bytes[1024]):
+def _safe_mint(owner: address, token_id: uint256, data: Bytes[1024]):
     """
-    @dev Safely mints `token_id` and transfers it to `to`.
-    @notice Note that `token_id` must not exist. Also, if `to`
+    @dev Safely mints `token_id` and transfers it to `owner`.
+    @notice Note that `token_id` must not exist. Also, if `owner`
             refers to a smart contract, it must implement
             {IERC721Receiver-onERC721Received}, which is called
             upon a safe transfer.
-    @param to The 20-byte receiver address.
+    @param owner The 20-byte owner address.
     @param token_id The 32-byte identifier of the token.
     @param data The maximum 1024-byte additional data
            with no specified format that is sent
-           to `to`.
+           to `owner`.
     """
-    self._mint(to, token_id)
-    assert self._check_on_erc721_received(empty(address), to, token_id, data), "ERC721: transfer to non-ERC721Receiver implementer"
+    self._mint(owner, token_id)
+    assert self._check_on_erc721_received(empty(address), owner, token_id, data), "ERC721: transfer to non-ERC721Receiver implementer"
 
 
 @internal
-def _mint(to: address, token_id: uint256):
+def _mint(owner: address, token_id: uint256):
     """
-    @dev Mints `token_id` and transfers it to `to`.
+    @dev Mints `token_id` and transfers it to `owner`.
     @notice Note that `token_id` must not exist and
-            `to` cannot be the zero address.
+            `owner` cannot be the zero address.
 
             WARNING: Usage of this method is discouraged,
             use `_safe_mint` whenever possible.
-    @param to The 20-byte receiver address.
+    @param owner The 20-byte owner address.
     @param token_id The 32-byte identifier of the token.
     """
-    assert to != empty(address), "ERC721: mint to the zero address"
+    assert owner != empty(address), "ERC721: mint to the zero address"
     assert not(self._exists(token_id)), "ERC721: token already minted"
 
-    self._before_token_transfer(empty(address), to, token_id)
+    self._before_token_transfer(empty(address), owner, token_id)
     # Checks that the `token_id` was not minted by the
     # `_before_token_transfer` hook.
     assert not(self._exists(token_id)), "ERC721: token already minted"
@@ -760,11 +775,11 @@ def _mint(to: address, token_id: uint256):
     # However, since we have bounded the dynamic array
     # `_all_tokens` by the maximum value of `uint64`,
     # this is no longer even theoretically possible.
-    self._balances[to] = unsafe_add(self._balances[to], 1)
-    self._owners[token_id] = to
-    log Transfer(empty(address), to, token_id)
+    self._balances[owner] = unsafe_add(self._balances[owner], 1)
+    self._owners[token_id] = owner
+    log Transfer(empty(address), owner, token_id)
 
-    self._after_token_transfer(empty(address), to, token_id)
+    self._after_token_transfer(empty(address), owner, token_id)
 
 
 @internal
