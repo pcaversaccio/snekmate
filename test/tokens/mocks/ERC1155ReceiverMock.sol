@@ -35,15 +35,15 @@ contract ERC1155ReceiverMock is ERC165, IERC1155Receiver {
     );
 
     constructor(
-        bytes4 recRetval,
-        bool recReverts,
-        bytes4 batRetval,
-        bool batReverts
+        bytes4 recRetval_,
+        bool recReverts_,
+        bytes4 batRetval_,
+        bool batReverts_
     ) {
-        _recRetval = recRetval;
-        _recReverts = recReverts;
-        _batRetval = batRetval;
-        _batReverts = batReverts;
+        _recRetval = recRetval_;
+        _recReverts = recReverts_;
+        _batRetval = batRetval_;
+        _batReverts = batReverts_;
     }
 
     /**

@@ -23,9 +23,9 @@ contract ERC721ReceiverMock is IERC721Receiver {
 
     event Received(address operator, address from, uint256 tokenId, bytes data);
 
-    constructor(bytes4 retval, Error error) {
-        _retval = retval;
-        _error = error;
+    constructor(bytes4 retval_, Error error_) {
+        _retval = retval_;
+        _error = error_;
     }
 
     /**
