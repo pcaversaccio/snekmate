@@ -9,6 +9,7 @@ import {IERC1155} from "openzeppelin/token/ERC1155/IERC1155.sol";
 import {IERC1155Receiver} from "openzeppelin/token/ERC1155/IERC1155Receiver.sol";
 import {IERC1155MetadataURI} from "openzeppelin/token/ERC1155/extensions/IERC1155MetadataURI.sol";
 
+import {Strings} from "openzeppelin/utils/Strings.sol";
 import {ERC1155ReceiverMock} from "./mocks/ERC1155ReceiverMock.sol";
 
 import {IERC1155Extended} from "./interfaces/IERC1155Extended.sol";
@@ -81,8 +82,14 @@ contract ERC1155Test is Test {
         address deployer = address(vyperDeployer);
         assertTrue(ERC1155Extended.owner() == deployer);
         assertTrue(ERC1155Extended.is_minter(deployer));
-        assertEq(ERC1155Extended.uri(0), string.concat(_BASE_URI, "0"));
-        assertEq(ERC1155Extended.uri(1), string.concat(_BASE_URI, "1"));
+        assertEq(
+            ERC1155Extended.uri(0),
+            string.concat(_BASE_URI, Strings.toString(uint256(0)))
+        );
+        assertEq(
+            ERC1155Extended.uri(1),
+            string.concat(_BASE_URI, Strings.toString(uint256(1)))
+        );
     }
 
     function testSupportsInterfaceSuccess() public {
@@ -114,12 +121,19 @@ contract ERC1155Test is Test {
         address deployer = address(vyperDeployer);
         address firstOwner = vm.addr(1);
         address secondOwner = vm.addr(2);
+        uint256 id1 = 0;
+        uint256 amountFirstOwner = 1;
+        uint256 id2 = 1;
+        uint256 amountSecondOwner = 20;
         bytes memory data = new bytes(0);
         vm.startPrank(deployer);
-        ERC1155Extended.safe_mint(firstOwner, 0, 1, data);
-        ERC1155Extended.safe_mint(secondOwner, 1, 20, data);
-        assertEq(ERC1155Extended.balanceOf(firstOwner, 0), 1);
-        assertEq(ERC1155Extended.balanceOf(secondOwner, 1), 20);
+        ERC1155Extended.safe_mint(firstOwner, id1, amountFirstOwner, data);
+        ERC1155Extended.safe_mint(secondOwner, id2, amountSecondOwner, data);
+        assertEq(ERC1155Extended.balanceOf(firstOwner, id1), amountFirstOwner);
+        assertEq(
+            ERC1155Extended.balanceOf(secondOwner, id2),
+            amountSecondOwner
+        );
         assertEq(ERC1155Extended.balanceOf(firstOwner, 2), 0);
         vm.stopPrank();
     }
@@ -646,13 +660,7 @@ contract ERC1155Test is Test {
         vm.stopPrank();
         vm.startPrank(owner);
         vm.expectRevert(bytes("ERC1155: insufficient balance for transfer"));
-        ERC1155Extended.safeTransferFrom(
-            owner,
-            vm.addr(2),
-            id,
-            amount + 1,
-            data
-        );
+        ERC1155Extended.safeTransferFrom(owner, vm.addr(2), id, ++amount, data);
         vm.stopPrank();
     }
 
@@ -1171,8 +1179,14 @@ contract ERC1155Test is Test {
     }
 
     function testUriNoTokenUri() public {
-        assertEq(ERC1155Extended.uri(0), string.concat(_BASE_URI, "0"));
-        assertEq(ERC1155Extended.uri(1), string.concat(_BASE_URI, "1"));
+        assertEq(
+            ERC1155Extended.uri(0),
+            string.concat(_BASE_URI, Strings.toString(uint256(0)))
+        );
+        assertEq(
+            ERC1155Extended.uri(1),
+            string.concat(_BASE_URI, Strings.toString(uint256(1)))
+        );
     }
 
     function testUriNoBaseURI() public {
@@ -1219,9 +1233,12 @@ contract ERC1155Test is Test {
         uint256 id = 1;
         vm.prank(address(vyperDeployer));
         vm.expectEmit(true, false, false, true);
-        emit URI(string.concat(_BASE_URI, "1"), id);
+        emit URI(string.concat(_BASE_URI, Strings.toString(uint256(id))), id);
         ERC1155Extended.set_uri(id, uri);
-        assertEq(ERC1155Extended.uri(id), string.concat(_BASE_URI, "1"));
+        assertEq(
+            ERC1155Extended.uri(id),
+            string.concat(_BASE_URI, Strings.toString(uint256(id)))
+        );
     }
 
     function testSetUriNonMinter() public {
@@ -1907,8 +1924,8 @@ contract ERC1155Test is Test {
         emit TransferBatch(deployer, address(0), receiver, ids, amounts);
         ERC1155Extended.safe_mint_batch(receiver, ids, amounts, data);
         for (uint256 i; i < ids.length; ++i) {
-            assertEq(ERC1155Extended.balanceOf(receiver, ids[i]), amounts[i]);
             assertEq(ERC1155Extended.total_supply(ids[i]), amounts[i]);
+            assertEq(ERC1155Extended.balanceOf(receiver, ids[i]), amounts[i]);
         }
         vm.stopPrank();
     }
