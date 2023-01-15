@@ -55,6 +55,36 @@ def is_valid_signature_now(signer: address, hash: bytes32, signature: Bytes[65])
         return True
 
     # Second check: EIP-1271 case.
+    return self._is_valid_ERC1271_signature_now(signer, hash, signature)
+
+
+@external
+@view
+def is_valid_ERC1271_signature_now(signer: address, hash: bytes32, signature: Bytes[65]) -> bool:
+    """
+    @dev Checks if a signature `signature` is valid
+         for a given `signer` and message digest `hash`.
+         The signature is validated against the signer 
+         smart contract using EIP-1271.
+    @notice Unlike ECDSA signatures, contract signatures
+            are revocable and the result of this function
+            can therefore change over time. It could return
+            `True` in block N and `False` in block N+1 (or the opposite).
+    @param hash The 32-byte message digest that was signed.
+    @param signature The secp256k1 64/65-byte signature of `hash`.
+    @return bool The verification whether `signature` is valid
+            for the provided data.
+    """
+    return self._is_valid_ERC1271_signature_now(signer, hash, signature)
+
+
+@internal
+@view
+def _is_valid_ERC1271_signature_now(signer: address, hash: bytes32, signature: Bytes[65]) -> bool:
+    """
+    @notice See {SignatureChecker-is_valid_ERC1271_signature_now} 
+            for the function docstring.
+    """
     return_data: Bytes[32] = \
         raw_call(signer, _abi_encode(hash, signature, method_id=IERC1271_ISVALIDSIGNATURE_SELECTOR), max_outsize=32, is_static_call=True)
     return ((len(return_data) == 32) and (convert(return_data, bytes32) == convert(IERC1271_ISVALIDSIGNATURE_SELECTOR, bytes32)))
