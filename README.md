@@ -20,17 +20,17 @@ src
 ├─ tokens
 │  ├─ ERC20 — "Modern and Gas-Efficient ERC-20 + EIP-2612 Implementation"
 │  ├─ ERC721 — "Modern and Gas-Efficient ERC-721 + EIP-4494 Implementation"
-│  ├─ ERC1155 — "Modern and Gas-Efficient ERC-1155 Implementation (TBD)"
+│  ├─ ERC1155 — "Modern and Gas-Efficient ERC-1155 Implementation"
 ├─ utils
-   ├─ ECDSA — "Elliptic Curve Digital Signature Algorithm (ECDSA) Functions"
+   ├─ Base64 — "Base64 Encoding and Decoding Functions"
+   ├─ BatchDistributor — "Batch Sending Both Native and ERC-20 Tokens"
    ├─ CreateAddress — "`CREATE` EVM Opcode Utility Function for Address Calculation"
    ├─ Create2Address — "`CREATE2` EVM Opcode Utility Functions for Address Calculations"
+   ├─ ECDSA — "Elliptic Curve Digital Signature Algorithm (ECDSA) Functions"
+   ├─ SignatureChecker — "ECDSA and EIP-1271 Signature Verification Function"
    ├─ EIP712DomainSeparator — "EIP-712 Domain Separator"
    ├─ MerkleProofVerification — "Merkle Tree Proof Verification Functions"
    ├─ Multicall — "Multicall Functions"
-   ├─ SignatureChecker — "ECDSA and EIP-1271 Signature Verification Function"
-   ├─ BatchDistributor — "Batch Sending Both Native and ERC-20 Tokens"
-   ├─ Base64 — "Base64 Encoding and Decoding Functions"
 ```
 
 ## 🙏🏼 Acknowledgements

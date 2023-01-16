@@ -149,7 +149,7 @@ def __init__():
 
 
 @external
-@pure
+@view
 def supportsInterface(interface_id: bytes4) -> bool:
     """
     @dev Returns `True` if this contract implements the

@@ -8,7 +8,7 @@ import {ERC1820Implementer} from "openzeppelin/utils/introspection/ERC1820Implem
  * @title Create2Impl
  * @author pcaversaccio
  * @notice Forked and adjusted accordingly from here:
- * https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/mocks/Create2Impl.sol.
+ * https://github.com/OpenZeppelin/openzeppelin-contracts/blob/a81b0d0b2136a0cca6029048be25c4e2bb230d49/contracts/mocks/Create2Impl.sol.
  * @dev Allows to test `CREATE2` deployments and address computation.
  */
 contract Create2Impl {

@@ -13,8 +13,8 @@ import {ECDSA} from "openzeppelin/utils/cryptography/ECDSA.sol";
  * @dev Allows to mock a correct ERC-1271 implementation.
  */
 contract ERC1271WalletMock is Ownable, IERC1271 {
-    constructor(address originalOwner) {
-        _transferOwnership(originalOwner);
+    constructor(address originalOwner_) {
+        _transferOwnership(originalOwner_);
     }
 
     /**

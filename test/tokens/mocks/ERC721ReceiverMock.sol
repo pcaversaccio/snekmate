@@ -7,7 +7,7 @@ import {IERC721Receiver} from "openzeppelin/token/ERC721/IERC721Receiver.sol";
  * @title ERC721ReceiverMock
  * @author pcaversaccio
  * @notice Forked and adjusted accordingly from here:
- * https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/mocks/ERC721ReceiverMock.sol.
+ * https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/mocks/token/ERC721ReceiverMock.sol.
  * @dev Allows to test receiving ERC-721 tokens as a smart contract.
  */
 contract ERC721ReceiverMock is IERC721Receiver {
@@ -23,9 +23,9 @@ contract ERC721ReceiverMock is IERC721Receiver {
 
     event Received(address operator, address from, uint256 tokenId, bytes data);
 
-    constructor(bytes4 retval, Error error) {
-        _retval = retval;
-        _error = error;
+    constructor(bytes4 retval_, Error error_) {
+        _retval = retval_;
+        _error = error_;
     }
 
     /**
