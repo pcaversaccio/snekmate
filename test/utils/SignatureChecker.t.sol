@@ -73,7 +73,7 @@ contract SignatureCheckerTest is Test {
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(1, hash);
         bytes memory signature = abi.encodePacked(r, s, v);
         assertTrue(
-            signatureChecker.is_valid_signature_now(
+            signatureChecker.is_valid_ERC1271_signature_now(
                 address(wallet),
                 hash,
                 signature
@@ -86,7 +86,7 @@ contract SignatureCheckerTest is Test {
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(2, hash);
         bytes memory signature = abi.encodePacked(r, s, v);
         assertTrue(
-            !signatureChecker.is_valid_signature_now(
+            !signatureChecker.is_valid_ERC1271_signature_now(
                 address(wallet),
                 hash,
                 signature
@@ -100,7 +100,7 @@ contract SignatureCheckerTest is Test {
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(1, hashWrong);
         bytes memory signatureInvalid = abi.encodePacked(r, s, v);
         assertTrue(
-            !signatureChecker.is_valid_signature_now(
+            !signatureChecker.is_valid_ERC1271_signature_now(
                 address(wallet),
                 hash,
                 signatureInvalid
@@ -113,7 +113,7 @@ contract SignatureCheckerTest is Test {
         (, bytes32 r, bytes32 s) = vm.sign(1, hash);
         bytes memory signatureInvalid = abi.encodePacked(r, s, bytes1(0xa0));
         vm.expectRevert(bytes("ECDSA: invalid signature"));
-        signatureChecker.is_valid_signature_now(
+        signatureChecker.is_valid_ERC1271_signature_now(
             address(wallet),
             hash,
             signatureInvalid
@@ -125,10 +125,39 @@ contract SignatureCheckerTest is Test {
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(1, hash);
         bytes memory signature = abi.encodePacked(r, s, v);
         assertTrue(
-            !signatureChecker.is_valid_signature_now(
+            !signatureChecker.is_valid_ERC1271_signature_now(
                 address(malicious),
                 hash,
                 signature
+            )
+        );
+    }
+
+    function testEIP1271onEOAWithEOAValidSignature() public {
+        address alice = vm.addr(1);
+        bytes32 hash = keccak256("WAGMI");
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(1, hash);
+        bytes memory signature = abi.encodePacked(r, s, v);
+        assertTrue(
+            !signatureChecker.is_valid_ERC1271_signature_now(
+                alice,
+                hash,
+                signature
+            )
+        );
+    }
+
+    function testEIP1271onEOAWithEOAInvalidSignature() public {
+        address alice = vm.addr(1);
+        bytes32 hash = keccak256("WAGMI");
+        bytes32 hashWrong = keccak256("WAGMI1");
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(1, hashWrong);
+        bytes memory signatureInvalid = abi.encodePacked(r, s, v);
+        assertTrue(
+            !signatureChecker.is_valid_ERC1271_signature_now(
+                alice,
+                hash,
+                signatureInvalid
             )
         );
     }
