@@ -32,6 +32,13 @@ contract SignatureCheckerTest is Test {
         assertTrue(
             signatureChecker.is_valid_signature_now(alice, hash, signature)
         );
+        assertTrue(
+            !signatureChecker.is_valid_ERC1271_signature_now(
+                alice,
+                hash,
+                signature
+            )
+        );
     }
 
     function testEOAWithInvalidSigner() public {
@@ -41,6 +48,13 @@ contract SignatureCheckerTest is Test {
         bytes memory signature = abi.encodePacked(r, s, v);
         assertTrue(
             !signatureChecker.is_valid_signature_now(alice, hash, signature)
+        );
+        assertTrue(
+            !signatureChecker.is_valid_ERC1271_signature_now(
+                alice,
+                hash,
+                signature
+            )
         );
     }
 
@@ -57,6 +71,13 @@ contract SignatureCheckerTest is Test {
                 signatureInvalid
             )
         );
+        assertTrue(
+            !signatureChecker.is_valid_ERC1271_signature_now(
+                alice,
+                hash,
+                signatureInvalid
+            )
+        );
     }
 
     function testEOAWithInvalidSignature2() public {
@@ -66,6 +87,35 @@ contract SignatureCheckerTest is Test {
         bytes memory signatureInvalid = abi.encodePacked(r, s, bytes1(0xa0));
         vm.expectRevert(bytes("ECDSA: invalid signature"));
         signatureChecker.is_valid_signature_now(alice, hash, signatureInvalid);
+        assertTrue(
+            !signatureChecker.is_valid_ERC1271_signature_now(
+                alice,
+                hash,
+                signatureInvalid
+            )
+        );
+    }
+
+    function testEOAWithTooHighSValue() public {
+        address alice = vm.addr(1);
+        bytes32 hash = keccak256("WAGMI");
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(1, hash);
+        uint256 sTooHigh = uint256(s) +
+            0x7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF5D576E7357A4501DDFE92F46681B20A0;
+        bytes memory signatureInvalid = abi.encodePacked(
+            r,
+            bytes32(sTooHigh),
+            v
+        );
+        vm.expectRevert(bytes("ECDSA: invalid signature 's' value"));
+        signatureChecker.is_valid_signature_now(alice, hash, signatureInvalid);
+        assertTrue(
+            !signatureChecker.is_valid_ERC1271_signature_now(
+                alice,
+                hash,
+                signatureInvalid
+            )
+        );
     }
 
     function testEIP1271WithValidSignature() public {
@@ -79,6 +129,13 @@ contract SignatureCheckerTest is Test {
                 signature
             )
         );
+        assertTrue(
+            signatureChecker.is_valid_ERC1271_signature_now(
+                address(wallet),
+                hash,
+                signature
+            )
+        );
     }
 
     function testEIP1271WithInvalidSigner() public {
@@ -87,6 +144,13 @@ contract SignatureCheckerTest is Test {
         bytes memory signature = abi.encodePacked(r, s, v);
         assertTrue(
             !signatureChecker.is_valid_signature_now(
+                address(wallet),
+                hash,
+                signature
+            )
+        );
+        assertTrue(
+            !signatureChecker.is_valid_ERC1271_signature_now(
                 address(wallet),
                 hash,
                 signature
@@ -106,6 +170,13 @@ contract SignatureCheckerTest is Test {
                 signatureInvalid
             )
         );
+        assertTrue(
+            !signatureChecker.is_valid_ERC1271_signature_now(
+                address(wallet),
+                hash,
+                signatureInvalid
+            )
+        );
     }
 
     function testEIP1271WithInvalidSignature2() public {
@@ -118,6 +189,12 @@ contract SignatureCheckerTest is Test {
             hash,
             signatureInvalid
         );
+        vm.expectRevert(bytes("ECDSA: invalid signature"));
+        signatureChecker.is_valid_ERC1271_signature_now(
+            address(wallet),
+            hash,
+            signatureInvalid
+        );
     }
 
     function testEIP1271WithMaliciousWallet() public {
@@ -126,6 +203,13 @@ contract SignatureCheckerTest is Test {
         bytes memory signature = abi.encodePacked(r, s, v);
         assertTrue(
             !signatureChecker.is_valid_signature_now(
+                address(malicious),
+                hash,
+                signature
+            )
+        );
+        assertTrue(
+            !signatureChecker.is_valid_ERC1271_signature_now(
                 address(malicious),
                 hash,
                 signature
