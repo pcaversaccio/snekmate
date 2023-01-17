@@ -8,8 +8,8 @@
         ECDSA signatures from externally-owned accounts (EOAs) as
         well as EIP-1271 (https://eips.ethereum.org/EIPS/eip-1271)
         signatures from smart contract wallets like Argent and Gnosis
-        Safe. For strict EIP-1271 verification, i.e. no ECDSA signatures
-        of EOAs are accepted, the function `is_valid_ERC1271_signature_now`
+        Safe. For strict EIP-1271 verification, i.e. only valid EIP-1271
+        signatures are verified, the function `is_valid_ERC1271_signature_now`
         can be called. The implementation is inspired by OpenZeppelin's
         implementation here:
         https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/cryptography/SignatureChecker.sol.
@@ -48,7 +48,7 @@ def is_valid_signature_now(signer: address, hash: bytes32, signature: Bytes[65])
             can therefore change over time. It could return
             `True` in block N and `False` in block N+1 (or the opposite).
     @param hash The 32-byte message digest that was signed.
-    @param signature The secp256k1 64/65-byte signature of `hash`.
+    @param signature The maximum 65-byte signature of `hash`.
     @return bool The verification whether `signature` is valid
             for the provided data.
     """
@@ -73,7 +73,7 @@ def is_valid_ERC1271_signature_now(signer: address, hash: bytes32, signature: By
             can therefore change over time. It could return
             `True` in block N and `False` in block N+1 (or the opposite).
     @param hash The 32-byte message digest that was signed.
-    @param signature The secp256k1 64/65-byte signature of `hash`.
+    @param signature The maximum 65-byte signature of `hash`.
     @return bool The verification whether `signature` is valid
             for the provided data.
     """
@@ -92,7 +92,7 @@ def _is_valid_ERC1271_signature_now(signer: address, hash: bytes32, signature: B
             can therefore change over time. It could return
             `True` in block N and `False` in block N+1 (or the opposite).
     @param hash The 32-byte message digest that was signed.
-    @param signature The secp256k1 64/65-byte signature of `hash`.
+    @param signature The maximum 65-byte signature of `hash`.
     @return bool The verification whether `signature` is valid
             for the provided data.
     """
