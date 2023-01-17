@@ -1,14 +1,17 @@
 # @version ^0.3.7
 """
-@title ECDSA and EIP-1271 Signature Verification Function
+@title ECDSA and EIP-1271 Signature Verification Functions
 @license GNU Affero General Public License v3.0
 @author pcaversaccio
-@notice Signature verification helper that can be used instead
-        of `ECDSA.recover_sig` to seamlessly support both ECDSA
-        signatures from externally-owned accounts (EOAs) as well
-        as EIP-1271 (https://eips.ethereum.org/EIPS/eip-1271)
-        signatures from smart contract wallets like Argent and Gnosis Safe.
-        The implementation is inspired by OpenZeppelin's implementation here:
+@notice Signature verification helper functions that can be used
+        instead of `ECDSA.recover_sig` to seamlessly support both
+        ECDSA signatures from externally-owned accounts (EOAs) as
+        well as EIP-1271 (https://eips.ethereum.org/EIPS/eip-1271)
+        signatures from smart contract wallets like Argent and Gnosis
+        Safe. For strict EIP-1271 verification, i.e. no ECDSA signatures
+        of EOAs are accepted, the function `is_valid_ERC1271_signature_now`
+        can be called. The implementation is inspired by OpenZeppelin's
+        implementation here:
         https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/cryptography/SignatureChecker.sol.
 @custom:security Signatures must not be used as unique identifiers since the
                  `ecrecover` opcode allows for malleable (non-unique) signatures.
@@ -64,8 +67,7 @@ def is_valid_ERC1271_signature_now(signer: address, hash: bytes32, signature: By
     """
     @dev Checks if a signature `signature` is valid
          for a given `signer` and message digest `hash`.
-         The signature is validated against the signer 
-         smart contract using EIP-1271.
+         The signature is validated using EIP-1271.
     @notice Unlike ECDSA signatures, contract signatures
             are revocable and the result of this function
             can therefore change over time. It could return
@@ -82,8 +84,17 @@ def is_valid_ERC1271_signature_now(signer: address, hash: bytes32, signature: By
 @view
 def _is_valid_ERC1271_signature_now(signer: address, hash: bytes32, signature: Bytes[65]) -> bool:
     """
-    @notice See {SignatureChecker-is_valid_ERC1271_signature_now} 
-            for the function docstring.
+    @dev This `internal` function is equivalent to
+         `is_valid_ERC1271_signature_now`, and can be used
+         for strict EIP-1271 verification.
+    @notice Unlike ECDSA signatures, contract signatures
+            are revocable and the result of this function
+            can therefore change over time. It could return
+            `True` in block N and `False` in block N+1 (or the opposite).
+    @param hash The 32-byte message digest that was signed.
+    @param signature The secp256k1 64/65-byte signature of `hash`.
+    @return bool The verification whether `signature` is valid
+            for the provided data.
     """
     return_data: Bytes[32] = \
         raw_call(signer, _abi_encode(hash, signature, method_id=IERC1271_ISVALIDSIGNATURE_SELECTOR), max_outsize=32, is_static_call=True)
