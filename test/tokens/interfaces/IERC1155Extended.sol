@@ -4,7 +4,7 @@ pragma solidity ^0.8.17;
 import {IERC1155MetadataURI} from "openzeppelin/token/ERC1155/extensions/IERC1155MetadataURI.sol";
 
 interface IERC1155Extended is IERC1155MetadataURI {
-    function set_uri(uint256 id, string memory tokenUri) external;
+    function set_uri(uint256 id, string calldata tokenUri) external;
 
     function exists(uint256 id) external view returns (bool);
 
@@ -14,8 +14,8 @@ interface IERC1155Extended is IERC1155MetadataURI {
 
     function burn_batch(
         address owner,
-        uint256[] memory ids,
-        uint256[] memory amounts
+        uint256[] calldata ids,
+        uint256[] calldata amounts
     ) external;
 
     function is_minter(address account) external view returns (bool);
@@ -24,14 +24,14 @@ interface IERC1155Extended is IERC1155MetadataURI {
         address owner,
         uint256 id,
         uint256 amount,
-        bytes memory data
+        bytes calldata data
     ) external;
 
     function safe_mint_batch(
         address owner,
-        uint256[] memory ids,
-        uint256[] memory amounts,
-        bytes memory data
+        uint256[] calldata ids,
+        uint256[] calldata amounts,
+        bytes calldata data
     ) external;
 
     function set_minter(address minter, bool status) external;
