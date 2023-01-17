@@ -4,7 +4,7 @@ pragma solidity ^0.8.17;
 interface IECDSA {
     function recover_sig(
         bytes32 hash,
-        bytes memory signature
+        bytes calldata signature
     ) external pure returns (address);
 
     function to_eth_signed_message_hash(
