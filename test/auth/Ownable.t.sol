@@ -8,6 +8,7 @@ import {IOwnable} from "./interfaces/IOwnable.sol";
 
 contract OwnableTest is Test {
     VyperDeployer private vyperDeployer = new VyperDeployer();
+    address private deployer = address(vyperDeployer);
 
     IOwnable private ownable;
     IOwnable private ownableInitialEvent;
@@ -24,7 +25,6 @@ contract OwnableTest is Test {
     }
 
     function testInitialSetup() public {
-        address deployer = address(vyperDeployer);
         assertEq(ownable.owner(), deployer);
         vm.expectEmit(true, true, false, false);
         emit OwnershipTransferred(address(0), deployer);
@@ -35,11 +35,11 @@ contract OwnableTest is Test {
     }
 
     function testHasOwner() public {
-        assertEq(ownable.owner(), address(vyperDeployer));
+        assertEq(ownable.owner(), deployer);
     }
 
     function testTransferOwnershipSuccess() public {
-        address oldOwner = address(vyperDeployer);
+        address oldOwner = deployer;
         address newOwner = vm.addr(1);
         vm.startPrank(oldOwner);
         vm.expectEmit(true, true, false, false);
@@ -55,13 +55,13 @@ contract OwnableTest is Test {
     }
 
     function testTransferOwnershipToZeroAddress() public {
-        vm.prank(address(vyperDeployer));
+        vm.prank(deployer);
         vm.expectRevert(bytes("Ownable: new owner is the zero address"));
         ownable.transfer_ownership(address(0));
     }
 
     function testRenounceOwnershipSuccess() public {
-        address oldOwner = address(vyperDeployer);
+        address oldOwner = deployer;
         address newOwner = address(0);
         vm.startPrank(oldOwner);
         vm.expectEmit(true, true, false, false);
@@ -81,7 +81,7 @@ contract OwnableTest is Test {
         address newOwner2
     ) public {
         vm.assume(newOwner1 != address(0) && newOwner2 != address(0));
-        address oldOwner = address(vyperDeployer);
+        address oldOwner = deployer;
         vm.startPrank(oldOwner);
         vm.expectEmit(true, true, false, false);
         emit OwnershipTransferred(oldOwner, newOwner1);
@@ -101,7 +101,7 @@ contract OwnableTest is Test {
         address nonOwner,
         address newOwner
     ) public {
-        vm.assume(nonOwner != address(vyperDeployer));
+        vm.assume(nonOwner != deployer);
         vm.prank(nonOwner);
         vm.expectRevert(bytes("Ownable: caller is not the owner"));
         ownable.transfer_ownership(newOwner);
@@ -109,7 +109,7 @@ contract OwnableTest is Test {
 
     function testFuzzRenounceOwnershipSuccess(address newOwner) public {
         vm.assume(newOwner != address(0));
-        address oldOwner = address(vyperDeployer);
+        address oldOwner = deployer;
         address renounceAddress = address(0);
         vm.startPrank(oldOwner);
         vm.expectEmit(true, true, false, false);
@@ -127,7 +127,7 @@ contract OwnableTest is Test {
     }
 
     function testFuzzRenounceOwnershipNonOwner(address nonOwner) public {
-        vm.assume(nonOwner != address(vyperDeployer));
+        vm.assume(nonOwner != deployer);
         vm.prank(nonOwner);
         vm.expectRevert(bytes("Ownable: caller is not the owner"));
         ownable.renounce_ownership();
