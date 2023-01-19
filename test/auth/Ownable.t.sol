@@ -10,6 +10,7 @@ contract OwnableTest is Test {
     VyperDeployer private vyperDeployer = new VyperDeployer();
 
     IOwnable private ownable;
+    IOwnable private ownableInitialEvent;
 
     event OwnershipTransferred(
         address indexed previousOwner,
@@ -23,7 +24,14 @@ contract OwnableTest is Test {
     }
 
     function testInitialSetup() public {
-        assertTrue(ownable.owner() == address(vyperDeployer));
+        address deployer = address(vyperDeployer);
+        assertEq(ownable.owner(), deployer);
+        vm.expectEmit(true, true, false, false);
+        emit OwnershipTransferred(address(0), deployer);
+        ownableInitialEvent = IOwnable(
+            vyperDeployer.deployContract("src/auth/", "Ownable")
+        );
+        assertEq(ownableInitialEvent.owner(), deployer);
     }
 
     function testHasOwner() public {
@@ -64,6 +72,61 @@ contract OwnableTest is Test {
     }
 
     function testRenounceOwnershipNonOwner() public {
+        vm.expectRevert(bytes("Ownable: caller is not the owner"));
+        ownable.renounce_ownership();
+    }
+
+    function testFuzzTransferOwnershipSuccess(
+        address newOwner1,
+        address newOwner2
+    ) public {
+        address oldOwner = address(vyperDeployer);
+        vm.startPrank(oldOwner);
+        vm.expectEmit(true, true, false, false);
+        emit OwnershipTransferred(oldOwner, newOwner1);
+        ownable.transfer_ownership(newOwner1);
+        assertEq(ownable.owner(), newOwner1);
+
+        vm.stopPrank();
+        vm.startPrank(newOwner1);
+        vm.expectEmit(true, true, false, false);
+        emit OwnershipTransferred(newOwner1, newOwner2);
+        ownable.transfer_ownership(newOwner2);
+        assertEq(ownable.owner(), newOwner2);
+        vm.stopPrank();
+    }
+
+    function testFuzzTransferOwnershipNonOwner(
+        address nonOwner,
+        address newOwner
+    ) public {
+        vm.assume(nonOwner != address(vyperDeployer));
+        vm.prank(nonOwner);
+        vm.expectRevert(bytes("Ownable: caller is not the owner"));
+        ownable.transfer_ownership(newOwner);
+    }
+
+    function testFuzzRenounceOwnershipSuccess(address newOwner) public {
+        address oldOwner = address(vyperDeployer);
+        address renounceAddress = address(0);
+        vm.startPrank(oldOwner);
+        vm.expectEmit(true, true, false, false);
+        emit OwnershipTransferred(oldOwner, newOwner);
+        ownable.transfer_ownership(newOwner);
+        assertEq(ownable.owner(), newOwner);
+        vm.stopPrank();
+
+        vm.startPrank(newOwner);
+        vm.expectEmit(true, true, false, false);
+        emit OwnershipTransferred(newOwner, renounceAddress);
+        ownable.renounce_ownership();
+        assertEq(ownable.owner(), renounceAddress);
+        vm.stopPrank();
+    }
+
+    function testFuzzRenounceOwnershipNonOwner(address nonOwner) public {
+        vm.assume(nonOwner != address(vyperDeployer));
+        vm.prank(nonOwner);
         vm.expectRevert(bytes("Ownable: caller is not the owner"));
         ownable.renounce_ownership();
     }
