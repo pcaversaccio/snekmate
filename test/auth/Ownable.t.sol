@@ -80,6 +80,7 @@ contract OwnableTest is Test {
         address newOwner1,
         address newOwner2
     ) public {
+        vm.assume(newOwner1 != address(0) && newOwner2 != address(0));
         address oldOwner = address(vyperDeployer);
         vm.startPrank(oldOwner);
         vm.expectEmit(true, true, false, false);
@@ -107,6 +108,7 @@ contract OwnableTest is Test {
     }
 
     function testFuzzRenounceOwnershipSuccess(address newOwner) public {
+        vm.assume(newOwner != address(0));
         address oldOwner = address(vyperDeployer);
         address renounceAddress = address(0);
         vm.startPrank(oldOwner);
