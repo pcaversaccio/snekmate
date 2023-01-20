@@ -40,7 +40,7 @@ contract OwnableTest is Test {
 
     function testTransferOwnershipSuccess() public {
         address oldOwner = deployer;
-        address newOwner = vm.makeAddr("newOwner");
+        address newOwner = makeAddr("newOwner");
         vm.startPrank(oldOwner);
         vm.expectEmit(true, true, false, false);
         emit OwnershipTransferred(oldOwner, newOwner);
@@ -51,7 +51,7 @@ contract OwnableTest is Test {
 
     function testTransferOwnershipNonOwner() public {
         vm.expectRevert(bytes("Ownable: caller is not the owner"));
-        ownable.transfer_ownership(vm.makeAddr("newOwner"));
+        ownable.transfer_ownership(makeAddr("newOwner"));
     }
 
     function testTransferOwnershipToZeroAddress() public {
