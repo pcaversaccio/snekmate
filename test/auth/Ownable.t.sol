@@ -87,8 +87,8 @@ contract OwnableTest is Test {
         emit OwnershipTransferred(oldOwner, newOwner1);
         ownable.transfer_ownership(newOwner1);
         assertEq(ownable.owner(), newOwner1);
-
         vm.stopPrank();
+
         vm.startPrank(newOwner1);
         vm.expectEmit(true, true, false, false);
         emit OwnershipTransferred(newOwner1, newOwner2);
