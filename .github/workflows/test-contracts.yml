@@ -60,7 +60,7 @@ jobs:
         uses: foundry-rs/foundry-toolchain@v1
         with:
           version: nightly
-      
+
       - name: Show the Foundry CI config
         run: "forge config"
         env:
