@@ -289,3 +289,70 @@ contract Ownable2StepTest is Test {
         vm.stopPrank();
     }
 }
+
+contract Ownable2StepInvariants is Test, InvariantTest {
+    VyperDeployer private vyperDeployer = new VyperDeployer();
+    address private deployer = address(vyperDeployer);
+
+    IOwnable2Step private ownable2Step;
+    Owner2StepHandler private owner2StepHandler;
+
+    function setUp() public {
+        ownable2Step = IOwnable2Step(
+            vyperDeployer.deployContract("src/auth/", "Ownable2Step")
+        );
+        owner2StepHandler = new Owner2StepHandler(
+            ownable2Step,
+            deployer,
+            address(0)
+        );
+        targetContract(address(owner2StepHandler));
+    }
+
+    function invariantOwner() public {
+        assertEq(ownable2Step.owner(), owner2StepHandler.owner());
+    }
+
+    function invariantPendingOwner() public {
+        assertEq(
+            ownable2Step.pending_owner(),
+            owner2StepHandler.pending_owner()
+        );
+    }
+}
+
+contract Owner2StepHandler {
+    IOwnable2Step private ownable2Step;
+    address public owner;
+    // solhint-disable-next-line var-name-mixedcase
+    address public pending_owner;
+
+    constructor(
+        IOwnable2Step ownable2Step_,
+        address owner_,
+        // solhint-disable-next-line var-name-mixedcase
+        address pending_owner_
+    ) {
+        ownable2Step = ownable2Step_;
+        owner = owner_;
+        pending_owner = pending_owner_;
+    }
+
+    function transfer_ownership(address newOwner) public {
+        ownable2Step.transfer_ownership(newOwner);
+        pending_owner = newOwner;
+    }
+
+    function accept_ownership() public {
+        ownable2Step.accept_ownership();
+        owner = msg.sender;
+        pending_owner = address(0);
+    }
+
+    function renounce_ownership() public {
+        address zeroAddress = address(0);
+        ownable2Step.renounce_ownership();
+        owner = zeroAddress;
+        pending_owner = zeroAddress;
+    }
+}
