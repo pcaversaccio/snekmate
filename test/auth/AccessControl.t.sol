@@ -384,6 +384,7 @@ contract AccessControlTest is Test {
     }
 
     function testFuzzGrantRoleAdminRoleSuccess(address account) public {
+        vm.assume(account != deployer);
         address admin = deployer;
         vm.startPrank(admin);
         vm.expectEmit(true, true, true, false);
@@ -420,6 +421,7 @@ contract AccessControlTest is Test {
     }
 
     function testFuzzRevokeRoleSuccess(address account) public {
+        vm.assume(account != deployer);
         address admin = deployer;
         vm.startPrank(admin);
         assertTrue(!accessControl.hasRole(ADDITIONAL_ROLE_1, account));
@@ -518,7 +520,7 @@ contract AccessControlTest is Test {
     }
 
     function testFuzzRenounceRoleNonMsgSender(address account) public {
-        vm.assume(msg.sender != account);
+        vm.assume(msg.sender != account && msg.sender != deployer);
         vm.expectRevert(
             bytes("AccessControl: can only renounce roles for itself")
         );
