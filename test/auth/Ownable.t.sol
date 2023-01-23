@@ -81,7 +81,8 @@ contract OwnableTest is Test {
         address newOwner1,
         address newOwner2
     ) public {
-        vm.assume(newOwner1 != address(0) && newOwner2 != address(0));
+        address zeroAddress = address(0);
+        vm.assume(newOwner1 != zeroAddress && newOwner2 != zeroAddress);
         address oldOwner = deployer;
         vm.startPrank(oldOwner);
         vm.expectEmit(true, true, false, false);
@@ -109,9 +110,10 @@ contract OwnableTest is Test {
     }
 
     function testFuzzRenounceOwnershipSuccess(address newOwner) public {
-        vm.assume(newOwner != address(0));
+        address zeroAddress = address(0);
+        vm.assume(newOwner != zeroAddress);
         address oldOwner = deployer;
-        address renounceAddress = address(0);
+        address renounceAddress = zeroAddress;
         vm.startPrank(oldOwner);
         vm.expectEmit(true, true, false, false);
         emit OwnershipTransferred(oldOwner, newOwner);
