@@ -34,6 +34,7 @@ contract Ownable2StepTest is Test {
         address zeroAddress = address(0);
         assertEq(ownable2Step.owner(), deployer);
         assertEq(ownable2Step.pending_owner(), zeroAddress);
+
         vm.expectEmit(true, true, false, false);
         emit OwnershipTransferred(zeroAddress, deployer);
         ownable2StepInitialEvent = IOwnable2Step(
@@ -96,6 +97,7 @@ contract Ownable2StepTest is Test {
         ownable2Step.transfer_ownership(newOwner);
         assertEq(ownable2Step.owner(), oldOwner);
         assertEq(ownable2Step.pending_owner(), newOwner);
+
         vm.expectRevert(bytes("Ownable2Step: caller is not the new owner"));
         ownable2Step.accept_ownership();
         vm.stopPrank();
@@ -118,9 +120,9 @@ contract Ownable2StepTest is Test {
     }
 
     function testPendingOwnerResetAfterRenounceOwnership() public {
+        address zeroAddress = address(0);
         address oldOwner = deployer;
         address newOwner = makeAddr("newOwner");
-        address zeroAddress = address(0);
         vm.startPrank(oldOwner);
         assertEq(ownable2Step.pending_owner(), zeroAddress);
         vm.expectEmit(true, true, false, false);
@@ -128,6 +130,154 @@ contract Ownable2StepTest is Test {
         ownable2Step.transfer_ownership(newOwner);
         assertEq(ownable2Step.owner(), oldOwner);
         assertEq(ownable2Step.pending_owner(), newOwner);
+
+        ownable2Step.renounce_ownership();
+        assertEq(ownable2Step.owner(), zeroAddress);
+        assertEq(ownable2Step.pending_owner(), zeroAddress);
+        vm.stopPrank();
+
+        vm.startPrank(newOwner);
+        vm.expectRevert(bytes("Ownable2Step: caller is not the new owner"));
+        ownable2Step.accept_ownership();
+        vm.stopPrank();
+    }
+
+    function testFuzzTransferOwnershipSuccess(
+        address newOwner1,
+        address newOwner2
+    ) public {
+        address zeroAddress = address(0);
+        vm.assume(newOwner1 != zeroAddress && newOwner2 != zeroAddress);
+        address oldOwner = deployer;
+        vm.startPrank(oldOwner);
+        assertEq(ownable2Step.pending_owner(), zeroAddress);
+        vm.expectEmit(true, true, false, false);
+        emit OwnershipTransferStarted(oldOwner, newOwner1);
+        ownable2Step.transfer_ownership(newOwner1);
+        assertEq(ownable2Step.owner(), oldOwner);
+        assertEq(ownable2Step.pending_owner(), newOwner1);
+
+        vm.expectEmit(true, true, false, false);
+        emit OwnershipTransferStarted(oldOwner, newOwner2);
+        ownable2Step.transfer_ownership(newOwner2);
+        assertEq(ownable2Step.owner(), oldOwner);
+        assertEq(ownable2Step.pending_owner(), newOwner2);
+        vm.stopPrank();
+    }
+
+    function testFuzzTransferOwnershipNonOwner(
+        address nonOwner,
+        address newOwner
+    ) public {
+        vm.assume(nonOwner != deployer);
+        vm.prank(nonOwner);
+        vm.expectRevert(bytes("Ownable2Step: caller is not the owner"));
+        ownable2Step.transfer_ownership(newOwner);
+    }
+
+    function testFuzzAcceptOwnershipSuccess(
+        address newOwner1,
+        address newOwner2
+    ) public {
+        address zeroAddress = address(0);
+        vm.assume(newOwner1 != zeroAddress && newOwner2 != zeroAddress);
+        address oldOwner = deployer;
+        vm.startPrank(oldOwner);
+        assertEq(ownable2Step.pending_owner(), zeroAddress);
+        vm.expectEmit(true, true, false, false);
+        emit OwnershipTransferStarted(oldOwner, newOwner1);
+        ownable2Step.transfer_ownership(newOwner1);
+        assertEq(ownable2Step.owner(), oldOwner);
+        assertEq(ownable2Step.pending_owner(), newOwner1);
+        vm.stopPrank();
+
+        vm.startPrank(newOwner1);
+        emit OwnershipTransferred(oldOwner, newOwner1);
+        ownable2Step.accept_ownership();
+        assertEq(ownable2Step.owner(), newOwner1);
+        assertEq(ownable2Step.pending_owner(), zeroAddress);
+
+        vm.expectEmit(true, true, false, false);
+        emit OwnershipTransferStarted(newOwner1, newOwner2);
+        ownable2Step.transfer_ownership(newOwner2);
+        assertEq(ownable2Step.owner(), newOwner1);
+        assertEq(ownable2Step.pending_owner(), newOwner2);
+        vm.stopPrank();
+
+        vm.startPrank(newOwner2);
+        emit OwnershipTransferred(newOwner1, newOwner2);
+        ownable2Step.accept_ownership();
+        assertEq(ownable2Step.owner(), newOwner2);
+        assertEq(ownable2Step.pending_owner(), zeroAddress);
+        vm.stopPrank();
+    }
+
+    function testFuzzAcceptOwnershipNonPendingOwner(address newOwner) public {
+        vm.assume(newOwner != address(0));
+        address oldOwner = deployer;
+        vm.startPrank(oldOwner);
+        assertEq(ownable2Step.pending_owner(), address(0));
+        vm.expectEmit(true, true, false, false);
+        emit OwnershipTransferStarted(oldOwner, newOwner);
+        ownable2Step.transfer_ownership(newOwner);
+        assertEq(ownable2Step.owner(), oldOwner);
+        assertEq(ownable2Step.pending_owner(), newOwner);
+
+        vm.expectRevert(bytes("Ownable2Step: caller is not the new owner"));
+        ownable2Step.accept_ownership();
+        vm.stopPrank();
+    }
+
+    function testFuzzRenounceOwnershipSuccess(address newOwner) public {
+        address zeroAddress = address(0);
+        vm.assume(newOwner != zeroAddress);
+        address oldOwner = deployer;
+        address renounceAddress = zeroAddress;
+        vm.startPrank(oldOwner);
+        assertEq(ownable2Step.pending_owner(), zeroAddress);
+        vm.expectEmit(true, true, false, false);
+        emit OwnershipTransferStarted(oldOwner, newOwner);
+        ownable2Step.transfer_ownership(newOwner);
+        assertEq(ownable2Step.owner(), oldOwner);
+        assertEq(ownable2Step.pending_owner(), newOwner);
+        vm.stopPrank();
+
+        vm.startPrank(newOwner);
+        emit OwnershipTransferred(oldOwner, newOwner);
+        ownable2Step.accept_ownership();
+        assertEq(ownable2Step.owner(), newOwner);
+        assertEq(ownable2Step.pending_owner(), zeroAddress);
+        vm.stopPrank();
+
+        vm.startPrank(newOwner);
+        vm.expectEmit(true, true, false, false);
+        emit OwnershipTransferred(newOwner, renounceAddress);
+        ownable2Step.renounce_ownership();
+        assertEq(ownable2Step.owner(), renounceAddress);
+        vm.stopPrank();
+    }
+
+    function testFuzzRenounceOwnershipNonOwner(address nonOwner) public {
+        vm.assume(nonOwner != deployer);
+        vm.prank(nonOwner);
+        vm.expectRevert(bytes("Ownable2Step: caller is not the owner"));
+        ownable2Step.renounce_ownership();
+    }
+
+    function testFuzzPendingOwnerResetAfterRenounceOwnership(
+        address newOwner
+    ) public {
+        address zeroAddress = address(0);
+        vm.assume(newOwner != zeroAddress);
+        address oldOwner = deployer;
+        vm.startPrank(oldOwner);
+        assertEq(ownable2Step.pending_owner(), zeroAddress);
+        vm.expectEmit(true, true, false, false);
+        emit OwnershipTransferStarted(oldOwner, newOwner);
+        ownable2Step.transfer_ownership(newOwner);
+        assertEq(ownable2Step.owner(), oldOwner);
+        assertEq(ownable2Step.pending_owner(), newOwner);
+
         ownable2Step.renounce_ownership();
         assertEq(ownable2Step.owner(), zeroAddress);
         assertEq(ownable2Step.pending_owner(), zeroAddress);

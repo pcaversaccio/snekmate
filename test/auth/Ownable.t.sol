@@ -27,6 +27,7 @@ contract OwnableTest is Test {
 
     function testInitialSetup() public {
         assertEq(ownable.owner(), deployer);
+
         vm.expectEmit(true, true, false, false);
         emit OwnershipTransferred(address(0), deployer);
         ownableInitialEvent = IOwnable(
