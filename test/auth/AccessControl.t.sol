@@ -372,4 +372,243 @@ contract AccessControlTest is Test {
         accessControl.revokeRole(ADDITIONAL_ROLE_1, account);
         vm.stopPrank();
     }
+
+    function testFuzzGrantRoleSuccess(address account) public {
+        address admin = deployer;
+        vm.startPrank(admin);
+        vm.expectEmit(true, true, true, false);
+        emit RoleGranted(ADDITIONAL_ROLE_1, account, admin);
+        accessControl.grantRole(ADDITIONAL_ROLE_1, account);
+        assertTrue(accessControl.hasRole(ADDITIONAL_ROLE_1, account));
+        vm.stopPrank();
+    }
+
+    function testFuzzGrantRoleAdminRoleSuccess(address account) public {
+        address admin = deployer;
+        vm.startPrank(admin);
+        vm.expectEmit(true, true, true, false);
+        emit RoleGranted(DEFAULT_ADMIN_ROLE, account, admin);
+        accessControl.grantRole(DEFAULT_ADMIN_ROLE, account);
+        assertTrue(accessControl.hasRole(DEFAULT_ADMIN_ROLE, account));
+        vm.stopPrank();
+    }
+
+    function testFuzzGrantRoleMultipleTimesSuccess(address account) public {
+        address admin = deployer;
+        vm.startPrank(admin);
+        vm.expectEmit(true, true, true, false);
+        emit RoleGranted(ADDITIONAL_ROLE_1, account, admin);
+        accessControl.grantRole(ADDITIONAL_ROLE_1, account);
+        assertTrue(accessControl.hasRole(ADDITIONAL_ROLE_1, account));
+
+        accessControl.grantRole(ADDITIONAL_ROLE_1, account);
+        assertTrue(accessControl.hasRole(ADDITIONAL_ROLE_1, account));
+
+        accessControl.grantRole(ADDITIONAL_ROLE_1, account);
+        assertTrue(accessControl.hasRole(ADDITIONAL_ROLE_1, account));
+        vm.stopPrank();
+    }
+
+    function testFuzzGrantRoleNonAdmin(
+        address nonAdmin,
+        address account
+    ) public {
+        vm.assume(nonAdmin != deployer);
+        vm.prank(nonAdmin);
+        vm.expectRevert(bytes("AccessControl: account is missing role"));
+        accessControl.grantRole(ADDITIONAL_ROLE_1, account);
+    }
+
+    function testFuzzRevokeRoleSuccess(address account) public {
+        address admin = deployer;
+        vm.startPrank(admin);
+        assertTrue(!accessControl.hasRole(ADDITIONAL_ROLE_1, account));
+        accessControl.revokeRole(ADDITIONAL_ROLE_1, account);
+        assertTrue(!accessControl.hasRole(ADDITIONAL_ROLE_1, account));
+
+        vm.expectEmit(true, true, true, false);
+        emit RoleGranted(ADDITIONAL_ROLE_1, account, admin);
+        accessControl.grantRole(ADDITIONAL_ROLE_1, account);
+        assertTrue(accessControl.hasRole(ADDITIONAL_ROLE_1, account));
+
+        vm.expectEmit(true, true, true, false);
+        emit RoleRevoked(ADDITIONAL_ROLE_1, account, admin);
+        accessControl.revokeRole(ADDITIONAL_ROLE_1, account);
+        assertTrue(!accessControl.hasRole(ADDITIONAL_ROLE_1, account));
+        vm.stopPrank();
+    }
+
+    function testFuzzRevokeRoleMultipleTimesSuccess(address account) public {
+        address admin = deployer;
+        vm.startPrank(admin);
+        vm.expectEmit(true, true, true, false);
+        emit RoleGranted(ADDITIONAL_ROLE_1, account, admin);
+        accessControl.grantRole(ADDITIONAL_ROLE_1, account);
+        assertTrue(accessControl.hasRole(ADDITIONAL_ROLE_1, account));
+
+        vm.expectEmit(true, true, true, false);
+        emit RoleRevoked(ADDITIONAL_ROLE_1, account, admin);
+        accessControl.revokeRole(ADDITIONAL_ROLE_1, account);
+        assertTrue(!accessControl.hasRole(ADDITIONAL_ROLE_1, account));
+
+        accessControl.revokeRole(ADDITIONAL_ROLE_1, account);
+        assertTrue(!accessControl.hasRole(ADDITIONAL_ROLE_1, account));
+
+        accessControl.revokeRole(ADDITIONAL_ROLE_1, account);
+        assertTrue(!accessControl.hasRole(ADDITIONAL_ROLE_1, account));
+        vm.stopPrank();
+    }
+
+    function testFuzzRevokeRoleNonAdmin(
+        address nonAdmin,
+        address account
+    ) public {
+        vm.assume(nonAdmin != deployer);
+        vm.prank(nonAdmin);
+        vm.expectRevert(bytes("AccessControl: account is missing role"));
+        accessControl.revokeRole(ADDITIONAL_ROLE_1, account);
+    }
+
+    function testFuzzRenounceRoleSuccess(address account) public {
+        address admin = deployer;
+        vm.startPrank(admin);
+        vm.expectEmit(true, true, true, false);
+        emit RoleGranted(ADDITIONAL_ROLE_1, account, admin);
+        accessControl.grantRole(ADDITIONAL_ROLE_1, account);
+        assertTrue(accessControl.hasRole(ADDITIONAL_ROLE_1, account));
+        vm.stopPrank();
+
+        vm.startPrank(account);
+        assertTrue(!accessControl.hasRole(DEFAULT_ADMIN_ROLE, account));
+        accessControl.renounceRole(DEFAULT_ADMIN_ROLE, account);
+        assertTrue(!accessControl.hasRole(DEFAULT_ADMIN_ROLE, account));
+
+        vm.expectEmit(true, true, true, false);
+        emit RoleRevoked(ADDITIONAL_ROLE_1, account, account);
+        accessControl.renounceRole(ADDITIONAL_ROLE_1, account);
+        assertTrue(!accessControl.hasRole(ADDITIONAL_ROLE_1, account));
+        vm.stopPrank();
+    }
+
+    function testFuzzRenounceRoleMultipleTimesSuccess(address account) public {
+        address admin = deployer;
+        vm.startPrank(admin);
+        vm.expectEmit(true, true, true, false);
+        emit RoleGranted(ADDITIONAL_ROLE_1, account, admin);
+        accessControl.grantRole(ADDITIONAL_ROLE_1, account);
+        assertTrue(accessControl.hasRole(ADDITIONAL_ROLE_1, account));
+        vm.stopPrank();
+
+        vm.startPrank(account);
+        assertTrue(!accessControl.hasRole(DEFAULT_ADMIN_ROLE, account));
+        accessControl.renounceRole(DEFAULT_ADMIN_ROLE, account);
+        assertTrue(!accessControl.hasRole(DEFAULT_ADMIN_ROLE, account));
+
+        vm.expectEmit(true, true, true, false);
+        emit RoleRevoked(ADDITIONAL_ROLE_1, account, account);
+        accessControl.renounceRole(ADDITIONAL_ROLE_1, account);
+        assertTrue(!accessControl.hasRole(ADDITIONAL_ROLE_1, account));
+
+        accessControl.renounceRole(ADDITIONAL_ROLE_1, account);
+        assertTrue(!accessControl.hasRole(ADDITIONAL_ROLE_1, account));
+
+        accessControl.renounceRole(ADDITIONAL_ROLE_1, account);
+        assertTrue(!accessControl.hasRole(ADDITIONAL_ROLE_1, account));
+        vm.stopPrank();
+    }
+
+    function testFuzzRenounceRoleNonMsgSender(address account) public {
+        vm.assume(msg.sender != account);
+        vm.expectRevert(
+            bytes("AccessControl: can only renounce roles for itself")
+        );
+        accessControl.renounceRole(ADDITIONAL_ROLE_1, account);
+    }
+
+    function testFuzzSetRoleAdminSuccess(
+        address otherAdmin,
+        address account
+    ) public {
+        address admin = deployer;
+        bytes32 otherAdminRole = keccak256("OTHER_ADMIN_ROLE");
+        vm.startPrank(admin);
+        vm.expectEmit(true, true, true, false);
+        emit RoleAdminChanged(
+            ADDITIONAL_ROLE_1,
+            DEFAULT_ADMIN_ROLE,
+            otherAdminRole
+        );
+        accessControl.set_role_admin(ADDITIONAL_ROLE_1, otherAdminRole);
+
+        vm.expectEmit(true, true, true, false);
+        emit RoleGranted(otherAdminRole, otherAdmin, admin);
+        accessControl.grantRole(otherAdminRole, otherAdmin);
+        assertTrue(accessControl.hasRole(otherAdminRole, otherAdmin));
+        vm.stopPrank();
+
+        vm.startPrank(otherAdmin);
+        assertEq(accessControl.getRoleAdmin(ADDITIONAL_ROLE_1), otherAdminRole);
+        vm.expectEmit(true, true, true, false);
+        emit RoleGranted(ADDITIONAL_ROLE_1, account, otherAdmin);
+        accessControl.grantRole(ADDITIONAL_ROLE_1, account);
+        assertTrue(accessControl.hasRole(ADDITIONAL_ROLE_1, account));
+
+        vm.expectEmit(true, true, true, false);
+        emit RoleRevoked(ADDITIONAL_ROLE_1, account, otherAdmin);
+        accessControl.revokeRole(ADDITIONAL_ROLE_1, account);
+        assertTrue(!accessControl.hasRole(ADDITIONAL_ROLE_1, account));
+        vm.stopPrank();
+    }
+
+    function testFuzzSetRoleAdminPreviousAdminCallsGrantRole(
+        address otherAdmin,
+        address account
+    ) public {
+        address admin = deployer;
+        bytes32 otherAdminRole = keccak256("OTHER_ADMIN_ROLE");
+        vm.startPrank(admin);
+        vm.expectEmit(true, true, true, false);
+        emit RoleAdminChanged(
+            ADDITIONAL_ROLE_1,
+            DEFAULT_ADMIN_ROLE,
+            otherAdminRole
+        );
+        accessControl.set_role_admin(ADDITIONAL_ROLE_1, otherAdminRole);
+
+        vm.expectEmit(true, true, true, false);
+        emit RoleGranted(otherAdminRole, otherAdmin, admin);
+        accessControl.grantRole(otherAdminRole, otherAdmin);
+        assertTrue(accessControl.hasRole(otherAdminRole, otherAdmin));
+
+        vm.expectRevert(bytes("AccessControl: account is missing role"));
+        accessControl.grantRole(ADDITIONAL_ROLE_1, account);
+        vm.stopPrank();
+    }
+
+    function testFuzzSetRoleAdminPreviousAdminCallsRevokeRole(
+        address otherAdmin,
+        address account
+    ) public {
+        address admin = deployer;
+        bytes32 otherAdminRole = keccak256("OTHER_ADMIN_ROLE");
+        vm.startPrank(admin);
+        accessControl.grantRole(ADDITIONAL_ROLE_1, account);
+
+        vm.expectEmit(true, true, true, false);
+        emit RoleAdminChanged(
+            ADDITIONAL_ROLE_1,
+            DEFAULT_ADMIN_ROLE,
+            otherAdminRole
+        );
+        accessControl.set_role_admin(ADDITIONAL_ROLE_1, otherAdminRole);
+
+        vm.expectEmit(true, true, true, false);
+        emit RoleGranted(otherAdminRole, otherAdmin, admin);
+        accessControl.grantRole(otherAdminRole, otherAdmin);
+        assertTrue(accessControl.hasRole(otherAdminRole, otherAdmin));
+
+        vm.expectRevert(bytes("AccessControl: account is missing role"));
+        accessControl.revokeRole(ADDITIONAL_ROLE_1, account);
+        vm.stopPrank();
+    }
 }
