@@ -374,6 +374,7 @@ contract AccessControlTest is Test {
     }
 
     function testFuzzGrantRoleSuccess(address account) public {
+        vm.assume(account != deployer);
         address admin = deployer;
         vm.startPrank(admin);
         vm.expectEmit(true, true, true, false);
@@ -395,6 +396,7 @@ contract AccessControlTest is Test {
     }
 
     function testFuzzGrantRoleMultipleTimesSuccess(address account) public {
+        vm.assume(account != deployer);
         address admin = deployer;
         vm.startPrank(admin);
         vm.expectEmit(true, true, true, false);
@@ -441,6 +443,7 @@ contract AccessControlTest is Test {
     }
 
     function testFuzzRevokeRoleMultipleTimesSuccess(address account) public {
+        vm.assume(account != deployer);
         address admin = deployer;
         vm.startPrank(admin);
         vm.expectEmit(true, true, true, false);
@@ -472,6 +475,7 @@ contract AccessControlTest is Test {
     }
 
     function testFuzzRenounceRoleSuccess(address account) public {
+        vm.assume(account != deployer);
         address admin = deployer;
         vm.startPrank(admin);
         vm.expectEmit(true, true, true, false);
@@ -493,6 +497,7 @@ contract AccessControlTest is Test {
     }
 
     function testFuzzRenounceRoleMultipleTimesSuccess(address account) public {
+        vm.assume(account != deployer);
         address admin = deployer;
         vm.startPrank(admin);
         vm.expectEmit(true, true, true, false);
@@ -520,7 +525,7 @@ contract AccessControlTest is Test {
     }
 
     function testFuzzRenounceRoleNonMsgSender(address account) public {
-        vm.assume(msg.sender != account && msg.sender != deployer);
+        vm.assume(address(this) != account);
         vm.expectRevert(
             bytes("AccessControl: can only renounce roles for itself")
         );
@@ -531,6 +536,7 @@ contract AccessControlTest is Test {
         address otherAdmin,
         address account
     ) public {
+        vm.assume(otherAdmin != deployer && account != deployer);
         address admin = deployer;
         bytes32 otherAdminRole = keccak256("OTHER_ADMIN_ROLE");
         vm.startPrank(admin);
@@ -566,6 +572,7 @@ contract AccessControlTest is Test {
         address otherAdmin,
         address account
     ) public {
+        vm.assume(otherAdmin != deployer);
         address admin = deployer;
         bytes32 otherAdminRole = keccak256("OTHER_ADMIN_ROLE");
         vm.startPrank(admin);
@@ -591,6 +598,7 @@ contract AccessControlTest is Test {
         address otherAdmin,
         address account
     ) public {
+        vm.assume(otherAdmin != deployer);
         address admin = deployer;
         bytes32 otherAdminRole = keccak256("OTHER_ADMIN_ROLE");
         vm.startPrank(admin);
