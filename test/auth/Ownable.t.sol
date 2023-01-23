@@ -2,6 +2,7 @@
 pragma solidity ^0.8.17;
 
 import {Test} from "forge-std/Test.sol";
+import {InvariantTest} from "forge-std/InvariantTest.sol";
 import {VyperDeployer} from "utils/VyperDeployer.sol";
 
 import {IOwnable} from "./interfaces/IOwnable.sol";
@@ -131,5 +132,45 @@ contract OwnableTest is Test {
         vm.prank(nonOwner);
         vm.expectRevert(bytes("Ownable: caller is not the owner"));
         ownable.renounce_ownership();
+    }
+}
+
+contract OwnableInvariants is Test, InvariantTest {
+    VyperDeployer private vyperDeployer = new VyperDeployer();
+    address private deployer = address(vyperDeployer);
+
+    IOwnable private ownable;
+    OwnerHandler private ownerHandler;
+
+    function setUp() public {
+        ownable = IOwnable(
+            vyperDeployer.deployContract("src/auth/", "Ownable")
+        );
+        ownerHandler = new OwnerHandler(ownable, deployer);
+        targetContract(address(ownerHandler));
+    }
+
+    function invariantOwner() public {
+        assertEq(ownable.owner(), ownerHandler.owner());
+    }
+}
+
+contract OwnerHandler {
+    IOwnable private ownable;
+    address public owner;
+
+    constructor(IOwnable ownable_, address owner_) {
+        ownable = ownable_;
+        owner = owner_;
+    }
+
+    function transfer_ownership(address newOwner) public {
+        ownable.transfer_ownership(newOwner);
+        owner = newOwner;
+    }
+
+    function renounce_ownership() public {
+        ownable.renounce_ownership();
+        owner = address(0);
     }
 }
