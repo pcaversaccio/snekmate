@@ -213,7 +213,7 @@ contract Ownable2StepTest is Test {
     }
 
     function testFuzzAcceptOwnershipNonPendingOwner(address newOwner) public {
-        vm.assume(newOwner != address(0));
+        vm.assume(newOwner != address(0) && newOwner != deployer);
         address oldOwner = deployer;
         vm.startPrank(oldOwner);
         assertEq(ownable2Step.pending_owner(), address(0));
