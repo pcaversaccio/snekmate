@@ -2,6 +2,7 @@
 pragma solidity ^0.8.17;
 
 import {Test} from "forge-std/Test.sol";
+import {InvariantTest} from "forge-std/InvariantTest.sol";
 import {VyperDeployer} from "utils/VyperDeployer.sol";
 
 import {IERC165} from "openzeppelin/utils/introspection/IERC165.sol";
@@ -17,6 +18,9 @@ contract AccessControlTest is Test {
     VyperDeployer private vyperDeployer = new VyperDeployer();
 
     IAccessControlExtended private accessControl;
+    IAccessControlExtended private accessControlInitialEvent;
+
+    address private deployer = address(vyperDeployer);
 
     event RoleAdminChanged(
         bytes32 indexed role,
@@ -43,10 +47,9 @@ contract AccessControlTest is Test {
     }
 
     function testInitialSetup() public {
-        address msgSender = address(vyperDeployer);
-        assertTrue(accessControl.hasRole(DEFAULT_ADMIN_ROLE, msgSender));
-        assertTrue(accessControl.hasRole(ADDITIONAL_ROLE_1, msgSender));
-        assertTrue(accessControl.hasRole(ADDITIONAL_ROLE_2, msgSender));
+        assertTrue(accessControl.hasRole(DEFAULT_ADMIN_ROLE, deployer));
+        assertTrue(accessControl.hasRole(ADDITIONAL_ROLE_1, deployer));
+        assertTrue(accessControl.hasRole(ADDITIONAL_ROLE_2, deployer));
         assertEq(
             accessControl.getRoleAdmin(DEFAULT_ADMIN_ROLE),
             DEFAULT_ADMIN_ROLE
@@ -57,6 +60,37 @@ contract AccessControlTest is Test {
         );
         assertEq(
             accessControl.getRoleAdmin(ADDITIONAL_ROLE_2),
+            DEFAULT_ADMIN_ROLE
+        );
+
+        vm.expectEmit(true, true, true, false);
+        emit RoleGranted(DEFAULT_ADMIN_ROLE, deployer, deployer);
+        vm.expectEmit(true, true, true, false);
+        emit RoleGranted(ADDITIONAL_ROLE_1, deployer, deployer);
+        vm.expectEmit(true, true, true, false);
+        emit RoleGranted(ADDITIONAL_ROLE_2, deployer, deployer);
+        accessControlInitialEvent = IAccessControlExtended(
+            vyperDeployer.deployContract("src/auth/", "AccessControl")
+        );
+        assertTrue(
+            accessControlInitialEvent.hasRole(DEFAULT_ADMIN_ROLE, deployer)
+        );
+        assertTrue(
+            accessControlInitialEvent.hasRole(ADDITIONAL_ROLE_1, deployer)
+        );
+        assertTrue(
+            accessControlInitialEvent.hasRole(ADDITIONAL_ROLE_2, deployer)
+        );
+        assertEq(
+            accessControlInitialEvent.getRoleAdmin(DEFAULT_ADMIN_ROLE),
+            DEFAULT_ADMIN_ROLE
+        );
+        assertEq(
+            accessControlInitialEvent.getRoleAdmin(ADDITIONAL_ROLE_1),
+            DEFAULT_ADMIN_ROLE
+        );
+        assertEq(
+            accessControlInitialEvent.getRoleAdmin(ADDITIONAL_ROLE_2),
             DEFAULT_ADMIN_ROLE
         );
     }
@@ -80,8 +114,8 @@ contract AccessControlTest is Test {
     }
 
     function testGrantRoleSuccess() public {
-        address admin = address(vyperDeployer);
-        address account = vm.addr(1);
+        address admin = deployer;
+        address account = makeAddr("account");
         vm.startPrank(admin);
         vm.expectEmit(true, true, true, false);
         emit RoleGranted(ADDITIONAL_ROLE_1, account, admin);
@@ -91,8 +125,8 @@ contract AccessControlTest is Test {
     }
 
     function testGrantRoleAdminRoleSuccess() public {
-        address admin = address(vyperDeployer);
-        address account = vm.addr(1);
+        address admin = deployer;
+        address account = makeAddr("account");
         vm.startPrank(admin);
         vm.expectEmit(true, true, true, false);
         emit RoleGranted(DEFAULT_ADMIN_ROLE, account, admin);
@@ -102,15 +136,17 @@ contract AccessControlTest is Test {
     }
 
     function testGrantRoleMultipleTimesSuccess() public {
-        address admin = address(vyperDeployer);
-        address account = vm.addr(1);
+        address admin = deployer;
+        address account = makeAddr("account");
         vm.startPrank(admin);
         vm.expectEmit(true, true, true, false);
         emit RoleGranted(ADDITIONAL_ROLE_1, account, admin);
         accessControl.grantRole(ADDITIONAL_ROLE_1, account);
         assertTrue(accessControl.hasRole(ADDITIONAL_ROLE_1, account));
+
         accessControl.grantRole(ADDITIONAL_ROLE_1, account);
         assertTrue(accessControl.hasRole(ADDITIONAL_ROLE_1, account));
+
         accessControl.grantRole(ADDITIONAL_ROLE_1, account);
         assertTrue(accessControl.hasRole(ADDITIONAL_ROLE_1, account));
         vm.stopPrank();
@@ -118,20 +154,22 @@ contract AccessControlTest is Test {
 
     function testGrantRoleNonAdmin() public {
         vm.expectRevert(bytes("AccessControl: account is missing role"));
-        accessControl.grantRole(ADDITIONAL_ROLE_1, vm.addr(1));
+        accessControl.grantRole(ADDITIONAL_ROLE_1, makeAddr("account"));
     }
 
     function testRevokeRoleSuccess() public {
-        address admin = address(vyperDeployer);
-        address account = vm.addr(1);
+        address admin = deployer;
+        address account = makeAddr("account");
         vm.startPrank(admin);
         assertTrue(!accessControl.hasRole(ADDITIONAL_ROLE_1, account));
         accessControl.revokeRole(ADDITIONAL_ROLE_1, account);
         assertTrue(!accessControl.hasRole(ADDITIONAL_ROLE_1, account));
+
         vm.expectEmit(true, true, true, false);
         emit RoleGranted(ADDITIONAL_ROLE_1, account, admin);
         accessControl.grantRole(ADDITIONAL_ROLE_1, account);
         assertTrue(accessControl.hasRole(ADDITIONAL_ROLE_1, account));
+
         vm.expectEmit(true, true, true, false);
         emit RoleRevoked(ADDITIONAL_ROLE_1, account, admin);
         accessControl.revokeRole(ADDITIONAL_ROLE_1, account);
@@ -140,32 +178,36 @@ contract AccessControlTest is Test {
     }
 
     function testRevokeRoleMultipleTimesSuccess() public {
-        address admin = address(vyperDeployer);
-        address account = vm.addr(1);
+        address admin = deployer;
+        address account = makeAddr("account");
         vm.startPrank(admin);
         vm.expectEmit(true, true, true, false);
         emit RoleGranted(ADDITIONAL_ROLE_1, account, admin);
         accessControl.grantRole(ADDITIONAL_ROLE_1, account);
         assertTrue(accessControl.hasRole(ADDITIONAL_ROLE_1, account));
+
         vm.expectEmit(true, true, true, false);
         emit RoleRevoked(ADDITIONAL_ROLE_1, account, admin);
         accessControl.revokeRole(ADDITIONAL_ROLE_1, account);
         assertTrue(!accessControl.hasRole(ADDITIONAL_ROLE_1, account));
+
         accessControl.revokeRole(ADDITIONAL_ROLE_1, account);
         assertTrue(!accessControl.hasRole(ADDITIONAL_ROLE_1, account));
+
         accessControl.revokeRole(ADDITIONAL_ROLE_1, account);
         assertTrue(!accessControl.hasRole(ADDITIONAL_ROLE_1, account));
         vm.stopPrank();
     }
 
     function testRevokeRoleAdminRoleSuccess() public {
-        address admin = address(vyperDeployer);
+        address admin = deployer;
         vm.startPrank(admin);
         assertTrue(accessControl.hasRole(DEFAULT_ADMIN_ROLE, admin));
         vm.expectEmit(true, true, true, false);
         emit RoleRevoked(DEFAULT_ADMIN_ROLE, admin, admin);
         accessControl.revokeRole(DEFAULT_ADMIN_ROLE, admin);
         assertTrue(!accessControl.hasRole(DEFAULT_ADMIN_ROLE, admin));
+
         vm.expectRevert(bytes("AccessControl: account is missing role"));
         accessControl.revokeRole(ADDITIONAL_ROLE_1, admin);
         vm.stopPrank();
@@ -173,12 +215,12 @@ contract AccessControlTest is Test {
 
     function testRevokeRoleNonAdmin() public {
         vm.expectRevert(bytes("AccessControl: account is missing role"));
-        accessControl.revokeRole(ADDITIONAL_ROLE_1, vm.addr(1));
+        accessControl.revokeRole(ADDITIONAL_ROLE_1, makeAddr("account"));
     }
 
     function testRenounceRoleSuccess() public {
-        address admin = address(vyperDeployer);
-        address account = vm.addr(1);
+        address admin = deployer;
+        address account = makeAddr("account");
         vm.startPrank(admin);
         vm.expectEmit(true, true, true, false);
         emit RoleGranted(ADDITIONAL_ROLE_1, account, admin);
@@ -190,6 +232,7 @@ contract AccessControlTest is Test {
         assertTrue(!accessControl.hasRole(DEFAULT_ADMIN_ROLE, account));
         accessControl.renounceRole(DEFAULT_ADMIN_ROLE, account);
         assertTrue(!accessControl.hasRole(DEFAULT_ADMIN_ROLE, account));
+
         vm.expectEmit(true, true, true, false);
         emit RoleRevoked(ADDITIONAL_ROLE_1, account, account);
         accessControl.renounceRole(ADDITIONAL_ROLE_1, account);
@@ -198,8 +241,8 @@ contract AccessControlTest is Test {
     }
 
     function testRenounceRoleMultipleTimesSuccess() public {
-        address admin = address(vyperDeployer);
-        address account = vm.addr(1);
+        address admin = deployer;
+        address account = makeAddr("account");
         vm.startPrank(admin);
         vm.expectEmit(true, true, true, false);
         emit RoleGranted(ADDITIONAL_ROLE_1, account, admin);
@@ -211,25 +254,29 @@ contract AccessControlTest is Test {
         assertTrue(!accessControl.hasRole(DEFAULT_ADMIN_ROLE, account));
         accessControl.renounceRole(DEFAULT_ADMIN_ROLE, account);
         assertTrue(!accessControl.hasRole(DEFAULT_ADMIN_ROLE, account));
+
         vm.expectEmit(true, true, true, false);
         emit RoleRevoked(ADDITIONAL_ROLE_1, account, account);
         accessControl.renounceRole(ADDITIONAL_ROLE_1, account);
         assertTrue(!accessControl.hasRole(ADDITIONAL_ROLE_1, account));
+
         accessControl.renounceRole(ADDITIONAL_ROLE_1, account);
         assertTrue(!accessControl.hasRole(ADDITIONAL_ROLE_1, account));
+
         accessControl.renounceRole(ADDITIONAL_ROLE_1, account);
         assertTrue(!accessControl.hasRole(ADDITIONAL_ROLE_1, account));
         vm.stopPrank();
     }
 
     function testRenounceRoleAdminRoleSuccess() public {
-        address admin = address(vyperDeployer);
+        address admin = deployer;
         vm.startPrank(admin);
         assertTrue(accessControl.hasRole(DEFAULT_ADMIN_ROLE, admin));
         vm.expectEmit(true, true, true, false);
         emit RoleRevoked(DEFAULT_ADMIN_ROLE, admin, admin);
         accessControl.renounceRole(DEFAULT_ADMIN_ROLE, admin);
         assertTrue(!accessControl.hasRole(DEFAULT_ADMIN_ROLE, admin));
+
         accessControl.renounceRole(DEFAULT_ADMIN_ROLE, admin);
         assertTrue(!accessControl.hasRole(DEFAULT_ADMIN_ROLE, admin));
         vm.stopPrank();
@@ -239,13 +286,13 @@ contract AccessControlTest is Test {
         vm.expectRevert(
             bytes("AccessControl: can only renounce roles for itself")
         );
-        accessControl.renounceRole(ADDITIONAL_ROLE_1, vm.addr(1));
+        accessControl.renounceRole(ADDITIONAL_ROLE_1, makeAddr("account"));
     }
 
     function testSetRoleAdminSuccess() public {
-        address admin = address(vyperDeployer);
-        address otherAdmin = vm.addr(1);
-        address account = vm.addr(2);
+        address admin = deployer;
+        address otherAdmin = makeAddr("otherAdmin");
+        address account = makeAddr("account");
         bytes32 otherAdminRole = keccak256("OTHER_ADMIN_ROLE");
         vm.startPrank(admin);
         vm.expectEmit(true, true, true, false);
@@ -255,6 +302,7 @@ contract AccessControlTest is Test {
             otherAdminRole
         );
         accessControl.set_role_admin(ADDITIONAL_ROLE_1, otherAdminRole);
+
         vm.expectEmit(true, true, true, false);
         emit RoleGranted(otherAdminRole, otherAdmin, admin);
         accessControl.grantRole(otherAdminRole, otherAdmin);
@@ -267,6 +315,7 @@ contract AccessControlTest is Test {
         emit RoleGranted(ADDITIONAL_ROLE_1, account, otherAdmin);
         accessControl.grantRole(ADDITIONAL_ROLE_1, account);
         assertTrue(accessControl.hasRole(ADDITIONAL_ROLE_1, account));
+
         vm.expectEmit(true, true, true, false);
         emit RoleRevoked(ADDITIONAL_ROLE_1, account, otherAdmin);
         accessControl.revokeRole(ADDITIONAL_ROLE_1, account);
@@ -275,9 +324,9 @@ contract AccessControlTest is Test {
     }
 
     function testSetRoleAdminPreviousAdminCallsGrantRole() public {
-        address admin = address(vyperDeployer);
-        address otherAdmin = vm.addr(1);
-        address account = vm.addr(2);
+        address admin = deployer;
+        address otherAdmin = makeAddr("otherAdmin");
+        address account = makeAddr("account");
         bytes32 otherAdminRole = keccak256("OTHER_ADMIN_ROLE");
         vm.startPrank(admin);
         vm.expectEmit(true, true, true, false);
@@ -287,22 +336,25 @@ contract AccessControlTest is Test {
             otherAdminRole
         );
         accessControl.set_role_admin(ADDITIONAL_ROLE_1, otherAdminRole);
+
         vm.expectEmit(true, true, true, false);
         emit RoleGranted(otherAdminRole, otherAdmin, admin);
         accessControl.grantRole(otherAdminRole, otherAdmin);
         assertTrue(accessControl.hasRole(otherAdminRole, otherAdmin));
+
         vm.expectRevert(bytes("AccessControl: account is missing role"));
         accessControl.grantRole(ADDITIONAL_ROLE_1, account);
         vm.stopPrank();
     }
 
     function testSetRoleAdminPreviousAdminCallsRevokeRole() public {
-        address admin = address(vyperDeployer);
-        address otherAdmin = vm.addr(1);
-        address account = vm.addr(2);
+        address admin = deployer;
+        address otherAdmin = makeAddr("otherAdmin");
+        address account = makeAddr("account");
         bytes32 otherAdminRole = keccak256("OTHER_ADMIN_ROLE");
         vm.startPrank(admin);
         accessControl.grantRole(ADDITIONAL_ROLE_1, account);
+
         vm.expectEmit(true, true, true, false);
         emit RoleAdminChanged(
             ADDITIONAL_ROLE_1,
@@ -310,10 +362,12 @@ contract AccessControlTest is Test {
             otherAdminRole
         );
         accessControl.set_role_admin(ADDITIONAL_ROLE_1, otherAdminRole);
+
         vm.expectEmit(true, true, true, false);
         emit RoleGranted(otherAdminRole, otherAdmin, admin);
         accessControl.grantRole(otherAdminRole, otherAdmin);
         assertTrue(accessControl.hasRole(otherAdminRole, otherAdmin));
+
         vm.expectRevert(bytes("AccessControl: account is missing role"));
         accessControl.revokeRole(ADDITIONAL_ROLE_1, account);
         vm.stopPrank();
