@@ -9,10 +9,12 @@ import {IOwnable2Step} from "./interfaces/IOwnable2Step.sol";
 
 contract Ownable2StepTest is Test {
     VyperDeployer private vyperDeployer = new VyperDeployer();
-    address private deployer = address(vyperDeployer);
 
     IOwnable2Step private ownable2Step;
     IOwnable2Step private ownable2StepInitialEvent;
+
+    address private deployer = address(vyperDeployer);
+    address private zeroAddress = address(0);
 
     event OwnershipTransferStarted(
         address indexed previousOwner,
@@ -31,7 +33,6 @@ contract Ownable2StepTest is Test {
     }
 
     function testInitialSetup() public {
-        address zeroAddress = address(0);
         assertEq(ownable2Step.owner(), deployer);
         assertEq(ownable2Step.pending_owner(), zeroAddress);
 
@@ -52,7 +53,7 @@ contract Ownable2StepTest is Test {
         address oldOwner = deployer;
         address newOwner = makeAddr("newOwner");
         vm.startPrank(oldOwner);
-        assertEq(ownable2Step.pending_owner(), address(0));
+        assertEq(ownable2Step.pending_owner(), zeroAddress);
         vm.expectEmit(true, true, false, false);
         emit OwnershipTransferStarted(oldOwner, newOwner);
         ownable2Step.transfer_ownership(newOwner);
@@ -69,7 +70,6 @@ contract Ownable2StepTest is Test {
     function testAcceptOwnershipSuccess() public {
         address oldOwner = deployer;
         address newOwner = makeAddr("newOwner");
-        address zeroAddress = address(0);
         vm.startPrank(oldOwner);
         assertEq(ownable2Step.pending_owner(), zeroAddress);
         vm.expectEmit(true, true, false, false);
@@ -91,7 +91,7 @@ contract Ownable2StepTest is Test {
         address oldOwner = deployer;
         address newOwner = makeAddr("newOwner");
         vm.startPrank(oldOwner);
-        assertEq(ownable2Step.pending_owner(), address(0));
+        assertEq(ownable2Step.pending_owner(), zeroAddress);
         vm.expectEmit(true, true, false, false);
         emit OwnershipTransferStarted(oldOwner, newOwner);
         ownable2Step.transfer_ownership(newOwner);
@@ -105,7 +105,7 @@ contract Ownable2StepTest is Test {
 
     function testRenounceOwnershipSuccess() public {
         address oldOwner = deployer;
-        address newOwner = address(0);
+        address newOwner = zeroAddress;
         vm.startPrank(oldOwner);
         vm.expectEmit(true, true, false, false);
         emit OwnershipTransferred(oldOwner, newOwner);
@@ -120,7 +120,6 @@ contract Ownable2StepTest is Test {
     }
 
     function testPendingOwnerResetAfterRenounceOwnership() public {
-        address zeroAddress = address(0);
         address oldOwner = deployer;
         address newOwner = makeAddr("newOwner");
         vm.startPrank(oldOwner);
@@ -146,7 +145,6 @@ contract Ownable2StepTest is Test {
         address newOwner1,
         address newOwner2
     ) public {
-        address zeroAddress = address(0);
         vm.assume(newOwner1 != zeroAddress && newOwner2 != zeroAddress);
         address oldOwner = deployer;
         vm.startPrank(oldOwner);
@@ -179,7 +177,6 @@ contract Ownable2StepTest is Test {
         address newOwner1,
         address newOwner2
     ) public {
-        address zeroAddress = address(0);
         vm.assume(newOwner1 != zeroAddress && newOwner2 != zeroAddress);
         address oldOwner = deployer;
         vm.startPrank(oldOwner);
@@ -213,10 +210,10 @@ contract Ownable2StepTest is Test {
     }
 
     function testFuzzAcceptOwnershipNonPendingOwner(address newOwner) public {
-        vm.assume(newOwner != address(0) && newOwner != deployer);
+        vm.assume(newOwner != zeroAddress && newOwner != deployer);
         address oldOwner = deployer;
         vm.startPrank(oldOwner);
-        assertEq(ownable2Step.pending_owner(), address(0));
+        assertEq(ownable2Step.pending_owner(), zeroAddress);
         vm.expectEmit(true, true, false, false);
         emit OwnershipTransferStarted(oldOwner, newOwner);
         ownable2Step.transfer_ownership(newOwner);
@@ -229,7 +226,6 @@ contract Ownable2StepTest is Test {
     }
 
     function testFuzzRenounceOwnershipSuccess(address newOwner) public {
-        address zeroAddress = address(0);
         vm.assume(newOwner != zeroAddress);
         address oldOwner = deployer;
         address renounceAddress = zeroAddress;
@@ -267,7 +263,6 @@ contract Ownable2StepTest is Test {
     function testFuzzPendingOwnerResetAfterRenounceOwnership(
         address newOwner
     ) public {
-        address zeroAddress = address(0);
         vm.assume(newOwner != zeroAddress);
         address oldOwner = deployer;
         vm.startPrank(oldOwner);
@@ -292,10 +287,12 @@ contract Ownable2StepTest is Test {
 
 contract Ownable2StepInvariants is Test, InvariantTest {
     VyperDeployer private vyperDeployer = new VyperDeployer();
-    address private deployer = address(vyperDeployer);
 
     IOwnable2Step private ownable2Step;
     Owner2StepHandler private owner2StepHandler;
+
+    address private deployer = address(vyperDeployer);
+    address private zeroAddress = address(0);
 
     function setUp() public {
         ownable2Step = IOwnable2Step(
@@ -304,7 +301,7 @@ contract Ownable2StepInvariants is Test, InvariantTest {
         owner2StepHandler = new Owner2StepHandler(
             ownable2Step,
             deployer,
-            address(0)
+            zeroAddress
         );
         targetContract(address(owner2StepHandler));
     }
@@ -323,9 +320,11 @@ contract Ownable2StepInvariants is Test, InvariantTest {
 
 contract Owner2StepHandler {
     IOwnable2Step private ownable2Step;
+
     address public owner;
     // solhint-disable-next-line var-name-mixedcase
     address public pending_owner;
+    address private zeroAddress = address(0);
 
     constructor(
         IOwnable2Step ownable2Step_,
@@ -346,11 +345,10 @@ contract Owner2StepHandler {
     function accept_ownership() public {
         ownable2Step.accept_ownership();
         owner = msg.sender;
-        pending_owner = address(0);
+        pending_owner = zeroAddress;
     }
 
     function renounce_ownership() public {
-        address zeroAddress = address(0);
         ownable2Step.renounce_ownership();
         owner = zeroAddress;
         pending_owner = zeroAddress;

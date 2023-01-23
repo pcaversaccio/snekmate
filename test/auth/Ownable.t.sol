@@ -9,10 +9,12 @@ import {IOwnable} from "./interfaces/IOwnable.sol";
 
 contract OwnableTest is Test {
     VyperDeployer private vyperDeployer = new VyperDeployer();
-    address private deployer = address(vyperDeployer);
 
     IOwnable private ownable;
     IOwnable private ownableInitialEvent;
+
+    address private deployer = address(vyperDeployer);
+    address private zeroAddress = address(0);
 
     event OwnershipTransferred(
         address indexed previousOwner,
@@ -29,7 +31,7 @@ contract OwnableTest is Test {
         assertEq(ownable.owner(), deployer);
 
         vm.expectEmit(true, true, false, false);
-        emit OwnershipTransferred(address(0), deployer);
+        emit OwnershipTransferred(zeroAddress, deployer);
         ownableInitialEvent = IOwnable(
             vyperDeployer.deployContract("src/auth/", "Ownable")
         );
@@ -59,12 +61,12 @@ contract OwnableTest is Test {
     function testTransferOwnershipToZeroAddress() public {
         vm.prank(deployer);
         vm.expectRevert(bytes("Ownable: new owner is the zero address"));
-        ownable.transfer_ownership(address(0));
+        ownable.transfer_ownership(zeroAddress);
     }
 
     function testRenounceOwnershipSuccess() public {
         address oldOwner = deployer;
-        address newOwner = address(0);
+        address newOwner = zeroAddress;
         vm.startPrank(oldOwner);
         vm.expectEmit(true, true, false, false);
         emit OwnershipTransferred(oldOwner, newOwner);
@@ -82,7 +84,6 @@ contract OwnableTest is Test {
         address newOwner1,
         address newOwner2
     ) public {
-        address zeroAddress = address(0);
         vm.assume(newOwner1 != zeroAddress && newOwner2 != zeroAddress);
         address oldOwner = deployer;
         vm.startPrank(oldOwner);
@@ -111,7 +112,6 @@ contract OwnableTest is Test {
     }
 
     function testFuzzRenounceOwnershipSuccess(address newOwner) public {
-        address zeroAddress = address(0);
         vm.assume(newOwner != zeroAddress);
         address oldOwner = deployer;
         address renounceAddress = zeroAddress;
@@ -140,10 +140,11 @@ contract OwnableTest is Test {
 
 contract OwnableInvariants is Test, InvariantTest {
     VyperDeployer private vyperDeployer = new VyperDeployer();
-    address private deployer = address(vyperDeployer);
 
     IOwnable private ownable;
     OwnerHandler private ownerHandler;
+
+    address private deployer = address(vyperDeployer);
 
     function setUp() public {
         ownable = IOwnable(
@@ -160,7 +161,9 @@ contract OwnableInvariants is Test, InvariantTest {
 
 contract OwnerHandler {
     IOwnable private ownable;
+
     address public owner;
+    address private zeroAddress = address(0);
 
     constructor(IOwnable ownable_, address owner_) {
         ownable = ownable_;
@@ -174,6 +177,6 @@ contract OwnerHandler {
 
     function renounce_ownership() public {
         ownable.renounce_ownership();
-        owner = address(0);
+        owner = zeroAddress;
     }
 }
