@@ -24,6 +24,7 @@ contract ECDSATest is Test {
     using BytesLib for bytes;
 
     VyperDeployer private vyperDeployer = new VyperDeployer();
+    address private zeroAddress = address(0);
 
     // solhint-disable-next-line var-name-mixedcase
     IECDSA private ECDSA;
@@ -68,7 +69,7 @@ contract ECDSATest is Test {
         /// @dev Standard signature check.
         bytes32 hash = keccak256("WAGMI");
         bytes memory signature = "0x0123456789";
-        assertEq(address(0), ECDSA.recover_sig(hash, signature));
+        assertEq(ECDSA.recover_sig(hash, signature), zeroAddress);
 
         /// @dev EIP-2098 signature check.
         vm.expectRevert(
@@ -254,6 +255,46 @@ contract ECDSATest is Test {
         /// @dev EIP-2098 signature check.
         bytes memory signature2098 = to2098Format(signature);
         assertTrue(alice != ECDSA.recover_sig(digest, signature2098));
+    }
+
+    function testFuzzRecoverWithInvalidSignature(
+        bytes calldata signature,
+        string calldata message
+    ) public {
+        vm.assume(signature.length < 64);
+        /// @dev Standard signature check.
+        bytes32 hash = keccak256(abi.encode(message));
+        address recoveredAddress = ECDSA.recover_sig(hash, signature);
+        assertEq(recoveredAddress, zeroAddress);
+
+        /// @dev EIP-2098 signature check.
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                InvalidSignatureLength.selector,
+                address(this)
+            )
+        );
+        to2098Format(signature);
+    }
+
+    function testFuzzRecoverWithTooLongSignature(
+        bytes calldata signature,
+        string calldata message
+    ) public {
+        vm.assume(signature.length > 65);
+        /// @dev Standard signature check.
+        bytes32 hash = keccak256(abi.encode(message));
+        vm.expectRevert();
+        ECDSA.recover_sig(hash, signature);
+
+        /// @dev EIP-2098 signature check.
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                InvalidSignatureLength.selector,
+                address(this)
+            )
+        );
+        to2098Format(signature);
     }
 
     function testFuzzEthSignedMessageHash(string calldata message) public {
