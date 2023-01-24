@@ -59,7 +59,7 @@ contract EIP712DomainSeparatorTest is Test {
     function testDomainSeparatorV4() public {
         /**
          * @dev We change the chain id here to access the "else" branch
-         * in the function "domain_separator_v4()".
+         * in the function `domain_separator_v4`.
          */
         vm.chainId(block.chainid + 1);
         bytes32 digest = keccak256(
@@ -75,12 +75,60 @@ contract EIP712DomainSeparatorTest is Test {
     }
 
     function testHashTypedDataV4() public {
-        address owner = vm.addr(1);
-        address spender = vm.addr(2);
+        address owner = makeAddr("owner");
+        address spender = makeAddr("spender");
         uint256 value = 100;
         uint256 nonce = 1;
         // solhint-disable-next-line not-rely-on-time
         uint256 deadline = block.timestamp + 100000;
+        bytes32 structHash = keccak256(
+            abi.encode(
+                _PERMIT_TYPE_HASH,
+                owner,
+                spender,
+                value,
+                nonce,
+                deadline
+            )
+        );
+        bytes32 digest1 = EIP712domainSeparator.hash_typed_data_v4(structHash);
+        bytes32 digest2 = keccak256(
+            abi.encodePacked(
+                "\x19\x01",
+                EIP712domainSeparator.domain_separator_v4(),
+                structHash
+            )
+        );
+        assertEq(digest1, digest2);
+    }
+
+    function testFuzzDomainSeparatorV4(uint8 increment) public {
+        /**
+         * @dev We change the chain id here to access the "else" branch
+         * in the function `domain_separator_v4`.
+         */
+        vm.chainId(block.chainid + increment);
+        bytes32 digest = keccak256(
+            abi.encode(
+                _TYPE_HASH,
+                keccak256(bytes(_NAME)),
+                keccak256(bytes(_VERSION)),
+                block.chainid,
+                address(EIP712domainSeparator)
+            )
+        );
+        assertEq(EIP712domainSeparator.domain_separator_v4(), digest);
+    }
+
+    function testFuzzHashTypedDataV4(
+        address owner,
+        address spender,
+        uint256 value,
+        uint256 nonce,
+        uint64 increment
+    ) public {
+        // solhint-disable-next-line not-rely-on-time
+        uint256 deadline = block.timestamp + increment;
         bytes32 structHash = keccak256(
             abi.encode(
                 _PERMIT_TYPE_HASH,
