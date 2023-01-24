@@ -53,9 +53,9 @@ contract ECDSATest is Test {
 
     function testRecoverWithValidSignature() public {
         /// @dev Standard signature check.
-        address alice = vm.addr(1);
+        (address alice, uint256 key) = makeAddrAndKey("alice");
         bytes32 hash = keccak256("WAGMI");
-        (uint8 v, bytes32 r, bytes32 s) = vm.sign(1, hash);
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(key, hash);
         bytes memory signature = abi.encodePacked(r, s, v);
         assertEq(alice, ECDSA.recover_sig(hash, signature));
 
@@ -101,9 +101,9 @@ contract ECDSATest is Test {
 
     function testRecoverWithArbitraryMessage() public {
         /// @dev Standard signature check.
-        address alice = vm.addr(1);
+        (address alice, uint256 key) = makeAddrAndKey("alice");
         bytes32 hash = bytes32("0x5741474d49");
-        (uint8 v, bytes32 r, bytes32 s) = vm.sign(1, hash);
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(key, hash);
         bytes memory signature = abi.encodePacked(r, s, v);
         assertEq(alice, ECDSA.recover_sig(hash, signature));
 
@@ -114,9 +114,9 @@ contract ECDSATest is Test {
 
     function testRecoverWithWrongMessage() public {
         /// @dev Standard signature check.
-        address alice = vm.addr(1);
+        (address alice, uint256 key) = makeAddrAndKey("alice");
         bytes32 hashCorrect = keccak256("WAGMI");
-        (uint8 v, bytes32 r, bytes32 s) = vm.sign(1, hashCorrect);
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(key, hashCorrect);
         bytes memory signature = abi.encodePacked(r, s, v);
         bytes32 hashWrong = keccak256("WAGMI1");
         address recoveredAddress = ECDSA.recover_sig(hashWrong, signature);
@@ -164,9 +164,9 @@ contract ECDSATest is Test {
 
     function testRecoverWithCorrectVersion() public {
         /// @dev Standard signature check.
-        address alice = vm.addr(1);
+        (address alice, uint256 key) = makeAddrAndKey("alice");
         bytes32 hash = keccak256("WAGMI");
-        (uint8 v, bytes32 r, bytes32 s) = vm.sign(1, hash);
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(key, hash);
         bytes memory signatureWithoutVersion = abi.encodePacked(r, s);
         assertEq(
             alice,
@@ -215,6 +215,62 @@ contract ECDSATest is Test {
     function testToTypedDataHash() public {
         bytes32 domainSeparator = keccak256("WAGMI");
         bytes32 structHash = keccak256("GM");
+        bytes32 digest1 = ECDSA.to_typed_data_hash(domainSeparator, structHash);
+        bytes32 digest2 = keccak256(
+            abi.encodePacked("\x19\x01", domainSeparator, structHash)
+        );
+        assertEq(digest1, digest2);
+    }
+
+    function testFuzzRecoverWithValidSignature(
+        string calldata signer,
+        string calldata message
+    ) public {
+        /// @dev Standard signature check.
+        (address alice, uint256 key) = makeAddrAndKey(signer);
+        bytes32 hash = keccak256(abi.encode(message));
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(key, hash);
+        bytes memory signature = abi.encodePacked(r, s, v);
+        assertEq(alice, ECDSA.recover_sig(hash, signature));
+
+        /// @dev EIP-2098 signature check.
+        bytes memory signature2098 = to2098Format(signature);
+        assertEq(alice, ECDSA.recover_sig(hash, signature2098));
+    }
+
+    function testFuzzRecoverWithWrongMessage(
+        string calldata signer,
+        string calldata message,
+        bytes32 digest
+    ) public {
+        /// @dev Standard signature check.
+        (address alice, uint256 key) = makeAddrAndKey(signer);
+        bytes32 hashCorrect = keccak256(abi.encode(message));
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(key, hashCorrect);
+        bytes memory signature = abi.encodePacked(r, s, v);
+        address recoveredAddress = ECDSA.recover_sig(digest, signature);
+        assertTrue(alice != recoveredAddress);
+
+        /// @dev EIP-2098 signature check.
+        bytes memory signature2098 = to2098Format(signature);
+        assertTrue(alice != ECDSA.recover_sig(digest, signature2098));
+    }
+
+    function testFuzzEthSignedMessageHash(string calldata message) public {
+        bytes32 hash = keccak256(abi.encode(message));
+        bytes32 digest1 = ECDSA.to_eth_signed_message_hash(hash);
+        bytes32 digest2 = keccak256(
+            abi.encodePacked("\x19Ethereum Signed Message:\n32", hash)
+        );
+        assertEq(digest1, digest2);
+    }
+
+    function testFuzzToTypedDataHash(
+        string calldata domainSeparatorPlain,
+        string calldata structPlain
+    ) public {
+        bytes32 domainSeparator = keccak256(abi.encode(domainSeparatorPlain));
+        bytes32 structHash = keccak256(abi.encode(structPlain));
         bytes32 digest1 = ECDSA.to_typed_data_hash(domainSeparator, structHash);
         bytes32 digest2 = keccak256(
             abi.encodePacked("\x19\x01", domainSeparator, structHash)
