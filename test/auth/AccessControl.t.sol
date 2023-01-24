@@ -11,9 +11,9 @@ import {IAccessControl} from "openzeppelin/access/IAccessControl.sol";
 import {IAccessControlExtended} from "./interfaces/IAccessControlExtended.sol";
 
 contract AccessControlTest is Test {
-    bytes32 public constant DEFAULT_ADMIN_ROLE = bytes32(0);
-    bytes32 public constant ADDITIONAL_ROLE_1 = keccak256("ADDITIONAL_ROLE_1");
-    bytes32 public constant ADDITIONAL_ROLE_2 = keccak256("ADDITIONAL_ROLE_2");
+    bytes32 private constant DEFAULT_ADMIN_ROLE = bytes32(0);
+    bytes32 private constant ADDITIONAL_ROLE_1 = keccak256("ADDITIONAL_ROLE_1");
+    bytes32 private constant ADDITIONAL_ROLE_2 = keccak256("ADDITIONAL_ROLE_2");
 
     VyperDeployer private vyperDeployer = new VyperDeployer();
 
@@ -47,6 +47,9 @@ contract AccessControlTest is Test {
     }
 
     function testInitialSetup() public {
+        assertEq(accessControl.DEFAULT_ADMIN_ROLE(), DEFAULT_ADMIN_ROLE);
+        assertEq(accessControl.ADDITIONAL_ROLE_1(), ADDITIONAL_ROLE_1);
+        assertEq(accessControl.ADDITIONAL_ROLE_2(), ADDITIONAL_ROLE_2);
         assertTrue(accessControl.hasRole(DEFAULT_ADMIN_ROLE, deployer));
         assertTrue(accessControl.hasRole(ADDITIONAL_ROLE_1, deployer));
         assertTrue(accessControl.hasRole(ADDITIONAL_ROLE_2, deployer));
@@ -71,6 +74,18 @@ contract AccessControlTest is Test {
         emit RoleGranted(ADDITIONAL_ROLE_2, deployer, deployer);
         accessControlInitialEvent = IAccessControlExtended(
             vyperDeployer.deployContract("src/auth/", "AccessControl")
+        );
+        assertEq(
+            accessControlInitialEvent.DEFAULT_ADMIN_ROLE(),
+            DEFAULT_ADMIN_ROLE
+        );
+        assertEq(
+            accessControlInitialEvent.ADDITIONAL_ROLE_1(),
+            ADDITIONAL_ROLE_1
+        );
+        assertEq(
+            accessControlInitialEvent.ADDITIONAL_ROLE_2(),
+            ADDITIONAL_ROLE_2
         );
         assertTrue(
             accessControlInitialEvent.hasRole(DEFAULT_ADMIN_ROLE, deployer)
@@ -620,5 +635,111 @@ contract AccessControlTest is Test {
         vm.expectRevert(bytes("AccessControl: account is missing role"));
         accessControl.revokeRole(ADDITIONAL_ROLE_1, account);
         vm.stopPrank();
+    }
+}
+
+contract AccessControlInvariants is Test, InvariantTest {
+    bytes32 private constant DEFAULT_ADMIN_ROLE = bytes32(0);
+    bytes32 private constant ADDITIONAL_ROLE_1 = keccak256("ADDITIONAL_ROLE_1");
+    bytes32 private constant ADDITIONAL_ROLE_2 = keccak256("ADDITIONAL_ROLE_2");
+
+    VyperDeployer private vyperDeployer = new VyperDeployer();
+
+    IAccessControlExtended private accessControl;
+    AccessControlHandler private accessControlHandler;
+
+    address private deployer = address(vyperDeployer);
+
+    function setUp() public {
+        accessControl = IAccessControlExtended(
+            vyperDeployer.deployContract("src/auth/", "AccessControl")
+        );
+        accessControlHandler = new AccessControlHandler(
+            accessControl,
+            deployer,
+            DEFAULT_ADMIN_ROLE,
+            ADDITIONAL_ROLE_1,
+            ADDITIONAL_ROLE_2
+        );
+        targetContract(address(accessControlHandler));
+    }
+
+    function invariantHasRole() public {
+        assertEq(
+            accessControl.hasRole(DEFAULT_ADMIN_ROLE, deployer),
+            accessControlHandler.hasRole(DEFAULT_ADMIN_ROLE, deployer)
+        );
+        assertEq(
+            accessControl.hasRole(ADDITIONAL_ROLE_1, deployer),
+            accessControlHandler.hasRole(ADDITIONAL_ROLE_1, deployer)
+        );
+        assertEq(
+            accessControl.hasRole(ADDITIONAL_ROLE_2, deployer),
+            accessControlHandler.hasRole(ADDITIONAL_ROLE_2, deployer)
+        );
+    }
+
+    function invariantGetRoleAdmin() public {
+        assertEq(
+            accessControl.getRoleAdmin(DEFAULT_ADMIN_ROLE),
+            accessControlHandler.getRoleAdmin(DEFAULT_ADMIN_ROLE)
+        );
+        assertEq(
+            accessControl.getRoleAdmin(ADDITIONAL_ROLE_1),
+            accessControlHandler.getRoleAdmin(ADDITIONAL_ROLE_1)
+        );
+        assertEq(
+            accessControl.getRoleAdmin(ADDITIONAL_ROLE_2),
+            accessControlHandler.getRoleAdmin(ADDITIONAL_ROLE_2)
+        );
+    }
+}
+
+contract AccessControlHandler {
+    /* solhint-disable var-name-mixedcase */
+    bytes32 private immutable DEFAULT_ADMIN_ROLE;
+    bytes32 private immutable ADDITIONAL_ROLE_1;
+    bytes32 private immutable ADDITIONAL_ROLE_2;
+    /* solhint-enable var-name-mixedcase */
+
+    mapping(bytes32 => mapping(address => bool)) public hasRole;
+    mapping(bytes32 => bytes32) public getRoleAdmin;
+
+    IAccessControlExtended private accessControl;
+
+    constructor(
+        IAccessControlExtended accessControl_,
+        address defaultAdmin_,
+        bytes32 adminRole_,
+        bytes32 additionalRole1_,
+        bytes32 additionalRole2_
+    ) {
+        accessControl = accessControl_;
+        DEFAULT_ADMIN_ROLE = adminRole_;
+        ADDITIONAL_ROLE_1 = additionalRole1_;
+        ADDITIONAL_ROLE_2 = additionalRole2_;
+        hasRole[DEFAULT_ADMIN_ROLE][defaultAdmin_] = true;
+        hasRole[ADDITIONAL_ROLE_1][defaultAdmin_] = true;
+        hasRole[ADDITIONAL_ROLE_2][defaultAdmin_] = true;
+    }
+
+    function grantRole(bytes32 role, address account) public {
+        accessControl.grantRole(role, account);
+        hasRole[role][account] = true;
+    }
+
+    function revokeRole(bytes32 role, address account) public {
+        accessControl.revokeRole(role, account);
+        hasRole[role][account] = false;
+    }
+
+    function renounceRole(bytes32 role, address account) public {
+        accessControl.renounceRole(role, account);
+        hasRole[role][account] = false;
+    }
+
+    function set_role_admin(bytes32 role, bytes32 adminRole) public {
+        accessControl.set_role_admin(role, adminRole);
+        getRoleAdmin[role] = adminRole;
     }
 }

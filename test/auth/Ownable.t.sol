@@ -160,9 +160,10 @@ contract OwnableInvariants is Test, InvariantTest {
 }
 
 contract OwnerHandler {
+    address public owner;
+
     IOwnable private ownable;
 
-    address public owner;
     address private zeroAddress = address(0);
 
     constructor(IOwnable ownable_, address owner_) {

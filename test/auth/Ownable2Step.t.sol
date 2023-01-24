@@ -319,11 +319,12 @@ contract Ownable2StepInvariants is Test, InvariantTest {
 }
 
 contract Owner2StepHandler {
-    IOwnable2Step private ownable2Step;
-
     address public owner;
     // solhint-disable-next-line var-name-mixedcase
     address public pending_owner;
+
+    IOwnable2Step private ownable2Step;
+
     address private zeroAddress = address(0);
 
     constructor(
@@ -344,7 +345,7 @@ contract Owner2StepHandler {
 
     function accept_ownership() public {
         ownable2Step.accept_ownership();
-        owner = msg.sender;
+        owner = address(this);
         pending_owner = zeroAddress;
     }
 
