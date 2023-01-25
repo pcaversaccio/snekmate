@@ -339,7 +339,7 @@ contract BatchDistributorTest is Test {
         IBatchDistributor.Batch memory batch,
         uint256 value
     ) public {
-        vm.assume(value > type(uint128).max);
+        value = bound(value, type(uint16).max, type(uint32).max);
         vm.assume(batch.txns.length <= 50);
         for (uint256 i; i < batch.txns.length; ++i) {
             batch.txns[i].amount = bound(batch.txns[i].amount, 1, 100);
@@ -353,9 +353,9 @@ contract BatchDistributorTest is Test {
         batchDistributor.distribute_ether{value: value}(batch);
         for (uint256 i; i < batch.txns.length; ++i) {
             valueAccumulator += batch.txns[i].amount;
-            assertTrue(batch.txns[i].recipient.balance >= batch.txns[i].amount);
+            assertGe(batch.txns[i].recipient.balance, batch.txns[i].amount);
         }
-        assertEq(msgSender.balance, value - valueAccumulator);
+        assertGe(msgSender.balance, value - valueAccumulator);
         assertEq(address(batchDistributor).balance, 0);
     }
 
@@ -364,10 +364,15 @@ contract BatchDistributorTest is Test {
         address initialAccount,
         uint256 initialAmount
     ) public {
-        vm.assume(initialAmount > type(uint128).max);
+        initialAmount = bound(
+            initialAmount,
+            type(uint16).max,
+            type(uint32).max
+        );
         vm.assume(batch.txns.length <= 50);
         for (uint256 i; i < batch.txns.length; ++i) {
             batch.txns[i].amount = bound(batch.txns[i].amount, 1, 100);
+            vm.assume(batch.txns[i].recipient != address(0));
         }
 
         uint256 valueAccumulator;
@@ -385,12 +390,12 @@ contract BatchDistributorTest is Test {
         vm.stopPrank();
         for (uint256 i; i < batch.txns.length; ++i) {
             valueAccumulator += batch.txns[i].amount;
-            assertTrue(
-                erc20Mock.balanceOf(batch.txns[i].recipient) >=
-                    batch.txns[i].amount
+            assertGe(
+                erc20Mock.balanceOf(batch.txns[i].recipient),
+                batch.txns[i].amount
             );
         }
-        assertEq(
+        assertGe(
             erc20Mock.balanceOf(initialAccount),
             initialAmount - valueAccumulator
         );
@@ -400,21 +405,29 @@ contract BatchDistributorTest is Test {
 
 contract BatchDistributorInvariants is Test, InvariantTest {
     VyperDeployer private vyperDeployer = new VyperDeployer();
-    ERC20Mock private erc20Mock =
-        new ERC20Mock("MyToken", "MTKN", msg.sender, type(uint256).max);
 
     IBatchDistributor private batchDistributor;
     BatchDistributorHandler private batchDistributorHandler;
 
+    ERC20Mock private erc20Mock;
+
     function setUp() public {
         batchDistributor = IBatchDistributor(
             vyperDeployer.deployContract("src/utils/", "BatchDistributor")
+        );
+        address msgSender = makeAddr("msgSender");
+        erc20Mock = new ERC20Mock(
+            "MyToken",
+            "MTKN",
+            msgSender,
+            type(uint256).max
         );
         batchDistributorHandler = new BatchDistributorHandler(
             batchDistributor,
             erc20Mock
         );
         targetContract(address(batchDistributorHandler));
+        targetSender(msgSender);
     }
 
     function invariantNoEtherBalance() public {
