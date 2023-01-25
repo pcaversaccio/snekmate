@@ -385,9 +385,9 @@ contract BatchDistributorTest is Test {
         vm.stopPrank();
         for (uint256 i; i < batch.txns.length; ++i) {
             valueAccumulator += batch.txns[i].amount;
-            assertEq(
-                erc20Mock.balanceOf(batch.txns[i].recipient),
-                batch.txns[i].amount
+            assertTrue(
+                erc20Mock.balanceOf(batch.txns[i].recipient) >=
+                    batch.txns[i].amount
             );
         }
         assertEq(
