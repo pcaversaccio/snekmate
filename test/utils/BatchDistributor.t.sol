@@ -390,7 +390,10 @@ contract BatchDistributorTest is Test {
                 batch.txns[i].amount
             );
         }
-        assertEq(erc20Mock.balanceOf(initialAccount), initialAmount - valueAccumulator);
+        assertEq(
+            erc20Mock.balanceOf(initialAccount),
+            initialAmount - valueAccumulator
+        );
         assertEq(erc20Mock.balanceOf(address(batchDistributor)), 0);
     }
 }

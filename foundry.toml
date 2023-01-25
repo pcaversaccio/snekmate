@@ -17,5 +17,6 @@ fs_permissions = [{ access = "read-write", path = "./"}]    # set read-write acc
 ## default overrides for the CI runs
 [profile.ci]
 fuzz = { runs = 10_000 }                                    # increase the number of fuzz runs for the tests
+fuzz = { max_test_rejects = 1_000_000 }                     # increase the rejection threshold for the fuzz tests
 invariant = { runs = 5_000 }                                # increase the number of runs that must execute for each invariant test group
 verbosity = 4                                               # increase the verbosity of tests
