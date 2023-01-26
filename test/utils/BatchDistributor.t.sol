@@ -14,6 +14,8 @@ contract BatchDistributorTest is Test {
 
     IBatchDistributor private batchDistributor;
 
+    address private zeroAddress = address(0);
+
     function setUp() public {
         batchDistributor = IBatchDistributor(
             vyperDeployer.deployContract("src/utils/", "BatchDistributor")
@@ -364,6 +366,7 @@ contract BatchDistributorTest is Test {
         address initialAccount,
         uint256 initialAmount
     ) public {
+        vm.assume(initialAccount != zeroAddress);
         initialAmount = bound(
             initialAmount,
             type(uint16).max,
@@ -372,7 +375,7 @@ contract BatchDistributorTest is Test {
         vm.assume(batch.txns.length <= 50);
         for (uint256 i; i < batch.txns.length; ++i) {
             batch.txns[i].amount = bound(batch.txns[i].amount, 1, 100);
-            vm.assume(batch.txns[i].recipient != address(0));
+            vm.assume(batch.txns[i].recipient != zeroAddress);
         }
 
         uint256 valueAccumulator;
