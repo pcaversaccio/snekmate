@@ -9,7 +9,6 @@ cache = true                                                # whether to cache b
 cache_path = 'cache'                                        # where the cache is stored if enabled
 force = true                                                # whether to ignore the cache (clean build)
 fuzz = { runs = 256 }                                       # the number of fuzz runs for tests
-fuzz = { max_test_rejects = 65_536 }                        # the rejection threshold for the fuzz tests
 invariant = { runs = 256 }                                  # the number of runs that must execute for each invariant test group
 ffi = true                                                  # whether to enable foreign function interface (ffi) cheatcodes or not
 verbosity = 3                                               # the verbosity of tests
@@ -18,6 +17,5 @@ fs_permissions = [{ access = "read-write", path = "./"}]    # set read-write acc
 ## default overrides for the CI runs
 [profile.ci]
 fuzz = { runs = 10_000 }                                    # increase the number of fuzz runs for the tests
-fuzz = { max_test_rejects = 300_000 }                       # increase the rejection threshold for the fuzz tests
 invariant = { runs = 5_000 }                                # increase the number of runs that must execute for each invariant test group
 verbosity = 4                                               # increase the verbosity of tests
