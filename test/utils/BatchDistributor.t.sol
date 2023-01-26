@@ -375,7 +375,10 @@ contract BatchDistributorTest is Test {
         vm.assume(batch.txns.length <= 50);
         for (uint256 i; i < batch.txns.length; ++i) {
             batch.txns[i].amount = bound(batch.txns[i].amount, 1, 100);
-            vm.assume(batch.txns[i].recipient != zeroAddress);
+            vm.assume(
+                batch.txns[i].recipient != address(batchDistributor) &&
+                    batch.txns[i].recipient != zeroAddress
+            );
         }
 
         uint256 valueAccumulator;
@@ -438,6 +441,10 @@ contract BatchDistributorInvariants is Test, InvariantTest {
     }
 
     function invariantNoTokenBalance() public {
+        /**
+         * @dev This invariant breaks when tokens are sent directly to `batchDistributor`
+         * as part of `distribute_token`. However, this behaviour is acceptable.
+         */
         assertEq(erc20Mock.balanceOf(address(batchDistributor)), 0);
     }
 }
