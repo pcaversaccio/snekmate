@@ -218,7 +218,7 @@ contract SignatureCheckerTest is Test {
         );
     }
 
-    function testEIP1271WithNonExistentFunction() public {
+    function testEIP1271NoIsValidSignatureFunction() public {
         bytes32 hash = keccak256("WAGMI");
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(1, hash);
         bytes memory signature = abi.encodePacked(r, s, v);
