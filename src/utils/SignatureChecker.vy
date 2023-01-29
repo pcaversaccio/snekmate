@@ -103,8 +103,7 @@ def _is_valid_ERC1271_signature_now(signer: address, hash: bytes32, signature: B
     # the `isValidSignature` function. Since we enforce a length
     # check of 32 bytes for the return data, we return `False` for
     # EOA wallets instead of reverting (remember that the EVM always
-    # considers a call to an EOA as successful) because ABI encoding
-    # something with length 0 reverts.
+    # considers a call to an EOA as successful with return data `0x`).
     success, return_data = \
         raw_call(signer, _abi_encode(hash, signature, method_id=IERC1271_ISVALIDSIGNATURE_SELECTOR), max_outsize=32, is_static_call=True, revert_on_failure=False)
     return (success and (len(return_data) == 32) and (convert(return_data, bytes32) == convert(IERC1271_ISVALIDSIGNATURE_SELECTOR, bytes32)))
