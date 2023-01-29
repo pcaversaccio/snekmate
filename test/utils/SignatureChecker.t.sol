@@ -189,11 +189,12 @@ contract SignatureCheckerTest is Test {
             hash,
             signatureInvalid
         );
-        vm.expectRevert(bytes("ECDSA: invalid signature"));
-        signatureChecker.is_valid_ERC1271_signature_now(
-            address(wallet),
-            hash,
-            signatureInvalid
+        assertTrue(
+            !signatureChecker.is_valid_ERC1271_signature_now(
+                address(wallet),
+                hash,
+                signatureInvalid
+            )
         );
     }
 
@@ -211,6 +212,26 @@ contract SignatureCheckerTest is Test {
         assertTrue(
             !signatureChecker.is_valid_ERC1271_signature_now(
                 address(malicious),
+                hash,
+                signature
+            )
+        );
+    }
+
+    function testEIP1271WithNonExistentFunction() public {
+        bytes32 hash = keccak256("WAGMI");
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(1, hash);
+        bytes memory signature = abi.encodePacked(r, s, v);
+        assertTrue(
+            !signatureChecker.is_valid_signature_now(
+                address(vyperDeployer),
+                hash,
+                signature
+            )
+        );
+        assertTrue(
+            !signatureChecker.is_valid_ERC1271_signature_now(
+                address(vyperDeployer),
                 hash,
                 signature
             )
