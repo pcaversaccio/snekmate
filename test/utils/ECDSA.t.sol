@@ -24,10 +24,11 @@ contract ECDSATest is Test {
     using BytesLib for bytes;
 
     VyperDeployer private vyperDeployer = new VyperDeployer();
-    address private zeroAddress = address(0);
 
     // solhint-disable-next-line var-name-mixedcase
     IECDSA private ECDSA;
+
+    address private zeroAddress = address(0);
 
     /**
      * @dev Transforms a standard signature into an EIP-2098
@@ -130,8 +131,9 @@ contract ECDSATest is Test {
 
     function testRecoverWithInvalidSignature() public {
         /// @dev Standard signature check.
+        (, uint256 key) = makeAddrAndKey("alice");
         bytes32 hash = keccak256("WAGMI");
-        (, bytes32 r, bytes32 s) = vm.sign(1, hash);
+        (, bytes32 r, bytes32 s) = vm.sign(key, hash);
         bytes memory signatureInvalid = abi.encodePacked(r, s, bytes1(0xa0));
         vm.expectRevert(bytes("ECDSA: invalid signature"));
         ECDSA.recover_sig(hash, signatureInvalid);
@@ -139,8 +141,9 @@ contract ECDSATest is Test {
 
     function testRecoverWith0x00Value() public {
         /// @dev Standard signature check.
+        (, uint256 key) = makeAddrAndKey("alice");
         bytes32 hash = keccak256("WAGMI");
-        (, bytes32 r, bytes32 s) = vm.sign(1, hash);
+        (, bytes32 r, bytes32 s) = vm.sign(key, hash);
         bytes memory signatureWithoutVersion = abi.encodePacked(r, s);
         bytes1 version = 0x00;
         vm.expectRevert(bytes("ECDSA: invalid signature"));
@@ -152,8 +155,9 @@ contract ECDSATest is Test {
 
     function testRecoverWithWrongVersion() public {
         /// @dev Standard signature check.
+        (, uint256 key) = makeAddrAndKey("alice");
         bytes32 hash = keccak256("WAGMI");
-        (, bytes32 r, bytes32 s) = vm.sign(1, hash);
+        (, bytes32 r, bytes32 s) = vm.sign(key, hash);
         bytes memory signatureWithoutVersion = abi.encodePacked(r, s);
         bytes1 version = 0x02;
         vm.expectRevert(bytes("ECDSA: invalid signature"));
@@ -186,8 +190,9 @@ contract ECDSATest is Test {
 
     function testRecoverWithTooHighSValue() public {
         /// @dev Standard signature check.
+        (, uint256 key) = makeAddrAndKey("alice");
         bytes32 hash = keccak256("WAGMI");
-        (uint8 v, bytes32 r, bytes32 s) = vm.sign(1, hash);
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(key, hash);
         uint256 sTooHigh = uint256(s) +
             0x7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF5D576E7357A4501DDFE92F46681B20A0;
         bytes memory signature = abi.encodePacked(r, bytes32(sTooHigh), v);
