@@ -322,7 +322,9 @@ contract SignatureCheckerTest is Test {
         string calldata signer,
         string calldata message
     ) public {
-        vm.assume(keccak256(abi.encode(signer)) != keccak256(abi.encode("alice")));
+        vm.assume(
+            keccak256(abi.encode(signer)) != keccak256(abi.encode("alice"))
+        );
         (, uint256 key) = makeAddrAndKey(signer);
         bytes32 hash = keccak256(abi.encode(message));
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(key, hash);
