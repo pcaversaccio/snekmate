@@ -540,4 +540,12 @@ contract MerkleProofVerificationTest is Test {
             )
         );
     }
+
+    function testFuzzVerify(
+        bytes32[] calldata proof,
+        bytes32 root,
+        bytes32 leaf
+    ) public {
+        assertTrue(!merkleProofVerification.verify(proof, root, leaf));
+    }
 }
