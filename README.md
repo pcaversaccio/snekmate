@@ -33,6 +33,30 @@ src
    ├─ Multicall — "Multicall Functions"
 ```
 
+## 👩🏼‍⚖️ Tests
+
+This repository contains [Foundry](https://github.com/foundry-rs/foundry)-based unit tests, property-based tests (i.e. fuzzing), and invariant tests for all contracts, if applicable. All tests are run as part of the CI pipeline [`test-contracts`](./.github/workflows/test-contracts.yml).
+
+> **Note:** An _invariant_ is a property of a program that should always hold true. Fuzzing is a way of checking whether the invariant is falsifiable.
+
+| **Contract**              | **Unit Tests** | **Property-Based Tests** | **Invariant Tests** |
+| :------------------------ | :------------: | :----------------------: | :-----------------: |
+| `Ownable`                 |       ✅       |            ✅            |         ✅          |
+| `Ownable2Step`            |       ✅       |            ✅            |         ✅          |
+| `AccessControl`           |       ✅       |            ✅            |         ✅          |
+| `ERC20`                   |       ✅       |            ✅            |         ✅          |
+| `ERC721`                  |       ✅       |            ✅            |         ✅          |
+| `ERC1155`                 |       ✅       |            ✅            |         ✅          |
+| `Base64`                  |       ✅       |            ❌            |         ❌          |
+| `BatchDistributor`        |       ✅       |            ✅            |         ✅          |
+| `CreateAddress`           |       ✅       |            ✅            |         ❌          |
+| `Create2Address`          |       ✅       |            ✅            |         ❌          |
+| `ECDSA`                   |       ✅       |            ✅            |         ❌          |
+| `SignatureChecker`        |       ✅       |            ✅            |         ❌          |
+| `EIP712DomainSeparator`   |       ✅       |            ✅            |         ❌          |
+| `MerkleProofVerification` |       ✅       |            ✅            |         ❌          |
+| `Multicall`               |       ✅       |            ❌            |         ❌          |
+
 ## 🙏🏼 Acknowledgements
 
 This repository is inspired by or directly modified from many sources, primarily:
