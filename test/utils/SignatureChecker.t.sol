@@ -282,7 +282,7 @@ contract SignatureCheckerTest is Test {
         );
     }
 
-    function testEOAWithInvalidSignature(
+    function testFuzzEOAWithInvalidSignature(
         bytes calldata signature,
         string calldata message
     ) public {
