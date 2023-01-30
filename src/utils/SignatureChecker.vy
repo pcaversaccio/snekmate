@@ -96,9 +96,18 @@ def _is_valid_ERC1271_signature_now(signer: address, hash: bytes32, signature: B
     @return bool The verification whether `signature` is valid
             for the provided data.
     """
-    return_data: Bytes[32] = \
-        raw_call(signer, _abi_encode(hash, signature, method_id=IERC1271_ISVALIDSIGNATURE_SELECTOR), max_outsize=32, is_static_call=True)
-    return ((len(return_data) == 32) and (convert(return_data, bytes32) == convert(IERC1271_ISVALIDSIGNATURE_SELECTOR, bytes32)))
+    success: bool = empty(bool)
+    return_data: Bytes[32] = b""
+    # The following low-level call does not revert, but instead
+    # returns `False` if the callable contract does not implement
+    # the `isValidSignature` function. Since we perform a length
+    # check of 32 bytes for the return data in the return expression
+    # at the end, we also return `False` for EOA wallets instead
+    # of reverting (remember that the EVM always considers a call
+    # to an EOA as successful with return data `0x`).
+    success, return_data = \
+        raw_call(signer, _abi_encode(hash, signature, method_id=IERC1271_ISVALIDSIGNATURE_SELECTOR), max_outsize=32, is_static_call=True, revert_on_failure=False)
+    return (success and (len(return_data) == 32) and (convert(return_data, bytes32) == convert(IERC1271_ISVALIDSIGNATURE_SELECTOR, bytes32)))
 
 
 @internal
