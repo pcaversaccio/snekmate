@@ -513,7 +513,9 @@ contract MerkleProofVerificationTest is Test {
 
         leaves[0] = keccak256(bytes.concat(keccak256(abi.encode("a"))));
 
-        /// @dev Works for a Merkle tree containing a single leaf.
+        /**
+         * @dev Works for a Merkle tree containing a single leaf.
+         */
         assertTrue(
             merkleProofVerification.multi_proof_verify(
                 multiProof,
@@ -534,7 +536,9 @@ contract MerkleProofVerificationTest is Test {
         );
         multiProof[0] = root;
 
-        /// @dev Can prove empty leaves.
+        /**
+         * @dev Can prove empty leaves.
+         */
         assertTrue(
             merkleProofVerification.multi_proof_verify(
                 multiProof,

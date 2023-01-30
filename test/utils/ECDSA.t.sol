@@ -54,25 +54,33 @@ contract ECDSATest is Test {
     }
 
     function testRecoverWithValidSignature() public {
-        /// @dev Standard signature check.
+        /**
+         * @dev Standard signature check.
+         */
         (address alice, uint256 key) = makeAddrAndKey("alice");
         bytes32 hash = keccak256("WAGMI");
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(key, hash);
         bytes memory signature = abi.encodePacked(r, s, v);
         assertEq(alice, ECDSA.recover_sig(hash, signature));
 
-        /// @dev EIP-2098 signature check.
+        /**
+         * @dev EIP-2098 signature check.
+         */
         bytes memory signature2098 = to2098Format(signature);
         assertEq(alice, ECDSA.recover_sig(hash, signature2098));
     }
 
     function testRecoverWithTooShortSignature() public {
-        /// @dev Standard signature check.
+        /**
+         * @dev Standard signature check.
+         */
         bytes32 hash = keccak256("WAGMI");
         bytes memory signature = "0x0123456789";
         assertEq(ECDSA.recover_sig(hash, signature), zeroAddress);
 
-        /// @dev EIP-2098 signature check.
+        /**
+         * @dev EIP-2098 signature check.
+         */
         vm.expectRevert(
             abi.encodeWithSelector(
                 InvalidSignatureLength.selector,
@@ -83,7 +91,9 @@ contract ECDSATest is Test {
     }
 
     function testRecoverWithTooLongSignature() public {
-        /// @dev Standard signature check.
+        /**
+         * @dev Standard signature check.
+         */
         bytes32 hash = keccak256("WAGMI");
         bytes memory signature = bytes(
             "0x012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789"
@@ -91,7 +101,9 @@ contract ECDSATest is Test {
         vm.expectRevert();
         ECDSA.recover_sig(hash, signature);
 
-        /// @dev EIP-2098 signature check.
+        /**
+         * @dev EIP-2098 signature check.
+         */
         vm.expectRevert(
             abi.encodeWithSelector(
                 InvalidSignatureLength.selector,
@@ -102,20 +114,26 @@ contract ECDSATest is Test {
     }
 
     function testRecoverWithArbitraryMessage() public {
-        /// @dev Standard signature check.
+        /**
+         * @dev Standard signature check.
+         */
         (address alice, uint256 key) = makeAddrAndKey("alice");
         bytes32 hash = bytes32("0x5741474d49");
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(key, hash);
         bytes memory signature = abi.encodePacked(r, s, v);
         assertEq(alice, ECDSA.recover_sig(hash, signature));
 
-        /// @dev EIP-2098 signature check.
+        /**
+         * @dev EIP-2098 signature check.
+         */
         bytes memory signature2098 = to2098Format(signature);
         assertEq(alice, ECDSA.recover_sig(hash, signature2098));
     }
 
     function testRecoverWithWrongMessage() public {
-        /// @dev Standard signature check.
+        /**
+         * @dev Standard signature check.
+         */
         (address alice, uint256 key) = makeAddrAndKey("alice");
         bytes32 hashCorrect = keccak256("WAGMI");
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(key, hashCorrect);
@@ -124,13 +142,17 @@ contract ECDSATest is Test {
         address recoveredAddress = ECDSA.recover_sig(hashWrong, signature);
         assertTrue(alice != recoveredAddress);
 
-        /// @dev EIP-2098 signature check.
+        /**
+         * @dev EIP-2098 signature check.
+         */
         bytes memory signature2098 = to2098Format(signature);
         assertTrue(alice != ECDSA.recover_sig(hashWrong, signature2098));
     }
 
     function testRecoverWithInvalidSignature() public {
-        /// @dev Standard signature check.
+        /**
+         * @dev Standard signature check.
+         */
         (, uint256 key) = makeAddrAndKey("alice");
         bytes32 hash = keccak256("WAGMI");
         (, bytes32 r, bytes32 s) = vm.sign(key, hash);
@@ -140,7 +162,9 @@ contract ECDSATest is Test {
     }
 
     function testRecoverWith0x00Value() public {
-        /// @dev Standard signature check.
+        /**
+         * @dev Standard signature check.
+         */
         (, uint256 key) = makeAddrAndKey("alice");
         bytes32 hash = keccak256("WAGMI");
         (, bytes32 r, bytes32 s) = vm.sign(key, hash);
@@ -154,7 +178,9 @@ contract ECDSATest is Test {
     }
 
     function testRecoverWithWrongVersion() public {
-        /// @dev Standard signature check.
+        /**
+         * @dev Standard signature check.
+         */
         (, uint256 key) = makeAddrAndKey("alice");
         bytes32 hash = keccak256("WAGMI");
         (, bytes32 r, bytes32 s) = vm.sign(key, hash);
@@ -168,7 +194,9 @@ contract ECDSATest is Test {
     }
 
     function testRecoverWithCorrectVersion() public {
-        /// @dev Standard signature check.
+        /**
+         * @dev Standard signature check.
+         */
         (address alice, uint256 key) = makeAddrAndKey("alice");
         bytes32 hash = keccak256("WAGMI");
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(key, hash);
@@ -181,7 +209,9 @@ contract ECDSATest is Test {
             )
         );
 
-        /// @dev EIP-2098 signature check.
+        /**
+         * @dev EIP-2098 signature check.
+         */
         bytes memory signature2098 = to2098Format(
             abi.encodePacked(signatureWithoutVersion, v)
         );
@@ -189,7 +219,9 @@ contract ECDSATest is Test {
     }
 
     function testRecoverWithTooHighSValue() public {
-        /// @dev Standard signature check.
+        /**
+         * @dev Standard signature check.
+         */
         (, uint256 key) = makeAddrAndKey("alice");
         bytes32 hash = keccak256("WAGMI");
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(key, hash);
@@ -199,7 +231,9 @@ contract ECDSATest is Test {
         vm.expectRevert(bytes("ECDSA: invalid signature 's' value"));
         ECDSA.recover_sig(hash, signature);
 
-        /// @dev EIP-2098 signature check.
+        /**
+         * @dev EIP-2098 signature check.
+         */
         vm.expectRevert(
             abi.encodeWithSelector(
                 InvalidSignatureSValue.selector,
@@ -232,14 +266,18 @@ contract ECDSATest is Test {
         string calldata signer,
         string calldata message
     ) public {
-        /// @dev Standard signature check.
+        /**
+         * @dev Standard signature check.
+         */
         (address alice, uint256 key) = makeAddrAndKey(signer);
         bytes32 hash = keccak256(abi.encode(message));
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(key, hash);
         bytes memory signature = abi.encodePacked(r, s, v);
         assertEq(alice, ECDSA.recover_sig(hash, signature));
 
-        /// @dev EIP-2098 signature check.
+        /**
+         * @dev EIP-2098 signature check.
+         */
         bytes memory signature2098 = to2098Format(signature);
         assertEq(alice, ECDSA.recover_sig(hash, signature2098));
     }
@@ -249,7 +287,9 @@ contract ECDSATest is Test {
         string calldata message,
         bytes32 digest
     ) public {
-        /// @dev Standard signature check.
+        /**
+         * @dev Standard signature check.
+         */
         (address alice, uint256 key) = makeAddrAndKey(signer);
         bytes32 hashCorrect = keccak256(abi.encode(message));
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(key, hashCorrect);
@@ -257,7 +297,9 @@ contract ECDSATest is Test {
         address recoveredAddress = ECDSA.recover_sig(digest, signature);
         assertTrue(alice != recoveredAddress);
 
-        /// @dev EIP-2098 signature check.
+        /**
+         * @dev EIP-2098 signature check.
+         */
         bytes memory signature2098 = to2098Format(signature);
         assertTrue(alice != ECDSA.recover_sig(digest, signature2098));
     }
@@ -267,12 +309,16 @@ contract ECDSATest is Test {
         string calldata message
     ) public {
         vm.assume(signature.length < 64);
-        /// @dev Standard signature check.
+        /**
+         * @dev Standard signature check.
+         */
         bytes32 hash = keccak256(abi.encode(message));
         address recoveredAddress = ECDSA.recover_sig(hash, signature);
         assertEq(recoveredAddress, zeroAddress);
 
-        /// @dev EIP-2098 signature check.
+        /**
+         * @dev EIP-2098 signature check.
+         */
         vm.expectRevert(
             abi.encodeWithSelector(
                 InvalidSignatureLength.selector,
@@ -287,12 +333,16 @@ contract ECDSATest is Test {
         string calldata message
     ) public {
         vm.assume(signature.length > 65);
-        /// @dev Standard signature check.
+        /**
+         * @dev Standard signature check.
+         */
         bytes32 hash = keccak256(abi.encode(message));
         vm.expectRevert();
         ECDSA.recover_sig(hash, signature);
 
-        /// @dev EIP-2098 signature check.
+        /**
+         * @dev EIP-2098 signature check.
+         */
         vm.expectRevert(
             abi.encodeWithSelector(
                 InvalidSignatureLength.selector,

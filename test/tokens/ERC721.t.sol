@@ -394,7 +394,9 @@ contract ERC721Test is Test {
         vm.stopPrank();
         vm.revertTo(snapshot);
 
-        /// @dev Validates all possible reverts.
+        /**
+         * @dev Validates all possible reverts.
+         */
         _transferReverts(
             transferFunction,
             owner,
