@@ -18,7 +18,7 @@ Please consider writing [Foundry](https://github.com/foundry-rs/foundry)-based u
 
 ## 🪅 Code Style
 
-🐍Vyper code should be written in a consistent format that follows our [🐍Vyper Conventions](#🐍vyper-conventions).
+🐍Vyper code should be written in a consistent format that follows our [🐍Vyper Conventions](#vyper-conventions).
 
 Solidity test code should be written in a consistent format enforced by a linter and prettier that follows the official [Solidity Style Guide](https://docs.soliditylang.org/en/latest/style-guide.html). Also, we refer to Foundry's [best practices](https://book.getfoundry.sh/tutorials/best-practices?highlight=security#best-practices).
 
