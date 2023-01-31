@@ -2,6 +2,7 @@
 pragma solidity ^0.8.17;
 
 import {Test} from "forge-std/Test.sol";
+import {InvariantTest} from "forge-std/InvariantTest.sol";
 import {VyperDeployer} from "utils/VyperDeployer.sol";
 
 import {IERC20Extended} from "./interfaces/IERC20Extended.sol";
@@ -1508,5 +1509,120 @@ contract ERC20Test is Test {
         vm.prank(nonOwner);
         vm.expectRevert(bytes("Ownable: caller is not the owner"));
         ERC20Extended.renounce_ownership();
+    }
+}
+
+contract ERC20Invariants is Test, InvariantTest {
+    string private constant _NAME = "MyToken";
+    string private constant _SYMBOL = "WAGMI";
+    string private constant _NAME_EIP712 = "MyToken";
+    string private constant _VERSION_EIP712 = "1";
+    uint256 private constant _INITIAL_SUPPLY = type(uint8).max;
+
+    VyperDeployer private vyperDeployer = new VyperDeployer();
+
+    // solhint-disable-next-line var-name-mixedcase
+    IERC20Extended private ERC20Extended;
+    ERC20Handler private erc20Handler;
+
+    address private deployer = address(vyperDeployer);
+
+    function setUp() public {
+        bytes memory args = abi.encode(
+            _NAME,
+            _SYMBOL,
+            _INITIAL_SUPPLY,
+            _NAME_EIP712,
+            _VERSION_EIP712
+        );
+        ERC20Extended = IERC20Extended(
+            vyperDeployer.deployContract("src/tokens/", "ERC20", args)
+        );
+        erc20Handler = new ERC20Handler(
+            ERC20Extended,
+            _INITIAL_SUPPLY,
+            deployer
+        );
+        targetContract(address(erc20Handler));
+        targetSender(deployer);
+    }
+
+    function invariantTotalSupply() public {
+        assertEq(ERC20Extended.totalSupply(), erc20Handler.totalSupply());
+    }
+
+    function invariantOwner() public {
+        assertEq(ERC20Extended.owner(), erc20Handler.owner());
+    }
+}
+
+contract ERC20Handler {
+    address public owner;
+    uint256 public totalSupply;
+
+    IERC20Extended private token;
+
+    address private zeroAddress = address(0);
+
+    constructor(IERC20Extended token_, uint256 initialSupply_, address owner_) {
+        token = token_;
+        totalSupply = initialSupply_ * 10 ** uint256(token.decimals());
+        owner = owner_;
+    }
+
+    function transfer(address to, uint256 amount) public {
+        token.transfer(to, amount);
+    }
+
+    function approve(address spender, uint256 amount) public {
+        token.approve(spender, amount);
+    }
+
+    function transferFrom(
+        address ownerAddr,
+        address to,
+        uint256 amount
+    ) public {
+        token.transferFrom(ownerAddr, to, amount);
+    }
+
+    function increase_allowance(address spender, uint256 addedAmount) public {
+        token.increase_allowance(spender, addedAmount);
+    }
+
+    function decrease_allowance(
+        address spender,
+        uint256 subtractedAmount
+    ) public {
+        token.decrease_allowance(spender, subtractedAmount);
+    }
+
+    function burn(uint256 amount) public {
+        token.burn(amount);
+        totalSupply -= amount;
+    }
+
+    function burn_from(address ownerAddr, uint256 amount) public {
+        token.burn_from(ownerAddr, amount);
+        totalSupply -= amount;
+    }
+
+    function mint(address ownerAddr, uint256 amount) public {
+        token.mint(ownerAddr, amount);
+        totalSupply += amount;
+    }
+
+    function set_minter(address minter, bool status) public {
+        token.set_minter(minter, status);
+    }
+
+    function transfer_ownership(address newOwner) public {
+        token.transfer_ownership(newOwner);
+        owner = newOwner;
+    }
+
+    function renounce_ownership() public {
+        token.renounce_ownership();
+        owner = zeroAddress;
     }
 }
