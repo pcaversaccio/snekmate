@@ -385,8 +385,8 @@ contract ERC20Test is Test {
         vm.expectEmit(true, true, false, true);
         emit Approval(owner, spender, amount);
         bool returnValue1 = ERC20Extended.approve(spender, amount);
-        assertEq(ERC20Extended.allowance(owner, spender), amount);
         assertTrue(returnValue1);
+        assertEq(ERC20Extended.allowance(owner, spender), amount);
 
         vm.expectEmit(true, true, false, true);
         emit Approval(owner, spender, amount + addedAmount);
@@ -424,8 +424,8 @@ contract ERC20Test is Test {
         vm.expectEmit(true, true, false, true);
         emit Approval(owner, spender, amount);
         bool returnValue1 = ERC20Extended.approve(spender, amount);
-        assertEq(ERC20Extended.allowance(owner, spender), amount);
         assertTrue(returnValue1);
+        assertEq(ERC20Extended.allowance(owner, spender), amount);
 
         vm.expectEmit(true, true, false, true);
         emit Approval(owner, spender, amount + addedAmount);
@@ -464,8 +464,8 @@ contract ERC20Test is Test {
         vm.expectEmit(true, true, false, true);
         emit Approval(owner, spender, amount);
         bool returnValue1 = ERC20Extended.approve(spender, amount);
-        assertEq(ERC20Extended.allowance(owner, spender), amount);
         assertTrue(returnValue1);
+        assertEq(ERC20Extended.allowance(owner, spender), amount);
 
         vm.expectEmit(true, true, false, true);
         emit Approval(owner, spender, amount - subtractedAmount);
@@ -490,8 +490,8 @@ contract ERC20Test is Test {
         vm.expectEmit(true, true, false, true);
         emit Approval(owner, spender, amount);
         bool returnValue1 = ERC20Extended.approve(spender, amount);
-        assertEq(ERC20Extended.allowance(owner, spender), amount);
         assertTrue(returnValue1);
+        assertEq(ERC20Extended.allowance(owner, spender), amount);
 
         vm.expectEmit(true, true, false, true);
         emit Approval(owner, spender, amount - subtractedAmount);
@@ -516,8 +516,8 @@ contract ERC20Test is Test {
         vm.expectEmit(true, true, false, true);
         emit Approval(owner, spender, amount);
         bool returnValue1 = ERC20Extended.approve(spender, amount);
-        assertEq(ERC20Extended.allowance(owner, spender), amount);
         assertTrue(returnValue1);
+        assertEq(ERC20Extended.allowance(owner, spender), amount);
 
         vm.expectEmit(true, true, false, true);
         emit Approval(owner, spender, amount - subtractedAmount);
@@ -542,8 +542,8 @@ contract ERC20Test is Test {
         vm.expectEmit(true, true, false, true);
         emit Approval(owner, spender, amount);
         bool returnValue1 = ERC20Extended.approve(spender, amount);
-        assertEq(ERC20Extended.allowance(owner, spender), amount);
         assertTrue(returnValue1);
+        assertEq(ERC20Extended.allowance(owner, spender), amount);
 
         vm.expectEmit(true, true, false, true);
         emit Approval(owner, spender, amount - subtractedAmount);
@@ -574,8 +574,8 @@ contract ERC20Test is Test {
         vm.expectEmit(true, true, false, true);
         emit Approval(owner, spender, amount);
         bool returnValue = ERC20Extended.approve(spender, amount);
-        assertEq(ERC20Extended.allowance(owner, spender), amount);
         assertTrue(returnValue);
+        assertEq(ERC20Extended.allowance(owner, spender), amount);
 
         vm.expectRevert(bytes("ERC20: decreased allowance below zero"));
         ERC20Extended.decrease_allowance(spender, subtractedAmount);
@@ -1084,5 +1084,175 @@ contract ERC20Test is Test {
     function testRenounceOwnershipNonOwner() public {
         vm.expectRevert(bytes("Ownable: caller is not the owner"));
         ERC20Extended.renounce_ownership();
+    }
+
+    function testFuzzTransferSuccess(address to, uint256 amount) public {
+        address from = address(this);
+        vm.assume(to != zeroAddress && to != from && to != deployer);
+        uint256 give = type(uint256).max;
+        deal(ERC20ExtendedAddr, from, give);
+        vm.expectEmit(true, true, false, true);
+        emit Transfer(from, to, amount);
+        bool returnValue = ERC20Extended.transfer(to, amount);
+        assertTrue(returnValue);
+        assertEq(ERC20Extended.balanceOf(from), give - amount);
+        assertEq(ERC20Extended.balanceOf(to), amount);
+    }
+
+    function testFuzzTransferInvalidAmount(
+        address owner,
+        address to,
+        uint256 amount
+    ) public {
+        vm.assume(
+            owner != deployer &&
+                owner != zeroAddress &&
+                to != zeroAddress &&
+                amount > 0
+        );
+        vm.prank(owner);
+        vm.expectRevert(bytes("ERC20: transfer amount exceeds balance"));
+        ERC20Extended.transfer(to, amount);
+    }
+
+    function testFuzzApproveSuccess(address spender, uint256 amount) public {
+        vm.assume(spender != zeroAddress);
+        address owner = address(this);
+        vm.expectEmit(true, true, false, true);
+        emit Approval(owner, spender, amount);
+        bool returnValue = ERC20Extended.approve(spender, amount);
+        assertTrue(returnValue);
+        assertEq(ERC20Extended.allowance(owner, spender), amount);
+    }
+
+    function testFuzzTransferFromSuccess(
+        address owner,
+        address to,
+        uint256 amount
+    ) public {
+        address spender = address(this);
+        vm.assume(
+            to != zeroAddress &&
+                owner != zeroAddress &&
+                owner != to &&
+                to != spender &&
+                to != deployer
+        );
+        amount = bound(amount, 0, type(uint64).max);
+        uint256 give = type(uint256).max;
+        deal(ERC20ExtendedAddr, owner, give);
+        vm.startPrank(owner);
+        ERC20Extended.approve(spender, amount);
+        vm.stopPrank();
+
+        vm.expectEmit(true, true, false, true);
+        emit Approval(owner, spender, 0);
+        vm.expectEmit(true, true, false, true);
+        emit Transfer(owner, to, amount);
+        bool returnValue = ERC20Extended.transferFrom(owner, to, amount);
+        assertTrue(returnValue);
+        assertEq(ERC20Extended.balanceOf(owner), give - amount);
+        assertEq(ERC20Extended.balanceOf(to), amount);
+        assertEq(ERC20Extended.allowance(owner, spender), 0);
+    }
+
+    function testFuzzTransferFromInsufficientAllowance(
+        address owner,
+        address to,
+        uint256 amount,
+        uint8 increment
+    ) public {
+        address spender = address(this);
+        vm.assume(to != zeroAddress && owner != zeroAddress && increment > 0);
+        amount = bound(amount, 0, type(uint64).max);
+        uint256 give = type(uint256).max;
+        deal(ERC20ExtendedAddr, owner, give);
+        vm.startPrank(owner);
+        ERC20Extended.approve(spender, amount);
+        vm.stopPrank();
+
+        vm.expectRevert(bytes("ERC20: insufficient allowance"));
+        ERC20Extended.transferFrom(owner, to, amount + increment);
+    }
+
+    function testFuzzIncreaseAllowanceSuccess(
+        address spender,
+        uint256 addedAmount
+    ) public {
+        vm.assume(spender != zeroAddress);
+        address owner = address(this);
+        addedAmount = bound(addedAmount, 0, type(uint64).max);
+        vm.expectEmit(true, true, false, true);
+        emit Approval(owner, spender, addedAmount);
+        bool returnValue = ERC20Extended.increase_allowance(
+            spender,
+            addedAmount
+        );
+        assertTrue(returnValue);
+        assertEq(ERC20Extended.allowance(owner, spender), addedAmount);
+    }
+
+    function testFuzzDecreaseAllowanceSuccess(
+        address spender,
+        uint256 amount,
+        uint256 subtractedAmount
+    ) public {
+        vm.assume(spender != zeroAddress && amount >= subtractedAmount);
+        address owner = address(this);
+        vm.expectEmit(true, true, false, true);
+        emit Approval(owner, spender, amount);
+        bool returnValue1 = ERC20Extended.approve(spender, amount);
+        assertTrue(returnValue1);
+        assertEq(ERC20Extended.allowance(owner, spender), amount);
+
+        vm.expectEmit(true, true, false, true);
+        emit Approval(owner, spender, amount - subtractedAmount);
+        bool returnValue2 = ERC20Extended.decrease_allowance(
+            spender,
+            subtractedAmount
+        );
+        assertTrue(returnValue2);
+        assertEq(
+            ERC20Extended.allowance(owner, spender),
+            amount - subtractedAmount
+        );
+    }
+
+    function testFuzzDecreaseAllowanceInvalidAmount(
+        address spender,
+        uint256 amount,
+        uint256 subtractedAmount
+    ) public {
+        vm.assume(spender != zeroAddress && amount < subtractedAmount);
+        address owner = address(this);
+        vm.expectEmit(true, true, false, true);
+        emit Approval(owner, spender, amount);
+        bool returnValue1 = ERC20Extended.approve(spender, amount);
+        assertTrue(returnValue1);
+        assertEq(ERC20Extended.allowance(owner, spender), amount);
+
+        vm.expectRevert(bytes("ERC20: decreased allowance below zero"));
+        ERC20Extended.decrease_allowance(spender, subtractedAmount);
+    }
+
+    function testFuzzBurnSuccessCase(uint256 amount) public {
+        amount = bound(amount, 0, type(uint64).max);
+        address owner = address(this);
+        uint256 totalSupply = ERC20Extended.totalSupply();
+        uint256 give = type(uint256).max;
+        deal(ERC20ExtendedAddr, owner, give);
+        vm.expectEmit(true, true, false, true);
+        emit Transfer(owner, zeroAddress, amount);
+        ERC20Extended.burn(amount);
+        assertEq(ERC20Extended.balanceOf(owner), give - amount);
+        assertEq(ERC20Extended.totalSupply(), totalSupply - amount);
+        vm.stopPrank();
+    }
+
+    function testFuzzBurnInvalidAmount(address owner, uint256 amount) public {
+        vm.assume(owner != deployer && owner != zeroAddress && amount > 0);
+        vm.prank(owner);
+        vm.expectRevert(bytes("ERC20: burn amount exceeds balance"));
+        ERC20Extended.burn(amount);
     }
 }
