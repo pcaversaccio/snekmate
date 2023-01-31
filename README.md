@@ -58,6 +58,7 @@ This repository contains [Foundry](https://github.com/foundry-rs/foundry)-based 
 | `Multicall`               |       ✅       |            ❌            |         ❌          |
 
 > ✅ Test Type Implemented
+
 > ❌ Test Type Not Implemented
 
 ## 🙏🏼 Acknowledgements
