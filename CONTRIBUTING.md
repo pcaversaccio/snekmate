@@ -18,7 +18,7 @@ We particularly welcome support in the following areas:
 
 ## 🙋‍♀️ Opening an Issue
 
-If you encounter a bug or want to suggest a feature, you are welcome to [open a issue](https://github.com/pcaversaccio/snekmate/issues/new/choose). For serious bugs, please do _not_ open a issue, but refer to our [Security Policy](./SECURITY.md).
+If you encounter a bug or want to suggest a feature, you are welcome to [open a issue](https://github.com/pcaversaccio/snekmate/issues/new/choose). For serious bugs, please do **not** open a issue, but refer to our [Security Policy](./SECURITY.md).
 
 Before opening an issue, please review the existing open and closed issues as well as the existing [discussions](https://github.com/pcaversaccio/snekmate/discussions) and consider commenting on one of them instead.
 
