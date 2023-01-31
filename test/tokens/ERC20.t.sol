@@ -1238,9 +1238,9 @@ contract ERC20Test is Test {
     function testFuzzBurnSuccessCase(uint256 amount) public {
         amount = bound(amount, 0, type(uint64).max);
         address owner = address(this);
+        uint256 give = type(uint128).max;
+        deal(ERC20ExtendedAddr, owner, give, true);
         uint256 totalSupply = ERC20Extended.totalSupply();
-        uint256 give = type(uint256).max;
-        deal(ERC20ExtendedAddr, owner, give);
         vm.expectEmit(true, true, false, true);
         emit Transfer(owner, zeroAddress, amount);
         ERC20Extended.burn(amount);
@@ -1260,8 +1260,8 @@ contract ERC20Test is Test {
         vm.assume(owner != zeroAddress && owner != deployer);
         address spender = address(this);
         amount = bound(amount, 0, type(uint64).max);
-        uint256 give = type(uint256).max;
-        deal(ERC20ExtendedAddr, owner, give);
+        uint256 give = type(uint128).max;
+        deal(ERC20ExtendedAddr, owner, give, true);
         uint256 totalSupply = ERC20Extended.totalSupply();
         vm.startPrank(owner);
         ERC20Extended.approve(spender, amount);
@@ -1437,6 +1437,7 @@ contract ERC20Test is Test {
         vm.assume(
             newOwner1 != zeroAddress &&
                 newOwner1 != deployer &&
+                newOwner1 != newOwner2 &&
                 newOwner2 != zeroAddress
         );
         address oldOwner = deployer;
