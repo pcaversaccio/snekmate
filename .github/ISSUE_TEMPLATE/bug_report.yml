@@ -1,5 +1,5 @@
 name: "Bug Report"
-description: "Report a bug for snekmate."
+description: "Report a bug for 🐍 snekmate."
 title: "[Bug-Candidate]: "
 labels:
   - bug 🐛
