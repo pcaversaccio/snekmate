@@ -57,6 +57,9 @@ This repository contains [Foundry](https://github.com/foundry-rs/foundry)-based 
 | `MerkleProofVerification` |       ✅       |            ✅            |         ❌          |
 | `Multicall`               |       ✅       |            ❌            |         ❌          |
 
+> ✅ Test Type Implemented
+> ❌ Test Type Not Implemented
+
 ## 🙏🏼 Acknowledgements
 
 This repository is inspired by or directly modified from many sources, primarily:
