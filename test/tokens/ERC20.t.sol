@@ -1108,7 +1108,7 @@ contract ERC20Test is Test {
             owner != deployer &&
                 owner != zeroAddress &&
                 to != zeroAddress &&
-                amount > 0
+                amount != 0
         );
         vm.prank(owner);
         vm.expectRevert(bytes("ERC20: transfer amount exceeds balance"));
@@ -1163,7 +1163,7 @@ contract ERC20Test is Test {
         uint8 increment
     ) public {
         address spender = address(this);
-        vm.assume(to != zeroAddress && owner != zeroAddress && increment > 0);
+        vm.assume(to != zeroAddress && owner != zeroAddress && increment != 0);
         amount = bound(amount, 0, type(uint64).max);
         uint256 give = type(uint256).max;
         deal(ERC20ExtendedAddr, owner, give);
@@ -1250,9 +1250,262 @@ contract ERC20Test is Test {
     }
 
     function testFuzzBurnInvalidAmount(address owner, uint256 amount) public {
-        vm.assume(owner != deployer && owner != zeroAddress && amount > 0);
+        vm.assume(owner != deployer && owner != zeroAddress && amount != 0);
         vm.prank(owner);
         vm.expectRevert(bytes("ERC20: burn amount exceeds balance"));
         ERC20Extended.burn(amount);
+    }
+
+    function testFuzzBurnFromSuccess(address owner, uint256 amount) public {
+        vm.assume(owner != zeroAddress && owner != deployer);
+        address spender = address(this);
+        amount = bound(amount, 0, type(uint64).max);
+        uint256 give = type(uint256).max;
+        deal(ERC20ExtendedAddr, owner, give);
+        uint256 totalSupply = ERC20Extended.totalSupply();
+        vm.startPrank(owner);
+        ERC20Extended.approve(spender, amount);
+        vm.stopPrank();
+
+        vm.expectEmit(true, true, false, true);
+        emit Transfer(owner, zeroAddress, amount);
+        ERC20Extended.burn_from(owner, amount);
+        assertEq(ERC20Extended.balanceOf(owner), give - amount);
+        assertEq(ERC20Extended.totalSupply(), totalSupply - amount);
+        assertEq(ERC20Extended.allowance(owner, spender), 0);
+    }
+
+    function testFuzzBurnFromInsufficientAllowance(
+        address owner,
+        uint256 amount,
+        uint8 increment
+    ) public {
+        vm.assume(owner != zeroAddress && owner != deployer && increment != 0);
+        address spender = address(this);
+        amount = bound(amount, 0, type(uint64).max);
+        uint256 give = type(uint256).max;
+        deal(ERC20ExtendedAddr, owner, give);
+        vm.startPrank(owner);
+        ERC20Extended.approve(spender, amount);
+        vm.stopPrank();
+
+        vm.expectRevert(bytes("ERC20: insufficient allowance"));
+        ERC20Extended.burn_from(owner, amount + increment);
+    }
+
+    function testFuzzMintSuccess(string calldata owner, uint256 amount) public {
+        address minter = deployer;
+        address ownerAddr = makeAddr(owner);
+        amount = bound(amount, 0, type(uint64).max);
+        uint256 multiplier = 10 ** uint256(ERC20Extended.decimals());
+        vm.startPrank(minter);
+        vm.expectEmit(true, true, false, true);
+        emit Transfer(zeroAddress, ownerAddr, amount);
+        ERC20Extended.mint(ownerAddr, amount);
+        assertEq(ERC20Extended.balanceOf(ownerAddr), amount);
+        assertEq(
+            ERC20Extended.totalSupply(),
+            (amount + _INITIAL_SUPPLY * multiplier)
+        );
+        vm.stopPrank();
+    }
+
+    function testFuzzMintNonMinter(
+        string calldata owner,
+        uint256 amount
+    ) public {
+        vm.expectRevert(bytes("AccessControl: access is denied"));
+        ERC20Extended.mint(makeAddr(owner), amount);
+    }
+
+    function testFuzzSetMinterSuccess(string calldata minter) public {
+        address owner = deployer;
+        address minterAddr = makeAddr(minter);
+        vm.startPrank(owner);
+        vm.expectEmit(true, false, false, true);
+        emit RoleMinterChanged(minterAddr, true);
+        ERC20Extended.set_minter(minterAddr, true);
+        assertTrue(ERC20Extended.is_minter(minterAddr));
+
+        vm.expectEmit(true, false, false, true);
+        emit RoleMinterChanged(minterAddr, false);
+        ERC20Extended.set_minter(minterAddr, false);
+        assertTrue(!ERC20Extended.is_minter(minterAddr));
+        vm.stopPrank();
+    }
+
+    function testFuzzSetMinterNonOwner(string calldata minter) public {
+        vm.expectRevert(bytes("Ownable: caller is not the owner"));
+        ERC20Extended.set_minter(makeAddr(minter), true);
+    }
+
+    function testFuzzPermitSuccess(
+        string calldata owner,
+        string calldata spender,
+        uint16 increment
+    ) public {
+        (address ownerAddr, uint256 key) = makeAddrAndKey(owner);
+        address spenderAddr = makeAddr(spender);
+        uint256 amount = block.number;
+        uint256 nonce = ERC20Extended.nonces(ownerAddr);
+        // solhint-disable-next-line not-rely-on-time
+        uint256 deadline = block.timestamp + increment;
+        bytes32 domainSeparator = ERC20Extended.DOMAIN_SEPARATOR();
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(
+            key,
+            keccak256(
+                abi.encodePacked(
+                    "\x19\x01",
+                    domainSeparator,
+                    keccak256(
+                        abi.encode(
+                            _PERMIT_TYPE_HASH,
+                            ownerAddr,
+                            spenderAddr,
+                            amount,
+                            nonce,
+                            deadline
+                        )
+                    )
+                )
+            )
+        );
+        vm.expectEmit(true, true, false, true);
+        emit Approval(ownerAddr, spenderAddr, amount);
+        ERC20Extended.permit(ownerAddr, spenderAddr, amount, deadline, v, r, s);
+        assertEq(ERC20Extended.allowance(ownerAddr, spenderAddr), amount);
+        assertEq(ERC20Extended.nonces(ownerAddr), 1);
+    }
+
+    function testFuzzPermitInvalid(
+        string calldata owner,
+        string calldata spender,
+        uint16 increment
+    ) public {
+        vm.assume(
+            keccak256(abi.encode(owner)) != keccak256(abi.encode("ownerWrong"))
+        );
+        (address ownerAddr, ) = makeAddrAndKey(owner);
+        (, uint256 keyWrong) = makeAddrAndKey("ownerWrong");
+        address spenderAddr = makeAddr(spender);
+        uint256 amount = block.number;
+        uint256 nonce = ERC20Extended.nonces(ownerAddr);
+        // solhint-disable-next-line not-rely-on-time
+        uint256 deadline = block.timestamp + increment;
+        bytes32 domainSeparator = ERC20Extended.DOMAIN_SEPARATOR();
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(
+            keyWrong,
+            keccak256(
+                abi.encodePacked(
+                    "\x19\x01",
+                    domainSeparator,
+                    keccak256(
+                        abi.encode(
+                            _PERMIT_TYPE_HASH,
+                            ownerAddr,
+                            spenderAddr,
+                            amount,
+                            nonce,
+                            deadline
+                        )
+                    )
+                )
+            )
+        );
+        vm.expectRevert(bytes("ERC20Permit: invalid signature"));
+        ERC20Extended.permit(ownerAddr, spenderAddr, amount, deadline, v, r, s);
+    }
+
+    function testFuzzDomainSeparator(uint8 increment) public {
+        vm.chainId(block.chainid + increment);
+        bytes32 digest = keccak256(
+            abi.encode(
+                _TYPE_HASH,
+                keccak256(bytes(_NAME_EIP712)),
+                keccak256(bytes(_VERSION_EIP712)),
+                block.chainid,
+                ERC20ExtendedAddr
+            )
+        );
+        assertEq(ERC20Extended.DOMAIN_SEPARATOR(), digest);
+    }
+
+    function testFuzzTransferOwnershipSuccess(
+        address newOwner1,
+        address newOwner2
+    ) public {
+        vm.assume(
+            newOwner1 != zeroAddress &&
+                newOwner1 != deployer &&
+                newOwner2 != zeroAddress
+        );
+        address oldOwner = deployer;
+        vm.startPrank(oldOwner);
+        vm.expectEmit(true, false, false, true);
+        emit RoleMinterChanged(oldOwner, false);
+        vm.expectEmit(true, true, false, false);
+        emit OwnershipTransferred(oldOwner, newOwner1);
+        vm.expectEmit(true, false, false, true);
+        emit RoleMinterChanged(newOwner1, true);
+        ERC20Extended.transfer_ownership(newOwner1);
+        assertEq(ERC20Extended.owner(), newOwner1);
+        assertTrue(!ERC20Extended.is_minter(oldOwner));
+        assertTrue(ERC20Extended.is_minter(newOwner1));
+        vm.stopPrank();
+
+        vm.startPrank(newOwner1);
+        vm.expectEmit(true, false, false, true);
+        emit RoleMinterChanged(newOwner1, false);
+        vm.expectEmit(true, true, false, false);
+        emit OwnershipTransferred(newOwner1, newOwner2);
+        vm.expectEmit(true, false, false, true);
+        emit RoleMinterChanged(newOwner2, true);
+        emit OwnershipTransferred(newOwner1, newOwner2);
+        ERC20Extended.transfer_ownership(newOwner2);
+        assertEq(ERC20Extended.owner(), newOwner2);
+        assertTrue(!ERC20Extended.is_minter(newOwner1));
+        assertTrue(ERC20Extended.is_minter(newOwner2));
+        vm.stopPrank();
+    }
+
+    function testFuzzTransferOwnershipNonOwner(
+        address nonOwner,
+        address newOwner
+    ) public {
+        vm.assume(nonOwner != deployer);
+        vm.prank(nonOwner);
+        vm.expectRevert(bytes("Ownable: caller is not the owner"));
+        ERC20Extended.transfer_ownership(newOwner);
+    }
+
+    function testFuzzRenounceOwnershipSuccess(address newOwner) public {
+        vm.assume(newOwner != zeroAddress);
+        address oldOwner = deployer;
+        address renounceAddress = zeroAddress;
+        vm.startPrank(oldOwner);
+        vm.expectEmit(true, false, false, true);
+        emit RoleMinterChanged(oldOwner, false);
+        vm.expectEmit(true, true, false, false);
+        emit OwnershipTransferred(oldOwner, newOwner);
+        vm.expectEmit(true, false, false, true);
+        emit RoleMinterChanged(newOwner, true);
+        ERC20Extended.transfer_ownership(newOwner);
+        vm.stopPrank();
+
+        vm.startPrank(newOwner);
+        vm.expectEmit(true, false, false, true);
+        emit RoleMinterChanged(newOwner, false);
+        vm.expectEmit(true, true, false, false);
+        emit OwnershipTransferred(newOwner, renounceAddress);
+        ERC20Extended.renounce_ownership();
+        assertEq(ERC20Extended.owner(), renounceAddress);
+        vm.stopPrank();
+    }
+
+    function testFuzzRenounceOwnershipNonOwner(address nonOwner) public {
+        vm.assume(nonOwner != deployer);
+        vm.prank(nonOwner);
+        vm.expectRevert(bytes("Ownable: caller is not the owner"));
+        ERC20Extended.renounce_ownership();
     }
 }
