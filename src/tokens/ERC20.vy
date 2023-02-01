@@ -57,14 +57,6 @@ import interfaces.IERC20Permit as IERC20Permit
 implements: IERC20Permit
 
 
-# @dev Constant used as part of the ECDSA recovery function.
-_MALLEABILITY_THRESHOLD: constant(bytes32) = 0x7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF5D576E7357A4501DDFE92F46681B20A0
-
-
-# @dev The 32-byte type hash of the `permit` function.
-_PERMIT_TYPE_HASH: constant(bytes32) = keccak256("Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)")
-
-
 # @dev Returns the decimals places of the token.
 # The default value is 18.
 # @notice If you declare a variable as `public`,
@@ -76,6 +68,26 @@ _PERMIT_TYPE_HASH: constant(bytes32) = keccak256("Permit(address owner,address s
 # `immutable` and `constant` variables `name`,
 # `symbol`, and `decimals`.
 decimals: public(constant(uint8)) = 18
+
+
+# @dev Constant used as part of the ECDSA recovery function.
+_MALLEABILITY_THRESHOLD: constant(bytes32) = 0x7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF5D576E7357A4501DDFE92F46681B20A0
+
+
+# @dev The 32-byte type hash of the `permit` function.
+_PERMIT_TYPE_HASH: constant(bytes32) = keccak256("Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)")
+
+
+# @dev Returns the name of the token.
+# @notice See comment on lower case letters
+# above at `decimals`.
+name: public(immutable(String[25]))
+
+
+# @dev Returns the symbol of the token.
+# @notice See comment on lower case letters
+# above at `decimals`.
+symbol: public(immutable(String[5]))
 
 
 # @dev Caches the domain separator as an `immutable`
@@ -92,18 +104,6 @@ _CACHED_DOMAIN_SEPARATOR: immutable(bytes32)
 _HASHED_NAME: immutable(bytes32)
 _HASHED_VERSION: immutable(bytes32)
 _TYPE_HASH: immutable(bytes32)
-
-
-# @dev Returns the name of the token.
-# @notice See comment on lower case letters
-# above at `decimals`.
-name: public(immutable(String[25]))
-
-
-# @dev Returns the symbol of the token.
-# @notice See comment on lower case letters
-# above at `decimals`.
-symbol: public(immutable(String[5]))
 
 
 # @dev Returns the amount of tokens owned by an `address`.

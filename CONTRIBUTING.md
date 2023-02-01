@@ -2,7 +2,7 @@
 
 🙏 Thank you so much for your help in improving the project and pushing 🐍Vyper's long-term success! Many folks will be grateful to you. We are so glad to have you!
 
-There are many ways to get involved at every level. It doesn't matter if you have just started with 🐍Vyper or are the most experienced expert, we can use your help.
+There are many ways to get involved at every level. It does not matter if you have just started with 🐍Vyper or are the most experienced expert, we can use your help.
 
 **No contribution is too small and all contributions are highly appreciated.**
 
