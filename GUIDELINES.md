@@ -70,7 +70,7 @@ def _as_singleton_array(element: uint256) -> DynArray[uint256, 1]:
 - Unchecked arithmetic calculations should contain comments explaining why an overflow/underflow is guaranteed not to occur.
 - All functions should be provided with full [NatSpec](https://docs.vyperlang.org/en/latest/natspec.html) comments containing the tags `@dev`, `@notice` (if applicable), `@param` for each function parameter, and `@return` if a return statement is present.
 - Please note the following order of layout:
-  - Pragma statement
+  - Version pragma statement
   - Interface imports
   - `public` constants
   - `internal` constants
