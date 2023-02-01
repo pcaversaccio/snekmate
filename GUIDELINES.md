@@ -20,7 +20,7 @@ Please consider writing [Foundry](https://github.com/foundry-rs/foundry)-based u
 
 🐍Vyper code should be written in a consistent format that follows our [🐍Vyper Conventions](#vyper-conventions).
 
-Solidity test code should be written in a consistent format enforced by a linter and prettier that follows the official [Solidity Style Guide](https://docs.soliditylang.org/en/latest/style-guide.html). Also, we refer to Foundry's [best practices](https://book.getfoundry.sh/tutorials/best-practices?highlight=security#best-practices).
+Solidity test code should be written in a consistent format enforced by a prettier and linter that follows the official [Solidity Style Guide](https://docs.soliditylang.org/en/latest/style-guide.html). Also, we refer to Foundry's [best practices](https://book.getfoundry.sh/tutorials/best-practices?highlight=security#best-practices).
 
 The code should be simple and straightforward, with a focus on readability and comprehensibility. Consistency and predictability should be maintained throughout the code base. This is especially true for naming, which should be systematic, clear, and concise.
 
@@ -50,7 +50,7 @@ Branch names do not matter, and commit messages within a PR are mostly not impor
 
 ## 🐍Vyper Conventions
 
-- The names of `constant`, `immutable`, and state variables, functions, and function parameters use the _snake case_ notation (e.g. `my_function`) if no other notation is enforced via an EIP standard. In particular, `constant` and `immutable` variable names use the _screaming snake case_ notation (e.g. `DEFAULT_ADMIN_ROLE: public(constant(bytes32)) = empty(bytes32)`) if no other notation is enforced via an EIP standard.
+- The names of `constant`, `immutable`, and state variables, functions, and function parameters use the _snake case_ notation (e.g. `my_function`) if no other notation is enforced via an EIP standard. In particular, `constant` and `immutable` variable names use the _screaming snake case_ notation (e.g. `DEFAULT_CONSTANT`) if no other notation is enforced via an EIP standard.
 - `internal` `constant`, `immutable`, state variables and functions must have an underscore prefix:
 
 ```vyper
@@ -68,7 +68,7 @@ def _as_singleton_array(element: uint256) -> DynArray[uint256, 1]:
 
 - Use `internal` functions where feasible to improve composability and modularity.
 - Unchecked arithmetic calculations should contain comments explaining why an overflow/underflow is guaranteed not to occur.
-- All functions should be provided with full NatSpec comments containing the tags `@dev`, `@notice` (if applicable), `@param` for each function parameter, and `@return` if a return statement is present.
+- All functions should be provided with full [NatSpec](https://docs.vyperlang.org/en/latest/natspec.html) comments containing the tags `@dev`, `@notice` (if applicable), `@param` for each function parameter, and `@return` if a return statement is present.
 - Please note the following order of layout:
   - Pragma statement
   - Interface imports
