@@ -2,23 +2,39 @@
 
 🙏 Thank you so much for your help in improving the project and pushing 🐍Vyper's long-term success! Many folks will be grateful to you. We are so glad to have you!
 
-There are many ways to get involved at every level. It doesn't matter if you have just started with 🐍Vyper or are the most experienced expert, we can use your help.
+There are many ways to get involved at every level. It does not matter if you have just started with 🐍Vyper or are the most experienced expert, we can use your help.
 
 **No contribution is too small and all contributions are highly appreciated.**
 
 We particularly welcome support in the following areas:
 
-- Reporting issues. For security issues, see our [Security Policy](./SECURITY.md).
-- Fixing and responding to existing issues.
-- Proposing changes and/or new features.
+- [Reporting issues](https://github.com/pcaversaccio/snekmate/issues/new?assignees=pcaversaccio&labels=bug+%F0%9F%90%9B&template=bug_report.yml&title=%5BBug-Candidate%5D%3A+). For security issues, see our [Security Policy](./SECURITY.md).
+- Fixing and responding to [existing issues](https://github.com/pcaversaccio/snekmate/issues).
+- Proposing changes and/or [new features](https://github.com/pcaversaccio/snekmate/issues/new?assignees=pcaversaccio&labels=feature+%F0%9F%92%A5&template=feature_request.yml&title=%5BFeature-Request%5D%3A+).
 - Implementing changes and/or new features.
 - Improving documentation and fixing typos.
 
 > If you are writing a new feature and/or a breaking change, please ensure that you include appropriate test cases.
 
-## 🛠 Creating a Pull Request (PR)
+## 🙋‍♀️ Opening an Issue
 
-As a contributor, you are expected to fork the `main` branch of this repository, work on your own fork, and then submit pull requests. The pull requests are reviewed and eventually merged into the main repository. See ["Fork-a-Repo"](https://help.github.com/articles/fork-a-repo) for how this works.
+If you encounter a bug or want to suggest a feature, you are welcome to [open an issue](https://github.com/pcaversaccio/snekmate/issues/new/choose). For serious bugs, please do **not** open an issue, but refer to our [Security Policy](./SECURITY.md).
+
+Before opening an issue, please review the existing open and closed issues as well as the existing [discussions](https://github.com/pcaversaccio/snekmate/discussions) and consider commenting on one of them instead.
+
+For general types of discussion, e.g. on best practices, formatting, etc., please consider opening a [new discussion](https://github.com/pcaversaccio/snekmate/discussions/new/choose).
+
+When you propose a new feature, you should provide as much detail as possible, especially on the use cases that motivate it. Features are prioritised by their potential impact on the ecosystem, so we value information that shows the impact could be high.
+
+## 🛠 Submitting a Pull Request (PR)
+
+As a contributor, you are expected to fork the `main` branch of this repository, work on your own fork, and then submit pull requests. The pull requests are reviewed and eventually merged into the `main` repository. See ["Fork-a-Repo"](https://help.github.com/articles/fork-a-repo) for how this works.
+
+Ensure you read and follow our [Engineering Guidelines](./GUIDELINES.md). Run prettier, linter, and tests to make sure your PR is sound before submitting it.
+
+When you open a PR, you will be provided with a [template](./.github/pull_request_template.md) and a checklist. Read it carefully and follow the steps accordingly. You can expect a review and feedback from the maintainer [pcaversaccio](https://github.com/pcaversaccio) afterwards.
+
+If you are looking for an easy starting point, look for issues labelled as [good first issue 🎉](https://github.com/pcaversaccio/snekmate/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue+%F0%9F%8E%89%22)!
 
 ## 🌀 Dependencies
 

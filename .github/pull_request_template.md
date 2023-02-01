@@ -1,5 +1,5 @@
 <!--
-Thank you for using snekmate and taking the time to send a pull request (PR)!
+Thank you for using 🐍 snekmate and taking the time to send a pull request (PR)!
 
 If you are introducing a new feature, please discuss it in an issue or in the discussions section before submitting your change.
 
