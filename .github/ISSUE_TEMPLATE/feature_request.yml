@@ -1,5 +1,5 @@
 name: Feature Request
-description: Suggest an idea for snekmate.
+description: Suggest an idea for 🐍 snekmate.
 title: "[Feature-Request]: "
 labels:
   - feature 💥
@@ -9,7 +9,7 @@ body:
   - attributes:
       value: |
         Please check the [issues tab](https://github.com/pcaversaccio/snekmate/issues) to avoid duplicates.
-        Thanks for taking the time to provide feedback on snekmate!
+        Thanks for taking the time to provide feedback on 🐍 snekmate!
     type: markdown
   - attributes:
       label: "Describe the desired feature:"
