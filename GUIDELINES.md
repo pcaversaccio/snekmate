@@ -26,7 +26,7 @@ The code should be simple and straightforward, with a focus on readability and c
 
 Wherever possible, modularity, composability, and gas efficiency should be pursued, but not at the expense of security compromises.
 
-## 🛠 Pull Request (PR) Format
+## 🖌 Pull Request (PR) Format
 
 Pull requests are _squash-merged_ in most cases to keep the `main` branch history clean. The title of the PR becomes the commit message, so it should be written in a consistent format:
 
