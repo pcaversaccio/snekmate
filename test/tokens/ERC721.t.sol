@@ -1959,7 +1959,6 @@ contract ERC721Test is Test {
                 owner != zeroAddress &&
                 owner.code.length == 0
         );
-        vm.assume(data.length < 20);
         string memory uri1 = "my_awesome_nft_uri_1";
         string memory uri2 = "my_awesome_nft_uri_2";
         bytes4 receiverMagicValue = type(IERC721Receiver).interfaceId;
@@ -2129,9 +2128,11 @@ contract ERC721Test is Test {
         vm.startPrank(deployer);
         ERC721Extended.safe_mint(owner, uri);
         vm.stopPrank();
+
         vm.startPrank(owner);
         ERC721Extended.setApprovalForAll(operator, true);
         vm.stopPrank();
+
         vm.startPrank(operator);
         vm.expectEmit(true, true, true, false);
         emit Approval(owner, spender, tokenId);
@@ -2140,29 +2141,246 @@ contract ERC721Test is Test {
         vm.stopPrank();
     }
 
-    function testFuzzSetApprovalForAllSuccess() public {}
+    function testFuzzSetApprovalForAllSuccess(
+        address owner,
+        address operator
+    ) public {
+        vm.assume(owner > address(4096) && operator > address(4096));
+        vm.assume(
+            owner != operator && owner != zeroAddress && owner.code.length == 0
+        );
+        bool approved = true;
+        string memory uri = "my_awesome_nft_uri";
+        vm.startPrank(deployer);
+        ERC721Extended.safe_mint(owner, uri);
+        vm.stopPrank();
 
-    function testFuzzGetApprovedApprovedTokenId() public {}
+        vm.startPrank(owner);
+        vm.expectEmit(true, true, false, true);
+        emit ApprovalForAll(owner, operator, !approved);
+        ERC721Extended.setApprovalForAll(operator, !approved);
+        assertTrue(!ERC721Extended.isApprovedForAll(owner, operator));
 
-    function testFuzzTotalSupply() public {}
+        vm.expectEmit(true, true, false, true);
+        emit ApprovalForAll(owner, operator, approved);
+        ERC721Extended.setApprovalForAll(operator, approved);
+        assertTrue(ERC721Extended.isApprovedForAll(owner, operator));
 
-    function testFuzzTokenByIndex() public {}
+        vm.expectEmit(true, true, false, true);
+        emit ApprovalForAll(owner, operator, !approved);
+        ERC721Extended.setApprovalForAll(operator, !approved);
+        assertTrue(!ERC721Extended.isApprovedForAll(owner, operator));
+        vm.stopPrank();
+    }
 
-    function testFuzzBurnSuccess() public {}
+    function testFuzzGetApprovedApprovedTokenId(
+        address owner,
+        address spender
+    ) public {
+        vm.assume(
+            owner != spender && owner != zeroAddress && owner.code.length == 0
+        );
+        vm.assume(spender > address(4096));
+        string memory uri = "my_awesome_nft_uri";
+        vm.startPrank(deployer);
+        ERC721Extended.safe_mint(owner, uri);
+        vm.stopPrank();
 
-    function testFuzzSafeMintSuccess() public {}
+        vm.startPrank(owner);
+        ERC721Extended.approve(spender, 0);
+        assertEq(ERC721Extended.getApproved(0), spender);
+        vm.stopPrank();
+    }
 
-    function testFuzzSafeMintNonMinter() public {}
+    function testFuzzTotalSupply(address owner, string[] calldata uri) public {
+        vm.assume(owner != zeroAddress && owner.code.length == 0);
+        vm.startPrank(deployer);
+        for (uint256 i; i < uri.length; ++i) {
+            ERC721Extended.safe_mint(owner, uri[i]);
+        }
+        vm.stopPrank();
+        assertEq(ERC721Extended.totalSupply(), uri.length);
+    }
 
-    function testFuzzSetMinterSuccess() public {}
+    function testFuzzTokenByIndex(address owner, string[] calldata uri) public {
+        vm.assume(owner != zeroAddress && owner.code.length == 0);
+        vm.startPrank(deployer);
+        for (uint256 i; i < uri.length; ++i) {
+            ERC721Extended.safe_mint(owner, uri[i]);
+            assertEq(ERC721Extended.tokenByIndex(i), i);
+        }
+        vm.stopPrank();
+        assertEq(ERC721Extended.totalSupply(), uri.length);
+    }
 
-    function testFuzzSetMinterNonOwner() public {}
+    function testFuzzBurnSuccess(address owner) public {
+        vm.assume(owner != zeroAddress && owner.code.length == 0);
+        string memory uri1 = "my_awesome_nft_uri_1";
+        string memory uri2 = "my_awesome_nft_uri_2";
+        uint256 tokenId = 0;
+        vm.startPrank(deployer);
+        ERC721Extended.safe_mint(owner, uri1);
+        ERC721Extended.safe_mint(owner, uri2);
+        vm.stopPrank();
 
-    function testFuzzPermitSuccess() public {}
+        vm.startPrank(owner);
+        vm.expectEmit(true, true, true, false);
+        emit Transfer(owner, zeroAddress, tokenId);
+        ERC721Extended.burn(tokenId);
+        vm.expectRevert(bytes("ERC721: invalid token ID"));
+        ERC721Extended.burn(tokenId);
+        vm.stopPrank();
 
-    function testFuzzPermitInvalid() public {}
+        vm.expectRevert(bytes("ERC721: invalid token ID"));
+        ERC721Extended.ownerOf(tokenId);
+        assertEq(ERC721Extended.balanceOf(owner), 1);
+    }
 
-    function testFuzzDomainSeparator() public {}
+    function testFuzzSafeMintSuccess(address[] calldata owners) public {
+        for (uint256 i; i < owners.length; ++i) {
+            vm.assume(owners[i] != zeroAddress && owners[i].code.length == 0);
+        }
+        string memory uri = "my_awesome_nft_uri_1";
+        vm.startPrank(deployer);
+        for (uint256 i; i < owners.length; ++i) {
+            vm.expectEmit(true, true, true, false);
+            emit Transfer(zeroAddress, owners[i], i);
+            ERC721Extended.safe_mint(owners[i], uri);
+            assertGe(ERC721Extended.balanceOf(owners[i]), 1);
+        }
+        vm.stopPrank();
+        assertEq(ERC721Extended.totalSupply(), owners.length);
+    }
+
+    function testFuzzSafeMintNonMinter(address nonOwner) public {
+        vm.assume(nonOwner != deployer);
+        vm.expectRevert(bytes("AccessControl: access is denied"));
+        ERC721Extended.safe_mint(makeAddr("owner"), "my_awesome_nft_uri");
+    }
+
+    function testFuzzSetMinterSuccess(string calldata minter) public {
+        address owner = deployer;
+        address minterAddr = makeAddr(minter);
+        vm.startPrank(owner);
+        vm.expectEmit(true, false, false, true);
+        emit RoleMinterChanged(minterAddr, true);
+        ERC721Extended.set_minter(minterAddr, true);
+        assertTrue(ERC721Extended.is_minter(minterAddr));
+
+        vm.expectEmit(true, false, false, true);
+        emit RoleMinterChanged(minterAddr, false);
+        ERC721Extended.set_minter(minterAddr, false);
+        assertTrue(!ERC721Extended.is_minter(minterAddr));
+        vm.stopPrank();
+    }
+
+    function testFuzzSetMinterNonOwner(
+        address msgSender,
+        string calldata minter
+    ) public {
+        vm.assume(msgSender != deployer);
+        vm.expectRevert(bytes("Ownable: caller is not the owner"));
+        ERC721Extended.set_minter(makeAddr(minter), true);
+    }
+
+    function testFuzzPermitSuccess(
+        string calldata owner,
+        string calldata spender,
+        uint16 increment
+    ) public {
+        (address ownerAddr, uint256 key) = makeAddrAndKey(owner);
+        address spenderAddr = makeAddr(spender);
+        uint256 tokenId = 0;
+        string memory uri = "my_awesome_nft_uri";
+        vm.startPrank(deployer);
+        ERC721Extended.safe_mint(ownerAddr, uri);
+        vm.stopPrank();
+
+        uint256 nonce = ERC721Extended.nonces(tokenId);
+        // solhint-disable-next-line not-rely-on-time
+        uint256 deadline = block.timestamp + increment;
+        bytes32 domainSeparator = ERC721Extended.DOMAIN_SEPARATOR();
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(
+            key,
+            keccak256(
+                abi.encodePacked(
+                    "\x19\x01",
+                    domainSeparator,
+                    keccak256(
+                        abi.encode(
+                            _PERMIT_TYPE_HASH,
+                            spenderAddr,
+                            tokenId,
+                            nonce,
+                            deadline
+                        )
+                    )
+                )
+            )
+        );
+        vm.expectEmit(true, true, true, false);
+        emit Approval(ownerAddr, spenderAddr, tokenId);
+        ERC721Extended.permit(spenderAddr, tokenId, deadline, v, r, s);
+        assertEq(ERC721Extended.getApproved(tokenId), spenderAddr);
+        assertEq(ERC721Extended.nonces(tokenId), 1);
+    }
+
+    function testFuzzPermitInvalid(
+        string calldata owner,
+        string calldata spender,
+        uint16 increment
+    ) public {
+        vm.assume(
+            keccak256(abi.encode(owner)) != keccak256(abi.encode("ownerWrong"))
+        );
+        (address ownerAddr, ) = makeAddrAndKey(owner);
+        (, uint256 keyWrong) = makeAddrAndKey("ownerWrong");
+        address spenderAddr = makeAddr(spender);
+        uint256 tokenId = 0;
+        string memory uri = "my_awesome_nft_uri";
+        vm.startPrank(deployer);
+        ERC721Extended.safe_mint(ownerAddr, uri);
+        vm.stopPrank();
+
+        uint256 nonce = ERC721Extended.nonces(tokenId);
+        // solhint-disable-next-line not-rely-on-time
+        uint256 deadline = block.timestamp + increment;
+        bytes32 domainSeparator = ERC721Extended.DOMAIN_SEPARATOR();
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(
+            keyWrong,
+            keccak256(
+                abi.encodePacked(
+                    "\x19\x01",
+                    domainSeparator,
+                    keccak256(
+                        abi.encode(
+                            _PERMIT_TYPE_HASH,
+                            spenderAddr,
+                            tokenId,
+                            nonce,
+                            deadline
+                        )
+                    )
+                )
+            )
+        );
+        vm.expectRevert(bytes("ERC721Permit: invalid signature"));
+        ERC721Extended.permit(spenderAddr, tokenId, deadline, v, r, s);
+    }
+
+    function testFuzzDomainSeparator(uint8 increment) public {
+        vm.chainId(block.chainid + increment);
+        bytes32 digest = keccak256(
+            abi.encode(
+                _TYPE_HASH,
+                keccak256(bytes(_NAME_EIP712)),
+                keccak256(bytes(_VERSION_EIP712)),
+                block.chainid,
+                ERC721Extended
+            )
+        );
+        assertEq(ERC721Extended.DOMAIN_SEPARATOR(), digest);
+    }
 
     function testFuzzTransferOwnershipSuccess(
         address newOwner1,

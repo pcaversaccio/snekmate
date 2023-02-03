@@ -1335,7 +1335,11 @@ contract ERC20Test is Test {
         vm.stopPrank();
     }
 
-    function testFuzzSetMinterNonOwner(string calldata minter) public {
+    function testFuzzSetMinterNonOwner(
+        address msgSender,
+        string calldata minter
+    ) public {
+        vm.assume(msgSender != deployer);
         vm.expectRevert(bytes("Ownable: caller is not the owner"));
         ERC20Extended.set_minter(makeAddr(minter), true);
     }
