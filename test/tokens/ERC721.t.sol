@@ -1908,15 +1908,15 @@ contract ERC721Test is Test {
         address operator
     ) public {
         vm.assume(
-            owner > address(65535) &&
-                approved > address(65535) &&
-                operator > address(65535)
+            owner > address(4096) &&
+                approved > address(4096) &&
+                operator > address(4096)
         );
         vm.assume(
             owner != approved &&
                 owner != operator &&
                 owner != zeroAddress &&
-                owner != deployer
+                owner.code.length == 0
         );
         string memory uri1 = "my_awesome_nft_uri_1";
         string memory uri2 = "my_awesome_nft_uri_2";
@@ -1949,15 +1949,15 @@ contract ERC721Test is Test {
         bytes memory data
     ) public {
         vm.assume(
-            owner > address(65535) &&
-                approved > address(65535) &&
-                operator > address(65535)
+            owner > address(4096) &&
+                approved > address(4096) &&
+                operator > address(4096)
         );
         vm.assume(
             owner != approved &&
                 owner != operator &&
                 owner != zeroAddress &&
-                owner != deployer
+                owner.code.length == 0
         );
         vm.assume(data.length < 20);
         string memory uri1 = "my_awesome_nft_uri_1";
@@ -1994,9 +1994,9 @@ contract ERC721Test is Test {
         address spender
     ) public {
         vm.assume(
-            owner != spender && owner != zeroAddress && owner != deployer
+            owner != spender && owner != zeroAddress && owner.code.length == 0
         );
-        vm.assume(spender > address(65535));
+        vm.assume(spender > address(4096));
         string memory uri = "my_awesome_nft_uri";
         uint256 tokenId = 0;
         vm.startPrank(deployer);
@@ -2016,9 +2016,9 @@ contract ERC721Test is Test {
         address spender1
     ) public {
         vm.assume(
-            owner != spender1 && owner != zeroAddress && owner != deployer
+            owner != spender1 && owner != zeroAddress && owner.code.length == 0
         );
-        vm.assume(spender1 > address(65535));
+        vm.assume(spender1 > address(4096));
         address spender2 = zeroAddress;
         string memory uri = "my_awesome_nft_uri";
         uint256 tokenId = 0;
@@ -2044,9 +2044,9 @@ contract ERC721Test is Test {
         address spender
     ) public {
         vm.assume(
-            owner != spender && owner != zeroAddress && owner != deployer
+            owner != spender && owner != zeroAddress && owner.code.length == 0
         );
-        vm.assume(spender > address(65535));
+        vm.assume(spender > address(4096));
         string memory uri = "my_awesome_nft_uri";
         uint256 tokenId = 0;
         vm.startPrank(deployer);
@@ -2066,9 +2066,9 @@ contract ERC721Test is Test {
         address spender
     ) public {
         vm.assume(
-            owner != spender && owner != zeroAddress && owner != deployer
+            owner != spender && owner != zeroAddress && owner.code.length == 0
         );
-        vm.assume(spender > address(65535));
+        vm.assume(spender > address(4096));
         string memory uri = "my_awesome_nft_uri";
         uint256 tokenId = 0;
         vm.startPrank(deployer);
@@ -2089,8 +2089,9 @@ contract ERC721Test is Test {
     }
 
     function testFuzzApproveFromNonOwner(address nonOwner) public {
-        vm.assume(nonOwner != deployer);
         address owner = makeAddr("owner");
+        vm.assume(nonOwner != deployer);
+        vm.assume(nonOwner != owner);
         string memory uri = "my_awesome_nft_uri";
         uint256 tokenId = 0;
         vm.startPrank(deployer);
@@ -2113,15 +2114,15 @@ contract ERC721Test is Test {
         address spender
     ) public {
         vm.assume(
-            owner > address(65535) &&
-                operator > address(65535) &&
-                spender > address(65535)
+            owner > address(4096) &&
+                operator > address(4096) &&
+                spender > address(4096)
         );
         vm.assume(
             owner != operator &&
                 owner != spender &&
                 owner != zeroAddress &&
-                owner != deployer
+                owner.code.length == 0
         );
         string memory uri = "my_awesome_nft_uri";
         uint256 tokenId = 0;
