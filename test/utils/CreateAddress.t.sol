@@ -343,4 +343,531 @@ contract CreateAddressTest is Test {
         );
         assertEq(createAddressComputed, createAddressLibComputed);
     }
+
+    function testFuzzComputeAddressRevertTooHighNonce(uint72 nonce, address deployer) public {
+        vm.assume(nonce > uint72(type(uint64).max));
+        vm.expectRevert(bytes("RLP: invalid nonce value"));
+        createAddress.compute_address_rlp(deployer, nonce);
+    }
+
+    function testFuzzComputeAddressSelfRevertTooHighNonce(uint72 nonce) public {
+        vm.assume(nonce > uint72(type(uint64).max));
+        vm.expectRevert(bytes("RLP: invalid nonce value"));
+        createAddress.compute_address_rlp_self(nonce);
+    }
+
+    function testFuzzComputeAddressNonce0x7f(uint64 nonce) public {
+        string memory arg1 = "MyToken";
+        string memory arg2 = "MTKN";
+        address arg3 = vm.addr(1);
+        uint256 arg4 = 100;
+        vm.assume(
+            nonce <= 0x7f &&
+            nonce > vm.getNonce(address(this))
+        );
+        vm.setNonce(address(this), nonce);
+        address createAddressComputed = createAddress.compute_address_rlp(
+            address(this),
+            nonce
+        );
+        ERC20Mock createAddressComputedOnChain = new ERC20Mock(
+            arg1,
+            arg2,
+            arg3,
+            arg4
+        );
+        assertEq(createAddressComputed, address(createAddressComputedOnChain));
+    }
+
+    function testFuzzComputeAddressNonceUint8(
+        uint64 nonce,
+        address deployer
+    ) public {
+        string memory arg1 = "MyToken";
+        string memory arg2 = "MTKN";
+        address arg3 = vm.addr(1);
+        uint256 arg4 = 100;
+        vm.assume(
+            nonce > 0x7f &&
+            nonce <= uint64(type(uint8).max) &&
+            nonce > vm.getNonce(deployer) &&
+            deployer != address(0)
+        );
+        vm.setNonce(deployer, nonce);
+        address createAddressComputed = createAddress.compute_address_rlp(
+            deployer,
+            nonce
+        );
+        vm.prank(deployer);
+        ERC20Mock createAddressComputedOnChain = new ERC20Mock(
+            arg1,
+            arg2,
+            arg3,
+            arg4
+        );
+        assertEq(createAddressComputed, address(createAddressComputedOnChain));
+    }
+
+    function testFuzzComputeAddressNonceUint16(
+        uint64 nonce,
+        address deployer
+    ) public {
+        string memory arg1 = "MyToken";
+        string memory arg2 = "MTKN";
+        address arg3 = vm.addr(1);
+        uint256 arg4 = 100;
+        vm.assume(
+            nonce > uint64(type(uint8).max) &&
+            nonce <= uint64(type(uint16).max) &&
+            nonce > vm.getNonce(deployer) &&
+            deployer != address(0)
+        );
+        vm.setNonce(deployer, nonce);
+        address createAddressComputed = createAddress.compute_address_rlp(
+            deployer,
+            nonce
+        );
+        vm.prank(deployer);
+        ERC20Mock createAddressComputedOnChain = new ERC20Mock(
+            arg1,
+            arg2,
+            arg3,
+            arg4
+        );
+        assertEq(createAddressComputed, address(createAddressComputedOnChain));
+    }
+
+    function testFuzzComputeAddressNonceUint24(
+        uint64 nonce,
+        address deployer
+    ) public {
+        string memory arg1 = "MyToken";
+        string memory arg2 = "MTKN";
+        address arg3 = vm.addr(1);
+        uint256 arg4 = 100;
+        vm.assume(
+            nonce > uint64(type(uint16).max) &&
+            nonce <= uint64(type(uint24).max) &&
+            nonce > vm.getNonce(deployer) &&
+            deployer != address(0)
+        );
+        vm.setNonce(deployer, nonce);
+        address createAddressComputed = createAddress.compute_address_rlp(
+            deployer,
+            nonce
+        );
+        vm.prank(deployer);
+        ERC20Mock createAddressComputedOnChain = new ERC20Mock(
+            arg1,
+            arg2,
+            arg3,
+            arg4
+        );
+        assertEq(createAddressComputed, address(createAddressComputedOnChain));
+    }
+
+    function testFuzzComputeAddressNonceUint32(
+        uint64 nonce,
+        address deployer
+    ) public {
+        string memory arg1 = "MyToken";
+        string memory arg2 = "MTKN";
+        address arg3 = vm.addr(1);
+        uint256 arg4 = 100;
+        vm.assume(
+            nonce > uint64(type(uint24).max) &&
+            nonce <= uint64(type(uint32).max) &&
+            nonce > vm.getNonce(deployer) &&
+            deployer != address(0)
+        );
+        vm.setNonce(deployer, nonce);
+        address createAddressComputed = createAddress.compute_address_rlp(
+            deployer,
+            nonce
+        );
+        vm.prank(deployer);
+        ERC20Mock createAddressComputedOnChain = new ERC20Mock(
+            arg1,
+            arg2,
+            arg3,
+            arg4
+        );
+        assertEq(createAddressComputed, address(createAddressComputedOnChain));
+    }
+
+    function testFuzzComputeAddressNonceUint40(
+        uint64 nonce,
+        address deployer
+    ) public {
+        string memory arg1 = "MyToken";
+        string memory arg2 = "MTKN";
+        address arg3 = vm.addr(1);
+        uint256 arg4 = 100;
+        vm.assume(
+            nonce > uint64(type(uint32).max) &&
+            nonce <= uint64(type(uint40).max) &&
+            nonce > vm.getNonce(deployer) &&
+            deployer != address(0)
+        );
+        vm.setNonce(deployer, nonce);
+        address createAddressComputed = createAddress.compute_address_rlp(
+            deployer,
+            nonce
+        );
+        vm.prank(deployer);
+        ERC20Mock createAddressComputedOnChain = new ERC20Mock(
+            arg1,
+            arg2,
+            arg3,
+            arg4
+        );
+        assertEq(createAddressComputed, address(createAddressComputedOnChain));
+    }
+
+    function testFuzzComputeAddressNonceUint48(
+        uint64 nonce,
+        address deployer
+    ) public {
+        string memory arg1 = "MyToken";
+        string memory arg2 = "MTKN";
+        address arg3 = vm.addr(1);
+        uint256 arg4 = 100;
+        vm.assume(
+            nonce > uint64(type(uint40).max) &&
+            nonce <= uint64(type(uint48).max) &&
+            nonce > vm.getNonce(deployer) &&
+            deployer != address(0)
+        );
+        vm.setNonce(deployer, nonce);
+        address createAddressComputed = createAddress.compute_address_rlp(
+            deployer,
+            nonce
+        );
+        vm.prank(deployer);
+        ERC20Mock createAddressComputedOnChain = new ERC20Mock(
+            arg1,
+            arg2,
+            arg3,
+            arg4
+        );
+        assertEq(createAddressComputed, address(createAddressComputedOnChain));
+    }
+
+    function testFuzzComputeAddressNonceUint56(
+        uint64 nonce,
+        address deployer
+    ) public {
+        string memory arg1 = "MyToken";
+        string memory arg2 = "MTKN";
+        address arg3 = vm.addr(1);
+        uint256 arg4 = 100;
+        vm.assume(
+            nonce > uint64(type(uint48).max) &&
+            nonce <= uint64(type(uint56).max) &&
+            nonce > vm.getNonce(deployer) &&
+            deployer != address(0)
+        );
+        vm.setNonce(deployer, nonce);
+        address createAddressComputed = createAddress.compute_address_rlp(
+            deployer,
+            nonce
+        );
+        vm.prank(deployer);
+        ERC20Mock createAddressComputedOnChain = new ERC20Mock(
+            arg1,
+            arg2,
+            arg3,
+            arg4
+        );
+        assertEq(createAddressComputed, address(createAddressComputedOnChain));
+    }
+
+    function testFuzzComputeAddressNonceUint64(
+        uint64 nonce,
+        address deployer
+    ) public {
+        string memory arg1 = "MyToken";
+        string memory arg2 = "MTKN";
+        address arg3 = vm.addr(1);
+        uint256 arg4 = 100;
+        vm.assume(
+            nonce > uint64(type(uint56).max) &&
+            nonce < uint64(type(uint64).max) &&
+            nonce > vm.getNonce(deployer) &&
+            deployer != address(0)
+        );
+        vm.setNonce(deployer, nonce);
+        address createAddressComputed = createAddress.compute_address_rlp(
+            deployer,
+            nonce
+        );
+        vm.prank(deployer);
+        ERC20Mock createAddressComputedOnChain = new ERC20Mock(
+            arg1,
+            arg2,
+            arg3,
+            arg4
+        );
+        assertEq(createAddressComputed, address(createAddressComputedOnChain));
+    }
+
+    function testFuzzComputeAddressSelfNonce0x7f(uint64 nonce) public {
+        string memory arg1 = "MyToken";
+        string memory arg2 = "MTKN";
+        address arg3 = vm.addr(1);
+        uint256 arg4 = 100;
+        vm.assume(
+            nonce <= 0x7f &&
+            nonce > vm.getNonce(address(createAddress))
+        );
+        vm.setNonce(address(createAddress), nonce);
+        address createAddressComputed = createAddress.compute_address_rlp_self(
+            nonce
+        );
+        address createAddressLibComputed = create.computeAddress(
+            address(createAddress),
+            nonce
+        );
+        vm.prank(address(createAddress));
+        ERC20Mock createAddressComputedOnChain = new ERC20Mock(
+            arg1,
+            arg2,
+            arg3,
+            arg4
+        );
+        assertEq(createAddressComputed, createAddressLibComputed);
+        assertEq(createAddressComputed, address(createAddressComputedOnChain));
+    }
+
+    function testFuzzComputeAddressSelfNonceUint8(uint64 nonce) public {
+        string memory arg1 = "MyToken";
+        string memory arg2 = "MTKN";
+        address arg3 = vm.addr(1);
+        uint256 arg4 = 100;
+        vm.assume(
+            nonce > 0x7f &&
+            nonce <= uint64(type(uint8).max) &&
+            nonce > vm.getNonce(address(createAddress))
+        );
+        vm.setNonce(address(createAddress), nonce);
+        address createAddressComputed = createAddress.compute_address_rlp_self(
+            nonce
+        );
+        address createAddressLibComputed = create.computeAddress(
+            address(createAddress),
+            nonce
+        );
+        vm.prank(address(createAddress));
+        ERC20Mock createAddressComputedOnChain = new ERC20Mock(
+            arg1,
+            arg2,
+            arg3,
+            arg4
+        );
+        assertEq(createAddressComputed, createAddressLibComputed);
+        assertEq(createAddressComputed, address(createAddressComputedOnChain));
+    }
+
+    function testFuzzComputeAddressSelfNonceUint16(uint64 nonce) public {
+        string memory arg1 = "MyToken";
+        string memory arg2 = "MTKN";
+        address arg3 = vm.addr(1);
+        uint256 arg4 = 100;
+        vm.assume(
+            nonce > uint64(type(uint8).max) &&
+            nonce <= uint64(type(uint16).max) &&
+            nonce > vm.getNonce(address(createAddress))
+        );
+        vm.setNonce(address(createAddress), nonce);
+        address createAddressComputed = createAddress.compute_address_rlp_self(
+            nonce
+        );
+        address createAddressLibComputed = create.computeAddress(
+            address(createAddress),
+            nonce
+        );
+        vm.prank(address(createAddress));
+        ERC20Mock createAddressComputedOnChain = new ERC20Mock(
+            arg1,
+            arg2,
+            arg3,
+            arg4
+        );
+        assertEq(createAddressComputed, createAddressLibComputed);
+        assertEq(createAddressComputed, address(createAddressComputedOnChain));
+    }
+
+    function testFuzzComputeAddressSelfNonceUint24(uint64 nonce) public {
+        string memory arg1 = "MyToken";
+        string memory arg2 = "MTKN";
+        address arg3 = vm.addr(1);
+        uint256 arg4 = 100;
+        vm.assume(
+            nonce > uint64(type(uint16).max) &&
+            nonce <= uint64(type(uint24).max) &&
+            nonce > vm.getNonce(address(createAddress))
+        );
+        vm.setNonce(address(createAddress), nonce);
+        address createAddressComputed = createAddress.compute_address_rlp_self(
+            nonce
+        );
+        address createAddressLibComputed = create.computeAddress(
+            address(createAddress),
+            nonce
+        );
+        vm.prank(address(createAddress));
+        ERC20Mock createAddressComputedOnChain = new ERC20Mock(
+            arg1,
+            arg2,
+            arg3,
+            arg4
+        );
+        assertEq(createAddressComputed, createAddressLibComputed);
+        assertEq(createAddressComputed, address(createAddressComputedOnChain));
+    }
+
+    function testFuzzComputeAddressSelfNonceUint32(uint64 nonce) public {
+        string memory arg1 = "MyToken";
+        string memory arg2 = "MTKN";
+        address arg3 = vm.addr(1);
+        uint256 arg4 = 100;
+        vm.assume(
+            nonce > uint64(type(uint24).max) &&
+            nonce <= uint64(type(uint32).max) &&
+            nonce > vm.getNonce(address(createAddress))
+        );
+        vm.setNonce(address(createAddress), nonce);
+        address createAddressComputed = createAddress.compute_address_rlp_self(
+            nonce
+        );
+        address createAddressLibComputed = create.computeAddress(
+            address(createAddress),
+            nonce
+        );
+        vm.prank(address(createAddress));
+        ERC20Mock createAddressComputedOnChain = new ERC20Mock(
+            arg1,
+            arg2,
+            arg3,
+            arg4
+        );
+        assertEq(createAddressComputed, createAddressLibComputed);
+        assertEq(createAddressComputed, address(createAddressComputedOnChain));
+    }
+
+    function testFuzzComputeAddressSelfNonceUint40(uint64 nonce) public {
+        string memory arg1 = "MyToken";
+        string memory arg2 = "MTKN";
+        address arg3 = vm.addr(1);
+        uint256 arg4 = 100;
+        vm.assume(
+            nonce > uint64(type(uint32).max) &&
+            nonce <= uint64(type(uint40).max) &&
+            nonce > vm.getNonce(address(createAddress))
+        );
+        vm.setNonce(address(createAddress), nonce);
+        address createAddressComputed = createAddress.compute_address_rlp_self(
+            nonce
+        );
+        address createAddressLibComputed = create.computeAddress(
+            address(createAddress),
+            nonce
+        );
+        vm.prank(address(createAddress));
+        ERC20Mock createAddressComputedOnChain = new ERC20Mock(
+            arg1,
+            arg2,
+            arg3,
+            arg4
+        );
+        assertEq(createAddressComputed, createAddressLibComputed);
+        assertEq(createAddressComputed, address(createAddressComputedOnChain));
+    }
+
+    function testFuzzComputeAddressSelfNonceUint48(uint64 nonce) public {
+        string memory arg1 = "MyToken";
+        string memory arg2 = "MTKN";
+        address arg3 = vm.addr(1);
+        uint256 arg4 = 100;
+        vm.assume(
+            nonce > uint64(type(uint40).max) &&
+            nonce <= uint64(type(uint48).max) &&
+            nonce > vm.getNonce(address(createAddress))
+        );
+        vm.setNonce(address(createAddress), nonce);
+        address createAddressComputed = createAddress.compute_address_rlp_self(
+            nonce
+        );
+        address createAddressLibComputed = create.computeAddress(
+            address(createAddress),
+            nonce
+        );
+        vm.prank(address(createAddress));
+        ERC20Mock createAddressComputedOnChain = new ERC20Mock(
+            arg1,
+            arg2,
+            arg3,
+            arg4
+        );
+        assertEq(createAddressComputed, createAddressLibComputed);
+        assertEq(createAddressComputed, address(createAddressComputedOnChain));
+    }
+
+    function testFuzzComputeAddressSelfNonceUint56(uint64 nonce) public {
+        string memory arg1 = "MyToken";
+        string memory arg2 = "MTKN";
+        address arg3 = vm.addr(1);
+        uint256 arg4 = 100;
+        vm.assume(
+            nonce > uint64(type(uint48).max) &&
+            nonce <= uint64(type(uint56).max) &&
+            nonce > vm.getNonce(address(createAddress))
+        );
+        vm.setNonce(address(createAddress), nonce);
+        address createAddressComputed = createAddress.compute_address_rlp_self(
+            nonce
+        );
+        address createAddressLibComputed = create.computeAddress(
+            address(createAddress),
+            nonce
+        );
+        vm.prank(address(createAddress));
+        ERC20Mock createAddressComputedOnChain = new ERC20Mock(
+            arg1,
+            arg2,
+            arg3,
+            arg4
+        );
+        assertEq(createAddressComputed, createAddressLibComputed);
+        assertEq(createAddressComputed, address(createAddressComputedOnChain));
+    }
+
+    function testFuzzComputeAddressSelfNonceUint64(uint64 nonce) public {
+        string memory arg1 = "MyToken";
+        string memory arg2 = "MTKN";
+        address arg3 = vm.addr(1);
+        uint256 arg4 = 100;
+        vm.assume(
+            nonce > uint64(type(uint56).max) &&
+            nonce < uint64(type(uint64).max) &&
+            nonce > vm.getNonce(address(createAddress))
+        );
+        vm.setNonce(address(createAddress), nonce);
+        address createAddressComputed = createAddress.compute_address_rlp_self(
+            nonce
+        );
+        address createAddressLibComputed = create.computeAddress(
+            address(createAddress),
+            nonce
+        );
+        vm.prank(address(createAddress));
+        ERC20Mock createAddressComputedOnChain = new ERC20Mock(
+            arg1,
+            arg2,
+            arg3,
+            arg4
+        );
+        assertEq(createAddressComputed, createAddressLibComputed);
+        assertEq(createAddressComputed, address(createAddressComputedOnChain));
+    }
 }
