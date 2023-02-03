@@ -2118,7 +2118,7 @@ contract ERC721Test is Test {
                 spender > address(65535)
         );
         vm.assume(
-                owner != operator &&
+            owner != operator &&
                 owner != spender &&
                 owner != zeroAddress &&
                 owner != deployer
