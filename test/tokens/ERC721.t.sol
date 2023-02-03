@@ -3,6 +3,7 @@ pragma solidity ^0.8.17;
 
 import {Test} from "forge-std/Test.sol";
 import {stdError} from "forge-std/StdError.sol";
+import {InvariantTest} from "forge-std/InvariantTest.sol";
 import {VyperDeployer} from "utils/VyperDeployer.sol";
 
 import {IERC165} from "openzeppelin/utils/introspection/IERC165.sol";
@@ -672,6 +673,17 @@ contract ERC721Test is Test {
         ERC721Extended.approve(approved, 0);
         ERC721Extended.setApprovalForAll(operator, true);
         vm.stopPrank();
+
+        _shouldTransferTokensByUsers(
+            "safeTransferFrom(address,address,uint256)",
+            owner,
+            approved,
+            operator,
+            0,
+            makeAddr("receiver"),
+            false,
+            new bytes(0)
+        );
 
         _shouldTransferSafely(
             "safeTransferFrom(address,address,uint256,bytes)",
@@ -1977,6 +1989,17 @@ contract ERC721Test is Test {
         ERC721Extended.setApprovalForAll(operator, true);
         vm.stopPrank();
 
+        _shouldTransferTokensByUsers(
+            "safeTransferFrom(address,address,uint256)",
+            owner,
+            approved,
+            operator,
+            0,
+            makeAddr("receiver"),
+            false,
+            new bytes(0)
+        );
+
         _shouldTransferSafely(
             "safeTransferFrom(address,address,uint256,bytes)",
             owner,
@@ -2460,5 +2483,120 @@ contract ERC721Test is Test {
         vm.prank(nonOwner);
         vm.expectRevert(bytes("Ownable: caller is not the owner"));
         ERC721Extended.renounce_ownership();
+    }
+}
+
+contract ERC721Invariants is Test, InvariantTest {
+    string private constant _NAME = "MyNFT";
+    string private constant _SYMBOL = "WAGMI";
+    string private constant _BASE_URI = "https://www.wagmi.xyz/";
+    string private constant _NAME_EIP712 = "MyNFT";
+    string private constant _VERSION_EIP712 = "1";
+
+    VyperDeployer private vyperDeployer = new VyperDeployer();
+
+    // solhint-disable-next-line var-name-mixedcase
+    IERC721Extended private ERC721Extended;
+    ERC721Handler private erc721Handler;
+
+    address private deployer = address(vyperDeployer);
+
+    function setUp() public {
+        bytes memory args = abi.encode(
+            _NAME,
+            _SYMBOL,
+            _BASE_URI,
+            _NAME_EIP712,
+            _VERSION_EIP712
+        );
+        ERC721Extended = IERC721Extended(
+            vyperDeployer.deployContract("src/tokens/", "ERC721", args)
+        );
+        erc721Handler = new ERC721Handler(ERC721Extended, deployer);
+        targetContract(address(erc721Handler));
+        targetSender(deployer);
+    }
+
+    function invariantTotalSupply() public {
+        assertEq(ERC721Extended.totalSupply(), erc721Handler.totalSupply());
+    }
+
+    function invariantOwner() public {
+        assertEq(ERC721Extended.owner(), erc721Handler.owner());
+    }
+}
+
+contract ERC721Handler {
+    address public owner;
+    uint256 public totalSupply;
+    uint256 private counter;
+
+    IERC721Extended private token;
+
+    address private zeroAddress = address(0);
+
+    constructor(IERC721Extended token_, address owner_) {
+        token = token_;
+        owner = owner_;
+    }
+
+    function safeTransferFrom(
+        address ownerAddr,
+        address to,
+        bytes calldata data
+    ) public {
+        token.safeTransferFrom(ownerAddr, to, counter, data);
+    }
+
+    function safeTransferFrom(address ownerAddr, address to) public {
+        token.safeTransferFrom(ownerAddr, to, counter);
+    }
+
+    function transferFrom(address ownerAddr, address to) public {
+        token.transferFrom(ownerAddr, to, counter);
+    }
+
+    function approve(address to) public {
+        token.approve(to, counter);
+    }
+
+    function setApprovalForAll(address operator, bool approved) public {
+        token.setApprovalForAll(operator, approved);
+    }
+
+    function permit(
+        address spender,
+        uint256 deadline,
+        uint8 v,
+        bytes32 r,
+        bytes32 s
+    ) public {
+        token.permit(spender, counter, deadline, v, r, s);
+    }
+
+    function burn() public {
+        token.burn(counter);
+        counter -= 1;
+        totalSupply -= 1;
+    }
+
+    function safe_mint(address ownerAddr, string calldata uri) public {
+        token.safe_mint(ownerAddr, uri);
+        counter += 1;
+        totalSupply += 1;
+    }
+
+    function set_minter(address minter, bool status) public {
+        token.set_minter(minter, status);
+    }
+
+    function transfer_ownership(address newOwner) public {
+        token.transfer_ownership(newOwner);
+        owner = newOwner;
+    }
+
+    function renounce_ownership() public {
+        token.renounce_ownership();
+        owner = zeroAddress;
     }
 }

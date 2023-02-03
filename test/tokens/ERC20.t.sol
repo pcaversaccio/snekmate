@@ -1590,6 +1590,18 @@ contract ERC20Handler {
         token.transferFrom(ownerAddr, to, amount);
     }
 
+    function permit(
+        address ownerAddr,
+        address spender,
+        uint256 value,
+        uint256 deadline,
+        uint8 v,
+        bytes32 r,
+        bytes32 s
+    ) public {
+        token.permit(ownerAddr, spender, value, deadline, v, r, s);
+    }
+
     function increase_allowance(address spender, uint256 addedAmount) public {
         token.increase_allowance(spender, addedAmount);
     }

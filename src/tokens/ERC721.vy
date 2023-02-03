@@ -412,7 +412,7 @@ def transferFrom(owner: address, to: address, token_id: uint256):
 
 @external
 @payable
-def safeTransferFrom(owner: address, to: address, token_id: uint256, data: Bytes[1024]):
+def safeTransferFrom(owner: address, to: address, token_id: uint256, data: Bytes[1024]=b""):
     """
     @dev Safely transfers `token_id` token from `owner`
          to `to`.
