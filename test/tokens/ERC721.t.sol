@@ -3,6 +3,7 @@ pragma solidity ^0.8.17;
 
 import {Test} from "forge-std/Test.sol";
 import {stdError} from "forge-std/StdError.sol";
+import {InvariantTest} from "forge-std/InvariantTest.sol";
 import {VyperDeployer} from "utils/VyperDeployer.sol";
 
 import {IERC165} from "openzeppelin/utils/introspection/IERC165.sol";
@@ -38,12 +39,17 @@ contract ERC721Test is Test {
 
     VyperDeployer private vyperDeployer = new VyperDeployer();
 
-    // solhint-disable-next-line var-name-mixedcase
+    /* solhint-disable var-name-mixedcase */
     IERC721Extended private ERC721Extended;
-    // solhint-disable-next-line var-name-mixedcase
+    IERC721Extended private ERC721ExtendedInitialEvent;
     IERC721Extended private ERC721ExtendedNoBaseURI;
-    // solhint-disable-next-line var-name-mixedcase
     bytes32 private _CACHED_DOMAIN_SEPARATOR;
+    /* solhint-enable var-name-mixedcase */
+
+    address private deployer = address(vyperDeployer);
+    address private zeroAddress = address(0);
+    // solhint-disable-next-line var-name-mixedcase
+    address private ERC721ExtendedAddr;
 
     event Transfer(
         address indexed from,
@@ -84,7 +90,7 @@ contract ERC721Test is Test {
         address receiver
     ) internal {
         assertEq(ERC721Extended.ownerOf(tokenId), receiver);
-        assertEq(ERC721Extended.getApproved(tokenId), address(0));
+        assertEq(ERC721Extended.getApproved(tokenId), zeroAddress);
         assertEq(ERC721Extended.balanceOf(owner), 1);
         assertEq(ERC721Extended.balanceOf(receiver), 1);
         assertEq(ERC721Extended.tokenOfOwnerByIndex(receiver, 0), tokenId);
@@ -112,11 +118,11 @@ contract ERC721Test is Test {
         bool withData,
         bytes memory data
     ) internal {
-        vm.startPrank(vm.addr(5));
+        vm.startPrank(makeAddr("nonOwner"));
         vm.expectRevert(bytes("ERC721: caller is not token owner or approved"));
         if (!withData) {
             Address.functionCall(
-                address(ERC721Extended),
+                ERC721ExtendedAddr,
                 abi.encodeWithSignature(
                     transferFunction,
                     owner,
@@ -126,7 +132,7 @@ contract ERC721Test is Test {
             );
         } else {
             Address.functionCall(
-                address(ERC721Extended),
+                ERC721ExtendedAddr,
                 abi.encodeWithSignature(
                     transferFunction,
                     owner,
@@ -142,7 +148,7 @@ contract ERC721Test is Test {
         vm.expectRevert(bytes("ERC721: transfer from incorrect owner"));
         if (!withData) {
             Address.functionCall(
-                address(ERC721Extended),
+                ERC721ExtendedAddr,
                 abi.encodeWithSignature(
                     transferFunction,
                     receiver,
@@ -152,7 +158,7 @@ contract ERC721Test is Test {
             );
         } else {
             Address.functionCall(
-                address(ERC721Extended),
+                ERC721ExtendedAddr,
                 abi.encodeWithSignature(
                     transferFunction,
                     receiver,
@@ -168,7 +174,7 @@ contract ERC721Test is Test {
         vm.expectRevert(bytes("ERC721: invalid token ID"));
         if (!withData) {
             Address.functionCall(
-                address(ERC721Extended),
+                ERC721ExtendedAddr,
                 abi.encodeWithSignature(
                     transferFunction,
                     receiver,
@@ -178,7 +184,7 @@ contract ERC721Test is Test {
             );
         } else {
             Address.functionCall(
-                address(ERC721Extended),
+                ERC721ExtendedAddr,
                 abi.encodeWithSignature(
                     transferFunction,
                     receiver,
@@ -194,21 +200,21 @@ contract ERC721Test is Test {
         vm.expectRevert(bytes("ERC721: transfer to the zero address"));
         if (!withData) {
             Address.functionCall(
-                address(ERC721Extended),
+                ERC721ExtendedAddr,
                 abi.encodeWithSignature(
                     transferFunction,
                     owner,
-                    address(0),
+                    zeroAddress,
                     tokenId
                 )
             );
         } else {
             Address.functionCall(
-                address(ERC721Extended),
+                ERC721ExtendedAddr,
                 abi.encodeWithSignature(
                     transferFunction,
                     owner,
-                    address(0),
+                    zeroAddress,
                     tokenId,
                     data
                 )
@@ -248,7 +254,7 @@ contract ERC721Test is Test {
         emit Transfer(owner, receiver, tokenId);
         if (!withData) {
             Address.functionCall(
-                address(ERC721Extended),
+                ERC721ExtendedAddr,
                 abi.encodeWithSignature(
                     transferFunction,
                     owner,
@@ -258,7 +264,7 @@ contract ERC721Test is Test {
             );
         } else {
             Address.functionCall(
-                address(ERC721Extended),
+                ERC721ExtendedAddr,
                 abi.encodeWithSignature(
                     transferFunction,
                     owner,
@@ -278,7 +284,7 @@ contract ERC721Test is Test {
         emit Transfer(owner, receiver, tokenId);
         if (!withData) {
             Address.functionCall(
-                address(ERC721Extended),
+                ERC721ExtendedAddr,
                 abi.encodeWithSignature(
                     transferFunction,
                     owner,
@@ -288,7 +294,7 @@ contract ERC721Test is Test {
             );
         } else {
             Address.functionCall(
-                address(ERC721Extended),
+                ERC721ExtendedAddr,
                 abi.encodeWithSignature(
                     transferFunction,
                     owner,
@@ -308,7 +314,7 @@ contract ERC721Test is Test {
         emit Transfer(owner, receiver, tokenId);
         if (!withData) {
             Address.functionCall(
-                address(ERC721Extended),
+                ERC721ExtendedAddr,
                 abi.encodeWithSignature(
                     transferFunction,
                     owner,
@@ -318,7 +324,7 @@ contract ERC721Test is Test {
             );
         } else {
             Address.functionCall(
-                address(ERC721Extended),
+                ERC721ExtendedAddr,
                 abi.encodeWithSignature(
                     transferFunction,
                     owner,
@@ -334,14 +340,14 @@ contract ERC721Test is Test {
 
         snapshot = vm.snapshot();
         vm.startPrank(owner);
-        ERC721Extended.approve(address(0), tokenId);
+        ERC721Extended.approve(zeroAddress, tokenId);
         vm.stopPrank();
         vm.startPrank(operator);
         vm.expectEmit(true, true, true, false);
         emit Transfer(owner, receiver, tokenId);
         if (!withData) {
             Address.functionCall(
-                address(ERC721Extended),
+                ERC721ExtendedAddr,
                 abi.encodeWithSignature(
                     transferFunction,
                     owner,
@@ -351,7 +357,7 @@ contract ERC721Test is Test {
             );
         } else {
             Address.functionCall(
-                address(ERC721Extended),
+                ERC721ExtendedAddr,
                 abi.encodeWithSignature(
                     transferFunction,
                     owner,
@@ -371,12 +377,12 @@ contract ERC721Test is Test {
         emit Transfer(owner, owner, tokenId);
         if (!withData) {
             Address.functionCall(
-                address(ERC721Extended),
+                ERC721ExtendedAddr,
                 abi.encodeWithSignature(transferFunction, owner, owner, tokenId)
             );
         } else {
             Address.functionCall(
-                address(ERC721Extended),
+                ERC721ExtendedAddr,
                 abi.encodeWithSignature(
                     transferFunction,
                     owner,
@@ -387,7 +393,7 @@ contract ERC721Test is Test {
             );
         }
         assertEq(ERC721Extended.ownerOf(tokenId), owner);
-        assertEq(ERC721Extended.getApproved(tokenId), address(0));
+        assertEq(ERC721Extended.getApproved(tokenId), zeroAddress);
         assertEq(ERC721Extended.balanceOf(owner), 2);
         assertEq(ERC721Extended.tokenOfOwnerByIndex(owner, 0), tokenId);
         assertTrue(ERC721Extended.tokenOfOwnerByIndex(owner, 1) == tokenId + 1);
@@ -436,7 +442,7 @@ contract ERC721Test is Test {
             approved,
             operator,
             tokenId,
-            vm.addr(6),
+            makeAddr("receiver"),
             true,
             data
         );
@@ -460,7 +466,7 @@ contract ERC721Test is Test {
         vm.expectEmit(true, true, true, true, receiver);
         emit Received(owner, owner, tokenId, data);
         Address.functionCall(
-            address(ERC721Extended),
+            ERC721ExtendedAddr,
             abi.encodeWithSignature(
                 transferFunction,
                 owner,
@@ -478,7 +484,7 @@ contract ERC721Test is Test {
         vm.expectEmit(true, true, true, true, receiver);
         emit Received(approved, owner, tokenId, data);
         Address.functionCall(
-            address(ERC721Extended),
+            ERC721ExtendedAddr,
             abi.encodeWithSignature(
                 transferFunction,
                 owner,
@@ -494,7 +500,7 @@ contract ERC721Test is Test {
         vm.startPrank(owner);
         vm.expectRevert(bytes("ERC721: invalid token ID"));
         Address.functionCall(
-            address(ERC721Extended),
+            ERC721ExtendedAddr,
             abi.encodeWithSignature(
                 transferFunction,
                 owner,
@@ -517,23 +523,44 @@ contract ERC721Test is Test {
         ERC721Extended = IERC721Extended(
             vyperDeployer.deployContract("src/tokens/", "ERC721", args)
         );
+        ERC721ExtendedAddr = address(ERC721Extended);
         _CACHED_DOMAIN_SEPARATOR = keccak256(
             abi.encode(
                 _TYPE_HASH,
                 keccak256(bytes(_NAME_EIP712)),
                 keccak256(bytes(_VERSION_EIP712)),
                 block.chainid,
-                address(ERC721Extended)
+                ERC721ExtendedAddr
             )
         );
     }
 
     function testInitialSetup() public {
-        address deployer = address(vyperDeployer);
         assertEq(ERC721Extended.name(), _NAME);
         assertEq(ERC721Extended.symbol(), _SYMBOL);
-        assertTrue(ERC721Extended.owner() == deployer);
+        assertEq(ERC721Extended.totalSupply(), 0);
+        assertEq(ERC721Extended.owner(), deployer);
         assertTrue(ERC721Extended.is_minter(deployer));
+
+        vm.expectEmit(true, true, false, false);
+        emit OwnershipTransferred(zeroAddress, deployer);
+        vm.expectEmit(true, false, false, true);
+        emit RoleMinterChanged(deployer, true);
+        bytes memory args = abi.encode(
+            _NAME,
+            _SYMBOL,
+            _BASE_URI,
+            _NAME_EIP712,
+            _VERSION_EIP712
+        );
+        ERC721ExtendedInitialEvent = IERC721Extended(
+            vyperDeployer.deployContract("src/tokens/", "ERC721", args)
+        );
+        assertEq(ERC721ExtendedInitialEvent.name(), _NAME);
+        assertEq(ERC721ExtendedInitialEvent.symbol(), _SYMBOL);
+        assertEq(ERC721ExtendedInitialEvent.totalSupply(), 0);
+        assertEq(ERC721ExtendedInitialEvent.owner(), deployer);
+        assertTrue(ERC721ExtendedInitialEvent.is_minter(deployer));
     }
 
     function testSupportsInterfaceSuccess() public {
@@ -564,8 +591,7 @@ contract ERC721Test is Test {
     }
 
     function testBalanceOfCase1() public {
-        address deployer = address(vyperDeployer);
-        address owner = vm.addr(1);
+        address owner = makeAddr("owner");
         string memory uri1 = "my_awesome_nft_uri_1";
         string memory uri2 = "my_awesome_nft_uri_2";
         vm.startPrank(deployer);
@@ -576,17 +602,16 @@ contract ERC721Test is Test {
     }
 
     function testBalanceOfCase2() public {
-        assertEq(ERC721Extended.balanceOf(vm.addr(1)), 0);
+        assertEq(ERC721Extended.balanceOf(makeAddr("owner")), 0);
     }
 
     function testBalanceOfZeroAddress() public {
         vm.expectRevert(bytes("ERC721: the zero address is not a valid owner"));
-        ERC721Extended.balanceOf(address(0));
+        ERC721Extended.balanceOf(zeroAddress);
     }
 
     function testOwnerOf() public {
-        address deployer = address(vyperDeployer);
-        address owner = vm.addr(1);
+        address owner = makeAddr("owner");
         string memory uri = "my_awesome_nft_uri";
         vm.startPrank(deployer);
         ERC721Extended.safe_mint(owner, uri);
@@ -600,37 +625,37 @@ contract ERC721Test is Test {
     }
 
     function testTransferFrom() public {
-        address deployer = address(vyperDeployer);
-        address owner = vm.addr(1);
-        address approved = vm.addr(2);
-        address operator = vm.addr(3);
+        address owner = makeAddr("owner");
+        address approved = makeAddr("approved");
+        address operator = makeAddr("operator");
         string memory uri1 = "my_awesome_nft_uri_1";
         string memory uri2 = "my_awesome_nft_uri_2";
         vm.startPrank(deployer);
         ERC721Extended.safe_mint(owner, uri1);
         ERC721Extended.safe_mint(owner, uri2);
         vm.stopPrank();
+
         vm.startPrank(owner);
         ERC721Extended.approve(approved, 0);
         ERC721Extended.setApprovalForAll(operator, true);
         vm.stopPrank();
+
         _shouldTransferTokensByUsers(
             "transferFrom(address,address,uint256)",
             owner,
             approved,
             operator,
             0,
-            vm.addr(4),
+            makeAddr("receiver"),
             false,
             new bytes(0)
         );
     }
 
     function testSafeTransferFromNoData() public {
-        address deployer = address(vyperDeployer);
-        address owner = vm.addr(1);
-        address approved = vm.addr(2);
-        address operator = vm.addr(3);
+        address owner = makeAddr("owner");
+        address approved = makeAddr("approved");
+        address operator = makeAddr("operator");
         string memory uri1 = "my_awesome_nft_uri_1";
         string memory uri2 = "my_awesome_nft_uri_2";
         bytes4 receiverMagicValue = type(IERC721Receiver).interfaceId;
@@ -643,10 +668,23 @@ contract ERC721Test is Test {
         ERC721Extended.safe_mint(owner, uri1);
         ERC721Extended.safe_mint(owner, uri2);
         vm.stopPrank();
+
         vm.startPrank(owner);
         ERC721Extended.approve(approved, 0);
         ERC721Extended.setApprovalForAll(operator, true);
         vm.stopPrank();
+
+        _shouldTransferTokensByUsers(
+            "safeTransferFrom(address,address,uint256)",
+            owner,
+            approved,
+            operator,
+            0,
+            makeAddr("receiver"),
+            false,
+            new bytes(0)
+        );
+
         _shouldTransferSafely(
             "safeTransferFrom(address,address,uint256,bytes)",
             owner,
@@ -659,10 +697,9 @@ contract ERC721Test is Test {
     }
 
     function testSafeTransferFromWithData() public {
-        address deployer = address(vyperDeployer);
-        address owner = vm.addr(1);
-        address approved = vm.addr(2);
-        address operator = vm.addr(3);
+        address owner = makeAddr("owner");
+        address approved = makeAddr("approved");
+        address operator = makeAddr("operator");
         string memory uri1 = "my_awesome_nft_uri_1";
         string memory uri2 = "my_awesome_nft_uri_2";
         bytes4 receiverMagicValue = type(IERC721Receiver).interfaceId;
@@ -675,10 +712,12 @@ contract ERC721Test is Test {
         ERC721Extended.safe_mint(owner, uri1);
         ERC721Extended.safe_mint(owner, uri2);
         vm.stopPrank();
+
         vm.startPrank(owner);
         ERC721Extended.approve(approved, 0);
         ERC721Extended.setApprovalForAll(operator, true);
         vm.stopPrank();
+
         _shouldTransferSafely(
             "safeTransferFrom(address,address,uint256,bytes)",
             owner,
@@ -691,8 +730,7 @@ contract ERC721Test is Test {
     }
 
     function testSafeTransferFromReceiverInvalidReturnIdentifier() public {
-        address deployer = address(vyperDeployer);
-        address owner = vm.addr(1);
+        address owner = makeAddr("owner");
         string memory uri = "my_awesome_nft_uri";
         ERC721ReceiverMock erc721ReceiverMock = new ERC721ReceiverMock(
             0x00bb8833,
@@ -702,6 +740,7 @@ contract ERC721Test is Test {
         vm.startPrank(deployer);
         ERC721Extended.safe_mint(owner, uri);
         vm.stopPrank();
+
         vm.startPrank(owner);
         vm.expectRevert(
             bytes("ERC721: transfer to non-ERC721Receiver implementer")
@@ -711,8 +750,7 @@ contract ERC721Test is Test {
     }
 
     function testSafeTransferFromReceiverRevertsWithMessage() public {
-        address deployer = address(vyperDeployer);
-        address owner = vm.addr(1);
+        address owner = makeAddr("owner");
         string memory uri = "my_awesome_nft_uri";
         bytes4 receiverMagicValue = type(IERC721Receiver).interfaceId;
         ERC721ReceiverMock erc721ReceiverMock = new ERC721ReceiverMock(
@@ -723,6 +761,7 @@ contract ERC721Test is Test {
         vm.startPrank(deployer);
         ERC721Extended.safe_mint(owner, uri);
         vm.stopPrank();
+
         vm.startPrank(owner);
         vm.expectRevert(bytes("ERC721ReceiverMock: reverting"));
         ERC721Extended.safeTransferFrom(owner, receiver, 0, new bytes(0));
@@ -730,8 +769,7 @@ contract ERC721Test is Test {
     }
 
     function testSafeTransferFromReceiverRevertsWithoutMessage() public {
-        address deployer = address(vyperDeployer);
-        address owner = vm.addr(1);
+        address owner = makeAddr("owner");
         string memory uri = "my_awesome_nft_uri";
         bytes4 receiverMagicValue = type(IERC721Receiver).interfaceId;
         ERC721ReceiverMock erc721ReceiverMock = new ERC721ReceiverMock(
@@ -742,6 +780,7 @@ contract ERC721Test is Test {
         vm.startPrank(deployer);
         ERC721Extended.safe_mint(owner, uri);
         vm.stopPrank();
+
         vm.startPrank(owner);
         vm.expectRevert();
         ERC721Extended.safeTransferFrom(owner, receiver, 0, new bytes(0));
@@ -749,8 +788,7 @@ contract ERC721Test is Test {
     }
 
     function testSafeTransferFromReceiverRevertsWithPanic() public {
-        address deployer = address(vyperDeployer);
-        address owner = vm.addr(1);
+        address owner = makeAddr("owner");
         string memory uri = "my_awesome_nft_uri";
         bytes4 receiverMagicValue = type(IERC721Receiver).interfaceId;
         ERC721ReceiverMock erc721ReceiverMock = new ERC721ReceiverMock(
@@ -761,6 +799,7 @@ contract ERC721Test is Test {
         vm.startPrank(deployer);
         ERC721Extended.safe_mint(owner, uri);
         vm.stopPrank();
+
         vm.startPrank(owner);
         vm.expectRevert(stdError.divisionError);
         ERC721Extended.safeTransferFrom(owner, receiver, 0, new bytes(0));
@@ -768,12 +807,12 @@ contract ERC721Test is Test {
     }
 
     function testSafeTransferFromReceiverFunctionNotImplemented() public {
-        address deployer = address(vyperDeployer);
-        address owner = vm.addr(1);
+        address owner = makeAddr("owner");
         string memory uri = "my_awesome_nft_uri";
         vm.startPrank(deployer);
         ERC721Extended.safe_mint(owner, uri);
         vm.stopPrank();
+
         vm.startPrank(owner);
         vm.expectRevert();
         ERC721Extended.safeTransferFrom(owner, deployer, 0, new bytes(0));
@@ -781,14 +820,14 @@ contract ERC721Test is Test {
     }
 
     function testApproveClearingApprovalWithNoPriorApproval() public {
-        address deployer = address(vyperDeployer);
-        address owner = vm.addr(1);
-        address spender = address(0);
+        address owner = makeAddr("owner");
+        address spender = zeroAddress;
         string memory uri = "my_awesome_nft_uri";
         uint256 tokenId = 0;
         vm.startPrank(deployer);
         ERC721Extended.safe_mint(owner, uri);
         vm.stopPrank();
+
         vm.startPrank(owner);
         vm.expectEmit(true, true, true, false);
         emit Approval(owner, spender, tokenId);
@@ -798,15 +837,15 @@ contract ERC721Test is Test {
     }
 
     function testApproveClearingApprovalWithPriorApproval() public {
-        address deployer = address(vyperDeployer);
-        address owner = vm.addr(1);
-        address spender1 = vm.addr(2);
-        address spender2 = address(0);
+        address owner = makeAddr("owner");
+        address spender1 = makeAddr("spender1");
+        address spender2 = zeroAddress;
         string memory uri = "my_awesome_nft_uri";
         uint256 tokenId = 0;
         vm.startPrank(deployer);
         ERC721Extended.safe_mint(owner, uri);
         vm.stopPrank();
+
         vm.startPrank(owner);
         vm.expectEmit(true, true, true, false);
         emit Approval(owner, spender1, tokenId);
@@ -821,15 +860,15 @@ contract ERC721Test is Test {
     }
 
     function testApproveToZeroAddress() public {
-        address deployer = address(vyperDeployer);
-        address owner = vm.addr(1);
-        address spender1 = vm.addr(2);
-        address spender2 = address(0);
+        address owner = makeAddr("owner");
+        address spender1 = makeAddr("spender1");
+        address spender2 = zeroAddress;
         string memory uri = "my_awesome_nft_uri";
         uint256 tokenId = 0;
         vm.startPrank(deployer);
         ERC721Extended.safe_mint(owner, uri);
         vm.stopPrank();
+
         vm.startPrank(owner);
         vm.expectEmit(true, true, true, false);
         emit Approval(owner, spender1, tokenId);
@@ -844,14 +883,14 @@ contract ERC721Test is Test {
     }
 
     function testApproveWithNoPriorApproval() public {
-        address deployer = address(vyperDeployer);
-        address owner = vm.addr(1);
-        address spender = vm.addr(2);
+        address owner = makeAddr("owner");
+        address spender = makeAddr("spender");
         string memory uri = "my_awesome_nft_uri";
         uint256 tokenId = 0;
         vm.startPrank(deployer);
         ERC721Extended.safe_mint(owner, uri);
         vm.stopPrank();
+
         vm.startPrank(owner);
         vm.expectEmit(true, true, true, false);
         emit Approval(owner, spender, tokenId);
@@ -861,14 +900,14 @@ contract ERC721Test is Test {
     }
 
     function testApproveWithPriorApprovalToSameAddress() public {
-        address deployer = address(vyperDeployer);
-        address owner = vm.addr(1);
-        address spender = vm.addr(2);
+        address owner = makeAddr("owner");
+        address spender = makeAddr("spender");
         string memory uri = "my_awesome_nft_uri";
         uint256 tokenId = 0;
         vm.startPrank(deployer);
         ERC721Extended.safe_mint(owner, uri);
         vm.stopPrank();
+
         vm.startPrank(owner);
         vm.expectEmit(true, true, true, false);
         emit Approval(owner, spender, tokenId);
@@ -883,15 +922,15 @@ contract ERC721Test is Test {
     }
 
     function testApproveWithPriorApprovalToDifferentAddress() public {
-        address deployer = address(vyperDeployer);
-        address owner = vm.addr(1);
-        address spender1 = vm.addr(2);
-        address spender2 = vm.addr(3);
+        address owner = makeAddr("owner");
+        address spender1 = makeAddr("spender1");
+        address spender2 = makeAddr("spender2");
         string memory uri = "my_awesome_nft_uri";
         uint256 tokenId = 0;
         vm.startPrank(deployer);
         ERC721Extended.safe_mint(owner, uri);
         vm.stopPrank();
+
         vm.startPrank(owner);
         vm.expectEmit(true, true, true, false);
         emit Approval(owner, spender1, tokenId);
@@ -906,13 +945,13 @@ contract ERC721Test is Test {
     }
 
     function testApproveToOwner() public {
-        address deployer = address(vyperDeployer);
-        address owner = vm.addr(1);
+        address owner = makeAddr("owner");
         string memory uri = "my_awesome_nft_uri";
         uint256 tokenId = 0;
         vm.startPrank(deployer);
         ERC721Extended.safe_mint(owner, uri);
         vm.stopPrank();
+
         vm.startPrank(owner);
         vm.expectRevert(bytes("ERC721: approval to current owner"));
         ERC721Extended.approve(owner, tokenId);
@@ -920,58 +959,60 @@ contract ERC721Test is Test {
     }
 
     function testApproveFromNonOwner() public {
-        address deployer = address(vyperDeployer);
-        address owner = vm.addr(1);
+        address owner = makeAddr("owner");
         string memory uri = "my_awesome_nft_uri";
         uint256 tokenId = 0;
         vm.startPrank(deployer);
         ERC721Extended.safe_mint(owner, uri);
         vm.stopPrank();
-        vm.startPrank(vm.addr(2));
+
+        vm.startPrank(makeAddr("nonOwner"));
         vm.expectRevert(
             bytes(
                 "ERC721: approve caller is not token owner or approved for all"
             )
         );
-        ERC721Extended.approve(vm.addr(3), tokenId);
+        ERC721Extended.approve(makeAddr("to"), tokenId);
         vm.stopPrank();
     }
 
     function testApproveFromApprovedAddress() public {
-        address deployer = address(vyperDeployer);
-        address owner = vm.addr(1);
-        address spender = vm.addr(2);
+        address owner = makeAddr("owner");
+        address spender = makeAddr("spender");
         string memory uri = "my_awesome_nft_uri";
         uint256 tokenId = 0;
         vm.startPrank(deployer);
         ERC721Extended.safe_mint(owner, uri);
         vm.stopPrank();
+
         vm.startPrank(owner);
         ERC721Extended.approve(spender, tokenId);
         vm.stopPrank();
+
         vm.startPrank(spender);
         vm.expectRevert(
             bytes(
                 "ERC721: approve caller is not token owner or approved for all"
             )
         );
-        ERC721Extended.approve(vm.addr(3), tokenId);
+        ERC721Extended.approve(makeAddr("to"), tokenId);
         vm.stopPrank();
     }
 
     function testApproveFromOperatorAddress() public {
-        address deployer = address(vyperDeployer);
-        address owner = vm.addr(1);
-        address operator = vm.addr(2);
-        address spender = vm.addr(3);
+        address owner = makeAddr("owner");
+        address operator = makeAddr("operator");
+        address spender = makeAddr("spender");
         string memory uri = "my_awesome_nft_uri";
         uint256 tokenId = 0;
         vm.startPrank(deployer);
         ERC721Extended.safe_mint(owner, uri);
         vm.stopPrank();
+
         vm.startPrank(owner);
         ERC721Extended.setApprovalForAll(operator, true);
         vm.stopPrank();
+
         vm.startPrank(operator);
         vm.expectEmit(true, true, true, false);
         emit Approval(owner, spender, tokenId);
@@ -981,28 +1022,28 @@ contract ERC721Test is Test {
     }
 
     function testApproveInvalidTokenId() public {
-        address deployer = address(vyperDeployer);
-        address owner = vm.addr(1);
+        address owner = makeAddr("owner");
         string memory uri = "my_awesome_nft_uri";
         uint256 tokenId = 0;
         vm.startPrank(deployer);
         ERC721Extended.safe_mint(owner, uri);
         vm.stopPrank();
+
         vm.startPrank(owner);
         vm.expectRevert(bytes("ERC721: invalid token ID"));
-        ERC721Extended.approve(vm.addr(2), tokenId + 1);
+        ERC721Extended.approve(makeAddr("to"), tokenId + 1);
         vm.stopPrank();
     }
 
     function testSetApprovalForAllSuccessCase1() public {
-        address deployer = address(vyperDeployer);
-        address owner = vm.addr(1);
-        address operator = vm.addr(2);
+        address owner = makeAddr("owner");
+        address operator = makeAddr("operator");
         bool approved = true;
         string memory uri = "my_awesome_nft_uri";
         vm.startPrank(deployer);
         ERC721Extended.safe_mint(owner, uri);
         vm.stopPrank();
+
         vm.startPrank(owner);
         vm.expectEmit(true, true, false, true);
         emit ApprovalForAll(owner, operator, approved);
@@ -1012,14 +1053,14 @@ contract ERC721Test is Test {
     }
 
     function testSetApprovalForAllSuccessCase2() public {
-        address deployer = address(vyperDeployer);
-        address owner = vm.addr(1);
-        address operator = vm.addr(2);
+        address owner = makeAddr("owner");
+        address operator = makeAddr("operator");
         bool approved = true;
         string memory uri = "my_awesome_nft_uri";
         vm.startPrank(deployer);
         ERC721Extended.safe_mint(owner, uri);
         vm.stopPrank();
+
         vm.startPrank(owner);
         vm.expectEmit(true, true, false, true);
         emit ApprovalForAll(owner, operator, !approved);
@@ -1039,14 +1080,14 @@ contract ERC721Test is Test {
     }
 
     function testSetApprovalForAllSuccessCase3() public {
-        address deployer = address(vyperDeployer);
-        address owner = vm.addr(1);
-        address operator = vm.addr(2);
+        address owner = makeAddr("owner");
+        address operator = makeAddr("operator");
         bool approved = true;
         string memory uri = "my_awesome_nft_uri";
         vm.startPrank(deployer);
         ERC721Extended.safe_mint(owner, uri);
         vm.stopPrank();
+
         vm.startPrank(owner);
         vm.expectEmit(true, true, false, true);
         emit ApprovalForAll(owner, operator, approved);
@@ -1061,12 +1102,12 @@ contract ERC721Test is Test {
     }
 
     function testSetApprovalForAllOperatorIsOwner() public {
-        address deployer = address(vyperDeployer);
-        address owner = vm.addr(1);
+        address owner = makeAddr("owner");
         string memory uri = "my_awesome_nft_uri";
         vm.startPrank(deployer);
         ERC721Extended.safe_mint(owner, uri);
         vm.stopPrank();
+
         vm.startPrank(owner);
         vm.expectRevert(bytes("ERC721: approve to caller"));
         ERC721Extended.setApprovalForAll(owner, true);
@@ -1079,23 +1120,22 @@ contract ERC721Test is Test {
     }
 
     function testGetApprovedNotApprovedTokenId() public {
-        address deployer = address(vyperDeployer);
-        address owner = vm.addr(1);
+        address owner = makeAddr("owner");
         string memory uri = "my_awesome_nft_uri";
         vm.startPrank(deployer);
         ERC721Extended.safe_mint(owner, uri);
         vm.stopPrank();
-        assertEq(ERC721Extended.getApproved(0), address(0));
+        assertEq(ERC721Extended.getApproved(0), zeroAddress);
     }
 
     function testGetApprovedApprovedTokenId() public {
-        address deployer = address(vyperDeployer);
-        address owner = vm.addr(1);
-        address spender = vm.addr(2);
+        address owner = makeAddr("owner");
+        address spender = makeAddr("spender");
         string memory uri = "my_awesome_nft_uri";
         vm.startPrank(deployer);
         ERC721Extended.safe_mint(owner, uri);
         vm.stopPrank();
+
         vm.startPrank(owner);
         ERC721Extended.approve(spender, 0);
         assertEq(ERC721Extended.getApproved(0), spender);
@@ -1103,8 +1143,7 @@ contract ERC721Test is Test {
     }
 
     function testTokenURIDefault() public {
-        address deployer = address(vyperDeployer);
-        address owner = vm.addr(1);
+        address owner = makeAddr("owner");
         string memory uri = "my_awesome_nft_uri";
         vm.startPrank(deployer);
         ERC721Extended.safe_mint(owner, uri);
@@ -1113,8 +1152,7 @@ contract ERC721Test is Test {
     }
 
     function testTokenURINoTokenUri() public {
-        address deployer = address(vyperDeployer);
-        address owner = vm.addr(1);
+        address owner = makeAddr("owner");
         vm.startPrank(deployer);
         ERC721Extended.safe_mint(owner, "");
         vm.stopPrank();
@@ -1132,8 +1170,7 @@ contract ERC721Test is Test {
         ERC721ExtendedNoBaseURI = IERC721Extended(
             vyperDeployer.deployContract("src/tokens/", "ERC721", args)
         );
-        address deployer = address(vyperDeployer);
-        address owner = vm.addr(1);
+        address owner = makeAddr("owner");
         string memory uri = "my_awesome_nft_uri";
         vm.startPrank(deployer);
         ERC721ExtendedNoBaseURI.safe_mint(owner, uri);
@@ -1147,22 +1184,22 @@ contract ERC721Test is Test {
     }
 
     function testTokenURIAfterBurning() public {
-        address deployer = address(vyperDeployer);
-        address owner = vm.addr(1);
+        address owner = makeAddr("owner");
         string memory uri = "my_awesome_nft_uri";
         vm.startPrank(deployer);
         ERC721Extended.safe_mint(owner, uri);
         vm.stopPrank();
+
         vm.startPrank(owner);
         ERC721Extended.burn(0);
         vm.stopPrank();
+
         vm.expectRevert(bytes("ERC721: invalid token ID"));
         ERC721Extended.tokenURI(0);
     }
 
     function testTotalSupply() public {
-        address deployer = address(vyperDeployer);
-        address owner = vm.addr(1);
+        address owner = makeAddr("owner");
         string memory uri1 = "my_awesome_nft_uri_1";
         string memory uri2 = "my_awesome_nft_uri_2";
         vm.startPrank(deployer);
@@ -1173,8 +1210,7 @@ contract ERC721Test is Test {
     }
 
     function testTokenByIndex() public {
-        address deployer = address(vyperDeployer);
-        address owner = vm.addr(1);
+        address owner = makeAddr("owner");
         string memory uri1 = "my_awesome_nft_uri_1";
         string memory uri2 = "my_awesome_nft_uri_2";
         string memory uri3 = "my_awesome_nft_uri_3";
@@ -1206,8 +1242,7 @@ contract ERC721Test is Test {
     }
 
     function testTokenByIndexOutOfBounds() public {
-        address deployer = address(vyperDeployer);
-        address owner = vm.addr(1);
+        address owner = makeAddr("owner");
         string memory uri1 = "my_awesome_nft_uri_1";
         string memory uri2 = "my_awesome_nft_uri_2";
         vm.startPrank(deployer);
@@ -1215,14 +1250,14 @@ contract ERC721Test is Test {
         ERC721Extended.safe_mint(owner, uri2);
         vm.stopPrank();
         assertEq(ERC721Extended.totalSupply(), 2);
+
         vm.expectRevert(bytes("ERC721Enumerable: global index out of bounds"));
         ERC721Extended.tokenByIndex(2);
     }
 
     function testTokenOfOwnerByIndex() public {
-        address deployer = address(vyperDeployer);
-        address owner = vm.addr(1);
-        address other = vm.addr(2);
+        address owner = makeAddr("owner");
+        address other = makeAddr("other");
         string memory uri1 = "my_awesome_nft_uri_1";
         string memory uri2 = "my_awesome_nft_uri_2";
         string memory uri3 = "my_awesome_nft_uri_3";
@@ -1280,9 +1315,8 @@ contract ERC721Test is Test {
     }
 
     function testTokenOfOwnerByIndexReverts() public {
-        address deployer = address(vyperDeployer);
-        address owner = vm.addr(1);
-        address other = vm.addr(2);
+        address owner = makeAddr("owner");
+        address other = makeAddr("other");
         string memory uri1 = "my_awesome_nft_uri_1";
         string memory uri2 = "my_awesome_nft_uri_2";
         string memory uri3 = "my_awesome_nft_uri_3";
@@ -1316,8 +1350,7 @@ contract ERC721Test is Test {
     }
 
     function testBurnSuccess() public {
-        address deployer = address(vyperDeployer);
-        address owner = vm.addr(1);
+        address owner = makeAddr("owner");
         string memory uri1 = "my_awesome_nft_uri_1";
         string memory uri2 = "my_awesome_nft_uri_2";
         uint256 tokenId = 0;
@@ -1325,23 +1358,24 @@ contract ERC721Test is Test {
         ERC721Extended.safe_mint(owner, uri1);
         ERC721Extended.safe_mint(owner, uri2);
         vm.stopPrank();
+
         vm.startPrank(owner);
         vm.expectEmit(true, true, true, false);
-        emit Transfer(owner, address(0), tokenId);
+        emit Transfer(owner, zeroAddress, tokenId);
         ERC721Extended.burn(tokenId);
         vm.expectRevert(bytes("ERC721: invalid token ID"));
         ERC721Extended.burn(tokenId);
         vm.stopPrank();
+
         vm.expectRevert(bytes("ERC721: invalid token ID"));
         ERC721Extended.ownerOf(tokenId);
         assertEq(ERC721Extended.balanceOf(owner), 1);
     }
 
     function testBurnSuccessViaApproveAndSetApprovalForAll() public {
-        address deployer = address(vyperDeployer);
-        address owner = vm.addr(1);
-        address operator = vm.addr(2);
-        address other = vm.addr(3);
+        address owner = makeAddr("owner");
+        address operator = makeAddr("operator");
+        address other = makeAddr("other");
         string memory uri1 = "my_awesome_nft_uri_1";
         string memory uri2 = "my_awesome_nft_uri_2";
         uint256 tokenId = 0;
@@ -1349,6 +1383,7 @@ contract ERC721Test is Test {
         ERC721Extended.safe_mint(owner, uri1);
         ERC721Extended.safe_mint(owner, uri2);
         vm.stopPrank();
+
         vm.startPrank(owner);
         vm.expectRevert(bytes("ERC721: invalid token ID"));
         ERC721Extended.burn(tokenId + 2);
@@ -1358,13 +1393,13 @@ contract ERC721Test is Test {
 
         vm.startPrank(operator);
         vm.expectEmit(true, true, true, false);
-        emit Transfer(owner, address(0), tokenId);
+        emit Transfer(owner, zeroAddress, tokenId);
         ERC721Extended.burn(tokenId);
         vm.stopPrank();
 
         vm.startPrank(other);
         vm.expectEmit(true, true, true, false);
-        emit Transfer(owner, address(0), tokenId + 1);
+        emit Transfer(owner, zeroAddress, tokenId + 1);
         ERC721Extended.burn(tokenId + 1);
         vm.stopPrank();
 
@@ -1383,33 +1418,32 @@ contract ERC721Test is Test {
     }
 
     function testSafeMintSuccess() public {
-        address deployer = address(vyperDeployer);
-        address owner = vm.addr(1);
+        address owner = makeAddr("owner");
         string memory uri1 = "my_awesome_nft_uri_1";
         string memory uri2 = "my_awesome_nft_uri_2";
         string memory uri3 = "my_awesome_nft_uri_3";
         uint256 tokenId = 0;
         vm.startPrank(deployer);
         vm.expectEmit(true, true, true, false);
-        emit Transfer(address(0), owner, tokenId);
+        emit Transfer(zeroAddress, owner, tokenId);
         ERC721Extended.safe_mint(owner, uri1);
         vm.expectEmit(true, true, true, false);
-        emit Transfer(address(0), owner, tokenId + 1);
+        emit Transfer(zeroAddress, owner, tokenId + 1);
         ERC721Extended.safe_mint(owner, uri2);
         vm.expectEmit(true, true, true, false);
-        emit Transfer(address(0), owner, tokenId + 2);
+        emit Transfer(zeroAddress, owner, tokenId + 2);
         ERC721Extended.safe_mint(owner, uri3);
         vm.stopPrank();
 
         vm.startPrank(owner);
         vm.expectEmit(true, true, true, false);
-        emit Transfer(owner, address(0), tokenId + 2);
+        emit Transfer(owner, zeroAddress, tokenId + 2);
         ERC721Extended.burn(tokenId + 2);
         vm.stopPrank();
 
         vm.startPrank(deployer);
         vm.expectEmit(true, true, true, false);
-        emit Transfer(address(0), owner, tokenId + 3);
+        emit Transfer(zeroAddress, owner, tokenId + 3);
         ERC721Extended.safe_mint(owner, "");
         vm.stopPrank();
         assertEq(ERC721Extended.balanceOf(owner), 3);
@@ -1420,17 +1454,16 @@ contract ERC721Test is Test {
     }
 
     function testSafeMintTokenAlreadyMinted() public {
-        address deployer = address(vyperDeployer);
-        address owner = vm.addr(1);
+        address owner = makeAddr("owner");
         string memory uri1 = "my_awesome_nft_uri_1";
         string memory uri2 = "my_awesome_nft_uri_2";
         uint256 tokenId = 0;
         vm.startPrank(deployer);
         vm.expectEmit(true, true, true, false);
-        emit Transfer(address(0), owner, tokenId);
+        emit Transfer(zeroAddress, owner, tokenId);
         ERC721Extended.safe_mint(owner, uri1);
         vm.expectEmit(true, true, true, false);
-        emit Transfer(address(0), owner, tokenId + 1);
+        emit Transfer(zeroAddress, owner, tokenId + 1);
         ERC721Extended.safe_mint(owner, uri2);
 
         /**
@@ -1438,7 +1471,7 @@ contract ERC721Test is Test {
          * in Vyper, use `vyper -f layout yourFileName.vy`.
          */
         vm.store(
-            address(ERC721Extended),
+            ERC721ExtendedAddr,
             bytes32(uint256(18446744073709551627)),
             bytes32(0)
         );
@@ -1448,7 +1481,6 @@ contract ERC721Test is Test {
     }
 
     function testSafeMintReceiverContract() public {
-        address deployer = address(vyperDeployer);
         bytes4 receiverMagicValue = type(IERC721Receiver).interfaceId;
         ERC721ReceiverMock erc721ReceiverMock = new ERC721ReceiverMock(
             receiverMagicValue,
@@ -1466,7 +1498,6 @@ contract ERC721Test is Test {
     }
 
     function testSafeMintReceiverContractInvalidReturnIdentifier() public {
-        address deployer = address(vyperDeployer);
         ERC721ReceiverMock erc721ReceiverMock = new ERC721ReceiverMock(
             0x00bb8833,
             ERC721ReceiverMock.Error.None
@@ -1482,7 +1513,6 @@ contract ERC721Test is Test {
     }
 
     function testSafeMintReceiverContractRevertsWithMessage() public {
-        address deployer = address(vyperDeployer);
         bytes4 receiverMagicValue = type(IERC721Receiver).interfaceId;
         ERC721ReceiverMock erc721ReceiverMock = new ERC721ReceiverMock(
             receiverMagicValue,
@@ -1497,7 +1527,6 @@ contract ERC721Test is Test {
     }
 
     function testSafeMintReceiverContractRevertsWithoutMessage() public {
-        address deployer = address(vyperDeployer);
         bytes4 receiverMagicValue = type(IERC721Receiver).interfaceId;
         ERC721ReceiverMock erc721ReceiverMock = new ERC721ReceiverMock(
             receiverMagicValue,
@@ -1512,7 +1541,6 @@ contract ERC721Test is Test {
     }
 
     function testSafeMintReceiverContractRevertsWithPanic() public {
-        address deployer = address(vyperDeployer);
         bytes4 receiverMagicValue = type(IERC721Receiver).interfaceId;
         ERC721ReceiverMock erc721ReceiverMock = new ERC721ReceiverMock(
             receiverMagicValue,
@@ -1527,7 +1555,6 @@ contract ERC721Test is Test {
     }
 
     function testSafeMintReceiverContractFunctionNotImplemented() public {
-        address deployer = address(vyperDeployer);
         string memory uri = "my_awesome_nft_uri";
         vm.startPrank(deployer);
         vm.expectRevert();
@@ -1537,13 +1564,13 @@ contract ERC721Test is Test {
 
     function testSafeMintNonMinter() public {
         vm.expectRevert(bytes("AccessControl: access is denied"));
-        ERC721Extended.safe_mint(vm.addr(1), "my_awesome_nft_uri");
+        ERC721Extended.safe_mint(makeAddr("owner"), "my_awesome_nft_uri");
     }
 
     function testSafeMintToZeroAddress() public {
-        vm.prank(address(vyperDeployer));
+        vm.prank(deployer);
         vm.expectRevert(bytes("ERC721: mint to the zero address"));
-        ERC721Extended.safe_mint(address(0), "my_awesome_nft_uri");
+        ERC721Extended.safe_mint(zeroAddress, "my_awesome_nft_uri");
     }
 
     function testSafeMintOverflow() public {
@@ -1552,18 +1579,18 @@ contract ERC721Test is Test {
          * in Vyper, use `vyper -f layout yourFileName.vy`.
          */
         vm.store(
-            address(ERC721Extended),
+            ERC721ExtendedAddr,
             bytes32(uint256(18446744073709551627)),
             bytes32(type(uint256).max)
         );
-        vm.prank(address(vyperDeployer));
+        vm.prank(deployer);
         vm.expectRevert();
-        ERC721Extended.safe_mint(vm.addr(1), "my_awesome_nft_uri");
+        ERC721Extended.safe_mint(makeAddr("owner"), "my_awesome_nft_uri");
     }
 
     function testSetMinterSuccess() public {
-        address owner = address(vyperDeployer);
-        address minter = vm.addr(1);
+        address owner = deployer;
+        address minter = makeAddr("minter");
         vm.startPrank(owner);
         vm.expectEmit(true, false, false, true);
         emit RoleMinterChanged(minter, true);
@@ -1579,36 +1606,36 @@ contract ERC721Test is Test {
 
     function testSetMinterNonOwner() public {
         vm.expectRevert(bytes("Ownable: caller is not the owner"));
-        ERC721Extended.set_minter(vm.addr(1), true);
+        ERC721Extended.set_minter(makeAddr("minter"), true);
     }
 
     function testSetMinterToZeroAddress() public {
-        vm.prank(address(vyperDeployer));
+        vm.prank(deployer);
         vm.expectRevert(bytes("AccessControl: minter is the zero address"));
-        ERC721Extended.set_minter(address(0), true);
+        ERC721Extended.set_minter(zeroAddress, true);
     }
 
     function testSetMinterRemoveOwnerAddress() public {
-        vm.prank(address(vyperDeployer));
+        vm.prank(deployer);
         vm.expectRevert(bytes("AccessControl: minter is owner address"));
-        ERC721Extended.set_minter(address(vyperDeployer), false);
+        ERC721Extended.set_minter(deployer, false);
     }
 
     function testPermitSuccess() public {
-        address deployer = address(vyperDeployer);
-        address owner = vm.addr(1);
-        address spender = vm.addr(2);
+        (address owner, uint256 key) = makeAddrAndKey("owner");
+        address spender = makeAddr("spender");
         uint256 tokenId = 0;
         string memory uri = "my_awesome_nft_uri";
         vm.startPrank(deployer);
         ERC721Extended.safe_mint(owner, uri);
         vm.stopPrank();
+
         uint256 nonce = ERC721Extended.nonces(tokenId);
         // solhint-disable-next-line not-rely-on-time
         uint256 deadline = block.timestamp + 100000;
         bytes32 domainSeparator = ERC721Extended.DOMAIN_SEPARATOR();
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(
-            1,
+            key,
             keccak256(
                 abi.encodePacked(
                     "\x19\x01",
@@ -1633,20 +1660,20 @@ contract ERC721Test is Test {
     }
 
     function testPermitReplaySignature() public {
-        address deployer = address(vyperDeployer);
-        address owner = vm.addr(1);
-        address spender = vm.addr(2);
+        (address owner, uint256 key) = makeAddrAndKey("owner");
+        address spender = makeAddr("spender");
         uint256 tokenId = 0;
         string memory uri = "my_awesome_nft_uri";
         vm.startPrank(deployer);
         ERC721Extended.safe_mint(owner, uri);
         vm.stopPrank();
+
         uint256 nonce = ERC721Extended.nonces(tokenId);
         // solhint-disable-next-line not-rely-on-time
         uint256 deadline = block.timestamp + 100000;
         bytes32 domainSeparator = ERC721Extended.DOMAIN_SEPARATOR();
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(
-            1,
+            key,
             keccak256(
                 abi.encodePacked(
                     "\x19\x01",
@@ -1671,20 +1698,20 @@ contract ERC721Test is Test {
     }
 
     function testPermitOtherSignature() public {
-        address deployer = address(vyperDeployer);
-        address owner = vm.addr(1);
-        address spender = vm.addr(2);
+        (address owner, uint256 key) = makeAddrAndKey("owner");
+        address spender = makeAddr("spender");
         uint256 tokenId = 0;
         string memory uri = "my_awesome_nft_uri";
         vm.startPrank(deployer);
         ERC721Extended.safe_mint(owner, uri);
         vm.stopPrank();
+
         uint256 nonce = ERC721Extended.nonces(tokenId);
         // solhint-disable-next-line not-rely-on-time
         uint256 deadline = block.timestamp + 100000;
         bytes32 domainSeparator = ERC721Extended.DOMAIN_SEPARATOR();
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(
-            3,
+            key + 1,
             keccak256(
                 abi.encodePacked(
                     "\x19\x01",
@@ -1706,14 +1733,14 @@ contract ERC721Test is Test {
     }
 
     function testPermitBadChainId() public {
-        address deployer = address(vyperDeployer);
-        address owner = vm.addr(1);
-        address spender = vm.addr(2);
+        (address owner, uint256 key) = makeAddrAndKey("owner");
+        address spender = makeAddr("spender");
         uint256 tokenId = 0;
         string memory uri = "my_awesome_nft_uri";
         vm.startPrank(deployer);
         ERC721Extended.safe_mint(owner, uri);
         vm.stopPrank();
+
         uint256 nonce = ERC721Extended.nonces(tokenId);
         // solhint-disable-next-line not-rely-on-time
         uint256 deadline = block.timestamp + 100000;
@@ -1723,11 +1750,11 @@ contract ERC721Test is Test {
                 keccak256(bytes(_NAME_EIP712)),
                 keccak256(bytes(_VERSION_EIP712)),
                 block.chainid + 1,
-                address(ERC721Extended)
+                ERC721ExtendedAddr
             )
         );
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(
-            1,
+            key,
             keccak256(
                 abi.encodePacked(
                     "\x19\x01",
@@ -1749,20 +1776,20 @@ contract ERC721Test is Test {
     }
 
     function testPermitBadNonce() public {
-        address deployer = address(vyperDeployer);
-        address owner = vm.addr(1);
-        address spender = vm.addr(2);
+        (address owner, uint256 key) = makeAddrAndKey("owner");
+        address spender = makeAddr("spender");
         uint256 tokenId = 0;
         string memory uri = "my_awesome_nft_uri";
         vm.startPrank(deployer);
         ERC721Extended.safe_mint(owner, uri);
         vm.stopPrank();
+
         uint256 nonce = 1;
         // solhint-disable-next-line not-rely-on-time
         uint256 deadline = block.timestamp + 100000;
         bytes32 domainSeparator = ERC721Extended.DOMAIN_SEPARATOR();
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(
-            3,
+            key,
             keccak256(
                 abi.encodePacked(
                     "\x19\x01",
@@ -1784,20 +1811,20 @@ contract ERC721Test is Test {
     }
 
     function testPermitExpiredDeadline() public {
-        address deployer = address(vyperDeployer);
-        address owner = vm.addr(1);
-        address spender = vm.addr(2);
+        (address owner, uint256 key) = makeAddrAndKey("owner");
+        address spender = makeAddr("spender");
         uint256 tokenId = 0;
         string memory uri = "my_awesome_nft_uri";
         vm.startPrank(deployer);
         ERC721Extended.safe_mint(owner, uri);
         vm.stopPrank();
+
         uint256 nonce = 1;
         // solhint-disable-next-line not-rely-on-time
         uint256 deadline = block.timestamp - 1;
         bytes32 domainSeparator = ERC721Extended.DOMAIN_SEPARATOR();
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(
-            3,
+            key,
             keccak256(
                 abi.encodePacked(
                     "\x19\x01",
@@ -1830,19 +1857,19 @@ contract ERC721Test is Test {
                 keccak256(bytes(_NAME_EIP712)),
                 keccak256(bytes(_VERSION_EIP712)),
                 block.chainid,
-                address(ERC721Extended)
+                ERC721ExtendedAddr
             )
         );
         assertEq(ERC721Extended.DOMAIN_SEPARATOR(), digest);
     }
 
     function testHasOwner() public {
-        assertEq(ERC721Extended.owner(), address(vyperDeployer));
+        assertEq(ERC721Extended.owner(), deployer);
     }
 
     function testTransferOwnershipSuccess() public {
-        address oldOwner = address(vyperDeployer);
-        address newOwner = vm.addr(1);
+        address oldOwner = deployer;
+        address newOwner = makeAddr("newOwner");
         vm.startPrank(oldOwner);
         vm.expectEmit(true, false, false, true);
         emit RoleMinterChanged(oldOwner, false);
@@ -1859,18 +1886,18 @@ contract ERC721Test is Test {
 
     function testTransferOwnershipNonOwner() public {
         vm.expectRevert(bytes("Ownable: caller is not the owner"));
-        ERC721Extended.transfer_ownership(vm.addr(1));
+        ERC721Extended.transfer_ownership(makeAddr("newOwner"));
     }
 
     function testTransferOwnershipToZeroAddress() public {
-        vm.prank(address(vyperDeployer));
+        vm.prank(deployer);
         vm.expectRevert(bytes("Ownable: new owner is the zero address"));
-        ERC721Extended.transfer_ownership(address(0));
+        ERC721Extended.transfer_ownership(zeroAddress);
     }
 
     function testRenounceOwnershipSuccess() public {
-        address oldOwner = address(vyperDeployer);
-        address newOwner = address(0);
+        address oldOwner = deployer;
+        address newOwner = zeroAddress;
         vm.startPrank(oldOwner);
         vm.expectEmit(true, false, false, true);
         emit RoleMinterChanged(oldOwner, false);
@@ -1885,5 +1912,691 @@ contract ERC721Test is Test {
     function testRenounceOwnershipNonOwner() public {
         vm.expectRevert(bytes("Ownable: caller is not the owner"));
         ERC721Extended.renounce_ownership();
+    }
+
+    function testFuzzTransferFrom(
+        address owner,
+        address approved,
+        address operator
+    ) public {
+        vm.assume(
+            owner > address(4096) &&
+                approved > address(4096) &&
+                operator > address(4096)
+        );
+        vm.assume(
+            owner != approved &&
+                owner != operator &&
+                owner != zeroAddress &&
+                owner.code.length == 0
+        );
+        string memory uri1 = "my_awesome_nft_uri_1";
+        string memory uri2 = "my_awesome_nft_uri_2";
+        vm.startPrank(deployer);
+        ERC721Extended.safe_mint(owner, uri1);
+        ERC721Extended.safe_mint(owner, uri2);
+        vm.stopPrank();
+
+        vm.startPrank(owner);
+        ERC721Extended.approve(approved, 0);
+        ERC721Extended.setApprovalForAll(operator, true);
+        vm.stopPrank();
+
+        _shouldTransferTokensByUsers(
+            "transferFrom(address,address,uint256)",
+            owner,
+            approved,
+            operator,
+            0,
+            makeAddr("receiver"),
+            false,
+            new bytes(0)
+        );
+    }
+
+    function testFuzzSafeTransferFromWithData(
+        address owner,
+        address approved,
+        address operator,
+        bytes memory data
+    ) public {
+        vm.assume(
+            owner > address(4096) &&
+                approved > address(4096) &&
+                operator > address(4096)
+        );
+        vm.assume(
+            owner != approved &&
+                owner != operator &&
+                owner != zeroAddress &&
+                owner.code.length == 0
+        );
+        string memory uri1 = "my_awesome_nft_uri_1";
+        string memory uri2 = "my_awesome_nft_uri_2";
+        bytes4 receiverMagicValue = type(IERC721Receiver).interfaceId;
+        ERC721ReceiverMock erc721ReceiverMock = new ERC721ReceiverMock(
+            receiverMagicValue,
+            ERC721ReceiverMock.Error.None
+        );
+        address receiver = address(erc721ReceiverMock);
+        vm.startPrank(deployer);
+        ERC721Extended.safe_mint(owner, uri1);
+        ERC721Extended.safe_mint(owner, uri2);
+        vm.stopPrank();
+
+        vm.startPrank(owner);
+        ERC721Extended.approve(approved, 0);
+        ERC721Extended.setApprovalForAll(operator, true);
+        vm.stopPrank();
+
+        _shouldTransferTokensByUsers(
+            "safeTransferFrom(address,address,uint256)",
+            owner,
+            approved,
+            operator,
+            0,
+            makeAddr("receiver"),
+            false,
+            new bytes(0)
+        );
+
+        _shouldTransferSafely(
+            "safeTransferFrom(address,address,uint256,bytes)",
+            owner,
+            approved,
+            operator,
+            0,
+            receiver,
+            data
+        );
+    }
+
+    function testFuzzApproveClearingApprovalWithNoPriorApproval(
+        address owner,
+        address spender
+    ) public {
+        vm.assume(
+            owner != spender && owner != zeroAddress && owner.code.length == 0
+        );
+        vm.assume(spender > address(4096));
+        string memory uri = "my_awesome_nft_uri";
+        uint256 tokenId = 0;
+        vm.startPrank(deployer);
+        ERC721Extended.safe_mint(owner, uri);
+        vm.stopPrank();
+
+        vm.startPrank(owner);
+        vm.expectEmit(true, true, true, false);
+        emit Approval(owner, spender, tokenId);
+        ERC721Extended.approve(spender, tokenId);
+        assertEq(ERC721Extended.getApproved(tokenId), spender);
+        vm.stopPrank();
+    }
+
+    function testFuzzApproveClearingApprovalWithPriorApproval(
+        address owner,
+        address spender1
+    ) public {
+        vm.assume(
+            owner != spender1 && owner != zeroAddress && owner.code.length == 0
+        );
+        vm.assume(spender1 > address(4096));
+        address spender2 = zeroAddress;
+        string memory uri = "my_awesome_nft_uri";
+        uint256 tokenId = 0;
+        vm.startPrank(deployer);
+        ERC721Extended.safe_mint(owner, uri);
+        vm.stopPrank();
+
+        vm.startPrank(owner);
+        vm.expectEmit(true, true, true, false);
+        emit Approval(owner, spender1, tokenId);
+        ERC721Extended.approve(spender1, tokenId);
+        assertEq(ERC721Extended.getApproved(tokenId), spender1);
+
+        vm.expectEmit(true, true, true, false);
+        emit Approval(owner, spender2, tokenId);
+        ERC721Extended.approve(spender2, tokenId);
+        assertEq(ERC721Extended.getApproved(tokenId), spender2);
+        vm.stopPrank();
+    }
+
+    function testFuzzApproveWithNoPriorApproval(
+        address owner,
+        address spender
+    ) public {
+        vm.assume(
+            owner != spender && owner != zeroAddress && owner.code.length == 0
+        );
+        vm.assume(spender > address(4096));
+        string memory uri = "my_awesome_nft_uri";
+        uint256 tokenId = 0;
+        vm.startPrank(deployer);
+        ERC721Extended.safe_mint(owner, uri);
+        vm.stopPrank();
+
+        vm.startPrank(owner);
+        vm.expectEmit(true, true, true, false);
+        emit Approval(owner, spender, tokenId);
+        ERC721Extended.approve(spender, tokenId);
+        assertEq(ERC721Extended.getApproved(tokenId), spender);
+        vm.stopPrank();
+    }
+
+    function testFuzzApproveWithPriorApproval(
+        address owner,
+        address spender
+    ) public {
+        vm.assume(
+            owner != spender && owner != zeroAddress && owner.code.length == 0
+        );
+        vm.assume(spender > address(4096));
+        string memory uri = "my_awesome_nft_uri";
+        uint256 tokenId = 0;
+        vm.startPrank(deployer);
+        ERC721Extended.safe_mint(owner, uri);
+        vm.stopPrank();
+
+        vm.startPrank(owner);
+        vm.expectEmit(true, true, true, false);
+        emit Approval(owner, spender, tokenId);
+        ERC721Extended.approve(spender, tokenId);
+        assertEq(ERC721Extended.getApproved(tokenId), spender);
+
+        vm.expectEmit(true, true, true, false);
+        emit Approval(owner, spender, tokenId);
+        ERC721Extended.approve(spender, tokenId);
+        assertEq(ERC721Extended.getApproved(tokenId), spender);
+        vm.stopPrank();
+    }
+
+    function testFuzzApproveFromNonOwner(address nonOwner) public {
+        address owner = makeAddr("owner");
+        vm.assume(nonOwner != deployer);
+        vm.assume(nonOwner != owner);
+        string memory uri = "my_awesome_nft_uri";
+        uint256 tokenId = 0;
+        vm.startPrank(deployer);
+        ERC721Extended.safe_mint(owner, uri);
+        vm.stopPrank();
+
+        vm.startPrank(nonOwner);
+        vm.expectRevert(
+            bytes(
+                "ERC721: approve caller is not token owner or approved for all"
+            )
+        );
+        ERC721Extended.approve(makeAddr("to"), tokenId);
+        vm.stopPrank();
+    }
+
+    function testFuzzApproveFromOperatorAddress(
+        address owner,
+        address operator,
+        address spender
+    ) public {
+        vm.assume(
+            owner > address(4096) &&
+                operator > address(4096) &&
+                spender > address(4096)
+        );
+        vm.assume(
+            owner != operator &&
+                owner != spender &&
+                owner != zeroAddress &&
+                owner.code.length == 0
+        );
+        string memory uri = "my_awesome_nft_uri";
+        uint256 tokenId = 0;
+        vm.startPrank(deployer);
+        ERC721Extended.safe_mint(owner, uri);
+        vm.stopPrank();
+
+        vm.startPrank(owner);
+        ERC721Extended.setApprovalForAll(operator, true);
+        vm.stopPrank();
+
+        vm.startPrank(operator);
+        vm.expectEmit(true, true, true, false);
+        emit Approval(owner, spender, tokenId);
+        ERC721Extended.approve(spender, tokenId);
+        assertEq(ERC721Extended.getApproved(tokenId), spender);
+        vm.stopPrank();
+    }
+
+    function testFuzzSetApprovalForAllSuccess(
+        address owner,
+        address operator
+    ) public {
+        vm.assume(owner > address(4096) && operator > address(4096));
+        vm.assume(
+            owner != operator && owner != zeroAddress && owner.code.length == 0
+        );
+        bool approved = true;
+        string memory uri = "my_awesome_nft_uri";
+        vm.startPrank(deployer);
+        ERC721Extended.safe_mint(owner, uri);
+        vm.stopPrank();
+
+        vm.startPrank(owner);
+        vm.expectEmit(true, true, false, true);
+        emit ApprovalForAll(owner, operator, !approved);
+        ERC721Extended.setApprovalForAll(operator, !approved);
+        assertTrue(!ERC721Extended.isApprovedForAll(owner, operator));
+
+        vm.expectEmit(true, true, false, true);
+        emit ApprovalForAll(owner, operator, approved);
+        ERC721Extended.setApprovalForAll(operator, approved);
+        assertTrue(ERC721Extended.isApprovedForAll(owner, operator));
+
+        vm.expectEmit(true, true, false, true);
+        emit ApprovalForAll(owner, operator, !approved);
+        ERC721Extended.setApprovalForAll(operator, !approved);
+        assertTrue(!ERC721Extended.isApprovedForAll(owner, operator));
+        vm.stopPrank();
+    }
+
+    function testFuzzGetApprovedApprovedTokenId(
+        address owner,
+        address spender
+    ) public {
+        vm.assume(
+            owner != spender && owner != zeroAddress && owner.code.length == 0
+        );
+        vm.assume(spender > address(4096));
+        string memory uri = "my_awesome_nft_uri";
+        vm.startPrank(deployer);
+        ERC721Extended.safe_mint(owner, uri);
+        vm.stopPrank();
+
+        vm.startPrank(owner);
+        ERC721Extended.approve(spender, 0);
+        assertEq(ERC721Extended.getApproved(0), spender);
+        vm.stopPrank();
+    }
+
+    function testFuzzTotalSupply(address owner, string[] calldata uri) public {
+        vm.assume(owner != zeroAddress && owner.code.length == 0);
+        vm.startPrank(deployer);
+        for (uint256 i; i < uri.length; ++i) {
+            ERC721Extended.safe_mint(owner, uri[i]);
+        }
+        vm.stopPrank();
+        assertEq(ERC721Extended.totalSupply(), uri.length);
+    }
+
+    function testFuzzTokenByIndex(address owner, string[] calldata uri) public {
+        vm.assume(owner != zeroAddress && owner.code.length == 0);
+        vm.startPrank(deployer);
+        for (uint256 i; i < uri.length; ++i) {
+            ERC721Extended.safe_mint(owner, uri[i]);
+            assertEq(ERC721Extended.tokenByIndex(i), i);
+        }
+        vm.stopPrank();
+        assertEq(ERC721Extended.totalSupply(), uri.length);
+    }
+
+    function testFuzzBurnSuccess(address owner) public {
+        vm.assume(owner != zeroAddress && owner.code.length == 0);
+        string memory uri1 = "my_awesome_nft_uri_1";
+        string memory uri2 = "my_awesome_nft_uri_2";
+        uint256 tokenId = 0;
+        vm.startPrank(deployer);
+        ERC721Extended.safe_mint(owner, uri1);
+        ERC721Extended.safe_mint(owner, uri2);
+        vm.stopPrank();
+
+        vm.startPrank(owner);
+        vm.expectEmit(true, true, true, false);
+        emit Transfer(owner, zeroAddress, tokenId);
+        ERC721Extended.burn(tokenId);
+        vm.expectRevert(bytes("ERC721: invalid token ID"));
+        ERC721Extended.burn(tokenId);
+        vm.stopPrank();
+
+        vm.expectRevert(bytes("ERC721: invalid token ID"));
+        ERC721Extended.ownerOf(tokenId);
+        assertEq(ERC721Extended.balanceOf(owner), 1);
+    }
+
+    function testFuzzSafeMintSuccess(address[] calldata owners) public {
+        for (uint256 i; i < owners.length; ++i) {
+            vm.assume(owners[i] != zeroAddress && owners[i].code.length == 0);
+        }
+        string memory uri = "my_awesome_nft_uri_1";
+        vm.startPrank(deployer);
+        for (uint256 i; i < owners.length; ++i) {
+            vm.expectEmit(true, true, true, false);
+            emit Transfer(zeroAddress, owners[i], i);
+            ERC721Extended.safe_mint(owners[i], uri);
+            assertGe(ERC721Extended.balanceOf(owners[i]), 1);
+        }
+        vm.stopPrank();
+        assertEq(ERC721Extended.totalSupply(), owners.length);
+    }
+
+    function testFuzzSafeMintNonMinter(address nonOwner) public {
+        vm.assume(nonOwner != deployer);
+        vm.expectRevert(bytes("AccessControl: access is denied"));
+        ERC721Extended.safe_mint(makeAddr("owner"), "my_awesome_nft_uri");
+    }
+
+    function testFuzzSetMinterSuccess(string calldata minter) public {
+        address owner = deployer;
+        address minterAddr = makeAddr(minter);
+        vm.startPrank(owner);
+        vm.expectEmit(true, false, false, true);
+        emit RoleMinterChanged(minterAddr, true);
+        ERC721Extended.set_minter(minterAddr, true);
+        assertTrue(ERC721Extended.is_minter(minterAddr));
+
+        vm.expectEmit(true, false, false, true);
+        emit RoleMinterChanged(minterAddr, false);
+        ERC721Extended.set_minter(minterAddr, false);
+        assertTrue(!ERC721Extended.is_minter(minterAddr));
+        vm.stopPrank();
+    }
+
+    function testFuzzSetMinterNonOwner(
+        address msgSender,
+        string calldata minter
+    ) public {
+        vm.assume(msgSender != deployer);
+        vm.expectRevert(bytes("Ownable: caller is not the owner"));
+        ERC721Extended.set_minter(makeAddr(minter), true);
+    }
+
+    function testFuzzPermitSuccess(
+        string calldata owner,
+        string calldata spender,
+        uint16 increment
+    ) public {
+        (address ownerAddr, uint256 key) = makeAddrAndKey(owner);
+        address spenderAddr = makeAddr(spender);
+        uint256 tokenId = 0;
+        string memory uri = "my_awesome_nft_uri";
+        vm.startPrank(deployer);
+        ERC721Extended.safe_mint(ownerAddr, uri);
+        vm.stopPrank();
+
+        uint256 nonce = ERC721Extended.nonces(tokenId);
+        // solhint-disable-next-line not-rely-on-time
+        uint256 deadline = block.timestamp + increment;
+        bytes32 domainSeparator = ERC721Extended.DOMAIN_SEPARATOR();
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(
+            key,
+            keccak256(
+                abi.encodePacked(
+                    "\x19\x01",
+                    domainSeparator,
+                    keccak256(
+                        abi.encode(
+                            _PERMIT_TYPE_HASH,
+                            spenderAddr,
+                            tokenId,
+                            nonce,
+                            deadline
+                        )
+                    )
+                )
+            )
+        );
+        vm.expectEmit(true, true, true, false);
+        emit Approval(ownerAddr, spenderAddr, tokenId);
+        ERC721Extended.permit(spenderAddr, tokenId, deadline, v, r, s);
+        assertEq(ERC721Extended.getApproved(tokenId), spenderAddr);
+        assertEq(ERC721Extended.nonces(tokenId), 1);
+    }
+
+    function testFuzzPermitInvalid(
+        string calldata owner,
+        string calldata spender,
+        uint16 increment
+    ) public {
+        vm.assume(
+            keccak256(abi.encode(owner)) != keccak256(abi.encode("ownerWrong"))
+        );
+        (address ownerAddr, ) = makeAddrAndKey(owner);
+        (, uint256 keyWrong) = makeAddrAndKey("ownerWrong");
+        address spenderAddr = makeAddr(spender);
+        uint256 tokenId = 0;
+        string memory uri = "my_awesome_nft_uri";
+        vm.startPrank(deployer);
+        ERC721Extended.safe_mint(ownerAddr, uri);
+        vm.stopPrank();
+
+        uint256 nonce = ERC721Extended.nonces(tokenId);
+        // solhint-disable-next-line not-rely-on-time
+        uint256 deadline = block.timestamp + increment;
+        bytes32 domainSeparator = ERC721Extended.DOMAIN_SEPARATOR();
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(
+            keyWrong,
+            keccak256(
+                abi.encodePacked(
+                    "\x19\x01",
+                    domainSeparator,
+                    keccak256(
+                        abi.encode(
+                            _PERMIT_TYPE_HASH,
+                            spenderAddr,
+                            tokenId,
+                            nonce,
+                            deadline
+                        )
+                    )
+                )
+            )
+        );
+        vm.expectRevert(bytes("ERC721Permit: invalid signature"));
+        ERC721Extended.permit(spenderAddr, tokenId, deadline, v, r, s);
+    }
+
+    function testFuzzDomainSeparator(uint8 increment) public {
+        vm.chainId(block.chainid + increment);
+        bytes32 digest = keccak256(
+            abi.encode(
+                _TYPE_HASH,
+                keccak256(bytes(_NAME_EIP712)),
+                keccak256(bytes(_VERSION_EIP712)),
+                block.chainid,
+                ERC721Extended
+            )
+        );
+        assertEq(ERC721Extended.DOMAIN_SEPARATOR(), digest);
+    }
+
+    function testFuzzTransferOwnershipSuccess(
+        address newOwner1,
+        address newOwner2
+    ) public {
+        vm.assume(
+            newOwner1 != zeroAddress &&
+                newOwner1 != deployer &&
+                newOwner1 != newOwner2 &&
+                newOwner2 != zeroAddress
+        );
+        address oldOwner = deployer;
+        vm.startPrank(oldOwner);
+        vm.expectEmit(true, false, false, true);
+        emit RoleMinterChanged(oldOwner, false);
+        vm.expectEmit(true, true, false, false);
+        emit OwnershipTransferred(oldOwner, newOwner1);
+        vm.expectEmit(true, false, false, true);
+        emit RoleMinterChanged(newOwner1, true);
+        ERC721Extended.transfer_ownership(newOwner1);
+        assertEq(ERC721Extended.owner(), newOwner1);
+        assertTrue(!ERC721Extended.is_minter(oldOwner));
+        assertTrue(ERC721Extended.is_minter(newOwner1));
+        vm.stopPrank();
+
+        vm.startPrank(newOwner1);
+        vm.expectEmit(true, false, false, true);
+        emit RoleMinterChanged(newOwner1, false);
+        vm.expectEmit(true, true, false, false);
+        emit OwnershipTransferred(newOwner1, newOwner2);
+        vm.expectEmit(true, false, false, true);
+        emit RoleMinterChanged(newOwner2, true);
+        emit OwnershipTransferred(newOwner1, newOwner2);
+        ERC721Extended.transfer_ownership(newOwner2);
+        assertEq(ERC721Extended.owner(), newOwner2);
+        assertTrue(!ERC721Extended.is_minter(newOwner1));
+        assertTrue(ERC721Extended.is_minter(newOwner2));
+        vm.stopPrank();
+    }
+
+    function testFuzzTransferOwnershipNonOwner(
+        address nonOwner,
+        address newOwner
+    ) public {
+        vm.assume(nonOwner != deployer);
+        vm.prank(nonOwner);
+        vm.expectRevert(bytes("Ownable: caller is not the owner"));
+        ERC721Extended.transfer_ownership(newOwner);
+    }
+
+    function testFuzzRenounceOwnershipSuccess(address newOwner) public {
+        vm.assume(newOwner != zeroAddress);
+        address oldOwner = deployer;
+        address renounceAddress = zeroAddress;
+        vm.startPrank(oldOwner);
+        vm.expectEmit(true, false, false, true);
+        emit RoleMinterChanged(oldOwner, false);
+        vm.expectEmit(true, true, false, false);
+        emit OwnershipTransferred(oldOwner, newOwner);
+        vm.expectEmit(true, false, false, true);
+        emit RoleMinterChanged(newOwner, true);
+        ERC721Extended.transfer_ownership(newOwner);
+        vm.stopPrank();
+
+        vm.startPrank(newOwner);
+        vm.expectEmit(true, false, false, true);
+        emit RoleMinterChanged(newOwner, false);
+        vm.expectEmit(true, true, false, false);
+        emit OwnershipTransferred(newOwner, renounceAddress);
+        ERC721Extended.renounce_ownership();
+        assertEq(ERC721Extended.owner(), renounceAddress);
+        vm.stopPrank();
+    }
+
+    function testFuzzRenounceOwnershipNonOwner(address nonOwner) public {
+        vm.assume(nonOwner != deployer);
+        vm.prank(nonOwner);
+        vm.expectRevert(bytes("Ownable: caller is not the owner"));
+        ERC721Extended.renounce_ownership();
+    }
+}
+
+contract ERC721Invariants is Test, InvariantTest {
+    string private constant _NAME = "MyNFT";
+    string private constant _SYMBOL = "WAGMI";
+    string private constant _BASE_URI = "https://www.wagmi.xyz/";
+    string private constant _NAME_EIP712 = "MyNFT";
+    string private constant _VERSION_EIP712 = "1";
+
+    VyperDeployer private vyperDeployer = new VyperDeployer();
+
+    // solhint-disable-next-line var-name-mixedcase
+    IERC721Extended private ERC721Extended;
+    ERC721Handler private erc721Handler;
+
+    address private deployer = address(vyperDeployer);
+
+    function setUp() public {
+        bytes memory args = abi.encode(
+            _NAME,
+            _SYMBOL,
+            _BASE_URI,
+            _NAME_EIP712,
+            _VERSION_EIP712
+        );
+        ERC721Extended = IERC721Extended(
+            vyperDeployer.deployContract("src/tokens/", "ERC721", args)
+        );
+        erc721Handler = new ERC721Handler(ERC721Extended, deployer);
+        targetContract(address(erc721Handler));
+        targetSender(deployer);
+    }
+
+    function invariantTotalSupply() public {
+        assertEq(ERC721Extended.totalSupply(), erc721Handler.totalSupply());
+    }
+
+    function invariantOwner() public {
+        assertEq(ERC721Extended.owner(), erc721Handler.owner());
+    }
+}
+
+contract ERC721Handler {
+    address public owner;
+    uint256 public totalSupply;
+    uint256 private counter;
+
+    IERC721Extended private token;
+
+    address private zeroAddress = address(0);
+
+    constructor(IERC721Extended token_, address owner_) {
+        token = token_;
+        owner = owner_;
+    }
+
+    function safeTransferFrom(
+        address ownerAddr,
+        address to,
+        bytes calldata data
+    ) public {
+        token.safeTransferFrom(ownerAddr, to, counter, data);
+    }
+
+    function safeTransferFrom(address ownerAddr, address to) public {
+        token.safeTransferFrom(ownerAddr, to, counter);
+    }
+
+    function transferFrom(address ownerAddr, address to) public {
+        token.transferFrom(ownerAddr, to, counter);
+    }
+
+    function approve(address to) public {
+        token.approve(to, counter);
+    }
+
+    function setApprovalForAll(address operator, bool approved) public {
+        token.setApprovalForAll(operator, approved);
+    }
+
+    function permit(
+        address spender,
+        uint256 deadline,
+        uint8 v,
+        bytes32 r,
+        bytes32 s
+    ) public {
+        token.permit(spender, counter, deadline, v, r, s);
+    }
+
+    function burn() public {
+        token.burn(counter);
+        counter -= 1;
+        totalSupply -= 1;
+    }
+
+    function safe_mint(address ownerAddr, string calldata uri) public {
+        token.safe_mint(ownerAddr, uri);
+        counter += 1;
+        totalSupply += 1;
+    }
+
+    function set_minter(address minter, bool status) public {
+        token.set_minter(minter, status);
+    }
+
+    function transfer_ownership(address newOwner) public {
+        token.transfer_ownership(newOwner);
+        owner = newOwner;
+    }
+
+    function renounce_ownership() public {
+        token.renounce_ownership();
+        owner = zeroAddress;
     }
 }

@@ -1335,7 +1335,11 @@ contract ERC20Test is Test {
         vm.stopPrank();
     }
 
-    function testFuzzSetMinterNonOwner(string calldata minter) public {
+    function testFuzzSetMinterNonOwner(
+        address msgSender,
+        string calldata minter
+    ) public {
+        vm.assume(msgSender != deployer);
         vm.expectRevert(bytes("Ownable: caller is not the owner"));
         ERC20Extended.set_minter(makeAddr(minter), true);
     }
@@ -1584,6 +1588,18 @@ contract ERC20Handler {
         uint256 amount
     ) public {
         token.transferFrom(ownerAddr, to, amount);
+    }
+
+    function permit(
+        address ownerAddr,
+        address spender,
+        uint256 value,
+        uint256 deadline,
+        uint8 v,
+        bytes32 r,
+        bytes32 s
+    ) public {
+        token.permit(ownerAddr, spender, value, deadline, v, r, s);
     }
 
     function increase_allowance(address spender, uint256 addedAmount) public {

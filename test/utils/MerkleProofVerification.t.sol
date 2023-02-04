@@ -10,9 +10,9 @@ import {IMerkleProofVerification} from "./interfaces/IMerkleProofVerification.so
 
 contract MerkleProofVerificationTest is Test {
     VyperDeployer private vyperDeployer = new VyperDeployer();
+    Merkle private merkleGenerator = new Merkle();
 
     IMerkleProofVerification private merkleProofVerification;
-    Merkle private merkleGenerator;
 
     /**
      * @dev An `internal` helper function that converts the JavaScript-based
@@ -281,7 +281,6 @@ contract MerkleProofVerificationTest is Test {
                 "MerkleProofVerification"
             )
         );
-        merkleGenerator = new Merkle();
     }
 
     function testVerify() public {

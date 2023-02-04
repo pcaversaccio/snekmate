@@ -11,22 +11,18 @@ import {IMulticall} from "./interfaces/IMulticall.sol";
 
 contract MulticallTest is Test {
     VyperDeployer private vyperDeployer = new VyperDeployer();
+    EtherReceiver private etherReceiver = new EtherReceiver();
+    MockCallee private mockCallee = new MockCallee();
 
     IMulticall private multicall;
-    EtherReceiver private etherReceiver;
-    MockCallee private mockCallee;
 
-    address private etherReceiverAddr;
-    address private mockCalleeAddr;
+    address private etherReceiverAddr = address(etherReceiver);
+    address private mockCalleeAddr = address(mockCallee);
 
     function setUp() public {
         multicall = IMulticall(
             vyperDeployer.deployContract("src/utils/", "Multicall")
         );
-        etherReceiver = new EtherReceiver();
-        etherReceiverAddr = address(etherReceiver);
-        mockCallee = new MockCallee();
-        mockCalleeAddr = address(mockCallee);
     }
 
     function testMulticallSuccess() public {
