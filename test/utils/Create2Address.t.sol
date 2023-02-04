@@ -75,10 +75,7 @@ contract Create2AddressTest is Test {
         assertEq(create2AddressComputed, create2AddressOZComputed);
     }
 
-    function testFuzzComputeAddress(
-        bytes32 salt,
-        address deployer
-    ) public {
+    function testFuzzComputeAddress(bytes32 salt, address deployer) public {
         vm.assume(deployer != address(0));
         string memory arg1 = "MyToken";
         string memory arg2 = "MTKN";

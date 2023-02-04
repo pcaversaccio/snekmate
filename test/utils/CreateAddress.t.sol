@@ -344,14 +344,29 @@ contract CreateAddressTest is Test {
         assertEq(createAddressComputed, createAddressLibComputed);
     }
 
-    function testFuzzComputeAddressRevertTooHighNonce(uint72 nonce, address deployer) public {
-        vm.assume(nonce > uint72(type(uint64).max));
+    function testFuzzComputeAddressRevertTooHighNonce(
+        uint72 nonce,
+        address deployer
+    ) public {
+        nonce = uint72(
+            bound(
+                uint256(nonce),
+                uint256(type(uint64).max),
+                uint256(type(uint72).max)
+            )
+        );
         vm.expectRevert(bytes("RLP: invalid nonce value"));
         createAddress.compute_address_rlp(deployer, nonce);
     }
 
     function testFuzzComputeAddressSelfRevertTooHighNonce(uint72 nonce) public {
-        vm.assume(nonce > uint72(type(uint64).max));
+        nonce = uint72(
+            bound(
+                uint256(nonce),
+                uint256(type(uint64).max),
+                uint256(type(uint72).max)
+            )
+        );
         vm.expectRevert(bytes("RLP: invalid nonce value"));
         createAddress.compute_address_rlp_self(nonce);
     }
@@ -361,9 +376,8 @@ contract CreateAddressTest is Test {
         string memory arg2 = "MTKN";
         address arg3 = vm.addr(1);
         uint256 arg4 = 100;
-        vm.assume(
-            nonce <= 0x7f &&
-            nonce > vm.getNonce(address(this))
+        nonce = uint64(
+            bound(uint256(nonce), vm.getNonce(address(this)) + 1, 0x7f)
         );
         vm.setNonce(address(this), nonce);
         address createAddressComputed = createAddress.compute_address_rlp(
@@ -387,12 +401,8 @@ contract CreateAddressTest is Test {
         string memory arg2 = "MTKN";
         address arg3 = vm.addr(1);
         uint256 arg4 = 100;
-        vm.assume(
-            nonce > 0x7f &&
-            nonce <= uint64(type(uint8).max) &&
-            nonce > vm.getNonce(deployer) &&
-            deployer != address(0)
-        );
+        vm.assume(deployer != address(0));
+        nonce = uint64(bound(nonce, 0x7f + 1, uint256(type(uint8).max)));
         vm.setNonce(deployer, nonce);
         address createAddressComputed = createAddress.compute_address_rlp(
             deployer,
@@ -416,11 +426,9 @@ contract CreateAddressTest is Test {
         string memory arg2 = "MTKN";
         address arg3 = vm.addr(1);
         uint256 arg4 = 100;
-        vm.assume(
-            nonce > uint64(type(uint8).max) &&
-            nonce <= uint64(type(uint16).max) &&
-            nonce > vm.getNonce(deployer) &&
-            deployer != address(0)
+        vm.assume(deployer != address(0));
+        nonce = uint64(
+            bound(nonce, uint64(type(uint8).max) + 1, uint64(type(uint16).max))
         );
         vm.setNonce(deployer, nonce);
         address createAddressComputed = createAddress.compute_address_rlp(
@@ -445,11 +453,13 @@ contract CreateAddressTest is Test {
         string memory arg2 = "MTKN";
         address arg3 = vm.addr(1);
         uint256 arg4 = 100;
-        vm.assume(
-            nonce > uint64(type(uint16).max) &&
-            nonce <= uint64(type(uint24).max) &&
-            nonce > vm.getNonce(deployer) &&
-            deployer != address(0)
+        vm.assume(deployer != address(0));
+        nonce = uint64(
+            bound(
+                uint256(nonce),
+                uint256(type(uint16).max) + 1,
+                uint256(type(uint24).max)
+            )
         );
         vm.setNonce(deployer, nonce);
         address createAddressComputed = createAddress.compute_address_rlp(
@@ -474,11 +484,13 @@ contract CreateAddressTest is Test {
         string memory arg2 = "MTKN";
         address arg3 = vm.addr(1);
         uint256 arg4 = 100;
-        vm.assume(
-            nonce > uint64(type(uint24).max) &&
-            nonce <= uint64(type(uint32).max) &&
-            nonce > vm.getNonce(deployer) &&
-            deployer != address(0)
+        vm.assume(deployer != address(0));
+        nonce = uint64(
+            bound(
+                uint256(nonce),
+                uint256(type(uint24).max) + 1,
+                uint256(type(uint32).max)
+            )
         );
         vm.setNonce(deployer, nonce);
         address createAddressComputed = createAddress.compute_address_rlp(
@@ -503,11 +515,13 @@ contract CreateAddressTest is Test {
         string memory arg2 = "MTKN";
         address arg3 = vm.addr(1);
         uint256 arg4 = 100;
-        vm.assume(
-            nonce > uint64(type(uint32).max) &&
-            nonce <= uint64(type(uint40).max) &&
-            nonce > vm.getNonce(deployer) &&
-            deployer != address(0)
+        vm.assume(deployer != address(0));
+        nonce = uint64(
+            bound(
+                uint256(nonce),
+                uint256(type(uint32).max) + 1,
+                uint256(type(uint40).max)
+            )
         );
         vm.setNonce(deployer, nonce);
         address createAddressComputed = createAddress.compute_address_rlp(
@@ -532,11 +546,13 @@ contract CreateAddressTest is Test {
         string memory arg2 = "MTKN";
         address arg3 = vm.addr(1);
         uint256 arg4 = 100;
-        vm.assume(
-            nonce > uint64(type(uint40).max) &&
-            nonce <= uint64(type(uint48).max) &&
-            nonce > vm.getNonce(deployer) &&
-            deployer != address(0)
+        vm.assume(deployer != address(0));
+        nonce = uint64(
+            bound(
+                uint256(nonce),
+                uint256(type(uint40).max) + 1,
+                uint256(type(uint48).max)
+            )
         );
         vm.setNonce(deployer, nonce);
         address createAddressComputed = createAddress.compute_address_rlp(
@@ -561,11 +577,13 @@ contract CreateAddressTest is Test {
         string memory arg2 = "MTKN";
         address arg3 = vm.addr(1);
         uint256 arg4 = 100;
-        vm.assume(
-            nonce > uint64(type(uint48).max) &&
-            nonce <= uint64(type(uint56).max) &&
-            nonce > vm.getNonce(deployer) &&
-            deployer != address(0)
+        vm.assume(deployer != address(0));
+        nonce = uint64(
+            bound(
+                uint256(nonce),
+                uint256(type(uint48).max) + 1,
+                uint256(type(uint56).max)
+            )
         );
         vm.setNonce(deployer, nonce);
         address createAddressComputed = createAddress.compute_address_rlp(
@@ -590,11 +608,13 @@ contract CreateAddressTest is Test {
         string memory arg2 = "MTKN";
         address arg3 = vm.addr(1);
         uint256 arg4 = 100;
-        vm.assume(
-            nonce > uint64(type(uint56).max) &&
-            nonce < uint64(type(uint64).max) &&
-            nonce > vm.getNonce(deployer) &&
-            deployer != address(0)
+        vm.assume(deployer != address(0));
+        nonce = uint64(
+            bound(
+                uint256(nonce),
+                uint256(type(uint56).max) + 1,
+                uint256(type(uint64).max) - 1
+            )
         );
         vm.setNonce(deployer, nonce);
         address createAddressComputed = createAddress.compute_address_rlp(
@@ -616,9 +636,8 @@ contract CreateAddressTest is Test {
         string memory arg2 = "MTKN";
         address arg3 = vm.addr(1);
         uint256 arg4 = 100;
-        vm.assume(
-            nonce <= 0x7f &&
-            nonce > vm.getNonce(address(createAddress))
+        nonce = uint64(
+            bound(nonce, vm.getNonce(address(createAddress)) + 1, 0x7f)
         );
         vm.setNonce(address(createAddress), nonce);
         address createAddressComputed = createAddress.compute_address_rlp_self(
@@ -644,10 +663,8 @@ contract CreateAddressTest is Test {
         string memory arg2 = "MTKN";
         address arg3 = vm.addr(1);
         uint256 arg4 = 100;
-        vm.assume(
-            nonce > 0x7f &&
-            nonce <= uint64(type(uint8).max) &&
-            nonce > vm.getNonce(address(createAddress))
+        nonce = uint64(
+            bound(uint256(nonce), 0x7f + 1, uint256(type(uint8).max))
         );
         vm.setNonce(address(createAddress), nonce);
         address createAddressComputed = createAddress.compute_address_rlp_self(
@@ -673,10 +690,12 @@ contract CreateAddressTest is Test {
         string memory arg2 = "MTKN";
         address arg3 = vm.addr(1);
         uint256 arg4 = 100;
-        vm.assume(
-            nonce > uint64(type(uint8).max) &&
-            nonce <= uint64(type(uint16).max) &&
-            nonce > vm.getNonce(address(createAddress))
+        nonce = uint64(
+            bound(
+                uint256(nonce),
+                uint256(type(uint8).max) + 1,
+                uint256(type(uint16).max)
+            )
         );
         vm.setNonce(address(createAddress), nonce);
         address createAddressComputed = createAddress.compute_address_rlp_self(
@@ -702,10 +721,12 @@ contract CreateAddressTest is Test {
         string memory arg2 = "MTKN";
         address arg3 = vm.addr(1);
         uint256 arg4 = 100;
-        vm.assume(
-            nonce > uint64(type(uint16).max) &&
-            nonce <= uint64(type(uint24).max) &&
-            nonce > vm.getNonce(address(createAddress))
+        nonce = uint64(
+            bound(
+                uint256(nonce),
+                uint256(type(uint16).max) + 1,
+                uint256(type(uint24).max)
+            )
         );
         vm.setNonce(address(createAddress), nonce);
         address createAddressComputed = createAddress.compute_address_rlp_self(
@@ -731,10 +752,12 @@ contract CreateAddressTest is Test {
         string memory arg2 = "MTKN";
         address arg3 = vm.addr(1);
         uint256 arg4 = 100;
-        vm.assume(
-            nonce > uint64(type(uint24).max) &&
-            nonce <= uint64(type(uint32).max) &&
-            nonce > vm.getNonce(address(createAddress))
+        nonce = uint64(
+            bound(
+                uint256(nonce),
+                uint256(type(uint24).max) + 1,
+                uint256(type(uint32).max)
+            )
         );
         vm.setNonce(address(createAddress), nonce);
         address createAddressComputed = createAddress.compute_address_rlp_self(
@@ -760,10 +783,12 @@ contract CreateAddressTest is Test {
         string memory arg2 = "MTKN";
         address arg3 = vm.addr(1);
         uint256 arg4 = 100;
-        vm.assume(
-            nonce > uint64(type(uint32).max) &&
-            nonce <= uint64(type(uint40).max) &&
-            nonce > vm.getNonce(address(createAddress))
+        nonce = uint64(
+            bound(
+                uint256(nonce),
+                uint256(type(uint32).max) + 1,
+                uint256(type(uint40).max)
+            )
         );
         vm.setNonce(address(createAddress), nonce);
         address createAddressComputed = createAddress.compute_address_rlp_self(
@@ -789,10 +814,12 @@ contract CreateAddressTest is Test {
         string memory arg2 = "MTKN";
         address arg3 = vm.addr(1);
         uint256 arg4 = 100;
-        vm.assume(
-            nonce > uint64(type(uint40).max) &&
-            nonce <= uint64(type(uint48).max) &&
-            nonce > vm.getNonce(address(createAddress))
+        nonce = uint64(
+            bound(
+                uint256(nonce),
+                uint256(type(uint40).max) + 1,
+                uint256(type(uint48).max)
+            )
         );
         vm.setNonce(address(createAddress), nonce);
         address createAddressComputed = createAddress.compute_address_rlp_self(
@@ -818,10 +845,12 @@ contract CreateAddressTest is Test {
         string memory arg2 = "MTKN";
         address arg3 = vm.addr(1);
         uint256 arg4 = 100;
-        vm.assume(
-            nonce > uint64(type(uint48).max) &&
-            nonce <= uint64(type(uint56).max) &&
-            nonce > vm.getNonce(address(createAddress))
+        nonce = uint64(
+            bound(
+                uint256(nonce),
+                uint256(type(uint48).max) + 1,
+                uint256(type(uint56).max)
+            )
         );
         vm.setNonce(address(createAddress), nonce);
         address createAddressComputed = createAddress.compute_address_rlp_self(
@@ -847,10 +876,12 @@ contract CreateAddressTest is Test {
         string memory arg2 = "MTKN";
         address arg3 = vm.addr(1);
         uint256 arg4 = 100;
-        vm.assume(
-            nonce > uint64(type(uint56).max) &&
-            nonce < uint64(type(uint64).max) &&
-            nonce > vm.getNonce(address(createAddress))
+        nonce = uint64(
+            bound(
+                uint256(nonce),
+                uint256(type(uint56).max) + 1,
+                uint256(type(uint64).max) - 1
+            )
         );
         vm.setNonce(address(createAddress), nonce);
         address createAddressComputed = createAddress.compute_address_rlp_self(
