@@ -11,23 +11,19 @@ import {ISignatureChecker} from "./interfaces/ISignatureChecker.sol";
 
 contract SignatureCheckerTest is Test {
     VyperDeployer private vyperDeployer = new VyperDeployer();
+    ERC1271WalletMock private wallet = new ERC1271WalletMock(makeAddr("alice"));
+    ERC1271MaliciousMock private malicious = new ERC1271MaliciousMock();
 
     ISignatureChecker private signatureChecker;
-    ERC1271WalletMock private wallet;
-    ERC1271MaliciousMock private malicious;
 
     address private deployer = address(vyperDeployer);
-    address private walletAddr;
-    address private maliciousAddr;
+    address private walletAddr = address(wallet);
+    address private maliciousAddr = address(malicious);
 
     function setUp() public {
         signatureChecker = ISignatureChecker(
             vyperDeployer.deployContract("src/utils/", "SignatureChecker")
         );
-        wallet = new ERC1271WalletMock(makeAddr("alice"));
-        walletAddr = address(wallet);
-        malicious = new ERC1271MaliciousMock();
-        maliciousAddr = address(malicious);
     }
 
     function testEOAWithValidSignature() public {
