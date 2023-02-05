@@ -121,7 +121,7 @@ contract AccessControlTest is Test {
         uint256 startGas = gasleft();
         accessControl.supportsInterface(type(IERC165).interfaceId);
         uint256 gasUsed = startGas - gasleft();
-        assertTrue(gasUsed < 30_000);
+        assertTrue(gasUsed <= 30_000);
     }
 
     function testSupportsInterfaceInvalidInterfaceId() public {

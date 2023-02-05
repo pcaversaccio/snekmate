@@ -583,7 +583,7 @@ contract ERC721Test is Test {
         uint256 startGas = gasleft();
         ERC721Extended.supportsInterface(type(IERC165).interfaceId);
         uint256 gasUsed = startGas - gasleft();
-        assertTrue(gasUsed < 30_000);
+        assertTrue(gasUsed <= 30_000);
     }
 
     function testSupportsInterfaceInvalidInterfaceId() public {
