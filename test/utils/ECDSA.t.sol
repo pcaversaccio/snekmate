@@ -28,6 +28,7 @@ contract ECDSATest is Test {
     // solhint-disable-next-line var-name-mixedcase
     IECDSA private ECDSA;
 
+    address private self = address(this);
     address private zeroAddress = address(0);
 
     /**
@@ -39,10 +40,8 @@ contract ECDSATest is Test {
     function to2098Format(
         bytes memory signature
     ) internal view returns (bytes memory) {
-        if (signature.length != 65)
-            revert InvalidSignatureLength(address(this));
-        if (uint8(signature[32]) >> 7 == 1)
-            revert InvalidSignatureSValue(address(this));
+        if (signature.length != 65) revert InvalidSignatureLength(self);
+        if (uint8(signature[32]) >> 7 == 1) revert InvalidSignatureSValue(self);
         bytes memory short = signature.slice(0, 64);
         uint8 parityBit = uint8(short[32]) | ((uint8(signature[64]) % 27) << 7);
         short[32] = bytes1(parityBit);
@@ -82,10 +81,7 @@ contract ECDSATest is Test {
          * @dev EIP-2098 signature check.
          */
         vm.expectRevert(
-            abi.encodeWithSelector(
-                InvalidSignatureLength.selector,
-                address(this)
-            )
+            abi.encodeWithSelector(InvalidSignatureLength.selector, self)
         );
         to2098Format(signature);
     }
@@ -105,10 +101,7 @@ contract ECDSATest is Test {
          * @dev EIP-2098 signature check.
          */
         vm.expectRevert(
-            abi.encodeWithSelector(
-                InvalidSignatureLength.selector,
-                address(this)
-            )
+            abi.encodeWithSelector(InvalidSignatureLength.selector, self)
         );
         to2098Format(signature);
     }
@@ -235,10 +228,7 @@ contract ECDSATest is Test {
          * @dev EIP-2098 signature check.
          */
         vm.expectRevert(
-            abi.encodeWithSelector(
-                InvalidSignatureSValue.selector,
-                address(this)
-            )
+            abi.encodeWithSelector(InvalidSignatureSValue.selector, self)
         );
         to2098Format(signature);
     }
@@ -320,10 +310,7 @@ contract ECDSATest is Test {
          * @dev EIP-2098 signature check.
          */
         vm.expectRevert(
-            abi.encodeWithSelector(
-                InvalidSignatureLength.selector,
-                address(this)
-            )
+            abi.encodeWithSelector(InvalidSignatureLength.selector, self)
         );
         to2098Format(signature);
     }
@@ -344,10 +331,7 @@ contract ECDSATest is Test {
          * @dev EIP-2098 signature check.
          */
         vm.expectRevert(
-            abi.encodeWithSelector(
-                InvalidSignatureLength.selector,
-                address(this)
-            )
+            abi.encodeWithSelector(InvalidSignatureLength.selector, self)
         );
         to2098Format(signature);
     }
