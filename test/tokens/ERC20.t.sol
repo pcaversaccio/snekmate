@@ -35,6 +35,7 @@ contract ERC20Test is Test {
     /* solhint-enable var-name-mixedcase */
 
     address private deployer = address(vyperDeployer);
+    address private self = address(this);
     address private zeroAddress = address(0);
     // solhint-disable-next-line var-name-mixedcase
     address private ERC20ExtendedAddr;
@@ -1088,7 +1089,7 @@ contract ERC20Test is Test {
     }
 
     function testFuzzTransferSuccess(address to, uint256 amount) public {
-        address from = address(this);
+        address from = self;
         vm.assume(to != zeroAddress && to != from && to != deployer);
         uint256 give = type(uint256).max;
         deal(ERC20ExtendedAddr, from, give);
@@ -1118,7 +1119,7 @@ contract ERC20Test is Test {
 
     function testFuzzApproveSuccess(address spender, uint256 amount) public {
         vm.assume(spender != zeroAddress);
-        address owner = address(this);
+        address owner = self;
         vm.expectEmit(true, true, false, true);
         emit Approval(owner, spender, amount);
         bool returnValue = ERC20Extended.approve(spender, amount);
@@ -1131,7 +1132,7 @@ contract ERC20Test is Test {
         address to,
         uint256 amount
     ) public {
-        address spender = address(this);
+        address spender = self;
         vm.assume(
             to != zeroAddress &&
                 owner != zeroAddress &&
@@ -1163,7 +1164,7 @@ contract ERC20Test is Test {
         uint256 amount,
         uint8 increment
     ) public {
-        address spender = address(this);
+        address spender = self;
         vm.assume(to != zeroAddress && owner != zeroAddress && increment != 0);
         amount = bound(amount, 0, type(uint64).max);
         uint256 give = type(uint256).max;
@@ -1181,7 +1182,7 @@ contract ERC20Test is Test {
         uint256 addedAmount
     ) public {
         vm.assume(spender != zeroAddress);
-        address owner = address(this);
+        address owner = self;
         addedAmount = bound(addedAmount, 0, type(uint64).max);
         vm.expectEmit(true, true, false, true);
         emit Approval(owner, spender, addedAmount);
@@ -1199,7 +1200,7 @@ contract ERC20Test is Test {
         uint256 subtractedAmount
     ) public {
         vm.assume(spender != zeroAddress && amount >= subtractedAmount);
-        address owner = address(this);
+        address owner = self;
         vm.expectEmit(true, true, false, true);
         emit Approval(owner, spender, amount);
         bool returnValue1 = ERC20Extended.approve(spender, amount);
@@ -1225,7 +1226,7 @@ contract ERC20Test is Test {
         uint256 subtractedAmount
     ) public {
         vm.assume(spender != zeroAddress && amount < subtractedAmount);
-        address owner = address(this);
+        address owner = self;
         vm.expectEmit(true, true, false, true);
         emit Approval(owner, spender, amount);
         bool returnValue1 = ERC20Extended.approve(spender, amount);
@@ -1238,7 +1239,7 @@ contract ERC20Test is Test {
 
     function testFuzzBurnSuccessCase(uint256 amount) public {
         amount = bound(amount, 0, type(uint64).max);
-        address owner = address(this);
+        address owner = self;
         uint256 give = type(uint128).max;
         deal(ERC20ExtendedAddr, owner, give, true);
         uint256 totalSupply = ERC20Extended.totalSupply();
@@ -1259,7 +1260,7 @@ contract ERC20Test is Test {
 
     function testFuzzBurnFromSuccess(address owner, uint256 amount) public {
         vm.assume(owner != zeroAddress && owner != deployer);
-        address spender = address(this);
+        address spender = self;
         amount = bound(amount, 0, type(uint64).max);
         uint256 give = type(uint128).max;
         deal(ERC20ExtendedAddr, owner, give, true);
@@ -1282,7 +1283,7 @@ contract ERC20Test is Test {
         uint8 increment
     ) public {
         vm.assume(owner != zeroAddress && owner != deployer && increment != 0);
-        address spender = address(this);
+        address spender = self;
         amount = bound(amount, 0, type(uint64).max);
         uint256 give = type(uint256).max;
         deal(ERC20ExtendedAddr, owner, give);

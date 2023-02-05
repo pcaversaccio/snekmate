@@ -32,6 +32,7 @@ interface _CheatCodes {
 contract VyperDeployer is Create {
     address private constant HEVM_ADDRESS =
         address(bytes20(uint160(uint256(keccak256("hevm cheat code")))));
+    address private self = address(this);
 
     /**
      * @dev Initialises `cheatCodes` in order to use the foreign function interface (ffi)
@@ -74,8 +75,7 @@ contract VyperDeployer is Create {
         /**
          * @dev Check that the deployment was successful.
          */
-        if (deployedAddress == address(0))
-            revert DeploymentFailed(address(this));
+        if (deployedAddress == address(0)) revert DeploymentFailed(self);
 
         /**
          * @dev Return the address that the contract was deployed to.
@@ -127,8 +127,7 @@ contract VyperDeployer is Create {
         /**
          * @dev Check that the deployment was successful.
          */
-        if (deployedAddress == address(0))
-            revert DeploymentFailed(address(this));
+        if (deployedAddress == address(0)) revert DeploymentFailed(self);
 
         /**
          * @dev Return the address that the contract was deployed to.
