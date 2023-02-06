@@ -2,7 +2,6 @@
 pragma solidity ^0.8.18;
 
 import {Test} from "forge-std/Test.sol";
-import {StdInvariant} from "forge-std/StdInvariant.sol";
 import {VyperDeployer} from "utils/VyperDeployer.sol";
 
 import {IERC165} from "openzeppelin/utils/introspection/IERC165.sol";
@@ -638,7 +637,7 @@ contract AccessControlTest is Test {
     }
 }
 
-contract AccessControlInvariants is Test, StdInvariant {
+contract AccessControlInvariants is Test {
     bytes32 private constant DEFAULT_ADMIN_ROLE = bytes32(0);
     bytes32 private constant ADDITIONAL_ROLE_1 = keccak256("ADDITIONAL_ROLE_1");
     bytes32 private constant ADDITIONAL_ROLE_2 = keccak256("ADDITIONAL_ROLE_2");
