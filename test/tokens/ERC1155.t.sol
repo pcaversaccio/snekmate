@@ -1542,7 +1542,7 @@ contract ERC1155Test is Test {
         ERC1155Extended.burn(firstOwner, 1, 1);
     }
 
-    function testBurnBatch() public {
+    function testBurnBatchSuccess() public {
         address owner = makeAddr("owner");
         uint256[] memory ids = new uint256[](4);
         uint256[] memory amounts = new uint256[](4);
@@ -2347,4 +2347,68 @@ contract ERC1155Test is Test {
         vm.expectRevert(bytes("Ownable: caller is not the owner"));
         ERC1155Extended.renounce_ownership();
     }
+
+    function testFuzzSetApprovalForAllSuccess() public {}
+
+    function testFuzzSetApprovalForAllRevoke() public {}
+
+    function testFuzzSafeTransferFromEOAReceiver() public {}
+
+    function testFuzzSafeTransferFromByApprovedOperator() public {}
+
+    function testFuzzSafeTransferFromNoData() public {}
+
+    function testFuzzSafeTransferFromWithData() public {}
+
+    function testFuzzSafeBatchTransferFromEOAReceiver() public {}
+
+    function testFuzzSafeBatchTransferFromByApprovedOperator() public {}
+
+    function testFuzzSafeBatchTransferFromNoData() public {}
+
+    function testFuzzSafeBatchTransferFromWithData() public {}
+
+    function testFuzzSetUri() public {}
+
+    function testFuzzSetUriNonMinter() public {}
+
+    function testFuzzTotalSupplyAfterSingleMint() public {}
+
+    function testFuzzTotalSupplyAfterBatchMint() public {}
+
+    function testFuzzTotalSupplyAfterSingleBurn() public {}
+
+    function testFuzzTotalSupplyAfterBatchBurn() public {}
+
+    function testFuzzBurnSuccess() public {}
+
+    function testFuzzBurnBatchSuccess() public {}
+
+    function testFuzzSafeMintEOAReceiver() public {}
+
+    function testFuzzSafeMintNoData() public {}
+
+    function testFuzzSafeMintWithData() public {}
+
+    function testFuzzSafeMintNonMinter() public {}
+
+    function testFuzzSafeMintBatchEOAReceiver() public {}
+
+    function testFuzzSafeMintBatchNoData() public {}
+
+    function testFuzzSafeMintBatchWithData() public {}
+
+    function testFuzzSafeMintBatchNonMinter() public {}
+
+    function testFuzzSetMinterSuccess() public {}
+
+    function testFuzzSetMinterNonOwner() public {}
+
+    function testFuzzTransferOwnershipSuccess() public {}
+
+    function testFuzzTransferOwnershipNonOwner() public {}
+
+    function testFuzzRenounceOwnershipSuccess() public {}
+
+    function testFuzzRenounceOwnershipNonOwner() public {}
 }
