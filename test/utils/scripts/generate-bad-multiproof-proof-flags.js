@@ -1,5 +1,5 @@
 const { StandardMerkleTree } = require("@openzeppelin/merkle-tree");
-const ethers = require("ethers");
+const { AbiCoder } = require("ethers");
 
 const badElements = require("./multiproof-bad-elements.js");
 const merkleTree = StandardMerkleTree.of(
@@ -12,5 +12,5 @@ const { proofFlags } = merkleTree.getMultiProof(idx);
 
 // eslint-disable-next-line no-undef
 process.stdout.write(
-  ethers.utils.defaultAbiCoder.encode(Array(7).fill("bool"), proofFlags)
+  AbiCoder.defaultAbiCoder().encode(Array(7).fill("bool"), proofFlags)
 );
