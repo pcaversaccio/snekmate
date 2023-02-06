@@ -3420,3 +3420,110 @@ contract ERC1155Test is Test {
         ERC1155Extended.renounce_ownership();
     }
 }
+
+contract ERC1155Invariants is Test {
+    string private constant _BASE_URI = "https://www.wagmi.xyz/";
+
+    VyperDeployer private vyperDeployer = new VyperDeployer();
+
+    // solhint-disable-next-line var-name-mixedcase
+    IERC1155Extended private ERC1155Extended;
+    ERC1155Handler private erc1155Handler;
+
+    address private deployer = address(vyperDeployer);
+
+    function setUp() public {
+        bytes memory args = abi.encode(_BASE_URI);
+        ERC1155Extended = IERC1155Extended(
+            vyperDeployer.deployContract("src/tokens/", "ERC1155", args)
+        );
+        erc1155Handler = new ERC1155Handler(ERC1155Extended, deployer);
+        targetContract(address(erc1155Handler));
+        targetSender(deployer);
+    }
+
+    function invariantOwner() public {
+        assertEq(ERC1155Extended.owner(), erc1155Handler.owner());
+    }
+}
+
+contract ERC1155Handler {
+    address public owner;
+
+    IERC1155Extended private token;
+
+    address private zeroAddress = address(0);
+
+    constructor(IERC1155Extended token_, address owner_) {
+        token = token_;
+        owner = owner_;
+    }
+
+    function setApprovalForAll(address operator, bool approved) public {
+        token.setApprovalForAll(operator, approved);
+    }
+
+    function safeTransferFrom(
+        address from,
+        address to,
+        uint256 id,
+        uint256 amount,
+        bytes calldata data
+    ) public {
+        token.safeTransferFrom(from, to, id, amount, data);
+    }
+
+    function safeBatchTransferFrom(
+        address from,
+        address to,
+        uint256[] calldata ids,
+        uint256[] calldata amounts,
+        bytes calldata data
+    ) public {
+        token.safeBatchTransferFrom(from, to, ids, amounts, data);
+    }
+
+    function burn(address ownerAddr, uint256 id, uint256 amount) public {
+        token.burn(ownerAddr, id, amount);
+    }
+
+    function burn_batch(
+        address ownerAddr,
+        uint256[] calldata ids,
+        uint256[] calldata amounts
+    ) public {
+        token.burn_batch(ownerAddr, ids, amounts);
+    }
+
+    function safe_mint(
+        address ownerAddr,
+        uint256 id,
+        uint256 amount,
+        bytes calldata data
+    ) public {
+        token.safe_mint(ownerAddr, id, amount, data);
+    }
+
+    function safe_mint_batch(
+        address ownerAddr,
+        uint256[] calldata ids,
+        uint256[] calldata amounts,
+        bytes calldata data
+    ) public {
+        token.safe_mint_batch(ownerAddr, ids, amounts, data);
+    }
+
+    function set_minter(address minter, bool status) public {
+        token.set_minter(minter, status);
+    }
+
+    function transfer_ownership(address newOwner) public {
+        token.transfer_ownership(newOwner);
+        owner = newOwner;
+    }
+
+    function renounce_ownership() public {
+        token.renounce_ownership();
+        owner = zeroAddress;
+    }
+}
