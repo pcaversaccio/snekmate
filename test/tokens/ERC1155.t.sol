@@ -722,6 +722,7 @@ contract ERC1155Test is Test {
         vm.startPrank(deployer);
         ERC1155Extended.safe_mint_batch(owner, ids, amounts, data);
         vm.stopPrank();
+
         vm.startPrank(owner);
         vm.expectEmit(true, true, true, true);
         emit TransferBatch(owner, owner, receiver, ids, amounts);
@@ -1746,6 +1747,7 @@ contract ERC1155Test is Test {
         vm.expectEmit(true, true, true, true);
         emit TransferSingle(deployer, zeroAddress, receiver, id1, amount1);
         ERC1155Extended.safe_mint(receiver, id1, amount1, data);
+
         vm.expectEmit(true, true, true, true);
         emit TransferSingle(deployer, zeroAddress, receiver, id2, amount2);
         ERC1155Extended.safe_mint(receiver, id2, amount2, data);
@@ -1779,6 +1781,7 @@ contract ERC1155Test is Test {
         vm.expectEmit(true, true, true, true);
         emit TransferSingle(deployer, zeroAddress, receiver, id1, amount1);
         ERC1155Extended.safe_mint(receiver, id1, amount1, data);
+
         vm.expectEmit(true, true, true, true);
         emit TransferSingle(deployer, zeroAddress, receiver, id2, amount2);
         ERC1155Extended.safe_mint(receiver, id2, amount2, data);
@@ -1812,6 +1815,7 @@ contract ERC1155Test is Test {
         vm.expectEmit(true, true, true, true);
         emit TransferSingle(deployer, zeroAddress, receiver, id1, amount1);
         ERC1155Extended.safe_mint(receiver, id1, amount1, data);
+
         vm.expectEmit(true, true, true, true);
         emit TransferSingle(deployer, zeroAddress, receiver, id2, amount2);
         ERC1155Extended.safe_mint(receiver, id2, amount2, data);
@@ -1918,7 +1922,7 @@ contract ERC1155Test is Test {
         uint256 id2 = 4;
         uint256 amount2 = 15;
         bytes memory data = new bytes(0);
-        vm.startPrank(makeAddr("msgSender"));
+        vm.startPrank(makeAddr("nonOwner"));
         vm.expectRevert(bytes("AccessControl: access is denied"));
         ERC1155Extended.safe_mint(receiver, id1, amount1, data);
 
@@ -2233,7 +2237,7 @@ contract ERC1155Test is Test {
         amounts[2] = 10;
         amounts[3] = 20;
 
-        vm.startPrank(makeAddr("msgSender"));
+        vm.startPrank(makeAddr("nonOwner"));
         vm.expectRevert(bytes("AccessControl: access is denied"));
         ERC1155Extended.safe_mint_batch(makeAddr("owner"), ids, amounts, data);
         vm.stopPrank();
@@ -2348,67 +2352,1071 @@ contract ERC1155Test is Test {
         ERC1155Extended.renounce_ownership();
     }
 
-    function testFuzzSetApprovalForAllSuccess() public {}
+    function testFuzzSetApprovalForAllSuccess(
+        address owner,
+        address operator
+    ) public {
+        vm.assume(owner != operator);
+        bool approved = true;
+        assertTrue(!ERC1155Extended.isApprovedForAll(owner, operator));
+        vm.startPrank(owner);
+        vm.expectEmit(true, true, false, true);
+        emit ApprovalForAll(owner, operator, approved);
+        ERC1155Extended.setApprovalForAll(operator, approved);
+        assertTrue(ERC1155Extended.isApprovedForAll(owner, operator));
 
-    function testFuzzSetApprovalForAllRevoke() public {}
+        vm.expectEmit(true, true, false, true);
+        emit ApprovalForAll(owner, operator, approved);
+        ERC1155Extended.setApprovalForAll(operator, approved);
+        assertTrue(ERC1155Extended.isApprovedForAll(owner, operator));
+        vm.stopPrank();
+    }
 
-    function testFuzzSafeTransferFromEOAReceiver() public {}
+    function testFuzzSetApprovalForAllRevoke(
+        address owner,
+        address operator
+    ) public {
+        vm.assume(owner != operator);
+        bool approved = true;
+        assertTrue(!ERC1155Extended.isApprovedForAll(owner, operator));
+        vm.startPrank(owner);
+        vm.expectEmit(true, true, false, true);
+        emit ApprovalForAll(owner, operator, approved);
+        ERC1155Extended.setApprovalForAll(operator, approved);
+        assertTrue(ERC1155Extended.isApprovedForAll(owner, operator));
 
-    function testFuzzSafeTransferFromByApprovedOperator() public {}
+        vm.expectEmit(true, true, false, true);
+        emit ApprovalForAll(owner, operator, !approved);
+        ERC1155Extended.setApprovalForAll(operator, !approved);
+        assertTrue(!ERC1155Extended.isApprovedForAll(owner, operator));
+        vm.stopPrank();
+    }
 
-    function testFuzzSafeTransferFromNoData() public {}
+    function testFuzzSafeTransferFromEOAReceiver(
+        address owner,
+        address receiver,
+        uint256 id1,
+        uint256 amount1,
+        uint256 id2,
+        uint256 amount2,
+        bytes calldata data
+    ) public {
+        vm.assume(
+            owner != zeroAddress &&
+                owner != receiver &&
+                owner.code.length == 0 &&
+                receiver != zeroAddress &&
+                receiver.code.length == 0
+        );
+        vm.assume(id1 != id2 && amount1 > 0 && amount2 > 0);
+        vm.startPrank(deployer);
+        ERC1155Extended.safe_mint(owner, id1, amount1, data);
+        ERC1155Extended.safe_mint(owner, id2, amount2, data);
+        vm.stopPrank();
 
-    function testFuzzSafeTransferFromWithData() public {}
+        vm.startPrank(owner);
+        vm.expectEmit(true, true, true, true);
+        emit TransferSingle(owner, owner, receiver, id1, amount1);
+        ERC1155Extended.safeTransferFrom(owner, receiver, id1, amount1, data);
+        assertEq(ERC1155Extended.balanceOf(owner, id1), 0);
+        assertEq(ERC1155Extended.balanceOf(owner, id2), amount2);
+        assertEq(ERC1155Extended.balanceOf(receiver, id1), amount1);
+        assertEq(ERC1155Extended.balanceOf(receiver, id2), 0);
+        vm.stopPrank();
+    }
 
-    function testFuzzSafeBatchTransferFromEOAReceiver() public {}
+    function testFuzzSafeTransferFromByApprovedOperator(
+        address owner,
+        address receiver,
+        address operator,
+        uint256 id1,
+        uint256 amount1,
+        uint256 id2,
+        uint256 amount2,
+        bytes calldata data
+    ) public {
+        vm.assume(
+            owner != zeroAddress &&
+                owner != receiver &&
+                owner != operator &&
+                owner.code.length == 0 &&
+                receiver != operator &&
+                receiver != zeroAddress &&
+                operator != zeroAddress &&
+                receiver.code.length == 0
+        );
+        vm.assume(id1 != id2 && amount1 > 0 && amount2 > 0);
+        bool approved = true;
+        vm.startPrank(deployer);
+        ERC1155Extended.safe_mint(owner, id1, amount1, data);
+        ERC1155Extended.safe_mint(owner, id2, amount2, data);
+        vm.stopPrank();
 
-    function testFuzzSafeBatchTransferFromByApprovedOperator() public {}
+        vm.startPrank(owner);
+        vm.expectEmit(true, true, false, true);
+        emit ApprovalForAll(owner, operator, approved);
+        ERC1155Extended.setApprovalForAll(operator, approved);
+        vm.stopPrank();
 
-    function testFuzzSafeBatchTransferFromNoData() public {}
+        vm.startPrank(operator);
+        vm.expectEmit(true, true, true, true);
+        emit TransferSingle(operator, owner, receiver, id1, amount1);
+        ERC1155Extended.safeTransferFrom(owner, receiver, id1, amount1, data);
+        assertEq(ERC1155Extended.balanceOf(owner, id1), 0);
+        assertEq(ERC1155Extended.balanceOf(owner, id2), amount2);
+        assertEq(ERC1155Extended.balanceOf(receiver, id1), amount1);
+        assertEq(ERC1155Extended.balanceOf(receiver, id2), 0);
+        assertEq(ERC1155Extended.balanceOf(operator, id1), 0);
+        assertEq(ERC1155Extended.balanceOf(operator, id2), 0);
+        vm.stopPrank();
+    }
 
-    function testFuzzSafeBatchTransferFromWithData() public {}
+    function testFuzzSafeTransferFromNoData(
+        address owner,
+        uint256 id1,
+        uint256 amount1,
+        uint256 id2,
+        uint256 amount2
+    ) public {
+        vm.assume(
+            owner != zeroAddress &&
+                owner.code.length == 0 &&
+                id1 != id2 &&
+                amount1 > 0 &&
+                amount2 > 0
+        );
+        bytes4 receiverSingleMagicValue = IERC1155Receiver
+            .onERC1155Received
+            .selector;
+        bytes4 receiverBatchMagicValue = IERC1155Receiver
+            .onERC1155BatchReceived
+            .selector;
+        ERC1155ReceiverMock erc1155ReceiverMock = new ERC1155ReceiverMock(
+            receiverSingleMagicValue,
+            false,
+            receiverBatchMagicValue,
+            false
+        );
+        address receiver = address(erc1155ReceiverMock);
+        bytes memory data = new bytes(0);
+        vm.startPrank(deployer);
+        ERC1155Extended.safe_mint(owner, id1, amount1, data);
+        ERC1155Extended.safe_mint(owner, id2, amount2, data);
+        vm.stopPrank();
 
-    function testFuzzSetUri() public {}
+        vm.startPrank(owner);
+        vm.expectEmit(true, true, true, true);
+        emit TransferSingle(owner, owner, receiver, id1, amount1);
+        vm.expectEmit(true, true, false, true, receiver);
+        emit Received(owner, owner, id1, amount1, data);
+        ERC1155Extended.safeTransferFrom(owner, receiver, id1, amount1, data);
+        assertEq(ERC1155Extended.balanceOf(owner, id1), 0);
+        assertEq(ERC1155Extended.balanceOf(owner, id2), amount2);
+        assertEq(ERC1155Extended.balanceOf(receiver, id1), amount1);
+        assertEq(ERC1155Extended.balanceOf(receiver, id2), 0);
+        vm.stopPrank();
 
-    function testFuzzSetUriNonMinter() public {}
+        address operator = makeAddr("operator");
+        bool approved = true;
+        vm.startPrank(owner);
+        vm.expectEmit(true, true, false, true);
+        emit ApprovalForAll(owner, operator, approved);
+        ERC1155Extended.setApprovalForAll(operator, approved);
+        vm.stopPrank();
 
-    function testFuzzTotalSupplyAfterSingleMint() public {}
+        vm.startPrank(operator);
+        vm.expectEmit(true, true, true, true);
+        emit TransferSingle(operator, owner, receiver, id2, amount2);
+        vm.expectEmit(true, true, false, true, receiver);
+        emit Received(operator, owner, id2, amount2, data);
+        ERC1155Extended.safeTransferFrom(owner, receiver, id2, amount2, data);
+        assertEq(ERC1155Extended.balanceOf(owner, id1), 0);
+        assertEq(ERC1155Extended.balanceOf(owner, id2), 0);
+        assertEq(ERC1155Extended.balanceOf(receiver, id1), amount1);
+        assertEq(ERC1155Extended.balanceOf(receiver, id2), amount2);
+        assertEq(ERC1155Extended.balanceOf(operator, id1), 0);
+        assertEq(ERC1155Extended.balanceOf(operator, id2), 0);
+        vm.stopPrank();
+    }
 
-    function testFuzzTotalSupplyAfterBatchMint() public {}
+    function testFuzzSafeTransferFromWithData(
+        address owner,
+        uint256 id1,
+        uint256 amount1,
+        uint256 id2,
+        uint256 amount2,
+        bytes calldata data
+    ) public {
+        vm.assume(
+            owner != zeroAddress &&
+                owner.code.length == 0 &&
+                id1 != id2 &&
+                amount1 > 0 &&
+                amount2 > 0
+        );
+        bytes4 receiverSingleMagicValue = IERC1155Receiver
+            .onERC1155Received
+            .selector;
+        bytes4 receiverBatchMagicValue = IERC1155Receiver
+            .onERC1155BatchReceived
+            .selector;
+        ERC1155ReceiverMock erc1155ReceiverMock = new ERC1155ReceiverMock(
+            receiverSingleMagicValue,
+            false,
+            receiverBatchMagicValue,
+            false
+        );
+        address receiver = address(erc1155ReceiverMock);
+        vm.startPrank(deployer);
+        ERC1155Extended.safe_mint(owner, id1, amount1, data);
+        ERC1155Extended.safe_mint(owner, id2, amount2, data);
+        vm.stopPrank();
 
-    function testFuzzTotalSupplyAfterSingleBurn() public {}
+        vm.startPrank(owner);
+        vm.expectEmit(true, true, true, true);
+        emit TransferSingle(owner, owner, receiver, id1, amount1);
+        vm.expectEmit(true, true, false, true, receiver);
+        emit Received(owner, owner, id1, amount1, data);
+        ERC1155Extended.safeTransferFrom(owner, receiver, id1, amount1, data);
+        assertEq(ERC1155Extended.balanceOf(owner, id1), 0);
+        assertEq(ERC1155Extended.balanceOf(owner, id2), amount2);
+        assertEq(ERC1155Extended.balanceOf(receiver, id1), amount1);
+        assertEq(ERC1155Extended.balanceOf(receiver, id2), 0);
+        vm.stopPrank();
 
-    function testFuzzTotalSupplyAfterBatchBurn() public {}
+        address operator = makeAddr("operator");
+        bool approved = true;
+        vm.startPrank(owner);
+        vm.expectEmit(true, true, false, true);
+        emit ApprovalForAll(owner, operator, approved);
+        ERC1155Extended.setApprovalForAll(operator, approved);
+        vm.stopPrank();
 
-    function testFuzzBurnSuccess() public {}
+        vm.startPrank(operator);
+        vm.expectEmit(true, true, true, true);
+        emit TransferSingle(operator, owner, receiver, id2, amount2);
+        vm.expectEmit(true, true, false, true, receiver);
+        emit Received(operator, owner, id2, amount2, data);
+        ERC1155Extended.safeTransferFrom(owner, receiver, id2, amount2, data);
+        assertEq(ERC1155Extended.balanceOf(owner, id1), 0);
+        assertEq(ERC1155Extended.balanceOf(owner, id2), 0);
+        assertEq(ERC1155Extended.balanceOf(receiver, id1), amount1);
+        assertEq(ERC1155Extended.balanceOf(receiver, id2), amount2);
+        assertEq(ERC1155Extended.balanceOf(operator, id1), 0);
+        assertEq(ERC1155Extended.balanceOf(operator, id2), 0);
+        vm.stopPrank();
+    }
 
-    function testFuzzBurnBatchSuccess() public {}
+    function testFuzzSafeBatchTransferFromEOAReceiver(
+        address owner,
+        address receiver,
+        uint256 id1,
+        uint256 amount1,
+        uint256 id2,
+        uint256 amount2,
+        bytes calldata data
+    ) public {
+        vm.assume(
+            owner != zeroAddress &&
+                owner != receiver &&
+                owner.code.length == 0 &&
+                receiver != zeroAddress &&
+                receiver.code.length == 0
+        );
+        vm.assume(id1 != id2 && amount1 > 0 && amount2 > 0);
+        uint256[] memory ids = new uint256[](2);
+        uint256[] memory amounts = new uint256[](2);
 
-    function testFuzzSafeMintEOAReceiver() public {}
+        ids[0] = id1;
+        ids[1] = id2;
+        amounts[0] = amount1;
+        amounts[1] = amount2;
 
-    function testFuzzSafeMintNoData() public {}
+        vm.startPrank(deployer);
+        ERC1155Extended.safe_mint_batch(owner, ids, amounts, data);
+        vm.stopPrank();
+        vm.startPrank(owner);
+        vm.expectEmit(true, true, true, true);
+        emit TransferBatch(owner, owner, receiver, ids, amounts);
+        ERC1155Extended.safeBatchTransferFrom(
+            owner,
+            receiver,
+            ids,
+            amounts,
+            data
+        );
+        for (uint256 i; i < ids.length; ++i) {
+            assertEq(ERC1155Extended.balanceOf(owner, ids[i]), 0);
+            assertEq(ERC1155Extended.balanceOf(receiver, ids[i]), amounts[i]);
+        }
+        vm.stopPrank();
+    }
 
-    function testFuzzSafeMintWithData() public {}
+    function testFuzzSafeBatchTransferFromByApprovedOperator(
+        address owner,
+        address receiver,
+        address operator,
+        uint256 id1,
+        uint256 amount1,
+        uint256 id2,
+        uint256 amount2,
+        bytes calldata data
+    ) public {
+        vm.assume(
+            owner != zeroAddress &&
+                owner != receiver &&
+                owner != operator &&
+                owner.code.length == 0 &&
+                receiver != operator &&
+                receiver != zeroAddress &&
+                operator != zeroAddress &&
+                receiver.code.length == 0
+        );
+        vm.assume(id1 != id2 && amount1 > 0 && amount2 > 0);
+        bool approved = true;
+        uint256[] memory ids = new uint256[](2);
+        uint256[] memory amounts = new uint256[](2);
 
-    function testFuzzSafeMintNonMinter() public {}
+        ids[0] = id1;
+        ids[1] = id2;
+        amounts[0] = amount1;
+        amounts[1] = amount2;
 
-    function testFuzzSafeMintBatchEOAReceiver() public {}
+        vm.startPrank(deployer);
+        ERC1155Extended.safe_mint_batch(owner, ids, amounts, data);
+        vm.stopPrank();
 
-    function testFuzzSafeMintBatchNoData() public {}
+        vm.startPrank(owner);
+        vm.expectEmit(true, true, false, true);
+        emit ApprovalForAll(owner, operator, approved);
+        ERC1155Extended.setApprovalForAll(operator, approved);
+        vm.stopPrank();
 
-    function testFuzzSafeMintBatchWithData() public {}
+        vm.startPrank(operator);
+        vm.expectEmit(true, true, true, true);
+        emit TransferBatch(operator, owner, receiver, ids, amounts);
+        ERC1155Extended.safeBatchTransferFrom(
+            owner,
+            receiver,
+            ids,
+            amounts,
+            data
+        );
+        for (uint256 i; i < ids.length; ++i) {
+            assertEq(ERC1155Extended.balanceOf(owner, ids[i]), 0);
+            assertEq(ERC1155Extended.balanceOf(receiver, ids[i]), amounts[i]);
+            assertEq(ERC1155Extended.balanceOf(operator, ids[i]), 0);
+        }
+        vm.stopPrank();
+    }
 
-    function testFuzzSafeMintBatchNonMinter() public {}
+    function testFuzzSafeBatchTransferFromNoData(
+        address owner,
+        uint256 id1,
+        uint256 amount1,
+        uint256 id2,
+        uint256 amount2
+    ) public {
+        vm.assume(
+            owner != zeroAddress &&
+                owner.code.length == 0 &&
+                id1 != id2 &&
+                amount1 > 0 &&
+                amount2 > 0
+        );
+        bytes4 receiverSingleMagicValue = IERC1155Receiver
+            .onERC1155Received
+            .selector;
+        bytes4 receiverBatchMagicValue = IERC1155Receiver
+            .onERC1155BatchReceived
+            .selector;
+        ERC1155ReceiverMock erc1155ReceiverMock = new ERC1155ReceiverMock(
+            receiverSingleMagicValue,
+            false,
+            receiverBatchMagicValue,
+            false
+        );
+        address receiver = address(erc1155ReceiverMock);
+        uint256[] memory ids = new uint256[](2);
+        uint256[] memory amounts = new uint256[](2);
+        bytes memory data = new bytes(0);
 
-    function testFuzzSetMinterSuccess() public {}
+        ids[0] = id1;
+        ids[1] = id2;
+        amounts[0] = amount1;
+        amounts[1] = amount2;
 
-    function testFuzzSetMinterNonOwner() public {}
+        vm.startPrank(deployer);
+        ERC1155Extended.safe_mint_batch(owner, ids, amounts, data);
+        vm.stopPrank();
 
-    function testFuzzTransferOwnershipSuccess() public {}
+        vm.startPrank(owner);
+        vm.expectEmit(true, true, true, true);
+        emit TransferBatch(owner, owner, receiver, ids, amounts);
+        vm.expectEmit(true, true, false, true, receiver);
+        emit BatchReceived(owner, owner, ids, amounts, data);
+        ERC1155Extended.safeBatchTransferFrom(
+            owner,
+            receiver,
+            ids,
+            amounts,
+            data
+        );
+        for (uint256 i; i < ids.length; ++i) {
+            assertEq(ERC1155Extended.balanceOf(owner, ids[i]), 0);
+            assertEq(ERC1155Extended.balanceOf(receiver, ids[i]), amounts[i]);
+        }
+        vm.stopPrank();
+    }
 
-    function testFuzzTransferOwnershipNonOwner() public {}
+    function testFuzzSafeBatchTransferFromWithData(
+        address owner,
+        uint256 id1,
+        uint256 amount1,
+        uint256 id2,
+        uint256 amount2
+    ) public {
+        vm.assume(
+            owner != zeroAddress &&
+                owner.code.length == 0 &&
+                id1 != id2 &&
+                amount1 > 0 &&
+                amount2 > 0
+        );
+        bytes4 receiverSingleMagicValue = IERC1155Receiver
+            .onERC1155Received
+            .selector;
+        bytes4 receiverBatchMagicValue = IERC1155Receiver
+            .onERC1155BatchReceived
+            .selector;
+        ERC1155ReceiverMock erc1155ReceiverMock = new ERC1155ReceiverMock(
+            receiverSingleMagicValue,
+            false,
+            receiverBatchMagicValue,
+            false
+        );
+        address receiver = address(erc1155ReceiverMock);
+        /**
+         * To avoid a stack-too-deep error, we do not generate the
+         * data input via a separate parameter here.
+         */
+        bytes memory data = new bytes(id2 % 2);
+        uint256[] memory ids = new uint256[](2);
+        uint256[] memory amounts = new uint256[](2);
 
-    function testFuzzRenounceOwnershipSuccess() public {}
+        ids[0] = id1;
+        ids[1] = id2;
+        amounts[0] = amount1;
+        amounts[1] = amount2;
 
-    function testFuzzRenounceOwnershipNonOwner() public {}
+        vm.startPrank(deployer);
+        ERC1155Extended.safe_mint_batch(owner, ids, amounts, data);
+        vm.stopPrank();
+
+        vm.startPrank(owner);
+        vm.expectEmit(true, true, true, true);
+        emit TransferBatch(owner, owner, receiver, ids, amounts);
+        vm.expectEmit(true, true, false, true, receiver);
+        emit BatchReceived(owner, owner, ids, amounts, data);
+        ERC1155Extended.safeBatchTransferFrom(
+            owner,
+            receiver,
+            ids,
+            amounts,
+            data
+        );
+        for (uint256 i; i < ids.length; ++i) {
+            assertEq(ERC1155Extended.balanceOf(owner, ids[i]), 0);
+            assertEq(ERC1155Extended.balanceOf(receiver, ids[i]), amounts[i]);
+        }
+        vm.stopPrank();
+    }
+
+    function testFuzzSetUriNonMinter(address nonOwner) public {
+        vm.assume(nonOwner != deployer);
+        vm.expectRevert(bytes("AccessControl: access is denied"));
+        vm.prank(nonOwner);
+        ERC1155Extended.set_uri(1, "my_awesome_uri");
+    }
+
+    function testFuzzTotalSupplyAfterSingleMint(
+        uint256 id,
+        uint256 amount,
+        bytes calldata data
+    ) public {
+        vm.startPrank(deployer);
+        ERC1155Extended.safe_mint(makeAddr("firstOwner"), id, amount % 2, data);
+        ERC1155Extended.safe_mint(
+            makeAddr("secondOwner"),
+            id,
+            amount % 2,
+            data
+        );
+        assertEq(ERC1155Extended.total_supply(id), 2 * (amount % 2));
+        vm.stopPrank();
+    }
+
+    function testFuzzTotalSupplyAfterBatchMint(
+        address owner,
+        uint256 id1,
+        uint256 amount1,
+        uint256 id2,
+        uint256 amount2
+    ) public {
+        vm.assume(
+            owner != zeroAddress &&
+                owner.code.length == 0 &&
+                id1 != id2 &&
+                amount1 > 0 &&
+                amount2 > 0
+        );
+        uint256[] memory ids = new uint256[](2);
+        uint256[] memory amounts = new uint256[](2);
+
+        ids[0] = id1;
+        ids[1] = id2;
+        amounts[0] = amount1;
+        amounts[1] = amount2;
+
+        vm.startPrank(deployer);
+        ERC1155Extended.safe_mint_batch(
+            owner,
+            ids,
+            amounts,
+            new bytes(id2 % 2)
+        );
+        assertEq(ERC1155Extended.total_supply(ids[0]), amounts[0]);
+        assertEq(ERC1155Extended.total_supply(ids[1]), amounts[1]);
+        vm.stopPrank();
+    }
+
+    function testFuzzTotalSupplyAfterSingleBurn(
+        address owner,
+        uint256 id,
+        bytes calldata data
+    ) public {
+        vm.assume(
+            owner != zeroAddress &&
+                owner != makeAddr("secondOwner") &&
+                owner.code.length == 0 &&
+                id > 0
+        );
+        vm.startPrank(deployer);
+        ERC1155Extended.safe_mint(owner, id, 15, data);
+        ERC1155Extended.safe_mint(makeAddr("secondOwner"), id, 20, data);
+        vm.stopPrank();
+
+        vm.startPrank(owner);
+        ERC1155Extended.burn(owner, id, 10);
+        assertEq(ERC1155Extended.total_supply(id), 25);
+        vm.stopPrank();
+    }
+
+    function testFuzzTotalSupplyAfterBatchBurn(
+        address owner,
+        uint256 id1,
+        uint256 amount1,
+        uint256 id2,
+        uint256 amount2
+    ) public {
+        vm.assume(
+            owner != zeroAddress &&
+                owner.code.length == 0 &&
+                id1 != id2 &&
+                amount1 > 0 &&
+                amount2 > 0
+        );
+        uint256[] memory ids = new uint256[](2);
+        uint256[] memory amounts = new uint256[](2);
+
+        ids[0] = id1;
+        ids[1] = id2;
+        amounts[0] = amount1;
+        amounts[1] = amount2;
+
+        vm.startPrank(deployer);
+        ERC1155Extended.safe_mint_batch(
+            owner,
+            ids,
+            amounts,
+            new bytes(id2 % 2)
+        );
+        vm.stopPrank();
+
+        vm.startPrank(owner);
+        ERC1155Extended.burn_batch(owner, ids, amounts);
+        assertEq(ERC1155Extended.total_supply(ids[0]), 0);
+        assertEq(ERC1155Extended.total_supply(ids[1]), 0);
+        vm.stopPrank();
+    }
+
+    function testFuzzBurnSuccess(
+        address firstOwner,
+        address secondOwner,
+        uint256 id
+    ) public {
+        vm.assume(
+            firstOwner != zeroAddress &&
+                firstOwner.code.length == 0 &&
+                firstOwner != secondOwner &&
+                secondOwner != zeroAddress &&
+                secondOwner.code.length == 0
+        );
+        uint256 burnAmount = 10;
+        bytes memory data = new bytes(0);
+        vm.startPrank(deployer);
+        ERC1155Extended.safe_mint(firstOwner, id, 15, data);
+        ERC1155Extended.safe_mint(secondOwner, id, 20, data);
+        vm.stopPrank();
+
+        vm.startPrank(firstOwner);
+        vm.expectEmit(true, true, true, true);
+        emit TransferSingle(
+            firstOwner,
+            firstOwner,
+            zeroAddress,
+            id,
+            burnAmount
+        );
+        ERC1155Extended.burn(firstOwner, id, 10);
+        assertEq(ERC1155Extended.total_supply(id), 25);
+        assertEq(ERC1155Extended.balanceOf(firstOwner, id), 5);
+        assertEq(ERC1155Extended.balanceOf(secondOwner, id), 20);
+        vm.stopPrank();
+    }
+
+    function testFuzzBurnBatchSuccess(
+        address owner,
+        uint256 id1,
+        uint256 amount1,
+        uint256 id2,
+        uint256 amount2
+    ) public {
+        vm.assume(
+            owner != zeroAddress &&
+                owner.code.length == 0 &&
+                id1 != id2 &&
+                amount1 > 0 &&
+                amount2 > 0
+        );
+        uint256[] memory ids = new uint256[](2);
+        uint256[] memory amounts = new uint256[](2);
+        bytes memory data = new bytes(id2 % 2);
+
+        ids[0] = id1;
+        ids[1] = id2;
+        amounts[0] = amount1;
+        amounts[1] = amount2;
+
+        vm.startPrank(deployer);
+        ERC1155Extended.safe_mint_batch(owner, ids, amounts, data);
+        vm.stopPrank();
+
+        vm.startPrank(owner);
+        vm.expectEmit(true, true, true, true);
+        emit TransferBatch(owner, owner, zeroAddress, ids, amounts);
+        ERC1155Extended.burn_batch(owner, ids, amounts);
+        assertEq(ERC1155Extended.total_supply(ids[0]), 0);
+        assertEq(ERC1155Extended.total_supply(ids[1]), 0);
+        assertEq(ERC1155Extended.balanceOf(owner, ids[0]), 0);
+        assertEq(ERC1155Extended.balanceOf(owner, ids[1]), 0);
+        vm.stopPrank();
+    }
+
+    function testFuzzSafeMintEOAReceiver(
+        address owner,
+        address receiver,
+        uint256 id1,
+        uint256 amount1,
+        uint256 id2,
+        uint256 amount2,
+        bytes calldata data
+    ) public {
+        vm.assume(
+            owner != zeroAddress &&
+                owner != receiver &&
+                owner.code.length == 0 &&
+                receiver != zeroAddress &&
+                receiver.code.length == 0
+        );
+        vm.assume(id1 != id2 && amount1 > 0 && amount2 > 0);
+        vm.startPrank(deployer);
+        vm.expectEmit(true, true, true, true);
+        emit TransferSingle(deployer, zeroAddress, receiver, id1, amount1);
+        ERC1155Extended.safe_mint(receiver, id1, amount1, data);
+
+        vm.expectEmit(true, true, true, true);
+        emit TransferSingle(deployer, zeroAddress, receiver, id2, amount2);
+        ERC1155Extended.safe_mint(receiver, id2, amount2, data);
+        assertEq(ERC1155Extended.total_supply(id1), amount1);
+        assertEq(ERC1155Extended.total_supply(id2), amount2);
+        assertEq(ERC1155Extended.balanceOf(receiver, id1), amount1);
+        assertEq(ERC1155Extended.balanceOf(receiver, id2), amount2);
+        vm.stopPrank();
+    }
+
+    function testFuzzSafeMintNoData(
+        address owner,
+        uint256 id1,
+        uint256 amount1,
+        uint256 id2,
+        uint256 amount2
+    ) public {
+        vm.assume(
+            owner != zeroAddress &&
+                owner.code.length == 0 &&
+                id1 != id2 &&
+                amount1 > 0 &&
+                amount2 > 0
+        );
+        bytes4 receiverSingleMagicValue = IERC1155Receiver
+            .onERC1155Received
+            .selector;
+        bytes4 receiverBatchMagicValue = IERC1155Receiver
+            .onERC1155BatchReceived
+            .selector;
+        ERC1155ReceiverMock erc1155ReceiverMock = new ERC1155ReceiverMock(
+            receiverSingleMagicValue,
+            false,
+            receiverBatchMagicValue,
+            false
+        );
+        address receiver = address(erc1155ReceiverMock);
+        bytes memory data = new bytes(0);
+        vm.startPrank(deployer);
+        vm.expectEmit(true, true, true, true);
+        emit TransferSingle(deployer, zeroAddress, receiver, id1, amount1);
+        ERC1155Extended.safe_mint(receiver, id1, amount1, data);
+
+        vm.expectEmit(true, true, true, true);
+        emit TransferSingle(deployer, zeroAddress, receiver, id2, amount2);
+        ERC1155Extended.safe_mint(receiver, id2, amount2, data);
+        assertEq(ERC1155Extended.total_supply(id1), amount1);
+        assertEq(ERC1155Extended.total_supply(id2), amount2);
+        assertEq(ERC1155Extended.balanceOf(receiver, id1), amount1);
+        assertEq(ERC1155Extended.balanceOf(receiver, id2), amount2);
+        vm.stopPrank();
+    }
+
+    function testFuzzSafeMintWithData(
+        address owner,
+        uint256 id1,
+        uint256 amount1,
+        uint256 id2,
+        uint256 amount2,
+        bytes calldata data
+    ) public {
+        vm.assume(
+            owner != zeroAddress &&
+                owner.code.length == 0 &&
+                id1 != id2 &&
+                amount1 > 0 &&
+                amount2 > 0
+        );
+        bytes4 receiverSingleMagicValue = IERC1155Receiver
+            .onERC1155Received
+            .selector;
+        bytes4 receiverBatchMagicValue = IERC1155Receiver
+            .onERC1155BatchReceived
+            .selector;
+        ERC1155ReceiverMock erc1155ReceiverMock = new ERC1155ReceiverMock(
+            receiverSingleMagicValue,
+            false,
+            receiverBatchMagicValue,
+            false
+        );
+        address receiver = address(erc1155ReceiverMock);
+        vm.startPrank(deployer);
+        vm.expectEmit(true, true, true, true);
+        emit TransferSingle(deployer, zeroAddress, receiver, id1, amount1);
+
+        ERC1155Extended.safe_mint(receiver, id1, amount1, data);
+        vm.expectEmit(true, true, true, true);
+        emit TransferSingle(deployer, zeroAddress, receiver, id2, amount2);
+        ERC1155Extended.safe_mint(receiver, id2, amount2, data);
+        assertEq(ERC1155Extended.total_supply(id1), amount1);
+        assertEq(ERC1155Extended.total_supply(id2), amount2);
+        assertEq(ERC1155Extended.balanceOf(receiver, id1), amount1);
+        assertEq(ERC1155Extended.balanceOf(receiver, id2), amount2);
+        vm.stopPrank();
+    }
+
+    function testFuzzSafeMintNonMinter(address nonOwner) public {
+        vm.assume(nonOwner != deployer);
+        address receiver = makeAddr("receiver");
+        uint256 id1 = 1;
+        uint256 amount1 = 1;
+        uint256 id2 = 4;
+        uint256 amount2 = 15;
+        bytes memory data = new bytes(0);
+        vm.startPrank(nonOwner);
+        vm.expectRevert(bytes("AccessControl: access is denied"));
+        ERC1155Extended.safe_mint(receiver, id1, amount1, data);
+
+        vm.expectRevert(bytes("AccessControl: access is denied"));
+        ERC1155Extended.safe_mint(receiver, id2, amount2, data);
+        vm.stopPrank();
+    }
+
+    function testFuzzSafeMintBatchEOAReceiver(
+        address owner,
+        address receiver,
+        uint256 id1,
+        uint256 amount1,
+        uint256 id2,
+        uint256 amount2,
+        bytes calldata data
+    ) public {
+        vm.assume(
+            owner != zeroAddress &&
+                owner != receiver &&
+                owner.code.length == 0 &&
+                receiver != zeroAddress &&
+                receiver.code.length == 0
+        );
+        vm.assume(id1 != id2 && amount1 > 0 && amount2 > 0);
+        uint256[] memory ids = new uint256[](2);
+        uint256[] memory amounts = new uint256[](2);
+
+        ids[0] = id1;
+        ids[1] = id2;
+        amounts[0] = amount1;
+        amounts[1] = amount2;
+
+        vm.startPrank(deployer);
+        vm.expectEmit(true, true, true, true);
+        emit TransferBatch(deployer, zeroAddress, receiver, ids, amounts);
+        ERC1155Extended.safe_mint_batch(receiver, ids, amounts, data);
+        for (uint256 i; i < ids.length; ++i) {
+            assertEq(ERC1155Extended.total_supply(ids[i]), amounts[i]);
+            assertEq(ERC1155Extended.balanceOf(receiver, ids[i]), amounts[i]);
+        }
+        vm.stopPrank();
+    }
+
+    function testFuzzSafeMintBatchNoData(
+        address owner,
+        uint256 id1,
+        uint256 amount1,
+        uint256 id2,
+        uint256 amount2
+    ) public {
+        vm.assume(
+            owner != zeroAddress &&
+                owner.code.length == 0 &&
+                id1 != id2 &&
+                amount1 > 0 &&
+                amount2 > 0
+        );
+
+        bytes4 receiverSingleMagicValue = IERC1155Receiver
+            .onERC1155Received
+            .selector;
+        bytes4 receiverBatchMagicValue = IERC1155Receiver
+            .onERC1155BatchReceived
+            .selector;
+        ERC1155ReceiverMock erc1155ReceiverMock = new ERC1155ReceiverMock(
+            receiverSingleMagicValue,
+            false,
+            receiverBatchMagicValue,
+            false
+        );
+        address receiver = address(erc1155ReceiverMock);
+        uint256[] memory ids = new uint256[](2);
+        uint256[] memory amounts = new uint256[](2);
+        bytes memory data = new bytes(0);
+
+        ids[0] = id1;
+        ids[1] = id2;
+        amounts[0] = amount1;
+        amounts[1] = amount2;
+
+        vm.startPrank(deployer);
+        vm.expectEmit(true, true, true, true);
+        emit TransferBatch(deployer, zeroAddress, receiver, ids, amounts);
+        ERC1155Extended.safe_mint_batch(receiver, ids, amounts, data);
+        for (uint256 i; i < ids.length; ++i) {
+            assertEq(ERC1155Extended.total_supply(ids[i]), amounts[i]);
+            assertEq(ERC1155Extended.balanceOf(receiver, ids[i]), amounts[i]);
+        }
+        vm.stopPrank();
+    }
+
+    function testFuzzSafeMintBatchWithData(
+        address owner,
+        uint256 id1,
+        uint256 amount1,
+        uint256 id2,
+        uint256 amount2
+    ) public {
+        vm.assume(
+            owner != zeroAddress &&
+                owner.code.length == 0 &&
+                id1 != id2 &&
+                amount1 > 0 &&
+                amount2 > 0
+        );
+
+        bytes4 receiverSingleMagicValue = IERC1155Receiver
+            .onERC1155Received
+            .selector;
+        bytes4 receiverBatchMagicValue = IERC1155Receiver
+            .onERC1155BatchReceived
+            .selector;
+        ERC1155ReceiverMock erc1155ReceiverMock = new ERC1155ReceiverMock(
+            receiverSingleMagicValue,
+            false,
+            receiverBatchMagicValue,
+            false
+        );
+        address receiver = address(erc1155ReceiverMock);
+        uint256[] memory ids = new uint256[](2);
+        uint256[] memory amounts = new uint256[](2);
+        /**
+         * To avoid a stack-too-deep error, we do not generate the
+         * data input via a separate parameter here.
+         */
+        bytes memory data = new bytes(id2 % 2);
+
+        ids[0] = id1;
+        ids[1] = id2;
+        amounts[0] = amount1;
+        amounts[1] = amount2;
+
+        vm.startPrank(deployer);
+        vm.expectEmit(true, true, true, true);
+        emit TransferBatch(deployer, zeroAddress, receiver, ids, amounts);
+        ERC1155Extended.safe_mint_batch(receiver, ids, amounts, data);
+        for (uint256 i; i < ids.length; ++i) {
+            assertEq(ERC1155Extended.total_supply(ids[i]), amounts[i]);
+            assertEq(ERC1155Extended.balanceOf(receiver, ids[i]), amounts[i]);
+        }
+        vm.stopPrank();
+    }
+
+    function testFuzzSafeMintBatchNonMinter(address nonOwner) public {
+        vm.assume(nonOwner != deployer);
+        uint256[] memory ids = new uint256[](4);
+        uint256[] memory amounts = new uint256[](4);
+        bytes memory data = new bytes(0);
+
+        ids[0] = 0;
+        ids[1] = 1;
+        ids[2] = 5;
+        ids[3] = 8;
+        amounts[0] = 1;
+        amounts[1] = 2;
+        amounts[2] = 10;
+        amounts[3] = 20;
+
+        vm.startPrank(nonOwner);
+        vm.expectRevert(bytes("AccessControl: access is denied"));
+        ERC1155Extended.safe_mint_batch(makeAddr("owner"), ids, amounts, data);
+        vm.stopPrank();
+    }
+
+    function testFuzzSetMinterSuccess(string calldata minter) public {
+        address owner = deployer;
+        address minterAddr = makeAddr(minter);
+        vm.startPrank(owner);
+        vm.expectEmit(true, false, false, true);
+        emit RoleMinterChanged(minterAddr, true);
+        ERC1155Extended.set_minter(minterAddr, true);
+        assertTrue(ERC1155Extended.is_minter(minterAddr));
+
+        vm.expectEmit(true, false, false, true);
+        emit RoleMinterChanged(minterAddr, false);
+        ERC1155Extended.set_minter(minterAddr, false);
+        assertTrue(!ERC1155Extended.is_minter(minterAddr));
+        vm.stopPrank();
+    }
+
+    function testFuzzSetMinterNonOwner(
+        address msgSender,
+        string calldata minter
+    ) public {
+        vm.assume(msgSender != deployer);
+        vm.expectRevert(bytes("Ownable: caller is not the owner"));
+        ERC1155Extended.set_minter(makeAddr(minter), true);
+    }
+
+    function testFuzzTransferOwnershipSuccess(
+        address newOwner1,
+        address newOwner2
+    ) public {
+        vm.assume(
+            newOwner1 != zeroAddress &&
+                newOwner1 != deployer &&
+                newOwner1 != newOwner2 &&
+                newOwner2 != zeroAddress
+        );
+        address oldOwner = deployer;
+        vm.startPrank(oldOwner);
+        vm.expectEmit(true, false, false, true);
+        emit RoleMinterChanged(oldOwner, false);
+        vm.expectEmit(true, true, false, false);
+        emit OwnershipTransferred(oldOwner, newOwner1);
+        vm.expectEmit(true, false, false, true);
+        emit RoleMinterChanged(newOwner1, true);
+        ERC1155Extended.transfer_ownership(newOwner1);
+        assertEq(ERC1155Extended.owner(), newOwner1);
+        assertTrue(!ERC1155Extended.is_minter(oldOwner));
+        assertTrue(ERC1155Extended.is_minter(newOwner1));
+        vm.stopPrank();
+
+        vm.startPrank(newOwner1);
+        vm.expectEmit(true, false, false, true);
+        emit RoleMinterChanged(newOwner1, false);
+        vm.expectEmit(true, true, false, false);
+        emit OwnershipTransferred(newOwner1, newOwner2);
+        vm.expectEmit(true, false, false, true);
+        emit RoleMinterChanged(newOwner2, true);
+        emit OwnershipTransferred(newOwner1, newOwner2);
+        ERC1155Extended.transfer_ownership(newOwner2);
+        assertEq(ERC1155Extended.owner(), newOwner2);
+        assertTrue(!ERC1155Extended.is_minter(newOwner1));
+        assertTrue(ERC1155Extended.is_minter(newOwner2));
+        vm.stopPrank();
+    }
+
+    function testFuzzTransferOwnershipNonOwner(
+        address nonOwner,
+        address newOwner
+    ) public {
+        vm.assume(nonOwner != deployer);
+        vm.prank(nonOwner);
+        vm.expectRevert(bytes("Ownable: caller is not the owner"));
+        ERC1155Extended.transfer_ownership(newOwner);
+    }
+
+    function testFuzzRenounceOwnershipSuccess(address newOwner) public {
+        vm.assume(newOwner != zeroAddress);
+        address oldOwner = deployer;
+        address renounceAddress = zeroAddress;
+        vm.startPrank(oldOwner);
+        vm.expectEmit(true, false, false, true);
+        emit RoleMinterChanged(oldOwner, false);
+        vm.expectEmit(true, true, false, false);
+        emit OwnershipTransferred(oldOwner, newOwner);
+        vm.expectEmit(true, false, false, true);
+        emit RoleMinterChanged(newOwner, true);
+        ERC1155Extended.transfer_ownership(newOwner);
+        vm.stopPrank();
+
+        vm.startPrank(newOwner);
+        vm.expectEmit(true, false, false, true);
+        emit RoleMinterChanged(newOwner, false);
+        vm.expectEmit(true, true, false, false);
+        emit OwnershipTransferred(newOwner, renounceAddress);
+        ERC1155Extended.renounce_ownership();
+        assertEq(ERC1155Extended.owner(), renounceAddress);
+        vm.stopPrank();
+    }
+
+    function testFuzzRenounceOwnershipNonOwner(address nonOwner) public {
+        vm.assume(nonOwner != deployer);
+        vm.prank(nonOwner);
+        vm.expectRevert(bytes("Ownable: caller is not the owner"));
+        ERC1155Extended.renounce_ownership();
+    }
 }
