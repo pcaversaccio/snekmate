@@ -1,5 +1,5 @@
 const { StandardMerkleTree } = require("@openzeppelin/merkle-tree");
-const ethers = require("ethers");
+const { AbiCoder } = require("ethers");
 
 const elements = require("./elements.js");
 const merkleTree = StandardMerkleTree.of(
@@ -11,5 +11,5 @@ const proof = merkleTree.getProof([elements[0]]);
 
 // eslint-disable-next-line no-undef
 process.stdout.write(
-  ethers.utils.defaultAbiCoder.encode(Array(6).fill("bytes32"), proof)
+  AbiCoder.defaultAbiCoder().encode(Array(6).fill("bytes32"), proof)
 );

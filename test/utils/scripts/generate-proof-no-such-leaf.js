@@ -1,6 +1,6 @@
 const { MerkleTree } = require("merkletreejs");
 const keccak256 = require("keccak256");
-const ethers = require("ethers");
+const { AbiCoder } = require("ethers");
 
 const elements = require("./elements.js");
 const merkleTree = new MerkleTree(elements, keccak256, {
@@ -13,5 +13,5 @@ const proof = merkleTree.getHexProof(leaf);
 
 // eslint-disable-next-line no-undef
 process.stdout.write(
-  ethers.utils.defaultAbiCoder.encode(Array(7).fill("bytes32"), proof)
+  AbiCoder.defaultAbiCoder().encode(Array(7).fill("bytes32"), proof)
 );
