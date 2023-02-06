@@ -2,7 +2,7 @@
 pragma solidity ^0.8.18;
 
 import {Test} from "forge-std/Test.sol";
-import {InvariantTest} from "forge-std/InvariantTest.sol";
+import {StdInvariant} from "forge-std/StdInvariant.sol";
 import {VyperDeployer} from "utils/VyperDeployer.sol";
 
 import {IERC20Extended} from "./interfaces/IERC20Extended.sol";
@@ -1517,7 +1517,7 @@ contract ERC20Test is Test {
     }
 }
 
-contract ERC20Invariants is Test, InvariantTest {
+contract ERC20Invariants is Test, StdInvariant {
     string private constant _NAME = "MyToken";
     string private constant _SYMBOL = "WAGMI";
     string private constant _NAME_EIP712 = "MyToken";

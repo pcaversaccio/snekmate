@@ -3,7 +3,7 @@ pragma solidity ^0.8.18;
 
 import {Test} from "forge-std/Test.sol";
 import {stdError} from "forge-std/StdError.sol";
-import {InvariantTest} from "forge-std/InvariantTest.sol";
+import {StdInvariant} from "forge-std/StdInvariant.sol";
 import {VyperDeployer} from "utils/VyperDeployer.sol";
 
 import {IERC165} from "openzeppelin/utils/introspection/IERC165.sol";
@@ -2486,7 +2486,7 @@ contract ERC721Test is Test {
     }
 }
 
-contract ERC721Invariants is Test, InvariantTest {
+contract ERC721Invariants is Test, StdInvariant {
     string private constant _NAME = "MyNFT";
     string private constant _SYMBOL = "WAGMI";
     string private constant _BASE_URI = "https://www.wagmi.xyz/";

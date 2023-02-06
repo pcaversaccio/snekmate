@@ -2,7 +2,7 @@
 pragma solidity ^0.8.18;
 
 import {Test} from "forge-std/Test.sol";
-import {InvariantTest} from "forge-std/InvariantTest.sol";
+import {StdInvariant} from "forge-std/StdInvariant.sol";
 import {VyperDeployer} from "utils/VyperDeployer.sol";
 
 import {IOwnable} from "./interfaces/IOwnable.sol";
@@ -138,7 +138,7 @@ contract OwnableTest is Test {
     }
 }
 
-contract OwnableInvariants is Test, InvariantTest {
+contract OwnableInvariants is Test, StdInvariant {
     VyperDeployer private vyperDeployer = new VyperDeployer();
 
     IOwnable private ownable;

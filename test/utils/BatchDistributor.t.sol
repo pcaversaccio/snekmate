@@ -2,7 +2,7 @@
 pragma solidity ^0.8.18;
 
 import {Test} from "forge-std/Test.sol";
-import {InvariantTest} from "forge-std/InvariantTest.sol";
+import {StdInvariant} from "forge-std/StdInvariant.sol";
 import {VyperDeployer} from "utils/VyperDeployer.sol";
 
 import {ERC20Mock} from "./mocks/ERC20Mock.sol";
@@ -409,7 +409,7 @@ contract BatchDistributorTest is Test {
     }
 }
 
-contract BatchDistributorInvariants is Test, InvariantTest {
+contract BatchDistributorInvariants is Test, StdInvariant {
     VyperDeployer private vyperDeployer = new VyperDeployer();
 
     IBatchDistributor private batchDistributor;
