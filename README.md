@@ -66,7 +66,7 @@ This repository is inspired by or directly modified from many sources, primarily
 - [ApeAcademy](https://github.com/ApeAcademy)
 - [Batch Distributor](https://github.com/pcaversaccio/batch-distributor)
 - [`CREATE` Factory](https://github.com/pcaversaccio/create-util)
-- [Disperse Reseach](https://github.com/banteg/disperse-research)
+- [Disperse Research](https://github.com/banteg/disperse-research)
 - [Multicall](https://github.com/mds1/multicall)
 - [OpenZeppelin Contracts](https://github.com/OpenZeppelin/openzeppelin-contracts)
 - [solady](https://github.com/Vectorized/solady)
