@@ -34,6 +34,17 @@
         https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC20/ERC20.sol,
         as well as by ApeAcademy's implementation here:
         https://github.com/ApeAcademy/ERC20/blob/main/%7B%7Bcookiecutter.project_name%7D%7D/contracts/Token.vy.
+@custom:security This ERC-20 implementation allows the commonly known
+                 address poisoning attack, where `transferFrom` instructions
+                 are executed from arbitrary addresses with an `amount` of 0.
+                 However, this poisoning attack is not an on-chain vulnerability.
+                 All assets are safe. It is an off-chain log interpretation issue.
+                 The main reason why we do not disallow address poisonig is that
+                 we do not want to potentially break any DeFi composability.
+                 This issue has been extensively discussed here:
+                 https://github.com/pcaversaccio/snekmate/issues/51,
+                 as well as in the OpenZeppelin repository:
+                 https://github.com/OpenZeppelin/openzeppelin-contracts/issues/3931.
 """
 
 
@@ -595,6 +606,12 @@ def _spend_allowance(owner: address, spender: address, amount: uint256):
     """
     current_allowance: uint256 = self.allowance[owner][spender]
     if (current_allowance != max_value(uint256)):
+        # The following line allows the commonly known address
+        # poisoning attack, where `transferFrom` instructions
+        # are executed from arbitrary addresses with an `amount`
+        # of 0. However, this poisoning attack is not an on-chain
+        # vulnerability. All assets are safe. It is an off-chain
+        # log interpretation issue.
         assert current_allowance >= amount, "ERC20: insufficient allowance"
         self._approve(owner, spender, unsafe_sub(current_allowance, amount))
 
