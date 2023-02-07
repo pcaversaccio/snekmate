@@ -64,12 +64,13 @@ This repository contains [Foundry](https://github.com/foundry-rs/foundry)-based 
 This repository is inspired by or directly modified from many sources, primarily:
 
 - [ApeAcademy](https://github.com/ApeAcademy)
-- [batch-distributor](https://github.com/pcaversaccio/batch-distributor)
-- [create-util](https://github.com/pcaversaccio/create-util)
-- [disperse-research](https://github.com/banteg/disperse-research)
-- [multicall](https://github.com/mds1/multicall)
-- [OpenZeppelin](https://github.com/OpenZeppelin/openzeppelin-contracts)
-- [Solmate](https://github.com/transmissions11/solmate)
+- [Batch Distributor](https://github.com/pcaversaccio/batch-distributor)
+- [`CREATE` Factory](https://github.com/pcaversaccio/create-util)
+- [Disperse Research](https://github.com/banteg/disperse-research)
+- [Multicall](https://github.com/mds1/multicall)
+- [OpenZeppelin Contracts](https://github.com/OpenZeppelin/openzeppelin-contracts)
+- [solady](https://github.com/Vectorized/solady)
+- [solmate](https://github.com/transmissions11/solmate)
 
 ## 🫡 Contributing
 
