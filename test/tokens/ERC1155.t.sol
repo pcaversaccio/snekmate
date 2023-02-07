@@ -3208,7 +3208,6 @@ contract ERC1155Test is Test {
                 amount1 > 0 &&
                 amount2 > 0
         );
-
         bytes4 receiverSingleMagicValue = IERC1155Receiver
             .onERC1155Received
             .selector;
@@ -3256,7 +3255,6 @@ contract ERC1155Test is Test {
                 amount1 > 0 &&
                 amount2 > 0
         );
-
         bytes4 receiverSingleMagicValue = IERC1155Receiver
             .onERC1155Received
             .selector;
