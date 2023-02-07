@@ -88,7 +88,7 @@ def distribute_token(token: ERC20, data: Batch):
     for txn in data.txns:
         total += txn.amount
 
-    assert token.transferFrom(msg.sender, self, total, default_return_value=True)
+    assert token.transferFrom(msg.sender, self, total, default_return_value=True), "BatchDistributor: transferFrom operation did not succeed"
 
     for txn in data.txns:
-        assert token.transfer(txn.recipient, txn.amount, default_return_value=True)
+        assert token.transfer(txn.recipient, txn.amount, default_return_value=True), "BatchDistributor: transfer operation did not succeed"

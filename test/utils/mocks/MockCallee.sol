@@ -16,6 +16,7 @@ error Reverted(address emitter);
  */
 contract MockCallee {
     uint256 public number;
+    address private self = address(this);
 
     /**
      * @dev Stores a uint256 value in the variable `number`.
@@ -42,7 +43,7 @@ contract MockCallee {
      * @dev A function that simply reverts.
      */
     function thisMethodReverts() public view {
-        revert Reverted(address(this));
+        revert Reverted(self);
     }
 
     /**
@@ -52,6 +53,6 @@ contract MockCallee {
     function transferEther(address target) public payable {
         // solhint-disable-next-line avoid-low-level-calls
         (bool ok, ) = target.call{value: msg.value}("");
-        if (!ok) revert Reverted(address(this));
+        if (!ok) revert Reverted(self);
     }
 }

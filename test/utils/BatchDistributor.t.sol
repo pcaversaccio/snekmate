@@ -13,6 +13,8 @@ contract BatchDistributorTest is Test {
 
     IBatchDistributor private batchDistributor;
 
+    address private zeroAddress = address(0);
+
     function setUp() public {
         batchDistributor = IBatchDistributor(
             vyperDeployer.deployContract("src/utils/", "BatchDistributor")
@@ -20,7 +22,7 @@ contract BatchDistributorTest is Test {
     }
 
     function testDistributeEtherOneAddressSuccess() public {
-        address payable alice = payable(vm.addr(1));
+        address alice = makeAddr("alice");
         IBatchDistributor.Transaction[]
             memory transaction = new IBatchDistributor.Transaction[](1);
         transaction[0] = IBatchDistributor.Transaction({
@@ -32,13 +34,14 @@ contract BatchDistributorTest is Test {
         });
 
         batchDistributor.distribute_ether{value: 2 wei}(batch);
-        assertTrue(alice.balance == 2 wei);
+        assertEq(alice.balance, 2 wei);
+        assertEq(address(batchDistributor).balance, 0);
     }
 
     function testDistributeEtherMultipleAddressesSuccess() public {
-        address payable alice = payable(vm.addr(1));
-        address payable bob = payable(vm.addr(2));
-        address payable carol = payable(vm.addr(3));
+        address alice = makeAddr("alice");
+        address bob = makeAddr("bob");
+        address carol = makeAddr("carol");
         IBatchDistributor.Transaction[]
             memory transaction = new IBatchDistributor.Transaction[](3);
         transaction[0] = IBatchDistributor.Transaction({
@@ -58,16 +61,17 @@ contract BatchDistributorTest is Test {
         });
 
         batchDistributor.distribute_ether{value: 2102 wei}(batch);
-        assertTrue(alice.balance == 2 wei);
-        assertTrue(bob.balance == 100 wei);
-        assertTrue(carol.balance == 2000 wei);
+        assertEq(alice.balance, 2 wei);
+        assertEq(bob.balance, 100 wei);
+        assertEq(carol.balance, 2000 wei);
+        assertEq(address(batchDistributor).balance, 0);
     }
 
     function testDistributeEtherSendsBackExcessiveEther() public {
-        address payable alice = payable(vm.addr(1));
-        address payable bob = payable(vm.addr(2));
-        address payable carol = payable(vm.addr(3));
-        address payable msgSender = payable(address(vm.addr(4)));
+        address alice = makeAddr("alice");
+        address bob = makeAddr("bob");
+        address carol = makeAddr("carol");
+        address msgSender = address(makeAddr("msgSender"));
         vm.deal(msgSender, 1 ether);
         uint256 balance = msgSender.balance;
         IBatchDistributor.Transaction[]
@@ -90,18 +94,22 @@ contract BatchDistributorTest is Test {
 
         vm.prank(msgSender);
         batchDistributor.distribute_ether{value: 1 ether}(batch);
-        assertTrue(alice.balance == 2 wei);
-        assertTrue(bob.balance == 100 wei);
-        assertTrue(carol.balance == 2000 wei);
-        assertTrue(msgSender.balance == (balance - 2 wei - 100 wei - 2000 wei));
+        assertEq(alice.balance, 2 wei);
+        assertEq(bob.balance, 100 wei);
+        assertEq(carol.balance, 2000 wei);
+        assertEq(
+            msgSender.balance,
+            balance - alice.balance - bob.balance - carol.balance
+        );
+        assertEq(address(batchDistributor).balance, 0);
     }
 
     function testDistributeEtherRevertWithNoFallbackFunctionForReceipt()
         public
     {
-        address payable alice = payable(address(batchDistributor));
-        address payable bob = payable(vm.addr(2));
-        address payable carol = payable(vm.addr(3));
+        address alice = address(batchDistributor);
+        address bob = makeAddr("bob");
+        address carol = makeAddr("carol");
         IBatchDistributor.Transaction[]
             memory transaction = new IBatchDistributor.Transaction[](3);
         transaction[0] = IBatchDistributor.Transaction({
@@ -126,14 +134,15 @@ contract BatchDistributorTest is Test {
          */
         vm.expectRevert();
         batchDistributor.distribute_ether{value: 2102 wei}(batch);
+        assertEq(address(batchDistributor).balance, 0);
     }
 
     function testDistributeEtherRevertWithNoFallbackFunctionForMsgSender()
         public
     {
-        address payable alice = payable(vm.addr(1));
-        address payable bob = payable(vm.addr(2));
-        address payable carol = payable(vm.addr(3));
+        address alice = makeAddr("alice");
+        address bob = makeAddr("bob");
+        address carol = makeAddr("carol");
         IBatchDistributor.Transaction[]
             memory transaction = new IBatchDistributor.Transaction[](3);
         transaction[0] = IBatchDistributor.Transaction({
@@ -158,12 +167,13 @@ contract BatchDistributorTest is Test {
          */
         vm.expectRevert();
         batchDistributor.distribute_ether{value: 1 ether}(batch);
+        assertEq(address(batchDistributor).balance, 0);
     }
 
     function testDistributeEtherRevertWithInsufficientFunds() public {
-        address payable alice = payable(vm.addr(1));
-        address payable bob = payable(vm.addr(2));
-        address payable carol = payable(vm.addr(3));
+        address alice = makeAddr("alice");
+        address bob = makeAddr("bob");
+        address carol = makeAddr("carol");
         IBatchDistributor.Transaction[]
             memory transaction = new IBatchDistributor.Transaction[](3);
         transaction[0] = IBatchDistributor.Transaction({
@@ -187,18 +197,19 @@ contract BatchDistributorTest is Test {
          */
         vm.expectRevert();
         batchDistributor.distribute_ether{value: 1 wei}(batch);
+        assertEq(address(batchDistributor).balance, 0);
     }
 
     function testDistributeTokenOneAddressSuccess() public {
         string memory arg1 = "MyToken";
         string memory arg2 = "MTKN";
-        address arg3 = vm.addr(1);
+        address arg3 = makeAddr("initialAccount");
         uint256 arg4 = 100;
         ERC20Mock erc20Mock = new ERC20Mock(arg1, arg2, arg3, arg4);
         vm.startPrank(arg3);
         erc20Mock.approve(address(batchDistributor), 30);
 
-        address payable alice = payable(vm.addr(2));
+        address alice = makeAddr("alice");
         IBatchDistributor.Transaction[]
             memory transaction = new IBatchDistributor.Transaction[](1);
         transaction[0] = IBatchDistributor.Transaction({
@@ -211,21 +222,22 @@ contract BatchDistributorTest is Test {
 
         batchDistributor.distribute_token(erc20Mock, batch);
         vm.stopPrank();
-        assertTrue(erc20Mock.balanceOf(alice) == 30);
+        assertEq(erc20Mock.balanceOf(alice), 30);
+        assertEq(erc20Mock.balanceOf(address(batchDistributor)), 0);
     }
 
     function testDistributeTokenMultipleAddressesSuccess() public {
         string memory arg1 = "MyToken";
         string memory arg2 = "MTKN";
-        address arg3 = vm.addr(1);
+        address arg3 = makeAddr("initialAccount");
         uint256 arg4 = 100;
         ERC20Mock erc20Mock = new ERC20Mock(arg1, arg2, arg3, arg4);
         vm.startPrank(arg3);
         erc20Mock.approve(address(batchDistributor), 100);
 
-        address payable alice = payable(vm.addr(2));
-        address payable bob = payable(vm.addr(3));
-        address payable carol = payable(vm.addr(4));
+        address alice = makeAddr("alice");
+        address bob = makeAddr("bob");
+        address carol = makeAddr("carol");
         IBatchDistributor.Transaction[]
             memory transaction = new IBatchDistributor.Transaction[](3);
         transaction[0] = IBatchDistributor.Transaction({
@@ -246,23 +258,24 @@ contract BatchDistributorTest is Test {
 
         batchDistributor.distribute_token(erc20Mock, batch);
         vm.stopPrank();
-        assertTrue(erc20Mock.balanceOf(alice) == 30);
-        assertTrue(erc20Mock.balanceOf(bob) == 20);
-        assertTrue(erc20Mock.balanceOf(carol) == 50);
+        assertEq(erc20Mock.balanceOf(alice), 30);
+        assertEq(erc20Mock.balanceOf(bob), 20);
+        assertEq(erc20Mock.balanceOf(carol), 50);
+        assertEq(erc20Mock.balanceOf(address(batchDistributor)), 0);
     }
 
     function testDistributeTokenRevertWithInsufficientAllowance() public {
         string memory arg1 = "MyToken";
         string memory arg2 = "MTKN";
-        address arg3 = vm.addr(1);
+        address arg3 = makeAddr("initialAccount");
         uint256 arg4 = 100;
         ERC20Mock erc20Mock = new ERC20Mock(arg1, arg2, arg3, arg4);
         vm.startPrank(arg3);
         erc20Mock.approve(address(batchDistributor), 99);
 
-        address payable alice = payable(vm.addr(2));
-        address payable bob = payable(vm.addr(3));
-        address payable carol = payable(vm.addr(4));
+        address alice = makeAddr("alice");
+        address bob = makeAddr("bob");
+        address carol = makeAddr("carol");
         IBatchDistributor.Transaction[]
             memory transaction = new IBatchDistributor.Transaction[](3);
         transaction[0] = IBatchDistributor.Transaction({
@@ -283,21 +296,22 @@ contract BatchDistributorTest is Test {
 
         vm.expectRevert(bytes("ERC20: insufficient allowance"));
         batchDistributor.distribute_token(erc20Mock, batch);
+        assertEq(erc20Mock.balanceOf(address(batchDistributor)), 0);
         vm.stopPrank();
     }
 
     function testDistributeTokenRevertWithInsufficientBalance() public {
         string memory arg1 = "MyToken";
         string memory arg2 = "MTKN";
-        address arg3 = vm.addr(1);
+        address arg3 = makeAddr("initialAccount");
         uint256 arg4 = 100;
         ERC20Mock erc20Mock = new ERC20Mock(arg1, arg2, arg3, arg4);
         vm.startPrank(arg3);
         erc20Mock.approve(address(batchDistributor), 120);
 
-        address payable alice = payable(vm.addr(2));
-        address payable bob = payable(vm.addr(3));
-        address payable carol = payable(vm.addr(4));
+        address alice = makeAddr("alice");
+        address bob = makeAddr("bob");
+        address carol = makeAddr("carol");
         IBatchDistributor.Transaction[]
             memory transaction = new IBatchDistributor.Transaction[](3);
         transaction[0] = IBatchDistributor.Transaction({
@@ -318,6 +332,139 @@ contract BatchDistributorTest is Test {
 
         vm.expectRevert(bytes("ERC20: transfer amount exceeds balance"));
         batchDistributor.distribute_token(erc20Mock, batch);
+        assertEq(erc20Mock.balanceOf(address(batchDistributor)), 0);
         vm.stopPrank();
+    }
+
+    function testFuzzDistributeEtherMultipleAddressesSuccess(
+        IBatchDistributor.Batch memory batch,
+        uint256 value
+    ) public {
+        value = bound(value, type(uint16).max, type(uint32).max);
+        vm.assume(batch.txns.length <= 50);
+        for (uint256 i; i < batch.txns.length; ++i) {
+            batch.txns[i].amount = bound(batch.txns[i].amount, 1, 100);
+            assumePayable(batch.txns[i].recipient);
+        }
+
+        uint256 valueAccumulator;
+        address msgSender = address(makeAddr("msgSender"));
+        vm.deal(msgSender, value);
+        vm.prank(msgSender);
+        batchDistributor.distribute_ether{value: value}(batch);
+        for (uint256 i; i < batch.txns.length; ++i) {
+            valueAccumulator += batch.txns[i].amount;
+            assertGe(batch.txns[i].recipient.balance, batch.txns[i].amount);
+        }
+        assertGe(msgSender.balance, value - valueAccumulator);
+        assertEq(address(batchDistributor).balance, 0);
+    }
+
+    function testFuzzDistributeTokenMultipleAddressesSuccess(
+        IBatchDistributor.Batch memory batch,
+        address initialAccount,
+        uint256 initialAmount
+    ) public {
+        vm.assume(initialAccount != zeroAddress);
+        initialAmount = bound(
+            initialAmount,
+            type(uint16).max,
+            type(uint32).max
+        );
+        vm.assume(batch.txns.length <= 50);
+        for (uint256 i; i < batch.txns.length; ++i) {
+            batch.txns[i].amount = bound(batch.txns[i].amount, 1, 100);
+            vm.assume(
+                batch.txns[i].recipient != address(batchDistributor) &&
+                    batch.txns[i].recipient != zeroAddress
+            );
+        }
+
+        uint256 valueAccumulator;
+        string memory arg1 = "MyToken";
+        string memory arg2 = "MTKN";
+        ERC20Mock erc20Mock = new ERC20Mock(
+            arg1,
+            arg2,
+            initialAccount,
+            initialAmount
+        );
+        vm.startPrank(initialAccount);
+        erc20Mock.approve(address(batchDistributor), initialAmount);
+        batchDistributor.distribute_token(erc20Mock, batch);
+        vm.stopPrank();
+        for (uint256 i; i < batch.txns.length; ++i) {
+            valueAccumulator += batch.txns[i].amount;
+            assertGe(
+                erc20Mock.balanceOf(batch.txns[i].recipient),
+                batch.txns[i].amount
+            );
+        }
+        assertGe(
+            erc20Mock.balanceOf(initialAccount),
+            initialAmount - valueAccumulator
+        );
+        assertEq(erc20Mock.balanceOf(address(batchDistributor)), 0);
+    }
+}
+
+contract BatchDistributorInvariants is Test {
+    VyperDeployer private vyperDeployer = new VyperDeployer();
+
+    IBatchDistributor private batchDistributor;
+    BatchDistributorHandler private batchDistributorHandler;
+
+    ERC20Mock private erc20Mock;
+
+    function setUp() public {
+        batchDistributor = IBatchDistributor(
+            vyperDeployer.deployContract("src/utils/", "BatchDistributor")
+        );
+        address msgSender = makeAddr("msgSender");
+        erc20Mock = new ERC20Mock(
+            "MyToken",
+            "MTKN",
+            msgSender,
+            type(uint256).max
+        );
+        batchDistributorHandler = new BatchDistributorHandler(
+            batchDistributor,
+            erc20Mock
+        );
+        targetContract(address(batchDistributorHandler));
+        targetSender(msgSender);
+    }
+
+    function invariantNoEtherBalance() public {
+        assertEq(address(batchDistributor).balance, 0);
+    }
+
+    function invariantNoTokenBalance() public {
+        /**
+         * @dev This invariant breaks when tokens are sent directly to `batchDistributor`
+         * as part of `distribute_token`. However, this behaviour is acceptable.
+         */
+        assertEq(erc20Mock.balanceOf(address(batchDistributor)), 0);
+    }
+}
+
+contract BatchDistributorHandler {
+    IBatchDistributor private batchDistributor;
+    ERC20Mock private token;
+
+    constructor(IBatchDistributor batchDistributor_, ERC20Mock token_) {
+        batchDistributor = batchDistributor_;
+        token = token_;
+    }
+
+    function distribute_ether(
+        IBatchDistributor.Batch calldata batch
+    ) public payable {
+        batchDistributor.distribute_ether(batch);
+    }
+
+    function distribute_token(IBatchDistributor.Batch calldata batch) public {
+        token.approve(address(batchDistributor), type(uint256).max);
+        batchDistributor.distribute_token(token, batch);
     }
 }

@@ -412,7 +412,7 @@ def transferFrom(owner: address, to: address, token_id: uint256):
 
 @external
 @payable
-def safeTransferFrom(owner: address, to: address, token_id: uint256, data: Bytes[1024]):
+def safeTransferFrom(owner: address, to: address, token_id: uint256, data: Bytes[1024]=b""):
     """
     @dev Safely transfers `token_id` token from `owner`
          to `to`.
@@ -424,6 +424,16 @@ def safeTransferFrom(owner: address, to: address, token_id: uint256, data: Bytes
             Eventually, if `to` refers to a smart contract,
             it must implement {IERC721Receiver-onERC721Received},
             which is called upon a safe transfer.
+
+            The Vyper compiler processes this function `safeTransferFrom`
+            as two separate function selectors, since a default
+            parameter `b""` is set in the function declaration.
+            Anyone can invoke this function using only `owner`,
+            `to`, and `token_id` as arguments, and is therefore
+            compatible with the function overloading of `safeTransferFrom`
+            in the standard ERC-721 interface. You can find more
+            information here:
+            https://github.com/vyperlang/vyper/issues/903.
 
             IMPORTANT: The function is declared as
             `payable` to comply with the EIP-721

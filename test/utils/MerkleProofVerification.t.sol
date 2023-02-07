@@ -4,10 +4,13 @@ pragma solidity ^0.8.18;
 import {Test} from "forge-std/Test.sol";
 import {VyperDeployer} from "utils/VyperDeployer.sol";
 
+import {Merkle} from "murky/Merkle.sol";
+
 import {IMerkleProofVerification} from "./interfaces/IMerkleProofVerification.sol";
 
 contract MerkleProofVerificationTest is Test {
     VyperDeployer private vyperDeployer = new VyperDeployer();
+    Merkle private merkleGenerator = new Merkle();
 
     IMerkleProofVerification private merkleProofVerification;
 
@@ -509,7 +512,9 @@ contract MerkleProofVerificationTest is Test {
 
         leaves[0] = keccak256(bytes.concat(keccak256(abi.encode("a"))));
 
-        /// @dev Works for a Merkle tree containing a single leaf.
+        /**
+         * @dev Works for a Merkle tree containing a single leaf.
+         */
         assertTrue(
             merkleProofVerification.multi_proof_verify(
                 multiProof,
@@ -530,7 +535,9 @@ contract MerkleProofVerificationTest is Test {
         );
         multiProof[0] = root;
 
-        /// @dev Can prove empty leaves.
+        /**
+         * @dev Can prove empty leaves.
+         */
         assertTrue(
             merkleProofVerification.multi_proof_verify(
                 multiProof,
@@ -538,6 +545,150 @@ contract MerkleProofVerificationTest is Test {
                 root,
                 leaves
             )
+        );
+    }
+
+    /**
+     * @notice Forked and adjusted accordingly from here:
+     * https://github.com/Vectorized/solady/blob/main/test/MerkleProofLib.t.sol.
+     */
+    function testFuzzVerify(
+        bytes32[] calldata data,
+        uint256 randomness
+    ) public {
+        vm.assume(data.length > 1);
+        uint256 nodeIndex = randomness % data.length;
+        bytes32 root = merkleGenerator.getRoot(data);
+        bytes32[] memory proof = merkleGenerator.getProof(data, nodeIndex);
+        bytes32 leaf = data[nodeIndex];
+        assertTrue(merkleProofVerification.verify(proof, root, leaf));
+        assertTrue(
+            !merkleProofVerification.verify(
+                proof,
+                bytes32(uint256(root) ^ 1),
+                leaf
+            )
+        );
+
+        proof[0] = bytes32(uint256(proof[0]) ^ 1);
+        assertTrue(!merkleProofVerification.verify(proof, root, leaf));
+        assertTrue(
+            !merkleProofVerification.verify(
+                proof,
+                bytes32(uint256(root) ^ 1),
+                leaf
+            )
+        );
+    }
+
+    /**
+     * @notice Forked and adjusted accordingly from here:
+     * https://github.com/Vectorized/solady/blob/main/test/MerkleProofLib.t.sol.
+     */
+    function testFuzzMultiProofVerifySingleLeaf(
+        bytes32[] calldata data,
+        uint256 randomness
+    ) public {
+        vm.assume(data.length > 1);
+        uint256 nodeIndex = randomness % data.length;
+        bytes32 root = merkleGenerator.getRoot(data);
+        bytes32[] memory proof = merkleGenerator.getProof(data, nodeIndex);
+        bytes32[] memory leaves = new bytes32[](1);
+        leaves[0] = data[nodeIndex];
+        bool[] memory proofFlags = new bool[](proof.length);
+        assertTrue(
+            merkleProofVerification.multi_proof_verify(
+                proof,
+                proofFlags,
+                root,
+                leaves
+            )
+        );
+        assertTrue(
+            !merkleProofVerification.multi_proof_verify(
+                proof,
+                proofFlags,
+                bytes32(uint256(root) ^ 1),
+                leaves
+            )
+        );
+
+        proof[0] = bytes32(uint256(proof[0]) ^ 1);
+        assertTrue(
+            !merkleProofVerification.multi_proof_verify(
+                proof,
+                proofFlags,
+                root,
+                leaves
+            )
+        );
+        assertTrue(
+            !merkleProofVerification.multi_proof_verify(
+                proof,
+                proofFlags,
+                bytes32(uint256(root) ^ 1),
+                leaves
+            )
+        );
+    }
+
+    /**
+     * @notice Forked and adjusted accordingly from here:
+     * https://github.com/Vectorized/solady/blob/main/test/MerkleProofLib.t.sol.
+     */
+    function testFuzzVerifyMultiProofMultipleLeaves(
+        bool damageProof,
+        bool damageRoot,
+        bool damageLeaves
+    ) public {
+        bool noDamage = true;
+
+        bytes32 root = merkleGenerator.hashLeafPairs(
+            merkleGenerator.hashLeafPairs(
+                merkleGenerator.hashLeafPairs(bytes32("a"), bytes32("b")),
+                merkleGenerator.hashLeafPairs(bytes32("c"), bytes32("d"))
+            ),
+            merkleGenerator.hashLeafPairs(bytes32("e"), bytes32("f"))
+        );
+
+        bytes32[] memory leaves = new bytes32[](3);
+        leaves[0] = bytes32("d");
+        leaves[1] = bytes32("e");
+        leaves[2] = bytes32("f");
+
+        bytes32[] memory proof = new bytes32[](2);
+        proof[0] = bytes32("c");
+        proof[1] = merkleGenerator.hashLeafPairs(bytes32("b"), bytes32("a"));
+
+        bool[] memory flags = new bool[](4);
+        flags[0] = false;
+        flags[1] = true;
+        flags[2] = false;
+        flags[3] = true;
+
+        if (damageRoot) {
+            noDamage = false;
+            root = bytes32(uint256(root) ^ 1);
+        }
+
+        if (damageLeaves) {
+            noDamage = false;
+            leaves[0] = bytes32(uint256(leaves[0]) ^ 1);
+        }
+
+        if (damageProof && proof.length != 0) {
+            noDamage = false;
+            proof[0] = bytes32(uint256(proof[0]) ^ 1);
+        }
+
+        assertEq(
+            merkleProofVerification.multi_proof_verify(
+                proof,
+                flags,
+                root,
+                leaves
+            ),
+            noDamage
         );
     }
 }

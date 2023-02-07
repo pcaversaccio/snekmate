@@ -11,23 +11,25 @@ import {ISignatureChecker} from "./interfaces/ISignatureChecker.sol";
 
 contract SignatureCheckerTest is Test {
     VyperDeployer private vyperDeployer = new VyperDeployer();
+    ERC1271WalletMock private wallet = new ERC1271WalletMock(makeAddr("alice"));
+    ERC1271MaliciousMock private malicious = new ERC1271MaliciousMock();
 
     ISignatureChecker private signatureChecker;
-    ERC1271WalletMock private wallet;
-    ERC1271MaliciousMock private malicious;
+
+    address private deployer = address(vyperDeployer);
+    address private walletAddr = address(wallet);
+    address private maliciousAddr = address(malicious);
 
     function setUp() public {
         signatureChecker = ISignatureChecker(
             vyperDeployer.deployContract("src/utils/", "SignatureChecker")
         );
-        wallet = new ERC1271WalletMock(vm.addr(1));
-        malicious = new ERC1271MaliciousMock();
     }
 
     function testEOAWithValidSignature() public {
-        address alice = vm.addr(1);
+        (address alice, uint256 key) = makeAddrAndKey("alice");
         bytes32 hash = keccak256("WAGMI");
-        (uint8 v, bytes32 r, bytes32 s) = vm.sign(1, hash);
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(key, hash);
         bytes memory signature = abi.encodePacked(r, s, v);
         assertTrue(
             signatureChecker.is_valid_signature_now(alice, hash, signature)
@@ -42,9 +44,9 @@ contract SignatureCheckerTest is Test {
     }
 
     function testEOAWithInvalidSigner() public {
-        address alice = vm.addr(1);
+        (address alice, uint256 key) = makeAddrAndKey("alice");
         bytes32 hash = keccak256("WAGMI");
-        (uint8 v, bytes32 r, bytes32 s) = vm.sign(2, hash);
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(key + 1, hash);
         bytes memory signature = abi.encodePacked(r, s, v);
         assertTrue(
             !signatureChecker.is_valid_signature_now(alice, hash, signature)
@@ -59,10 +61,10 @@ contract SignatureCheckerTest is Test {
     }
 
     function testEOAWithInvalidSignature1() public {
-        address alice = vm.addr(1);
+        (address alice, uint256 key) = makeAddrAndKey("alice");
         bytes32 hash = keccak256("WAGMI");
         bytes32 hashWrong = keccak256("WAGMI1");
-        (uint8 v, bytes32 r, bytes32 s) = vm.sign(1, hashWrong);
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(key, hashWrong);
         bytes memory signatureInvalid = abi.encodePacked(r, s, v);
         assertTrue(
             !signatureChecker.is_valid_signature_now(
@@ -81,9 +83,9 @@ contract SignatureCheckerTest is Test {
     }
 
     function testEOAWithInvalidSignature2() public {
-        address alice = vm.addr(1);
+        (address alice, uint256 key) = makeAddrAndKey("alice");
         bytes32 hash = keccak256("WAGMI");
-        (, bytes32 r, bytes32 s) = vm.sign(1, hash);
+        (, bytes32 r, bytes32 s) = vm.sign(key, hash);
         bytes memory signatureInvalid = abi.encodePacked(r, s, bytes1(0xa0));
         vm.expectRevert(bytes("ECDSA: invalid signature"));
         signatureChecker.is_valid_signature_now(alice, hash, signatureInvalid);
@@ -97,9 +99,9 @@ contract SignatureCheckerTest is Test {
     }
 
     function testEOAWithTooHighSValue() public {
-        address alice = vm.addr(1);
+        (address alice, uint256 key) = makeAddrAndKey("alice");
         bytes32 hash = keccak256("WAGMI");
-        (uint8 v, bytes32 r, bytes32 s) = vm.sign(1, hash);
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(key, hash);
         uint256 sTooHigh = uint256(s) +
             0x7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF5D576E7357A4501DDFE92F46681B20A0;
         bytes memory signatureInvalid = abi.encodePacked(
@@ -119,19 +121,16 @@ contract SignatureCheckerTest is Test {
     }
 
     function testEIP1271WithValidSignature() public {
+        (, uint256 key) = makeAddrAndKey("alice");
         bytes32 hash = keccak256("WAGMI");
-        (uint8 v, bytes32 r, bytes32 s) = vm.sign(1, hash);
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(key, hash);
         bytes memory signature = abi.encodePacked(r, s, v);
         assertTrue(
-            signatureChecker.is_valid_signature_now(
-                address(wallet),
-                hash,
-                signature
-            )
+            signatureChecker.is_valid_signature_now(walletAddr, hash, signature)
         );
         assertTrue(
             signatureChecker.is_valid_ERC1271_signature_now(
-                address(wallet),
+                walletAddr,
                 hash,
                 signature
             )
@@ -139,19 +138,20 @@ contract SignatureCheckerTest is Test {
     }
 
     function testEIP1271WithInvalidSigner() public {
+        (, uint256 key) = makeAddrAndKey("alice");
         bytes32 hash = keccak256("WAGMI");
-        (uint8 v, bytes32 r, bytes32 s) = vm.sign(2, hash);
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(key + 1, hash);
         bytes memory signature = abi.encodePacked(r, s, v);
         assertTrue(
             !signatureChecker.is_valid_signature_now(
-                address(wallet),
+                walletAddr,
                 hash,
                 signature
             )
         );
         assertTrue(
             !signatureChecker.is_valid_ERC1271_signature_now(
-                address(wallet),
+                walletAddr,
                 hash,
                 signature
             )
@@ -159,20 +159,21 @@ contract SignatureCheckerTest is Test {
     }
 
     function testEIP1271WithInvalidSignature1() public {
+        (, uint256 key) = makeAddrAndKey("alice");
         bytes32 hash = keccak256("WAGMI");
         bytes32 hashWrong = keccak256("WAGMI1");
-        (uint8 v, bytes32 r, bytes32 s) = vm.sign(1, hashWrong);
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(key, hashWrong);
         bytes memory signatureInvalid = abi.encodePacked(r, s, v);
         assertTrue(
             !signatureChecker.is_valid_signature_now(
-                address(wallet),
+                walletAddr,
                 hash,
                 signatureInvalid
             )
         );
         assertTrue(
             !signatureChecker.is_valid_ERC1271_signature_now(
-                address(wallet),
+                walletAddr,
                 hash,
                 signatureInvalid
             )
@@ -180,18 +181,19 @@ contract SignatureCheckerTest is Test {
     }
 
     function testEIP1271WithInvalidSignature2() public {
+        (, uint256 key) = makeAddrAndKey("alice");
         bytes32 hash = keccak256("WAGMI");
-        (, bytes32 r, bytes32 s) = vm.sign(1, hash);
+        (, bytes32 r, bytes32 s) = vm.sign(key, hash);
         bytes memory signatureInvalid = abi.encodePacked(r, s, bytes1(0xa0));
         vm.expectRevert(bytes("ECDSA: invalid signature"));
         signatureChecker.is_valid_signature_now(
-            address(wallet),
+            walletAddr,
             hash,
             signatureInvalid
         );
         assertTrue(
             !signatureChecker.is_valid_ERC1271_signature_now(
-                address(wallet),
+                walletAddr,
                 hash,
                 signatureInvalid
             )
@@ -199,19 +201,20 @@ contract SignatureCheckerTest is Test {
     }
 
     function testEIP1271WithMaliciousWallet() public {
+        (, uint256 key) = makeAddrAndKey("alice");
         bytes32 hash = keccak256("WAGMI");
-        (uint8 v, bytes32 r, bytes32 s) = vm.sign(1, hash);
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(key, hash);
         bytes memory signature = abi.encodePacked(r, s, v);
         assertTrue(
             !signatureChecker.is_valid_signature_now(
-                address(malicious),
+                maliciousAddr,
                 hash,
                 signature
             )
         );
         assertTrue(
             !signatureChecker.is_valid_ERC1271_signature_now(
-                address(malicious),
+                maliciousAddr,
                 hash,
                 signature
             )
@@ -219,19 +222,141 @@ contract SignatureCheckerTest is Test {
     }
 
     function testEIP1271NoIsValidSignatureFunction() public {
+        (, uint256 key) = makeAddrAndKey("alice");
         bytes32 hash = keccak256("WAGMI");
-        (uint8 v, bytes32 r, bytes32 s) = vm.sign(1, hash);
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(key, hash);
+        bytes memory signature = abi.encodePacked(r, s, v);
+        assertTrue(
+            !signatureChecker.is_valid_signature_now(deployer, hash, signature)
+        );
+        assertTrue(
+            !signatureChecker.is_valid_ERC1271_signature_now(
+                deployer,
+                hash,
+                signature
+            )
+        );
+    }
+
+    function testFuzzEOAWithValidSignature(
+        string calldata signer,
+        string calldata message
+    ) public {
+        (address alice, uint256 key) = makeAddrAndKey(signer);
+        bytes32 hash = keccak256(abi.encode(message));
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(key, hash);
+        bytes memory signature = abi.encodePacked(r, s, v);
+        assertTrue(
+            signatureChecker.is_valid_signature_now(alice, hash, signature)
+        );
+        assertTrue(
+            !signatureChecker.is_valid_ERC1271_signature_now(
+                alice,
+                hash,
+                signature
+            )
+        );
+    }
+
+    function testFuzzEOAWithInvalidSigner(
+        string calldata signer,
+        string calldata message
+    ) public {
+        (address alice, uint256 key) = makeAddrAndKey(signer);
+        bytes32 hash = keccak256(abi.encode(message));
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(key + 1, hash);
+        bytes memory signature = abi.encodePacked(r, s, v);
+        assertTrue(
+            !signatureChecker.is_valid_signature_now(alice, hash, signature)
+        );
+        assertTrue(
+            !signatureChecker.is_valid_ERC1271_signature_now(
+                alice,
+                hash,
+                signature
+            )
+        );
+    }
+
+    function testFuzzEOAWithInvalidSignature(
+        bytes calldata signature,
+        string calldata message
+    ) public {
+        vm.assume(signature.length < 64);
+        address alice = makeAddr("alice");
+        bytes32 hash = keccak256(abi.encode(message));
+        assertTrue(
+            !signatureChecker.is_valid_signature_now(alice, hash, signature)
+        );
+        assertTrue(
+            !signatureChecker.is_valid_ERC1271_signature_now(
+                alice,
+                hash,
+                signature
+            )
+        );
+    }
+
+    function testFuzzEIP1271WithValidSignature(string calldata message) public {
+        (, uint256 key) = makeAddrAndKey("alice");
+        bytes32 hash = keccak256(abi.encode(message));
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(key, hash);
+        bytes memory signature = abi.encodePacked(r, s, v);
+        assertTrue(
+            signatureChecker.is_valid_signature_now(walletAddr, hash, signature)
+        );
+        assertTrue(
+            signatureChecker.is_valid_ERC1271_signature_now(
+                walletAddr,
+                hash,
+                signature
+            )
+        );
+    }
+
+    function testFuzzEIP1271WithInvalidSigner(
+        string calldata signer,
+        string calldata message
+    ) public {
+        vm.assume(
+            keccak256(abi.encode(signer)) != keccak256(abi.encode("alice"))
+        );
+        (, uint256 key) = makeAddrAndKey(signer);
+        bytes32 hash = keccak256(abi.encode(message));
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(key, hash);
         bytes memory signature = abi.encodePacked(r, s, v);
         assertTrue(
             !signatureChecker.is_valid_signature_now(
-                address(vyperDeployer),
+                walletAddr,
                 hash,
                 signature
             )
         );
         assertTrue(
             !signatureChecker.is_valid_ERC1271_signature_now(
-                address(vyperDeployer),
+                walletAddr,
+                hash,
+                signature
+            )
+        );
+    }
+
+    function testEIP1271WithInvalidSignature(
+        bytes calldata signature,
+        string calldata message
+    ) public {
+        vm.assume(signature.length < 64);
+        bytes32 hash = keccak256(abi.encode(message));
+        assertTrue(
+            !signatureChecker.is_valid_signature_now(
+                walletAddr,
+                hash,
+                signature
+            )
+        );
+        assertTrue(
+            !signatureChecker.is_valid_ERC1271_signature_now(
+                walletAddr,
                 hash,
                 signature
             )

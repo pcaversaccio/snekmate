@@ -34,7 +34,7 @@ def compute_address_rlp_self(nonce: uint256) -> address:
     """
     @dev Returns the address where a contract will be stored if
          deployed via this contract using the `CREATE` opcode.
-    @param nonce The next uint256 nonce of this contract.
+    @param nonce The next 32-byte nonce of this contract.
     @return address The 20-byte address where a contract will be stored.
     """
     return ComputeCreateAddress(self).compute_address_rlp(self, nonce)
@@ -58,7 +58,7 @@ def compute_address_rlp(deployer: address, nonce: uint256) -> address:
          are initiated with `nonce = 1`. Thus, the first contract address
          created by another contract is calculated with a non-zero nonce.
     @param deployer The 20-byte deployer address.
-    @param nonce The next uint256 nonce of the deployer address.
+    @param nonce The next 32-byte nonce of the deployer address.
     @return address The 20-byte address where a contract will be stored.
     """
 
