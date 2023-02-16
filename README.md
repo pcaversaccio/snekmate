@@ -16,7 +16,7 @@ src
 │  ├─ Ownable2Step — "2-Step Ownership Transfer Functions"
 │  ├─ AccessControl — "Multi-Role-Based Access Control Functions"
 ├─ extensions
-│  ├─ ERC4626 — "ERC-4626 Tokenised Vault Implementation (TBD)"
+│  ├─ ERC4626 — "Modern and Gas-Efficient ERC-4626 Tokenised Vault Implementation"
 ├─ tokens
 │  ├─ ERC20 — "Modern and Gas-Efficient ERC-20 + EIP-2612 Implementation"
 │  ├─ ERC721 — "Modern and Gas-Efficient ERC-721 + EIP-4494 Implementation"
@@ -29,6 +29,7 @@ src
    ├─ ECDSA — "Elliptic Curve Digital Signature Algorithm (ECDSA) Functions"
    ├─ SignatureChecker — "ECDSA and EIP-1271 Signature Verification Functions"
    ├─ EIP712DomainSeparator — "EIP-712 Domain Separator"
+   ├─ Math — "Standard Mathematical Utility Functions"
    ├─ MerkleProofVerification — "Merkle Tree Proof Verification Functions"
    ├─ Multicall — "Multicall Functions"
 ```
@@ -44,6 +45,7 @@ This repository contains [Foundry](https://github.com/foundry-rs/foundry)-based 
 | `Ownable`                 |       ✅       |            ✅            |         ✅          |
 | `Ownable2Step`            |       ✅       |            ✅            |         ✅          |
 | `AccessControl`           |       ✅       |            ✅            |         ✅          |
+| `ERC4626`                 |       ✅       |            ✅            |         ✅          |
 | `ERC20`                   |       ✅       |            ✅            |         ✅          |
 | `ERC721`                  |       ✅       |            ✅            |         ✅          |
 | `ERC1155`                 |       ✅       |            ✅            |         ✅          |
@@ -54,6 +56,7 @@ This repository contains [Foundry](https://github.com/foundry-rs/foundry)-based 
 | `ECDSA`                   |       ✅       |            ✅            |         ❌          |
 | `SignatureChecker`        |       ✅       |            ✅            |         ❌          |
 | `EIP712DomainSeparator`   |       ✅       |            ✅            |         ❌          |
+| `Math`                    |       ✅       |            ✅            |         ❌          |
 | `MerkleProofVerification` |       ✅       |            ✅            |         ❌          |
 | `Multicall`               |       ✅       |            ❌            |         ❌          |
 
