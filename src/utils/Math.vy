@@ -10,16 +10,9 @@
 """
 
 
-# @dev Enumerated type for the rounding direction.
-enum Rounding:
-    DOWN # Rounds towards negative infinity.
-    UP # Rounds towards positive infinity.
-    ZERO # Rounds towards zero.
-
-
 @external
 @pure
-def mul_div(x: uint256, y: uint256, denominator: uint256, rounding: Rounding) -> uint256:
+def mul_div(x: uint256, y: uint256, denominator: uint256, roundup: bool) -> uint256:
     """
     @dev Calculates "(x * y) / denominator" in 512-bit precision,
          following the selected rounding direction.
@@ -32,9 +25,13 @@ def mul_div(x: uint256, y: uint256, denominator: uint256, rounding: Rounding) ->
     @param x The 32-byte multiplicand.
     @param y The 32-byte multiplier.
     @param denominator The 32-byte divisor.
-    @param rounding The enum-type-based rounding direction.
+    @param roundup The Boolean variable that specifies whether
+           to round up or not. The default `False` is round down.
     @return uint256 The 32-byte calculation result.
     """
+    # Handle division by zero.
+    assert denominator != empty(uint256), "Math: mul_div division by zero"
+
     # 512-bit multiplication "[prod1 prod0] = x * y".
     # Compute the product "mod 2**256" and "mod 2**256 - 1".
     # Then use the Chinese Remainder theorem to reconstruct
@@ -53,15 +50,19 @@ def mul_div(x: uint256, y: uint256, denominator: uint256, rounding: Rounding) ->
 
     # Handling of non-overflow cases, 256 by 256 division.
     if (prod1 == empty(uint256)):
-        return unsafe_div(prod0, denominator)
+        if (roundup and uint256_mulmod(x, y, denominator) > 0):
+            # Calculate "ceil((x * y) / denominator)".
+            return unsafe_add(unsafe_div(prod0, denominator), 1)
+        else:
+            return unsafe_div(prod0, denominator)
 
     # Ensure that the result is less than 2**256. Also,
     # prevents that `denominator == 0`.
     assert denominator > prod1, "Math: mul_div overflow"
 
-    ########################
-    # 512 by 256 division. #
-    ########################
+    #######################
+    # 512 by 256 Division #
+    #######################
 
     # Make division exact by subtracting the remainder
     # from "[prod1 prod0]". First, compute remainder using
@@ -72,8 +73,7 @@ def mul_div(x: uint256, y: uint256, denominator: uint256, rounding: Rounding) ->
     # number.
     if (remainder > prod0):
         prod1 = unsafe_sub(prod1, 1)
-    else:
-        prod0 = unsafe_sub(prod0, remainder)
+    prod0 = unsafe_sub(prod0, remainder)
 
     # Factor powers of two out of the denominator and calculate
     # the largest power of two divisor of denominator. Always >= 1,
@@ -105,12 +105,12 @@ def mul_div(x: uint256, y: uint256, denominator: uint256, rounding: Rounding) ->
     # Use Newton-Raphson iteration to improve accuracy. Thanks to Hensel's
     # lifting lemma, this also works in modular arithmetic by doubling the
     # correct bits in each step.
-    inverse *= unsafe_sub(2, unsafe_mul(denominator_div, inverse)) # Inverse "mod 2**8".
-    inverse *= unsafe_sub(2, unsafe_mul(denominator_div, inverse)) # Inverse "mod 2**16".
-    inverse *= unsafe_sub(2, unsafe_mul(denominator_div, inverse)) # Inverse "mod 2**32".
-    inverse *= unsafe_sub(2, unsafe_mul(denominator_div, inverse)) # Inverse "mod 2**64".
-    inverse *= unsafe_sub(2, unsafe_mul(denominator_div, inverse)) # Inverse "mod 2**128".
-    inverse *= unsafe_sub(2, unsafe_mul(denominator_div, inverse)) # Inverse "mod 2**256".
+    inverse = unsafe_mul(inverse, unsafe_sub(2, unsafe_mul(denominator_div, inverse))) # Inverse "mod 2**8".
+    inverse = unsafe_mul(inverse, unsafe_sub(2, unsafe_mul(denominator_div, inverse))) # Inverse "mod 2**16".
+    inverse = unsafe_mul(inverse, unsafe_sub(2, unsafe_mul(denominator_div, inverse))) # Inverse "mod 2**32".
+    inverse = unsafe_mul(inverse, unsafe_sub(2, unsafe_mul(denominator_div, inverse))) # Inverse "mod 2**64".
+    inverse = unsafe_mul(inverse, unsafe_sub(2, unsafe_mul(denominator_div, inverse))) # Inverse "mod 2**128".
+    inverse = unsafe_mul(inverse, unsafe_sub(2, unsafe_mul(denominator_div, inverse))) # Inverse "mod 2**256".
 
     # Since the division is now exact, we can divide by multiplying
     # with the modular inverse of the denominator. This returns the
@@ -120,9 +120,9 @@ def mul_div(x: uint256, y: uint256, denominator: uint256, rounding: Rounding) ->
     # `prod1` is no longer necessary.
     result: uint256 = unsafe_mul(prod0, inverse)
 
-    if (rounding == Rounding.UP and uint256_mulmod(x, y, denominator) > 0):
+    if (roundup and uint256_mulmod(x, y, denominator) > 0):
         # Calculate "ceil((x * y) / denominator)". The following
-        # line uses intentionally checked arithmetic, to prevent
+        # line uses intentionally checked arithmetic to prevent
         # a theoretically possible overflow.
         result += 1
 
