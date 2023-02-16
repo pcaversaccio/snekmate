@@ -188,7 +188,7 @@ contract MathTest is Test {
         /**
          * @dev Full precision check in case of "ceil((x * y) / denominator)".
          */
-        vm.assume(mulmod(x, y, d) > 0);
+        vm.assume(mulmod(x, y, d) > 0 && qDown < type(uint256).max);
         assertEq(math.mul_div(x, y, d, true), qDown + 1);
     }
 

@@ -51,8 +51,10 @@ def mul_div(x: uint256, y: uint256, denominator: uint256, roundup: bool) -> uint
     # Handling of non-overflow cases, 256 by 256 division.
     if (prod1 == empty(uint256)):
         if (roundup and uint256_mulmod(x, y, denominator) > 0):
-            # Calculate "ceil((x * y) / denominator)".
-            return unsafe_add(unsafe_div(prod0, denominator), 1)
+            # Calculate "ceil((x * y) / denominator)". The following
+            # line uses intentionally checked arithmetic for the
+            # addition to prevent a theoretically possible overflow.
+            return unsafe_div(prod0, denominator) + 1
         else:
             return unsafe_div(prod0, denominator)
 
