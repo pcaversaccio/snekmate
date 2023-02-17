@@ -662,9 +662,9 @@ espree@^9.4.0:
     eslint-visitor-keys "^3.3.0"
 
 esquery@^1.4.0:
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/esquery/-/esquery-1.4.0.tgz#2148ffc38b82e8c7057dfed48425b3e61f0f24a5"
-  integrity sha512-cCDispWt5vHHtwMY2YrAQ4ibFkAL8RbH5YGBnZBc90MolvvfkkQcJro/aZiAQUlQ3qgrYS6D6v8Gc5G5CQsc9w==
+  version "1.4.2"
+  resolved "https://registry.yarnpkg.com/esquery/-/esquery-1.4.2.tgz#c6d3fee05dd665808e2ad870631f221f5617b1d1"
+  integrity sha512-JVSoLdTlTDkmjFmab7H/9SL9qGSyjElT3myyKp7krqjVFQCDLmj1QFaCLRFBszBKI0XVZaiiXvuPIX3ZwHe1Ng==
   dependencies:
     estraverse "^5.1.0"
 
@@ -734,10 +734,10 @@ ethereumjs-util@^7.1.0:
     ethereum-cryptography "^0.1.3"
     rlp "^2.2.4"
 
-ethers@^6.0.3:
-  version "6.0.3"
-  resolved "https://registry.yarnpkg.com/ethers/-/ethers-6.0.3.tgz#00a525cc70306624dfc88d6438addcb001eb7a42"
-  integrity sha512-ECUt+AlY80eLA/XvOgy4/K5Pq5BsMzlKKcSuUXOgp4k6d3tcDphEiz+Fs3zut/zYQVgqLgm3f8YtCJEEtzl8kA==
+ethers@^6.0.4:
+  version "6.0.4"
+  resolved "https://registry.yarnpkg.com/ethers/-/ethers-6.0.4.tgz#4ff48a94e51248cdcdca762deda2b98d595a2889"
+  integrity sha512-El/9IN2A0ptmxdMQA/Rzn/F80/8OpwHSQ+CkU83y6XIT0fNUz2M2X12VCWzlkmLV0dTGk45gdWR6gxNfyXdylg==
   dependencies:
     "@adraffy/ens-normalize" "1.8.9"
     "@noble/hashes" "1.1.2"
