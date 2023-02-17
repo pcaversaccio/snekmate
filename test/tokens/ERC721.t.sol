@@ -75,6 +75,8 @@ contract ERC721Test is Test {
         address indexed newOwner
     );
 
+    event MetadataUpdate(uint256 tokenId);
+
     event RoleMinterChanged(address indexed minter, bool status);
 
     /**
@@ -576,6 +578,7 @@ contract ERC721Test is Test {
         assertTrue(
             ERC721Extended.supportsInterface(type(IERC4494).interfaceId)
         );
+        assertTrue(ERC721Extended.supportsInterface(0x49064906));
     }
 
     function testSupportsInterfaceGasCost() public {
@@ -1425,12 +1428,18 @@ contract ERC721Test is Test {
         vm.startPrank(deployer);
         vm.expectEmit(true, true, true, false);
         emit Transfer(zeroAddress, owner, tokenId);
+        vm.expectEmit(false, false, false, true);
+        emit MetadataUpdate(tokenId);
         ERC721Extended.safe_mint(owner, uri1);
         vm.expectEmit(true, true, true, false);
         emit Transfer(zeroAddress, owner, tokenId + 1);
+        vm.expectEmit(false, false, false, true);
+        emit MetadataUpdate(tokenId + 1);
         ERC721Extended.safe_mint(owner, uri2);
         vm.expectEmit(true, true, true, false);
         emit Transfer(zeroAddress, owner, tokenId + 2);
+        vm.expectEmit(false, false, false, true);
+        emit MetadataUpdate(tokenId + 2);
         ERC721Extended.safe_mint(owner, uri3);
         vm.stopPrank();
 
@@ -1443,6 +1452,8 @@ contract ERC721Test is Test {
         vm.startPrank(deployer);
         vm.expectEmit(true, true, true, false);
         emit Transfer(zeroAddress, owner, tokenId + 3);
+        vm.expectEmit(false, false, false, true);
+        emit MetadataUpdate(tokenId + 3);
         ERC721Extended.safe_mint(owner, "");
         vm.stopPrank();
         assertEq(ERC721Extended.balanceOf(owner), 3);
@@ -1460,9 +1471,13 @@ contract ERC721Test is Test {
         vm.startPrank(deployer);
         vm.expectEmit(true, true, true, false);
         emit Transfer(zeroAddress, owner, tokenId);
+        vm.expectEmit(false, false, false, true);
+        emit MetadataUpdate(tokenId);
         ERC721Extended.safe_mint(owner, uri1);
         vm.expectEmit(true, true, true, false);
         emit Transfer(zeroAddress, owner, tokenId + 1);
+        vm.expectEmit(false, false, false, true);
+        emit MetadataUpdate(tokenId + 1);
         ERC721Extended.safe_mint(owner, uri2);
 
         /**
@@ -2267,6 +2282,8 @@ contract ERC721Test is Test {
         for (uint256 i; i < owners.length; ++i) {
             vm.expectEmit(true, true, true, false);
             emit Transfer(zeroAddress, owners[i], i);
+            vm.expectEmit(false, false, false, true);
+            emit MetadataUpdate(i);
             ERC721Extended.safe_mint(owners[i], uri);
             assertGe(ERC721Extended.balanceOf(owners[i]), 1);
         }

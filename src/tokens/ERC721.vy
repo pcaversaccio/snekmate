@@ -71,6 +71,12 @@ import interfaces.IERC721Permit as IERC721Permit
 implements: IERC721Permit
 
 
+# @dev We import and implement the `IERC4906` interface,
+# which is written using standard Vyper syntax.
+import interfaces.IERC4906 as IERC4906
+implements: IERC4906
+
+
 # @dev We import the `IERC721Receiver` interface, which
 # is written using standard Vyper syntax.
 import interfaces.IERC721Receiver as IERC721Receiver
@@ -80,12 +86,13 @@ import interfaces.IERC721Receiver as IERC721Receiver
 # imported interface. The ERC-165 interface identifier
 # is defined as the XOR of all function selectors in the
 # interface.
-_SUPPORTED_INTERFACES: constant(bytes4[5]) = [
+_SUPPORTED_INTERFACES: constant(bytes4[6]) = [
     0x01FFC9A7, # The ERC-165 identifier for ERC-165.
     0x80AC58CD, # The ERC-165 identifier for ERC-721.
     0x5B5E139F, # The ERC-165 identifier for the ERC-721 metadata extension.
     0x780E9D63, # The ERC-165 identifier for the ERC-721 enumeration extension.
     0x589C5CE2, # The ERC-165 identifier for ERC-4494.
+    0x49064906, # The ERC-165 identifier for ERC-4906.
 ]
 
 
@@ -222,6 +229,19 @@ event ApprovalForAll:
     owner: indexed(address)
     operator: indexed(address)
     approved: bool
+
+
+# @dev Emitted when the metadata of a token is
+# changed.
+event MetadataUpdate:
+    token_id: uint256
+
+
+# @dev Emitted when the metadata of a range of
+# tokens is changed.
+event BatchMetadataUpdate:
+    from_token_id: uint256
+    token_id: uint256
 
 
 # @dev Emitted when the ownership is transferred
@@ -864,6 +884,7 @@ def _set_token_uri(token_id: uint256, token_uri: String[432]):
     """
     assert self._exists(token_id), "ERC721URIStorage: URI set of nonexistent token"
     self._token_uris[token_id] = token_uri
+    log MetadataUpdate(token_id)
 
 
 @internal
