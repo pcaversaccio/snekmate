@@ -52,9 +52,10 @@ def mul_div(x: uint256, y: uint256, denominator: uint256, roundup: bool) -> uint
     if (prod1 == empty(uint256)):
         if (roundup and uint256_mulmod(x, y, denominator) > 0):
             # Calculate "ceil((x * y) / denominator)". The following
-            # line uses intentionally checked arithmetic for the
-            # addition to prevent a theoretically possible overflow.
-            return unsafe_div(prod0, denominator) + 1
+            # line cannot overflow because we have the previous check
+            # "(x * y) % denominator > 0", which accordingly rules out
+            # the possibility of "x * y = 2**256 - 1" and `denominator == 1`.
+            return unsafe_add(unsafe_div(prod0, denominator), 1)
         else:
             return unsafe_div(prod0, denominator)
 
@@ -78,7 +79,7 @@ def mul_div(x: uint256, y: uint256, denominator: uint256, roundup: bool) -> uint
     prod0 = unsafe_sub(prod0, remainder)
 
     # Factor powers of two out of the denominator and calculate
-    # the largest power of two divisor of denominator. Always >= 1,
+    # the largest power of two divisor of denominator. Always `>= 1`,
     # unless the denominator is zero (which is prevented above),
     # in which case `twos` is zero. For more details, please refer to:
     # https://cs.stackexchange.com/q/138556.
