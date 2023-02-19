@@ -50,10 +50,10 @@ def mul_div(x: uint256, y: uint256, denominator: uint256, roundup: bool) -> uint
 
     # Handling of non-overflow cases, 256 by 256 division.
     if (prod1 == empty(uint256)):
-        if (roundup and uint256_mulmod(x, y, denominator) > 0):
+        if (roundup and uint256_mulmod(x, y, denominator) != empty(uint256)):
             # Calculate "ceil((x * y) / denominator)". The following
             # line cannot overflow because we have the previous check
-            # "(x * y) % denominator > 0", which accordingly rules out
+            # "(x * y) % denominator != 0", which accordingly rules out
             # the possibility of "x * y = 2**256 - 1" and `denominator == 1`.
             return unsafe_add(unsafe_div(prod0, denominator), 1)
         else:
@@ -117,13 +117,13 @@ def mul_div(x: uint256, y: uint256, denominator: uint256, roundup: bool) -> uint
 
     # Since the division is now exact, we can divide by multiplying
     # with the modular inverse of the denominator. This returns the
-    # correct result "modulo 2**256". Since the preconditions guarantee
+    # correct result modulo 2**256. Since the preconditions guarantee
     # that the result is less than 2**256, this is the final result.
     # We do not need to calculate the high bits of the result and
     # `prod1` is no longer necessary.
     result: uint256 = unsafe_mul(prod0, inverse)
 
-    if (roundup and uint256_mulmod(x, y, denominator) > 0):
+    if (roundup and uint256_mulmod(x, y, denominator) != empty(uint256)):
         # Calculate "ceil((x * y) / denominator)". The following
         # line uses intentionally checked arithmetic to prevent
         # a theoretically possible overflow.
