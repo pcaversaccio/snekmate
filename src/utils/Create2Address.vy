@@ -16,7 +16,7 @@ _COLLISION_OFFSET: constant(bytes1) = 0xFF
 
 # @dev A Vyper contract cannot call directly between two `external` functions.
 # To bypass this, we can use an interface.
-interface ComputeCreate2Address:
+interface ICreate2Address:
     def compute_address(salt: bytes32, bytecode_hash: bytes32, deployer: address) -> address: pure
 
 
@@ -43,7 +43,7 @@ def compute_address_self(salt: bytes32, bytecode_hash: bytes32) -> address:
     @param bytecode_hash The 32-byte bytecode digest of the contract creation bytecode.
     @return address The 20-byte address where a contract will be stored.
     """
-    return ComputeCreate2Address(self).compute_address(salt, bytecode_hash, self)
+    return ICreate2Address(self).compute_address(salt, bytecode_hash, self)
 
 
 @external

@@ -13,7 +13,7 @@
 
 # @dev A Vyper contract cannot call directly between two `external` functions.
 # To bypass this, we can use an interface.
-interface ComputeCreateAddress:
+interface ICreateAddress:
     def compute_address_rlp(deployer: address, nonce: uint256) -> address: pure
 
 
@@ -37,7 +37,7 @@ def compute_address_rlp_self(nonce: uint256) -> address:
     @param nonce The next 32-byte nonce of this contract.
     @return address The 20-byte address where a contract will be stored.
     """
-    return ComputeCreateAddress(self).compute_address_rlp(self, nonce)
+    return ICreateAddress(self).compute_address_rlp(self, nonce)
 
 
 @external
