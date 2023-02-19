@@ -37,7 +37,7 @@ def mul_div(x: uint256, y: uint256, denominator: uint256, roundup: bool) -> uint
     # Then use the Chinese Remainder theorem to reconstruct
     # the 512-bit result. The result is stored in two 256-bit
     # variables, where: "product = prod1 * 2**256 + prod0".
-    mm: uint256 = uint256_mulmod(x, y, ~empty(uint256))
+    mm: uint256 = uint256_mulmod(x, y, max_value(uint256))
     # The least significant 256 bits of the product.
     prod0: uint256 = unsafe_mul(x, y)
     # The most significant 256 bits of the product.
