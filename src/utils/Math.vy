@@ -1,21 +1,19 @@
 # @version ^0.3.7
-"""
-@title Gas-Efficient Math
-@license GNU Affero General Public License v3.0
-@author _______
-@notice ______
-"""
 
 
 @external
 @view
-def cbrt(x: uint256) -> uint256:
+def wad_cbrt(x: uint256) -> uint256:
     """
     @notice Calculate the cubic root of a number in 1e18 precision
     @dev Consumes around 1500 gas units
     @param x The number to calculate the cubic root of
     @return The cubic root of the number
     """
+
+    # Since this cubic root is for numbers at 1e18 base, we need to scale the
+    # input by 1e36 to increase precision. This will overflow for very large
+    # numbers. So conditionally sacrifice precision.
 
     xx: uint256 = 0
     if x >= 115792089237316195423570985008687907853269 * 10**18:
@@ -25,7 +23,33 @@ def cbrt(x: uint256) -> uint256:
     else:
         xx = unsafe_mul(x, 10**36)
 
-    log2x: int256 = self._log2(xx)
+    # Compute the binary logarithm of `x`
+
+    # This was inspired from Stanford's 'Bit Twiddling Hacks' by Sean Eron Anderson:
+    # https://graphics.stanford.edu/~seander/bithacks.html#IntegerLog
+    #
+    # More inspiration was derived from:
+    # https://github.com/transmissions11/solmate/blob/main/src/utils/SignedWadMath.sol
+    # 
+    # A detailed explanation by Remco can be found in: https://xn--2-umb.com/22/exp-ln/
+
+    log2x: int256 = 0
+    if xx > 340282366920938463463374607431768211455:
+        log2x = 128
+    if unsafe_div(xx, shift(2, log2x)) > 18446744073709551615:
+        log2x = log2x | 64
+    if unsafe_div(xx, shift(2, log2x)) > 4294967295:
+        log2x = log2x | 32
+    if unsafe_div(xx, shift(2, log2x)) > 65535:
+        log2x = log2x | 16
+    if unsafe_div(xx, shift(2, log2x)) > 255:
+        log2x = log2x | 8
+    if unsafe_div(xx, shift(2, log2x)) > 15:
+        log2x = log2x | 4
+    if unsafe_div(xx, shift(2, log2x)) > 3:
+        log2x = log2x | 2
+    if unsafe_div(xx, shift(2, log2x)) > 1:
+        log2x = log2x | 1
 
     # When we divide log2x by 3, the remainder is (log2x % 3).
     # So if we just multiply 2**(log2x/3) and discard the remainder to calculate our
@@ -53,6 +77,7 @@ def cbrt(x: uint256) -> uint256:
     # would be one too many iterations. Without initial values, the iteration count
     # can go up to 20 or greater. The iterations are unrolled. This reduces gas costs
     # but takes up more bytecode:
+
     a = unsafe_div(unsafe_add(unsafe_mul(2, a), unsafe_div(xx, unsafe_mul(a, a))), 3)
     a = unsafe_div(unsafe_add(unsafe_mul(2, a), unsafe_div(xx, unsafe_mul(a, a))), 3)
     a = unsafe_div(unsafe_add(unsafe_mul(2, a), unsafe_div(xx, unsafe_mul(a, a))), 3)
@@ -60,6 +85,8 @@ def cbrt(x: uint256) -> uint256:
     a = unsafe_div(unsafe_add(unsafe_mul(2, a), unsafe_div(xx, unsafe_mul(a, a))), 3)
     a = unsafe_div(unsafe_add(unsafe_mul(2, a), unsafe_div(xx, unsafe_mul(a, a))), 3)
     a = unsafe_div(unsafe_add(unsafe_mul(2, a), unsafe_div(xx, unsafe_mul(a, a))), 3)
+
+    # If we scaled up, then we should scale down:
 
     if x >= 115792089237316195423570985008687907853269 * 10**18:
         return a * 10**12
@@ -67,48 +94,3 @@ def cbrt(x: uint256) -> uint256:
         return a * 10**6
 
     return a
-
-
-@external
-@view
-def log2(x: uint256) -> int256:
-    """
-    @notice Calculate the binary logarithm of a number
-    @param x The number to calculate the binary logarithm of
-    @return The binary logarithm of the number
-    """
-
-    return self._log2(x)
-
-
-@internal
-@pure
-def _log2(x: uint256) -> int256:
-
-    # Compute the binary logarithm of `x`
-
-    # This was inspired from Stanford's 'Bit Twiddling Hacks' by Sean Eron Anderson:
-    # https://graphics.stanford.edu/~seander/bithacks.html#IntegerLog
-    #
-    # More inspiration was derived from:
-    # https://github.com/transmissions11/solmate/blob/main/src/utils/SignedWadMath.sol
-
-    log2x: int256 = 0
-    if x > 340282366920938463463374607431768211455:
-        log2x = 128
-    if unsafe_div(x, shift(2, log2x)) > 18446744073709551615:
-        log2x = log2x | 64
-    if unsafe_div(x, shift(2, log2x)) > 4294967295:
-        log2x = log2x | 32
-    if unsafe_div(x, shift(2, log2x)) > 65535:
-        log2x = log2x | 16
-    if unsafe_div(x, shift(2, log2x)) > 255:
-        log2x = log2x | 8
-    if unsafe_div(x, shift(2, log2x)) > 15:
-        log2x = log2x | 4
-    if unsafe_div(x, shift(2, log2x)) > 3:
-        log2x = log2x | 2
-    if unsafe_div(x, shift(2, log2x)) > 1:
-        log2x = log2x | 1
-
-    return log2x
