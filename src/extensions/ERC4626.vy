@@ -3,7 +3,9 @@
 @title Modern and Gas-Efficient ERC-4626 Tokenised Vault Implementation
 @license GNU Affero General Public License v3.0
 @author pcaversaccio
-@notice TBD
+@notice Adds optional `permit` functionality 
+- https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC20/extensions/ERC4626.sol
+- https://github.com/fubuloubu/ERC4626/blob/main/contracts/VyperVault.vy
 """
 
 
@@ -29,8 +31,9 @@ implements: IERC20Permit
 
 # @dev We import and implement the `ERC4626` interface,
 # which is a built-in interface of the Vyper compiler.
+# @notice https://github.com/vyperlang/vyper/pull/3295
 from vyper.interfaces import ERC4626
-#implements: ERC4626
+implements: ERC4626
 
 
 # @dev Constant used as part of the ECDSA recovery function.
@@ -107,12 +110,6 @@ totalSupply: public(uint256)
 nonces: public(HashMap[address, uint256])
 
 
-# @dev TBD
-enum Rounding:
-    DOWN
-    UP
-
-
 # @dev Emitted when `amount` tokens are moved
 # from one account (`owner`) to another (`to`).
 # Note that the parameter `amount` may be zero.
@@ -129,6 +126,23 @@ event Approval:
     owner: indexed(address)
     spender: indexed(address)
     amount: uint256
+
+
+# @dev TBD
+event Deposit:
+    sender: indexed(address)
+    owner: indexed(address)
+    assets: uint256
+    shares: uint256
+
+
+# @dev TBD
+event Withdraw:
+    sender: indexed(address)
+    receiver: indexed(address)
+    owner: indexed(address)
+    assets: uint256
+    shares: uint256
 
 
 @external
@@ -356,7 +370,90 @@ def totalAssets() -> uint256:
 @external
 @view
 def convertToShares(assets: uint256) -> uint256:
-    return self._convert_to_shares(assets, Rounding.DOWN)
+    return self._convert_to_shares(assets, False)
+
+
+@external
+@view
+def convertToAssets(shares: uint256) -> uint256:
+    return self._convert_to_assets(shares, False)
+
+
+@external
+@view
+def maxDeposit(receiver: address) -> uint256:
+    return max_value(uint256)
+
+
+@external
+@view
+def previewDeposit(assets: uint256) -> uint256:
+    return self._convert_to_shares(assets, False)
+
+
+@external
+def deposit(assets: uint256, receiver: address) -> uint256:
+    assert assets <= ERC4626(self).maxDeposit(receiver), "ERC4626: deposit more than maximum"
+    shares: uint256 = ERC4626(self).previewDeposit(assets)
+    self._deposit(msg.sender, receiver, assets, shares)
+    return shares
+
+
+@external
+@view
+def maxMint(receiver: address) -> uint256:
+    return max_value(uint256)
+
+
+@external
+@view
+def previewMint(shares: uint256) -> uint256:
+    return self._convert_to_assets(shares, True)
+
+
+@external
+def mint(shares: uint256, receiver:address) -> uint256:
+    assert shares <= ERC4626(self).maxMint(receiver), "ERC4626: mint more than maximum"
+    assets: uint256 = ERC4626(self).previewMint(shares)
+    self._deposit(msg.sender, receiver, assets, shares)
+    return assets
+
+
+@external
+@view
+def maxWithdraw(owner: address) -> uint256:
+    return self._convert_to_assets(asset.balanceOf(owner), False)
+
+
+@external
+@view
+def previewWithdraw(assets: uint256) -> uint256:
+    return self._convert_to_shares(assets, True)
+
+
+@external
+def withdraw(assets: uint256, receiver: address, owner: address) -> uint256:
+    assert assets <= ERC4626(self).maxWithdraw(receiver), "ERC4626: withdraw more than maximum"
+    shares: uint256 = ERC4626(self).previewWithdraw(assets)
+    self._withdraw(msg.sender, receiver, owner, assets, shares)
+    return shares
+
+
+@external
+def maxRedeem(owner: address) -> uint256:
+    return asset.balanceOf(owner)
+
+@external
+def previewRedeem(shares: uint256) -> uint256:
+    return self._convert_to_assets(shares, False)
+
+
+@external
+def redeem(shares: uint256, receiver: address, owner: address) -> uint256:
+    assert shares <= ERC4626(self).maxRedeem(owner), "ERC4626: redeem more than maximum"
+    assets: uint256 = ERC4626(self).previewRedeem(shares)
+    self._withdraw(msg.sender, receiver, owner, assets, shares)
+    return assets
 
 
 @internal
@@ -616,59 +713,143 @@ def _try_recover_vrs(hash: bytes32, v: uint256, r: uint256, s: uint256) -> addre
 
 @internal
 @view
-def _convert_to_shares(assets: uint256, rounding: Rounding) -> uint256:
+def _convert_to_shares(assets: uint256, roundup: bool) -> uint256:
     """
     @dev TBD
     """
-    return self._mul_div(assets, self.totalSupply + 10 ** convert(_DECIMALS_OFFSET, uint256), ERC4626(self).totalAssets() + 1, rounding)
+    return self._mul_div(assets, self.totalSupply + 10 ** convert(_DECIMALS_OFFSET, uint256), ERC4626(self).totalAssets() + 1, roundup)
+
+
+@internal
+@view
+def _convert_to_assets(shares: uint256, roundup: bool) -> uint256:
+    """
+    @dev TBD
+    """
+    return self._mul_div(shares, ERC4626(self).totalAssets() + 1, self.totalSupply + 10 ** convert(_DECIMALS_OFFSET, uint256), roundup)
+
+
+@internal
+def _deposit(sender: address, receiver: address, assets: uint256, shares: uint256):
+    assert asset.transferFrom(sender, self, assets, default_return_value=True), "ERC4626: transferFrom operation did not succeed"
+    self._mint(receiver, shares)
+    log Deposit(sender, receiver, assets, shares)
+
+
+@internal
+def _withdraw(sender: address, receiver: address, owner: address, assets: uint256, shares: uint256):
+    if (sender != owner):
+        self._spend_allowance(owner, sender, shares)
+
+    self._burn(owner, shares)
+    assert asset.transfer(receiver, assets, default_return_value=True), "ERC4626: transfer operation did not succeed"
+    log Withdraw(sender, receiver, owner, assets, shares)
 
 
 @internal
 @pure
-def _mul_div(x: uint256, y: uint256, denominator: uint256, rounding: Rounding) -> uint256:
+def _mul_div(x: uint256, y: uint256, denominator: uint256, roundup: bool) -> uint256:
     """
     @dev TBD
     """
-    prod0: uint256 = empty(uint256)
+    # Handle division by zero.
+    assert denominator != empty(uint256), "Math: mul_div division by zero"
+
+    # 512-bit multiplication "[prod1 prod0] = x * y".
+    # Compute the product "mod 2**256" and "mod 2**256 - 1".
+    # Then use the Chinese Remainder theorem to reconstruct
+    # the 512-bit result. The result is stored in two 256-bit
+    # variables, where: "product = prod1 * 2**256 + prod0".
+    mm: uint256 = uint256_mulmod(x, y, max_value(uint256))
+    # The least significant 256 bits of the product.
+    prod0: uint256 = unsafe_mul(x, y)
+    # The most significant 256 bits of the product.
     prod1: uint256 = empty(uint256)
 
-    mm: uint256 = uint256_mulmod(x, y, ~empty(uint256))
-    prod0 = unsafe_mul(x, y)
     if (mm < prod0):
         prod1 = unsafe_sub(unsafe_sub(mm, prod0), 1)
     else:
         prod1 = unsafe_sub(mm, prod0)
 
+    # Handling of non-overflow cases, 256 by 256 division.
     if (prod1 == empty(uint256)):
-        return unsafe_div(prod0, denominator)
+        if (roundup and uint256_mulmod(x, y, denominator) != empty(uint256)):
+            # Calculate "ceil((x * y) / denominator)". The following
+            # line cannot overflow because we have the previous check
+            # "(x * y) % denominator != 0", which accordingly rules out
+            # the possibility of "x * y = 2**256 - 1" and `denominator == 1`.
+            return unsafe_add(unsafe_div(prod0, denominator), 1)
+        else:
+            return unsafe_div(prod0, denominator)
 
+    # Ensure that the result is less than 2**256. Also,
+    # prevents that `denominator == 0`.
     assert denominator > prod1, "Math: mul_div overflow"
 
+    #######################
+    # 512 by 256 Division #
+    #######################
+
+    # Make division exact by subtracting the remainder
+    # from "[prod1 prod0]". First, compute remainder using
+    # the `uint256_mulmod` operation.
     remainder: uint256 = uint256_mulmod(x, y, denominator)
+
+    # Second, subtract the 256-bit number from the 512-bit
+    # number.
     if (remainder > prod0):
         prod1 = unsafe_sub(prod1, 1)
-    else:
-        prod0 = unsafe_sub(prod0, remainder)
+    prod0 = unsafe_sub(prod0, remainder)
 
+    # Factor powers of two out of the denominator and calculate
+    # the largest power of two divisor of denominator. Always `>= 1`,
+    # unless the denominator is zero (which is prevented above),
+    # in which case `twos` is zero. For more details, please refer to:
+    # https://cs.stackexchange.com/q/138556.
+
+    # The following line does not overflow because the denominator
+    # cannot be zero at this stage of the function.
     twos: uint256 = denominator & (unsafe_add(~denominator, 1))
+    # Divide denominator by `twos`.
     denominator_div: uint256 = unsafe_div(denominator, twos)
+    # Divide "[prod1 prod0]" by `twos`.
     prod0 = unsafe_div(prod0, twos)
+    # Flip `twos` such that it is "2**256 / twos". If `twos` is zero,
+    # it becomes one.
     twos = unsafe_add(unsafe_div(unsafe_sub(empty(uint256), twos), twos), 1)
 
+    # Shift bits from `prod1` to `prod0`.
     prod0 |= unsafe_mul(prod1, twos)
 
+    # Invert the denominator "mod 2**256". Since the denominator is
+    # now an odd number, it has an inverse modulo 2**256, so we have:
+    # "denominator * inverse = 1 mod 2**256". Calculate the inverse by
+    # starting with a seed that is correct for four bits. That is,
+    # "denominator * inverse = 1 mod 2**4".
     inverse: uint256 = unsafe_mul(3, denominator_div) ^ 2
-    
-    inverse *= unsafe_sub(2, unsafe_mul(denominator_div, inverse)) # inverse mod 2^8
-    inverse *= unsafe_sub(2, unsafe_mul(denominator_div, inverse)) # inverse mod 2^16
-    inverse *= unsafe_sub(2, unsafe_mul(denominator_div, inverse)) # inverse mod 2^32
-    inverse *= unsafe_sub(2, unsafe_mul(denominator_div, inverse)) # inverse mod 2^64
-    inverse *= unsafe_sub(2, unsafe_mul(denominator_div, inverse)) # inverse mod 2^128
-    inverse *= unsafe_sub(2, unsafe_mul(denominator_div, inverse)) # inverse mod 2^256
 
+    # Use Newton-Raphson iteration to improve accuracy. Thanks to Hensel's
+    # lifting lemma, this also works in modular arithmetic by doubling the
+    # correct bits in each step.
+    inverse = unsafe_mul(inverse, unsafe_sub(2, unsafe_mul(denominator_div, inverse))) # Inverse "mod 2**8".
+    inverse = unsafe_mul(inverse, unsafe_sub(2, unsafe_mul(denominator_div, inverse))) # Inverse "mod 2**16".
+    inverse = unsafe_mul(inverse, unsafe_sub(2, unsafe_mul(denominator_div, inverse))) # Inverse "mod 2**32".
+    inverse = unsafe_mul(inverse, unsafe_sub(2, unsafe_mul(denominator_div, inverse))) # Inverse "mod 2**64".
+    inverse = unsafe_mul(inverse, unsafe_sub(2, unsafe_mul(denominator_div, inverse))) # Inverse "mod 2**128".
+    inverse = unsafe_mul(inverse, unsafe_sub(2, unsafe_mul(denominator_div, inverse))) # Inverse "mod 2**256".
+
+    # Since the division is now exact, we can divide by multiplying
+    # with the modular inverse of the denominator. This returns the
+    # correct result modulo 2**256. Since the preconditions guarantee
+    # that the result is less than 2**256, this is the final result.
+    # We do not need to calculate the high bits of the result and
+    # `prod1` is no longer necessary.
     result: uint256 = unsafe_mul(prod0, inverse)
 
-    if (rounding == Rounding.UP and uint256_mulmod(x, y, denominator) > 0):
-        return unsafe_add(result, 1)
-    else:
-        return result
+    if (roundup and uint256_mulmod(x, y, denominator) != empty(uint256)):
+        # Calculate "ceil((x * y) / denominator)". The following
+        # line uses intentionally checked arithmetic to prevent
+        # a theoretically possible overflow.
+        result += 1
+
+    return result
