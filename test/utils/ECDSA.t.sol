@@ -30,6 +30,7 @@ contract ECDSATest is Test {
 
     address private self = address(this);
     address private zeroAddress = address(0);
+    address private deployedLibrary;
 
     /**
      * @dev Transforms a standard signature into an EIP-2098
@@ -49,7 +50,9 @@ contract ECDSATest is Test {
     }
 
     function setUp() public {
-        ECDSA = IECDSA(vyperDeployer.deployContract("src/utils/", "ECDSA"));
+        deployedLibrary = vyperDeployer.deployContract("src/utils/", "ECDSA");
+
+        ECDSA = IECDSA(deployedLibrary);
     }
 
     function testRecoverWithValidSignature() public {
@@ -354,6 +357,30 @@ contract ECDSATest is Test {
         bytes32 digest1 = ECDSA.to_typed_data_hash(domainSeparator, structHash);
         bytes32 digest2 = keccak256(
             abi.encodePacked("\x19\x01", domainSeparator, structHash)
+        );
+        assertEq(digest1, digest2);
+    }
+
+    function testFuzzToDataWithIntendedValidatorHash(
+        address validator,
+        bytes calldata data
+    ) public {
+        bytes32 digest1 = ECDSA.to_data_with_intended_validator_hash(
+            validator,
+            data
+        );
+        bytes32 digest2 = keccak256(
+            abi.encodePacked("\x19\x00", validator, data)
+        );
+        assertEq(digest1, digest2);
+    }
+
+    function testFuzzToDataWithIntendedValidatorHashSelf(bytes calldata data)
+        public
+    {
+        bytes32 digest1 = ECDSA.to_data_with_intended_validator_hash_self(data);
+        bytes32 digest2 = keccak256(
+            abi.encodePacked("\x19\x00", deployedLibrary, data)
         );
         assertEq(digest1, digest2);
     }
