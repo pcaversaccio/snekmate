@@ -180,8 +180,11 @@ def __init__(name_: String[25], symbol_: String[5], asset_: ERC20, decimals_offs
            string name of the token.
     @param symbol_ The maximum 5-character user-readable
            string symbol of the token.
-    @param asset_ TBD.
-    @param decimals_offset_ TBD
+    @param asset_ The ERC-20 compatible (i.e. ERC-777 is also viable)
+           underlying asset contract.
+    @param decimals_offset_ The 1-byte offset in the decimal
+           representation between the underlying asset's decimals
+           and the vault decimals.
     @param name_eip712_ The maximum 50-character user-readable
            string name of the signing domain, i.e. the name
            of the dApp or protocol.
@@ -191,13 +194,15 @@ def __init__(name_: String[25], symbol_: String[5], asset_: ERC20, decimals_offs
     """
     name = name_
     symbol = symbol_
+    asset = asset_
 
     success: bool = empty(bool)
     underlying_decimals: uint8 = empty(uint8)
     asset_decimals: uint8 = empty(uint8)
     success, decimals = self._try_get_underlying_decimals(asset_)
 
-    # issue: https://github.com/vyperlang/vyper/issues/3278
+    # Due to a known compiler bug (https://github.com/vyperlang/vyper/issues/3278),
+    # we use a local variable for the first value assignment.
     if (success):
         underlying_decimals = decimals
     else:
@@ -205,8 +210,9 @@ def __init__(name_: String[25], symbol_: String[5], asset_: ERC20, decimals_offs
 
     _UNDERLYING_DECIMALS = underlying_decimals
     _DECIMALS_OFFSET = decimals_offset_
+    # The following line uses intentionally checked arithmetic
+    # to prevent a theoretically possible overflow.
     decimals = _UNDERLYING_DECIMALS + _DECIMALS_OFFSET
-    asset = asset_
 
     hashed_name: bytes32 = keccak256(convert(name_eip712_, Bytes[50]))
     hashed_version: bytes32 = keccak256(convert(version_eip712_, Bytes[20]))
@@ -222,16 +228,9 @@ def __init__(name_: String[25], symbol_: String[5], asset_: ERC20, decimals_offs
 @external
 def transfer(to: address, amount: uint256) -> bool:
     """
-    @dev Moves `amount` tokens from the caller's
-         account to `to`.
-    @notice Note that `to` cannot be the zero address.
-            Also, the caller must have a balance of at
-            least `amount`.
-    @param to The 20-byte receiver address.
-    @param amount The 32-byte token amount to be transferred.
-    @return bool The verification whether the transfer succeeded
-            or failed. Note that the function reverts instead
-            of returning `False` on a failure.
+    @dev Sourced from {ERC20-transfer}.
+    @notice See {ERC20-transfer} for the function
+            docstring.
     """
     self._transfer(msg.sender, to, amount)
     return True
@@ -240,28 +239,9 @@ def transfer(to: address, amount: uint256) -> bool:
 @external
 def approve(spender: address, amount: uint256) -> bool:
     """
-    @dev Sets `amount` as the allowance of `spender`
-         over the caller's tokens.
-    @notice WARNING: Note that if `amount` is the maximum
-            `uint256`, the allowance is not updated on
-            `transferFrom`. This is semantically equivalent
-            to an infinite approval. Also, `spender` cannot
-            be the zero address.
-
-            IMPORTANT: Beware that changing an allowance
-            with this method brings the risk that someone
-            may use both the old and the new allowance by
-            unfortunate transaction ordering. One possible
-            solution to mitigate this race condition is to
-            first reduce the spender's allowance to 0 and
-            set the desired amount afterwards:
-            https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729.
-    @param spender The 20-byte spender address.
-    @param amount The 32-byte token amount that is
-           allowed to be spent by the `spender`.
-    @return bool The verification whether the approval operation
-            succeeded or failed. Note that the function reverts
-            instead of returning `False` on a failure.
+    @dev Sourced from {ERC20-approve}.
+    @notice See {ERC20-approve} for the function
+            docstring.
     """
     self._approve(msg.sender, spender, amount)
     return True
@@ -270,25 +250,9 @@ def approve(spender: address, amount: uint256) -> bool:
 @external
 def transferFrom(owner: address, to: address, amount: uint256) -> bool:
     """
-    @dev Moves `amount` tokens from `owner`
-         to `to` using the allowance mechanism.
-         The `amount` is then deducted from the
-         caller's allowance.
-    @notice Note that `owner` and `to` cannot
-            be the zero address. Also, `owner`
-            must have a balance of at least `amount`.
-            Eventually, the caller must have allowance
-            for `owner`'s tokens of at least `amount`.
-
-            WARNING: The function does not update the
-            allowance if the current allowance is the
-            maximum `uint256`.
-    @param owner The 20-byte owner address.
-    @param to The 20-byte receiver address.
-    @param amount The 32-byte token amount to be transferred.
-    @return bool The verification whether the transfer succeeded
-            or failed. Note that the function reverts instead
-            of returning `False` on a failure.
+    @dev Sourced from {ERC20-transferFrom}.
+    @notice See {ERC20-transferFrom} for the function
+            docstring.
     """
     self._spend_allowance(owner, msg.sender, amount)
     self._transfer(owner, to, amount)
@@ -298,18 +262,9 @@ def transferFrom(owner: address, to: address, amount: uint256) -> bool:
 @external
 def increase_allowance(spender: address, added_amount: uint256) -> bool:
     """
-    @dev Atomically increases the allowance granted to
-         `spender` by the caller.
-    @notice This is an alternative to `approve` that can
-            be used as a mitigation for the problems
-            described in https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729.
-            Note that `spender` cannot be the zero address.
-    @param spender The 20-byte spender address.
-    @param added_amount The 32-byte token amount that is
-           added atomically to the allowance of the `spender`.
-    @return bool The verification whether the allowance increase
-            operation succeeded or failed. Note that the function
-            reverts instead of returning `False` on a failure.
+    @dev Sourced from {ERC20-increase_allowance}.
+    @notice See {ERC20-increase_allowance} for the
+            function docstring.
     """
     self._approve(msg.sender, spender, self.allowance[msg.sender][spender] + added_amount)
     return True
@@ -318,20 +273,9 @@ def increase_allowance(spender: address, added_amount: uint256) -> bool:
 @external
 def decrease_allowance(spender: address, subtracted_amount: uint256) -> bool:
     """
-    @dev Atomically decreases the allowance granted to
-         `spender` by the caller.
-    @notice This is an alternative to `approve` that can
-            be used as a mitigation for the problems
-            described in https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729.
-            Note that `spender` cannot be the zero address.
-            Also, `spender` must have an allowance for
-            the caller of at least `subtracted_amount`.
-    @param spender The 20-byte spender address.
-    @param subtracted_amount The 32-byte token amount that is
-           subtracted atomically from the allowance of the `spender`.
-    @return bool The verification whether the allowance decrease
-            operation succeeded or failed. Note that the function
-            reverts instead of returning `False` on a failure.
+    @dev Sourced from {ERC20-decrease_allowance}.
+    @notice See {ERC20-decrease_allowance} for the
+            function docstring.
     """
     current_allowance: uint256 = self.allowance[msg.sender][spender]
     assert current_allowance >= subtracted_amount, "ERC20: decreased allowance below zero"
@@ -342,24 +286,9 @@ def decrease_allowance(spender: address, subtracted_amount: uint256) -> bool:
 @external
 def permit(owner: address, spender: address, amount: uint256, deadline: uint256, v: uint8, r: bytes32, s: bytes32):
     """
-    @dev Sets `amount` as the allowance of `spender`
-         over `owner`'s tokens, given `owner`'s signed
-         approval.
-    @notice Note that `spender` cannot be the zero address.
-            Also, `deadline` must be a block timestamp in
-            the future. `v`, `r`, and `s` must be a valid
-            secp256k1 signature from `owner` over the
-            EIP-712-formatted function arguments. Eventually,
-            the signature must use `owner`'s current nonce.
-    @param owner The 20-byte owner address.
-    @param spender The 20-byte spender address.
-    @param amount The 32-byte token amount that is
-           allowed to be spent by the `spender`.
-    @param deadline The 32-byte block timestamp up
-           which the `spender` is allowed to spend `amount`.
-    @param v The secp256k1 1-byte signature parameter `v`.
-    @param r The secp256k1 32-byte signature parameter `r`.
-    @param s The secp256k1 32-byte signature parameter `s`.
+    @dev Sourced from {ERC20-permit}.
+    @notice See {ERC20-permit} for the function
+            docstring.
     """
     assert block.timestamp <= deadline, "ERC20Permit: expired deadline"
 
@@ -379,8 +308,9 @@ def permit(owner: address, spender: address, amount: uint256, deadline: uint256,
 @view
 def DOMAIN_SEPARATOR() -> bytes32:
     """
-    @dev Returns the domain separator for the current chain.
-    @return bytes32 The 32-byte domain separator.
+    @dev Sourced from {ERC20-DOMAIN_SEPARATOR}.
+    @notice See {ERC20-DOMAIN_SEPARATOR} for the
+            function docstring.
     """
     return self._domain_separator_v4()
 
@@ -388,35 +318,89 @@ def DOMAIN_SEPARATOR() -> bytes32:
 @external
 @view
 def totalAssets() -> uint256:
+    """
+    @dev Returns the total amount of the underlying asset
+         that is managed by the vault.
+    @notice For the to be fulfilled conditions, please refer to:
+            https://eips.ethereum.org/EIPS/eip-4626#totalassets.
+    @return uint256 The 32-byte total managed assets.
+    """
     return asset.balanceOf(self)
 
 
 @external
 @view
 def convertToShares(assets: uint256) -> uint256:
+    """
+    @dev Returns the amount of shares that the vault would
+         exchange for the amount of assets provided, in an
+         ideal scenario where all the conditions are met.
+    @notice Note that the conversion must round down to 0.
+            For the to be fulfilled conditions, please refer to:
+            https://eips.ethereum.org/EIPS/eip-4626#converttoshares.
+    @param assets The 32-byte assets amount.
+    @return uint256 The 32-byte shares amount.
+    """
     return self._convert_to_shares(assets, False)
 
 
 @external
 @view
 def convertToAssets(shares: uint256) -> uint256:
+    """
+    @dev Returns the amount of assets that the vault would
+         exchange for the amount of shares provided, in an
+         ideal scenario where all the conditions are met.
+    @notice Note that the conversion must round down to 0.
+            For the to be fulfilled conditions, please refer to:
+            https://eips.ethereum.org/EIPS/eip-4626#converttoassets.
+    @param shares The 32-byte shares amount.
+    @return uint256 The 32-byte assets amount.
+    """
     return self._convert_to_assets(shares, False)
 
 
 @external
 @view
 def maxDeposit(receiver: address) -> uint256:
+    """
+    @dev Returns the maximum amount of the underlying asset
+         that can be deposited into the vault for the `receiver`,
+         through a `deposit` call.
+    @notice For the to be fulfilled conditions, please refer to:
+            https://eips.ethereum.org/EIPS/eip-4626#maxdeposit.
+    @param receiver The 20-byte receiver address.
+    @return uint256 The 32-byte maximum deposit amount.
+    """
     return max_value(uint256)
 
 
 @external
 @view
 def previewDeposit(assets: uint256) -> uint256:
+    """
+    @dev Allows an on-chain or off-chain user to simulate the
+         effects of their `deposit` at the current block, given
+         current on-chain conditions.
+    @notice For the to be fulfilled conditions, please refer to:
+            https://eips.ethereum.org/EIPS/eip-4626#previewdeposit.
+    @param assets The 32-byte assets amount.
+    @return uint256 The simulated 32-byte shares amount.
+    """
     return self._convert_to_shares(assets, False)
 
 
 @external
 def deposit(assets: uint256, receiver: address) -> uint256:
+    """
+    @dev Mints `shares` vault shares to `receiver` by depositing
+         exactly `assets` of underlying tokens.
+    @notice For the to be fulfilled conditions, please refer to:
+            https://eips.ethereum.org/EIPS/eip-4626#deposit.
+    @param assets The 32-byte assets amount.
+    @param receiver The 20-byte receiver addrress.
+    @return uint256 The 32-byte shares amount to be created.
+    """
     assert assets <= ERC4626(self).maxDeposit(receiver), "ERC4626: deposit more than maximum"
     shares: uint256 = ERC4626(self).previewDeposit(assets)
     self._deposit(msg.sender, receiver, assets, shares)
@@ -426,17 +410,43 @@ def deposit(assets: uint256, receiver: address) -> uint256:
 @external
 @view
 def maxMint(receiver: address) -> uint256:
+    """
+    @dev Returns the maximum amount of shares that can be minted
+         from the vault for the `receiver`, through a `mint` call.
+    @notice For the to be fulfilled conditions, please refer to:
+            https://eips.ethereum.org/EIPS/eip-4626#maxmint.
+    @param receiver The 20-byte receiver address.
+    @return uint256 The 32-byte maximum shares amount.
+    """
     return max_value(uint256)
 
 
 @external
 @view
 def previewMint(shares: uint256) -> uint256:
+    """
+    @dev Allows an on-chain or off-chain user to simulate the
+         effects of their `mint` at the current block, given
+         current on-chain conditions.
+    @notice For the to be fulfilled conditions, please refer to:
+            https://eips.ethereum.org/EIPS/eip-4626#previewmint.
+    @param receiver The 32-byte shares amount.
+    @return uint256 The simulated 32-byte assets amount.
+    """
     return self._convert_to_assets(shares, True)
 
 
 @external
 def mint(shares: uint256, receiver:address) -> uint256:
+    """
+    @dev Mints exactly `shares` vault shares to `receiver` by
+         depositing `assets` of underlying tokens.
+    @notice For the to be fulfilled conditions, please refer to:
+            https://eips.ethereum.org/EIPS/eip-4626#mint.
+    @param shares The 32-byte shares amount to be deposited.
+    @param receiver The 20-byte receiver address.
+    @return uint256 The deposited 32-byte assets amount.
+    """
     assert shares <= ERC4626(self).maxMint(receiver), "ERC4626: mint more than maximum"
     assets: uint256 = ERC4626(self).previewMint(shares)
     self._deposit(msg.sender, receiver, assets, shares)
@@ -446,17 +456,45 @@ def mint(shares: uint256, receiver:address) -> uint256:
 @external
 @view
 def maxWithdraw(owner: address) -> uint256:
+    """
+    @dev Returns the maximum amount of the underlying asset that
+         can be withdrawn from the owner balance in the Vault,
+         through a `withdraw` call.
+    @notice For the to be fulfilled conditions, please refer to:
+            https://eips.ethereum.org/EIPS/eip-4626#maxwithdraw.
+    @param owner The 20-byte owner address.
+    @return uint256 The 32-byte maximum assets amount.
+    """
     return self._convert_to_assets(asset.balanceOf(owner), False)
 
 
 @external
 @view
 def previewWithdraw(assets: uint256) -> uint256:
+    """
+    @dev Allows an on-chain or off-chain user to simulate the
+         effects of their withdrawal at the current block, given
+         current on-chain conditions.
+    @notice For the to be fulfilled conditions, please refer to:
+            https://eips.ethereum.org/EIPS/eip-4626#previewwithdraw.
+    @param receiver The 32-byte assets amount.
+    @return uint256 The simulated 32-byte shares amount.
+    """
     return self._convert_to_shares(assets, True)
 
 
 @external
 def withdraw(assets: uint256, receiver: address, owner: address) -> uint256:
+    """
+    @dev Burns `shares` from `owner` and sends exactly `assets` of
+         underlying tokens to `receiver`.
+    @notice For the to be fulfilled conditions, please refer to:
+            https://eips.ethereum.org/EIPS/eip-4626#withdraw.
+    @param assets The 32-byte assets amount.
+    @param receiver The 20-byte receiver address.
+    @param owner The 20-byte owner address.
+    @return uint256 The burned 32-byte shares amount.
+    """
     assert assets <= ERC4626(self).maxWithdraw(receiver), "ERC4626: withdraw more than maximum"
     shares: uint256 = ERC4626(self).previewWithdraw(assets)
     self._withdraw(msg.sender, receiver, owner, assets, shares)
@@ -464,16 +502,46 @@ def withdraw(assets: uint256, receiver: address, owner: address) -> uint256:
 
 
 @external
+@view
 def maxRedeem(owner: address) -> uint256:
+    """
+    @dev Maximum amount of vault shares that can be redeemed from
+         the `owner` balance in the vault, through a `redeem` call.
+    @notice For the to be fulfilled conditions, please refer to:
+            https://eips.ethereum.org/EIPS/eip-4626#maxredeem.
+    @param owner The 20-byte owner address.
+    @return uint256 The 32-byte maximum redeemable shares amount.
+    """
     return asset.balanceOf(owner)
 
+
 @external
+@view
 def previewRedeem(shares: uint256) -> uint256:
+    """
+    @dev Allows an on-chain or off-chain user to simulate the effects
+         of their redeemption at the current block, given current
+         on-chain conditions.
+    @notice For the to be fulfilled conditions, please refer to:
+            https://eips.ethereum.org/EIPS/eip-4626#previewredeem.
+    @param shares The 32-byte shares amount to be redeemed.
+    @return uint256 The simulated 32-byte assets amount.
+    """
     return self._convert_to_assets(shares, False)
 
 
 @external
 def redeem(shares: uint256, receiver: address, owner: address) -> uint256:
+    """
+    @dev Burns exactly `shares` from `owner` and sends `assets` of
+         underlying tokens to `receiver`.
+    @notice For the to be fulfilled conditions, please refer to:
+            https://eips.ethereum.org/EIPS/eip-4626#redeem.
+    @param shares The 32-byte redeemed shares amount.
+    @param receiver The 20-byte receiver address.
+    @param owner The 20-byte owner address.
+    @return uint256 The redeemed 32-byte assets amount.
+    """
     assert shares <= ERC4626(self).maxRedeem(owner), "ERC4626: redeem more than maximum"
     assets: uint256 = ERC4626(self).previewRedeem(shares)
     self._withdraw(msg.sender, receiver, owner, assets, shares)
@@ -481,34 +549,11 @@ def redeem(shares: uint256, receiver: address, owner: address) -> uint256:
 
 
 @internal
-@view
-def _try_get_underlying_decimals(underlying: ERC20) -> (bool, uint8):
-    """
-    @dev TBD
-    @notice TBD
-    @param underlying TBD
-    @return bool TBD
-    @return uint8 TBD
-    """
-    success: bool = empty(bool)
-    return_data: Bytes[32] = b""
-    success, return_data = raw_call(underlying.address, method_id("decimals()"), max_outsize=32, is_static_call=True, revert_on_failure=False)
-    if (success and (len(return_data) == 32) and (convert(return_data, uint256) <= convert(max_value(uint8), uint256))):
-        return (True, convert(return_data, uint8))
-    return (success, empty(uint8))
-
-
-@internal
 def _transfer(owner: address, to: address, amount: uint256):
     """
-    @dev Moves `amount` tokens from the owner's
-         account to `to`.
-    @notice Note that `owner` and `to` cannot be
-            the zero address. Also, `owner` must
-            have a balance of at least `amount`.
-    @param owner The 20-byte owner address.
-    @param to The 20-byte receiver address.
-    @param amount The 32-byte token amount to be transferred.
+    @dev Sourced from {ERC20-_transfer}.
+    @notice See {ERC20-_transfer} for the function
+            docstring.
     """
     assert owner != empty(address), "ERC20: transfer from the zero address"
     assert to != empty(address), "ERC20: transfer to the zero address"
@@ -527,14 +572,9 @@ def _transfer(owner: address, to: address, amount: uint256):
 @internal
 def _mint(owner: address, amount: uint256):
     """
-    @dev Creates `amount` tokens and assigns
-         them to `owner`, increasing the
-         total supply.
-    @notice This is an `internal` function without
-            access restriction. Note that `owner`
-            cannot be the zero address.
-    @param owner The 20-byte owner address.
-    @param amount The 32-byte token amount to be created.
+    @dev Sourced from {ERC20-_mint}.
+    @notice See {ERC20-_mint} for the function
+            docstring.
     """
     assert owner != empty(address), "ERC20: mint to the zero address"
 
@@ -550,13 +590,9 @@ def _mint(owner: address, amount: uint256):
 @internal
 def _burn(owner: address, amount: uint256):
     """
-    @dev Destroys `amount` tokens from `owner`,
-         reducing the total supply.
-    @notice Note that `owner` cannot be the
-            zero address. Also, `owner` must
-            have at least `amount` tokens.
-    @param owner The 20-byte owner address.
-    @param amount The 32-byte token amount to be destroyed.
+    @dev Sourced from {ERC20-_burn}.
+    @notice See {ERC20-_burn} for the function
+            docstring.
     """
     assert owner != empty(address), "ERC20: burn from the zero address"
 
@@ -574,14 +610,9 @@ def _burn(owner: address, amount: uint256):
 @internal
 def _approve(owner: address, spender: address, amount: uint256):
     """
-    @dev Sets `amount` as the allowance of `spender`
-         over the `owner`'s tokens.
-    @notice Note that `owner` and `spender` cannot
-            be the zero address.
-    @param owner The 20-byte owner address.
-    @param spender The 20-byte spender address.
-    @param amount The 32-byte token amount that is
-           allowed to be spent by the `spender`.
+    @dev Sourced from {ERC20-_approve}.
+    @notice See {ERC20-_approve} for the function
+            docstring.
     """
     assert owner != empty(address), "ERC20: approve from the zero address"
     assert spender != empty(address), "ERC20: approve to the zero address"
@@ -593,16 +624,9 @@ def _approve(owner: address, spender: address, amount: uint256):
 @internal
 def _spend_allowance(owner: address, spender: address, amount: uint256):
     """
-    @dev Updates `owner`'s allowance for `spender`
-         based on spent `amount`.
-    @notice WARNING: Note that it does not update the
-            allowance `amount` in case of infinite
-            allowance. Also, it reverts if not enough
-            allowance is available.
-    @param owner The 20-byte owner address.
-    @param spender The 20-byte spender address.
-    @param amount The 32-byte token amount that is
-           allowed to be spent by the `spender`.
+    @dev Sourced from {ERC20-_approve}.
+    @notice See {ERC20-_spend_allowance} for the
+            function docstring.
     """
     current_allowance: uint256 = self.allowance[owner][spender]
     if (current_allowance != max_value(uint256)):
@@ -619,20 +643,9 @@ def _spend_allowance(owner: address, spender: address, amount: uint256):
 @internal
 def _before_token_transfer(owner: address, to: address, amount: uint256):
     """
-    @dev Hook that is called before any transfer of tokens.
-         This includes minting and burning.
-    @notice The calling conditions are:
-            - when `owner` and `to` are both non-zero,
-              `amount` of `owner`'s tokens will be
-              transferred to `to`,
-            - when `owner` is zero, `amount` tokens will
-              be minted for `to`,
-            - when `to` is zero, `amount` of `owner`'s
-              tokens will be burned,
-            - `owner` and `to` are never both zero.
-    @param owner The 20-byte owner address.
-    @param to The 20-byte receiver address.
-    @param amount The 32-byte token amount to be transferred.
+    @dev Sourced from {ERC20-_before_token_transfer}.
+    @notice See {ERC20-_before_token_transfer} for
+            the function docstring.
     """
     pass
 
@@ -640,21 +653,9 @@ def _before_token_transfer(owner: address, to: address, amount: uint256):
 @internal
 def _after_token_transfer(owner: address, to: address, amount: uint256):
     """
-    @dev Hook that is called after any transfer of tokens.
-         This includes minting and burning.
-    @notice The calling conditions are:
-            - when `owner` and `to` are both non-zero,
-              `amount` of `owner`'s tokens has been
-              transferred to `to`,
-            - when `owner` is zero, `amount` tokens
-              have been minted for `to`,
-            - when `to` is zero, `amount` of `owner`'s
-              tokens have been burned,
-            - `owner` and `to` are never both zero.
-    @param owner The 20-byte owner address.
-    @param to The 20-byte receiver address.
-    @param amount The 32-byte token amount that has
-           been transferred.
+    @dev Sourced from {ERC20-_after_token_transfer}.
+    @notice See {ERC20-_after_token_transfer} for
+            the function docstring.
     """
     pass
 
@@ -737,9 +738,33 @@ def _try_recover_vrs(hash: bytes32, v: uint256, r: uint256, s: uint256) -> addre
 
 @internal
 @view
+def _try_get_underlying_decimals(underlying: ERC20) -> (bool, uint8):
+    """
+    @dev Attempts to fetch the asset decimals. A return value of
+         false indicates that the attempt failed in some way.
+    @param underlying The ERC-20 compatible (i.e. ERC-777 is also viable)
+           underlying asset contract.
+    @return bool The verification whether the call succeeded or failed.
+    @return uint8 The fetched underlying's decimals.
+    """
+    success: bool = empty(bool)
+    return_data: Bytes[32] = b""
+    success, return_data = raw_call(underlying.address, method_id("decimals()"), max_outsize=32, is_static_call=True, revert_on_failure=False)
+    if (success and (len(return_data) == 32) and (convert(return_data, uint256) <= convert(max_value(uint8), uint256))):
+        return (True, convert(return_data, uint8))
+    return (success, empty(uint8))
+
+
+@internal
+@view
 def _convert_to_shares(assets: uint256, roundup: bool) -> uint256:
     """
-    @dev TBD
+    @dev Internal conversion function (from assets to shares) with
+         support for rounding direction.
+    @param assets The 32-byte assets amount.
+    @param roundup The Boolean variable that specifies whether
+           to round up or not. The default `False` is round down.
+    @return uint256 The 32-byte shares amount.
     """
     return self._mul_div(assets, self.totalSupply + 10 ** convert(_DECIMALS_OFFSET, uint256), ERC4626(self).totalAssets() + 1, roundup)
 
@@ -748,13 +773,33 @@ def _convert_to_shares(assets: uint256, roundup: bool) -> uint256:
 @view
 def _convert_to_assets(shares: uint256, roundup: bool) -> uint256:
     """
-    @dev TBD
+    @dev Internal conversion function (from shares to assets) with
+         support for rounding direction.
+    @param shares The 32-byte shares amount.
+    @param roundup The Boolean variable that specifies whether
+           to round up or not. The default `False` is round down.
+    @return uint256 The 32-byte assets amount.
     """
     return self._mul_div(shares, ERC4626(self).totalAssets() + 1, self.totalSupply + 10 ** convert(_DECIMALS_OFFSET, uint256), roundup)
 
 
 @internal
 def _deposit(sender: address, receiver: address, assets: uint256, shares: uint256):
+    """
+    @dev Internal function handling the `deposit` and `mint` common workflow.
+    @param sender The 20-byte sender addrress.
+    @param receiver The 20-byte receiver addrress.
+    @param assets The 32-byte assets amount.
+    @param assets The 32-byte shares amount.
+    """
+    # If `asset` is an ERC-777, `transferFrom` can trigger
+    # a reenterancy before the transfer happens through the
+    # `tokensToSend` hook. On the other hand, the `tokenReceived`
+    # hook, that is triggered after the transfer, calls the vault,
+    # which is assumed not malicious. Thus, we need to do the
+    # transfer before we mint so that any reentrancy would happen
+    # before the assets are transferred and before the shares are
+    # minted, which is a valid state.
     assert asset.transferFrom(sender, self, assets, default_return_value=True), "ERC4626: transferFrom operation did not succeed"
     self._mint(receiver, shares)
     log Deposit(sender, receiver, assets, shares)
@@ -762,9 +807,24 @@ def _deposit(sender: address, receiver: address, assets: uint256, shares: uint25
 
 @internal
 def _withdraw(sender: address, receiver: address, owner: address, assets: uint256, shares: uint256):
+    """
+    @dev Internal function handling the `withdraw` and `redeem` common workflow.
+    @param sender The 20-byte sender addrress.
+    @param receiver The 20-byte receiver addrress.
+    @param owner The 20-byte owner addrress.
+    @param assets The 32-byte assets amount.
+    @param assets The 32-byte shares amount.
+    """
     if (sender != owner):
         self._spend_allowance(owner, sender, shares)
 
+    # If `asset` is an ERC-777, `transfer` can trigger a reenterancy
+    # after the transfer happens through the `tokensReceived` hook.
+    # On the other hand, the `tokensToSend` hook, that is triggered
+    # before the transfer, calls the vault, which is assumed not malicious.
+    # Thus, we need to do the transfer after the burn so that any
+    # reentrancy would happen after the shares are burned and after
+    # the assets are transferred, which is a valid state.
     self._burn(owner, shares)
     assert asset.transfer(receiver, assets, default_return_value=True), "ERC4626: transfer operation did not succeed"
     log Withdraw(sender, receiver, owner, assets, shares)
@@ -774,7 +834,9 @@ def _withdraw(sender: address, receiver: address, owner: address, assets: uint25
 @pure
 def _mul_div(x: uint256, y: uint256, denominator: uint256, roundup: bool) -> uint256:
     """
-    @dev TBD
+    @dev Sourced from {Math-mul_div}.
+    @notice See {Math-mul_div} for the
+            function docstring.
     """
     # Handle division by zero.
     assert denominator != empty(uint256), "Math: mul_div division by zero"
