@@ -3,21 +3,22 @@
 @title Modern and Gas-Efficient ERC-4626 Tokenised Vault Implementation
 @license GNU Affero General Public License v3.0
 @author pcaversaccio
-@notice Adds optional `permit` functionality 
-- https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC20/extensions/ERC4626.sol
-- https://github.com/fubuloubu/ERC4626/blob/main/contracts/VyperVault.vy
+@notice Adds optional `permit` functionality
+- https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC20/extensions/ERC4626.sol,
+- https://github.com/fubuloubu/ERC4626/blob/main/contracts/VyperVault.vy.
+@custom:security TBD
 """
 
 
 # @dev We import and implement the `ERC20` interface,
 # which is a built-in interface of the Vyper compiler.
-# @notice We do not import the interface `ERC20Detailed`
-# (https://github.com/vyperlang/vyper/blob/master/vyper/builtin_interfaces/ERC20Detailed.py)
+# @notice We do not import and implement the interface
+# `ERC20Detailed` (https://github.com/vyperlang/vyper/blob/master/vyper/builtins/interfaces/ERC20Detailed.py)
 # to be able to declare `name`, `symbol`, and `decimals`
 # as `immutable` variables. This is a known compiler bug
 # (https://github.com/vyperlang/vyper/issues/3130) and
-# we will import the interface `ERC20Detailed` once it
-# is fixed.
+# we will import and implement the interface `ERC20Detailed`
+# once it is fixed.
 from vyper.interfaces import ERC20
 implements: ERC20
 
@@ -29,11 +30,15 @@ import src.tokens.interfaces.IERC20Permit as IERC20Permit
 implements: IERC20Permit
 
 
-# @dev We import and implement the `ERC4626` interface,
-# which is a built-in interface of the Vyper compiler.
-# @notice https://github.com/vyperlang/vyper/pull/3295
+# @dev We import the `ERC4626` interface, which is a
+# built-in interface of the Vyper compiler.
+# @notice We do not implement the interface `ERC4626`
+# (https://github.com/vyperlang/vyper/blob/master/vyper/builtins/interfaces/ERC4626.py)
+# to be able to declare `asset` as an `immutable` variable.
+# This is a known compiler bug (https://github.com/vyperlang/vyper/issues/3130)
+# and we will implement the interface `ERC4626` once it
+# is fixed.
 from vyper.interfaces import ERC4626
-implements: ERC4626
 
 
 # @dev Constant used as part of the ECDSA recovery function.
@@ -45,35 +50,41 @@ _PERMIT_TYPE_HASH: constant(bytes32) = keccak256("Permit(address owner,address s
 
 
 # @dev Returns the name of the token.
-# @notice See comment on lower case letters
-# above at `decimals`.
+# @notice If you declare a variable as `public`,
+# Vyper automatically generates an `external`
+# getter function for the variable. Furthermore,
+# to preserve consistency with the interface for
+# the optional metadata functions of the ERC-20
+# standard, we use lower case letters for the
+# `immutable` variables `name`, `symbol`, and
+# `decimals`.
 name: public(immutable(String[25]))
 
 
 # @dev Returns the symbol of the token.
 # @notice See comment on lower case letters
-# above at `decimals`.
+# above at `name`.
 symbol: public(immutable(String[5]))
 
 
-# @dev TBD
+# @dev Returns the decimals places of the token.
+# @notice See comment on lower case letters
+# above at `name`.
 decimals: public(immutable(uint8))
 
 
-# @dev Vyper will automatically return the `address` type here.
+# @dev Returns the address of the underlying token
+# used for the vault for accounting, depositing,
+# and withdrawing. To preserve consistency with the
+# ERC-4626 interface, we use lower case letters for
+# the `immutable` variable `name`.
+# @notice Vyper returns the `address` type for interface
+# types by default.
 asset: public(immutable(ERC20))
 
 
-# @dev TBD
-_DECIMALS_OFFSET: immutable(uint8)
-
-
-# @dev TBD
-_UNDERLYING_DECIMALS: immutable(uint8)
-
-
 # @dev Caches the domain separator as an `immutable`
-# value, but also store the corresponding chain id
+# value, but also stores the corresponding chain id
 # to invalidate the cached domain separator if the
 # chain id changes.
 _CACHED_CHAIN_ID: immutable(uint256)
@@ -86,6 +97,15 @@ _CACHED_DOMAIN_SEPARATOR: immutable(bytes32)
 _HASHED_NAME: immutable(bytes32)
 _HASHED_VERSION: immutable(bytes32)
 _TYPE_HASH: immutable(bytes32)
+
+
+# @dev An offset in the decimal representation between
+# the underlying asset's decimals and the vault decimals.
+_DECIMALS_OFFSET: immutable(uint8)
+
+
+# @dev Caches the underlying asset's decimals.
+_UNDERLYING_DECIMALS: immutable(uint8)
 
 
 # @dev Returns the amount of tokens owned by an `address`.
@@ -128,7 +148,9 @@ event Approval:
     amount: uint256
 
 
-# @dev TBD
+# @dev Emitted when `sender` has exchanged `assets`
+# for `shares`, and transferred those `shares`
+# to `owner`.
 event Deposit:
     sender: indexed(address)
     owner: indexed(address)
@@ -136,7 +158,9 @@ event Deposit:
     shares: uint256
 
 
-# @dev TBD
+# @dev Emitted when `sender` has exchanged `shares`,
+# owned by `owner`, for `assets`, and transferred
+# those `assets` to `receiver`.
 event Withdraw:
     sender: indexed(address)
     receiver: indexed(address)

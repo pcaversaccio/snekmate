@@ -50,12 +50,12 @@
 
 # @dev We import and implement the `ERC20` interface,
 # which is a built-in interface of the Vyper compiler.
-# @notice We do not import the interface `ERC20Detailed`
-# (https://github.com/vyperlang/vyper/blob/master/vyper/builtins/interfaces/ERC20Detailed.py)
+# @notice We do not import and implement the interface
+# `ERC20Detailed` (https://github.com/vyperlang/vyper/blob/master/vyper/builtins/interfaces/ERC20Detailed.py)
 # to be able to declare `name`, `symbol`, and `decimals`
 # as `immutable` and `constant` variables. This is a
 # known compiler bug (https://github.com/vyperlang/vyper/issues/3130)
-# and we will import the interface `ERC20Detailed`
+# and we will import and implement the interface `ERC20Detailed`
 # once it is fixed.
 from vyper.interfaces import ERC20
 implements: ERC20
@@ -102,7 +102,7 @@ symbol: public(immutable(String[5]))
 
 
 # @dev Caches the domain separator as an `immutable`
-# value, but also store the corresponding chain id
+# value, but also stores the corresponding chain id
 # to invalidate the cached domain separator if the
 # chain id changes.
 _CACHED_CHAIN_ID: immutable(uint256)
