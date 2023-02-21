@@ -3,10 +3,48 @@
 @title Modern and Gas-Efficient ERC-4626 Tokenised Vault Implementation
 @license GNU Affero General Public License v3.0
 @author pcaversaccio
-@notice Adds optional `permit` functionality
-- https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC20/extensions/ERC4626.sol,
-- https://github.com/fubuloubu/ERC4626/blob/main/contracts/VyperVault.vy.
-@custom:security TBD
+@notice These functions implement the ERC-4626
+        standard interface:
+        - https://eips.ethereum.org/EIPS/eip-4626.
+        In addition, the following functions have
+        been added for convenience:
+        - `permit` (`external` function),
+        - `nonces` (`external` `view` function),
+        - `DOMAIN_SEPARATOR` (`external` `view` function).
+        The `permit` function implements approvals via
+        EIP-712 secp256k1 signatures:
+        https://eips.ethereum.org/EIPS/eip-2612.
+        The implementation is inspired by OpenZeppelin's
+        implementation here:
+        https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC20/extensions/ERC4626.sol,
+        as well as by fubuloubu's implementation here:
+        https://github.com/fubuloubu/ERC4626/blob/main/contracts/VyperVault.vy.
+@custom:security Most of the following security analysis was sourced from OpenZeppelin's
+                 implementation: This implementation uses virtual assets and shares to
+                 mitigate the risk of inflation attacks. The `internal` `immutable` variable
+                 `_DECIMALS_OFFSET` corresponds to an offset in the decimal representation
+                 between the underlying asset's decimals and the vault decimals. This offset
+                 also determines the rate of virtual shares to virtual assets in the vault,
+                 which itself determines the initial exchange rate. While not fully
+                 preventing the attack, analysis (https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/docs/modules/ROOT/pages/erc4626.adoc#security-concern-inflation-attack)
+                 shows that a standard offset of `0` makes it non-profitable, as a result
+                 of the value being captured by the virtual shares (out of the attacker's
+                 donation) matching the attacker's expected gains. With a larger offset,
+                 the attack becomes orders of magnitude more expensive than it is profitable.
+                 More details about the underlying mathematics can be found here:
+                 https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/docs/modules/ROOT/pages/erc4626.adoc#security-concern-inflation-attack.
+
+                 Furthermore, another potential approach would be that vault deployers can
+                 protect against this attack by making an initial deposit of a non-trivial
+                 amount of the asset, such that price manipulation becomes infeasible. For
+                 the detailed discussion, please refer to:
+                 https://ethereum-magicians.org/t/address-eip-4626-inflation-attacks-with-virtual-shares-and-assets/12677.
+
+                 The drawback of the implemented approach is that the virtual shares do
+                 capture (a very small) part of the value being accrued to the vault. Also,
+                 if the vault experiences losses, the users try to exit the vault, the virtual
+                 shares and assets will cause the first user to exit to experience reduced losses
+                 in detriment to the last users that will experience bigger losses.
 """
 
 
@@ -101,6 +139,10 @@ _TYPE_HASH: immutable(bytes32)
 
 # @dev An offset in the decimal representation between
 # the underlying asset's decimals and the vault decimals.
+# @notice While not fully preventing the attack, analysis
+# (https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/docs/modules/ROOT/pages/erc4626.adoc#security-concern-inflation-attack)
+# shows that a standard offset of `0` makes an inflation
+# attack non-profitable.
 _DECIMALS_OFFSET: immutable(uint8)
 
 
@@ -183,8 +225,9 @@ def __init__(name_: String[25], symbol_: String[5], asset_: ERC20, decimals_offs
     @param asset_ The ERC-20 compatible (i.e. ERC-777 is also viable)
            underlying asset contract.
     @param decimals_offset_ The 1-byte offset in the decimal
-           representation between the underlying asset's decimals
-           and the vault decimals.
+           representation between the underlying asset's
+           decimals and the vault decimals. The recommended value to
+           mitigate the risk of an inflation attack is `0`.
     @param name_eip712_ The maximum 50-character user-readable
            string name of the signing domain, i.e. the name
            of the dApp or protocol.
@@ -197,14 +240,17 @@ def __init__(name_: String[25], symbol_: String[5], asset_: ERC20, decimals_offs
     asset = asset_
 
     success: bool = empty(bool)
-    underlying_decimals: uint8 = empty(uint8)
-    asset_decimals: uint8 = empty(uint8)
-    success, decimals = self._try_get_underlying_decimals(asset_)
+    decoded_decimals: uint8 = empty(uint8)
+    # Attempt to fetch the underlying's decimals. A return
+    # value of `False` indicates that the attempt failed in
+    # some way.
+    success, decoded_decimals = self._try_get_underlying_decimals(asset_)
 
+    underlying_decimals: uint8 = empty(uint8)
     # Due to a known compiler bug (https://github.com/vyperlang/vyper/issues/3278),
     # we use a local variable for the first value assignment.
     if (success):
-        underlying_decimals = decimals
+        underlying_decimals = decoded_decimals
     else:
         underlying_decimals = 18
 
@@ -294,7 +340,7 @@ def permit(owner: address, spender: address, amount: uint256, deadline: uint256,
 
     current_nonce: uint256 = self.nonces[owner]
     self.nonces[owner] = unsafe_add(current_nonce, 1)
-    
+
     struct_hash: bytes32 = keccak256(_abi_encode(_PERMIT_TYPE_HASH, owner, spender, amount, current_nonce, deadline))
     hash: bytes32  = self._hash_typed_data_v4(struct_hash)
 
@@ -339,7 +385,7 @@ def convertToShares(assets: uint256) -> uint256:
             For the to be fulfilled conditions, please refer to:
             https://eips.ethereum.org/EIPS/eip-4626#converttoshares.
     @param assets The 32-byte assets amount.
-    @return uint256 The 32-byte shares amount.
+    @return uint256 The converted 32-byte shares amount.
     """
     return self._convert_to_shares(assets, False)
 
@@ -355,7 +401,7 @@ def convertToAssets(shares: uint256) -> uint256:
             For the to be fulfilled conditions, please refer to:
             https://eips.ethereum.org/EIPS/eip-4626#converttoassets.
     @param shares The 32-byte shares amount.
-    @return uint256 The 32-byte assets amount.
+    @return uint256 The converted 32-byte assets amount.
     """
     return self._convert_to_assets(shares, False)
 
@@ -380,12 +426,12 @@ def maxDeposit(receiver: address) -> uint256:
 def previewDeposit(assets: uint256) -> uint256:
     """
     @dev Allows an on-chain or off-chain user to simulate the
-         effects of their `deposit` at the current block, given
+         effects of their deposit at the current block, given
          current on-chain conditions.
     @notice For the to be fulfilled conditions, please refer to:
             https://eips.ethereum.org/EIPS/eip-4626#previewdeposit.
     @param assets The 32-byte assets amount.
-    @return uint256 The simulated 32-byte shares amount.
+    @return uint256 The simulated 32-byte returning shares amount.
     """
     return self._convert_to_shares(assets, False)
 
@@ -398,7 +444,7 @@ def deposit(assets: uint256, receiver: address) -> uint256:
     @notice For the to be fulfilled conditions, please refer to:
             https://eips.ethereum.org/EIPS/eip-4626#deposit.
     @param assets The 32-byte assets amount.
-    @param receiver The 20-byte receiver addrress.
+    @param receiver The 20-byte receiver address.
     @return uint256 The 32-byte shares amount to be created.
     """
     assert assets <= ERC4626(self).maxDeposit(receiver), "ERC4626: deposit more than maximum"
@@ -416,7 +462,7 @@ def maxMint(receiver: address) -> uint256:
     @notice For the to be fulfilled conditions, please refer to:
             https://eips.ethereum.org/EIPS/eip-4626#maxmint.
     @param receiver The 20-byte receiver address.
-    @return uint256 The 32-byte maximum shares amount.
+    @return uint256 The 32-byte maximum mint amount.
     """
     return max_value(uint256)
 
@@ -430,8 +476,8 @@ def previewMint(shares: uint256) -> uint256:
          current on-chain conditions.
     @notice For the to be fulfilled conditions, please refer to:
             https://eips.ethereum.org/EIPS/eip-4626#previewmint.
-    @param receiver The 32-byte shares amount.
-    @return uint256 The simulated 32-byte assets amount.
+    @param shares The 32-byte shares amount.
+    @return uint256 The simulated 32-byte required assets amount.
     """
     return self._convert_to_assets(shares, True)
 
@@ -443,7 +489,7 @@ def mint(shares: uint256, receiver:address) -> uint256:
          depositing `assets` of underlying tokens.
     @notice For the to be fulfilled conditions, please refer to:
             https://eips.ethereum.org/EIPS/eip-4626#mint.
-    @param shares The 32-byte shares amount to be deposited.
+    @param shares The 32-byte shares amount to be created.
     @param receiver The 20-byte receiver address.
     @return uint256 The deposited 32-byte assets amount.
     """
@@ -458,14 +504,14 @@ def mint(shares: uint256, receiver:address) -> uint256:
 def maxWithdraw(owner: address) -> uint256:
     """
     @dev Returns the maximum amount of the underlying asset that
-         can be withdrawn from the owner balance in the Vault,
+         can be withdrawn from the owner balance in the vault,
          through a `withdraw` call.
     @notice For the to be fulfilled conditions, please refer to:
             https://eips.ethereum.org/EIPS/eip-4626#maxwithdraw.
     @param owner The 20-byte owner address.
-    @return uint256 The 32-byte maximum assets amount.
+    @return uint256 The 32-byte maximum withdraw amount.
     """
-    return self._convert_to_assets(asset.balanceOf(owner), False)
+    return self._convert_to_assets(self.balanceOf[owner], False)
 
 
 @external
@@ -477,8 +523,8 @@ def previewWithdraw(assets: uint256) -> uint256:
          current on-chain conditions.
     @notice For the to be fulfilled conditions, please refer to:
             https://eips.ethereum.org/EIPS/eip-4626#previewwithdraw.
-    @param receiver The 32-byte assets amount.
-    @return uint256 The simulated 32-byte shares amount.
+    @param assets The 32-byte assets amount.
+    @return uint256 The simulated 32-byte burned shares amount.
     """
     return self._convert_to_shares(assets, True)
 
@@ -490,7 +536,7 @@ def withdraw(assets: uint256, receiver: address, owner: address) -> uint256:
          underlying tokens to `receiver`.
     @notice For the to be fulfilled conditions, please refer to:
             https://eips.ethereum.org/EIPS/eip-4626#withdraw.
-    @param assets The 32-byte assets amount.
+    @param assets The 32-byte assets amount to be withdrawn.
     @param receiver The 20-byte receiver address.
     @param owner The 20-byte owner address.
     @return uint256 The burned 32-byte shares amount.
@@ -512,7 +558,7 @@ def maxRedeem(owner: address) -> uint256:
     @param owner The 20-byte owner address.
     @return uint256 The 32-byte maximum redeemable shares amount.
     """
-    return asset.balanceOf(owner)
+    return self.balanceOf[owner]
 
 
 @external
@@ -525,7 +571,7 @@ def previewRedeem(shares: uint256) -> uint256:
     @notice For the to be fulfilled conditions, please refer to:
             https://eips.ethereum.org/EIPS/eip-4626#previewredeem.
     @param shares The 32-byte shares amount to be redeemed.
-    @return uint256 The simulated 32-byte assets amount.
+    @return uint256 The simulated 32-byte returning assets amount.
     """
     return self._convert_to_assets(shares, False)
 
@@ -540,7 +586,7 @@ def redeem(shares: uint256, receiver: address, owner: address) -> uint256:
     @param shares The 32-byte redeemed shares amount.
     @param receiver The 20-byte receiver address.
     @param owner The 20-byte owner address.
-    @return uint256 The redeemed 32-byte assets amount.
+    @return uint256 The returned 32-byte assets amount.
     """
     assert shares <= ERC4626(self).maxRedeem(owner), "ERC4626: redeem more than maximum"
     assets: uint256 = ERC4626(self).previewRedeem(shares)
@@ -740,15 +786,24 @@ def _try_recover_vrs(hash: bytes32, v: uint256, r: uint256, s: uint256) -> addre
 @view
 def _try_get_underlying_decimals(underlying: ERC20) -> (bool, uint8):
     """
-    @dev Attempts to fetch the asset decimals. A return value of
-         false indicates that the attempt failed in some way.
+    @dev Attempts to fetch the underlying's decimals. A return
+         value of `False` indicates that the attempt failed in
+         some way.
     @param underlying The ERC-20 compatible (i.e. ERC-777 is also viable)
            underlying asset contract.
-    @return bool The verification whether the call succeeded or failed.
+    @return bool The verification whether the call succeeded or
+            failed.
     @return uint8 The fetched underlying's decimals.
     """
     success: bool = empty(bool)
     return_data: Bytes[32] = b""
+    # The following low-level call does not revert, but instead
+    # returns `False` if the callable contract does not implement
+    # the `decimals` function. Since we perform a length check of
+    # 32 bytes for the return data in the return expression at the
+    # end, we also return `False` for EOA wallets instead of reverting
+    # (remember that the EVM always considers a call to an EOA as
+    # successful with return data `0x`).
     success, return_data = raw_call(underlying.address, method_id("decimals()"), max_outsize=32, is_static_call=True, revert_on_failure=False)
     if (success and (len(return_data) == 32) and (convert(return_data, uint256) <= convert(max_value(uint8), uint256))):
         return (True, convert(return_data, uint8))
@@ -759,12 +814,12 @@ def _try_get_underlying_decimals(underlying: ERC20) -> (bool, uint8):
 @view
 def _convert_to_shares(assets: uint256, roundup: bool) -> uint256:
     """
-    @dev Internal conversion function (from assets to shares) with
-         support for rounding direction.
+    @dev An `internal` conversion function (from assets to shares)
+         with support for rounding direction.
     @param assets The 32-byte assets amount.
     @param roundup The Boolean variable that specifies whether
            to round up or not. The default `False` is round down.
-    @return uint256 The 32-byte shares amount.
+    @return uint256 The converted 32-byte shares amount.
     """
     return self._mul_div(assets, self.totalSupply + 10 ** convert(_DECIMALS_OFFSET, uint256), ERC4626(self).totalAssets() + 1, roundup)
 
@@ -773,12 +828,12 @@ def _convert_to_shares(assets: uint256, roundup: bool) -> uint256:
 @view
 def _convert_to_assets(shares: uint256, roundup: bool) -> uint256:
     """
-    @dev Internal conversion function (from shares to assets) with
-         support for rounding direction.
+    @dev An `internal` conversion function (from shares to assets)
+         with support for rounding direction.
     @param shares The 32-byte shares amount.
     @param roundup The Boolean variable that specifies whether
            to round up or not. The default `False` is round down.
-    @return uint256 The 32-byte assets amount.
+    @return uint256 The converted 32-byte assets amount.
     """
     return self._mul_div(shares, ERC4626(self).totalAssets() + 1, self.totalSupply + 10 ** convert(_DECIMALS_OFFSET, uint256), roundup)
 
@@ -786,20 +841,28 @@ def _convert_to_assets(shares: uint256, roundup: bool) -> uint256:
 @internal
 def _deposit(sender: address, receiver: address, assets: uint256, shares: uint256):
     """
-    @dev Internal function handling the `deposit` and `mint` common workflow.
-    @param sender The 20-byte sender addrress.
-    @param receiver The 20-byte receiver addrress.
+    @dev An `internal` function handling the `deposit` and `mint`
+         common workflow.
+    @param sender The 20-byte sender address.
+    @param receiver The 20-byte receiver address.
     @param assets The 32-byte assets amount.
-    @param assets The 32-byte shares amount.
+    @param shares The 32-byte shares amount.
     """
-    # If `asset` is an ERC-777, `transferFrom` can trigger
-    # a reenterancy before the transfer happens through the
-    # `tokensToSend` hook. On the other hand, the `tokenReceived`
-    # hook, that is triggered after the transfer, calls the vault,
-    # which is assumed not malicious. Thus, we need to do the
-    # transfer before we mint so that any reentrancy would happen
-    # before the assets are transferred and before the shares are
-    # minted, which is a valid state.
+    # If `asset` is an ERC-777, `transferFrom` can trigger a reentrancy
+    # before the transfer happens through the `tokensToSend` hook. On the
+    # other hand, the `tokenReceived` hook, that is triggered after the
+    # transfer, calls the vault which is assumed not to be malicious.
+    # Thus, we need to do the transfer before we mint so that any reentrancy
+    # would happen before the assets are transferred and before the shares
+    # are minted, which is a valid state.
+
+    # To deal with (potentially) non-compliant ERC-20 tokens that do have
+    # no return value, we use the kwarg `default_return_value` for external
+    # calls. This function was introduced in Vyper version 0.3.4. For more
+    # details see:
+    # - https://github.com/vyperlang/vyper/pull/2839,
+    # - https://github.com/vyperlang/vyper/issues/2812,
+    # - https://medium.com/coinmonks/missing-return-value-bug-at-least-130-tokens-affected-d67bf08521ca.
     assert asset.transferFrom(sender, self, assets, default_return_value=True), "ERC4626: transferFrom operation did not succeed"
     self._mint(receiver, shares)
     log Deposit(sender, receiver, assets, shares)
@@ -808,24 +871,32 @@ def _deposit(sender: address, receiver: address, assets: uint256, shares: uint25
 @internal
 def _withdraw(sender: address, receiver: address, owner: address, assets: uint256, shares: uint256):
     """
-    @dev Internal function handling the `withdraw` and `redeem` common workflow.
-    @param sender The 20-byte sender addrress.
-    @param receiver The 20-byte receiver addrress.
-    @param owner The 20-byte owner addrress.
+    @dev An `internal` function handling the `withdraw` and `redeem`
+         common workflow.
+    @param sender The 20-byte sender address.
+    @param receiver The 20-byte receiver address.
+    @param owner The 20-byte owner address.
     @param assets The 32-byte assets amount.
-    @param assets The 32-byte shares amount.
+    @param shares The 32-byte shares amount.
     """
     if (sender != owner):
         self._spend_allowance(owner, sender, shares)
 
-    # If `asset` is an ERC-777, `transfer` can trigger a reenterancy
+    # If `asset` is an ERC-777, `transfer` can trigger a reentrancy
     # after the transfer happens through the `tokensReceived` hook.
     # On the other hand, the `tokensToSend` hook, that is triggered
-    # before the transfer, calls the vault, which is assumed not malicious.
-    # Thus, we need to do the transfer after the burn so that any
-    # reentrancy would happen after the shares are burned and after
-    # the assets are transferred, which is a valid state.
+    # before the transfer, calls the vault, which is assumed not to
+    # be malicious. Thus, we need to do the transfer after the burn
+    # so that any reentrancy would happen after the shares are burned
+    # and after the assets are transferred, which is a valid state.
     self._burn(owner, shares)
+    # To deal with (potentially) non-compliant ERC-20 tokens that do have
+    # no return value, we use the kwarg `default_return_value` for external
+    # calls. This function was introduced in Vyper version 0.3.4. For more
+    # details see:
+    # - https://github.com/vyperlang/vyper/pull/2839,
+    # - https://github.com/vyperlang/vyper/issues/2812,
+    # - https://medium.com/coinmonks/missing-return-value-bug-at-least-130-tokens-affected-d67bf08521ca.
     assert asset.transfer(receiver, assets, default_return_value=True), "ERC4626: transfer operation did not succeed"
     log Withdraw(sender, receiver, owner, assets, shares)
 
@@ -835,8 +906,8 @@ def _withdraw(sender: address, receiver: address, owner: address, assets: uint25
 def _mul_div(x: uint256, y: uint256, denominator: uint256, roundup: bool) -> uint256:
     """
     @dev Sourced from {Math-mul_div}.
-    @notice See {Math-mul_div} for the
-            function docstring.
+    @notice See {Math-mul_div} for the function
+            docstring.
     """
     # Handle division by zero.
     assert denominator != empty(uint256), "Math: mul_div division by zero"

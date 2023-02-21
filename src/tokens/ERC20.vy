@@ -430,7 +430,7 @@ def permit(owner: address, spender: address, amount: uint256, deadline: uint256,
 
     current_nonce: uint256 = self.nonces[owner]
     self.nonces[owner] = unsafe_add(current_nonce, 1)
-    
+
     struct_hash: bytes32 = keccak256(_abi_encode(_PERMIT_TYPE_HASH, owner, spender, amount, current_nonce, deadline))
     hash: bytes32  = self._hash_typed_data_v4(struct_hash)
 
