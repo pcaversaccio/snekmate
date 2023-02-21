@@ -16,6 +16,12 @@ _MALLEABILITY_THRESHOLD: constant(bytes32) = 0x7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF5
 _SIGNATURE_INCREMENT: constant(bytes32) = 0x7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
 
 
+# @dev A Vyper contract cannot call directly between two `external` functions.
+# To bypass this, we can use an interface.
+interface IECDSA:
+    def to_data_with_intended_validator_hash(validator: address, data: Bytes[1024]) -> bytes32: pure
+
+
 @external
 @payable
 def __init__():
@@ -164,3 +170,33 @@ def to_typed_data_hash(domain_separator: bytes32, struct_hash: bytes32) -> bytes
     @return bytes32 The 32-byte Ethereum signed typed data.
     """
     return keccak256(concat(b"\x19\x01", domain_separator, struct_hash))
+
+
+
+@external
+@view
+def to_data_with_intended_validator_hash_self(data: Bytes[1024]) -> bytes32:
+    """
+    @dev Returns an Ethereum signed data with `self` as intended validator
+        and `data`.
+    @notice This method construct the data according to the version
+            0 of EIP-191 https://eips.ethereum.org/EIPS/eip-191.
+    @param data The data to be signed.
+    @return bytes32 The 32-byte Ethereum signed data.
+    """
+    return IECDSA(self).to_data_with_intended_validator_hash(self, data)
+
+
+@external
+@pure
+def to_data_with_intended_validator_hash(validator: address, data: Bytes[1024]) -> bytes32:
+    """
+    @dev Returns an Ethereum signed data with intended validator
+        from `validator` and `data`.
+    @notice This method construct the data according to the version
+            0 of EIP-191 https://eips.ethereum.org/EIPS/eip-191.
+    @param validator The address that the data should be validated against i.
+    @param data The data to be signed.
+    @return bytes32 The 32-byte Ethereum signed data.
+    """
+    return keccak256(concat(b"\x19\x00", convert(validator, bytes20), data))
