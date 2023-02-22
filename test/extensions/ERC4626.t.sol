@@ -98,7 +98,7 @@ contract ERC4626VaultTest is ERC4626Test {
         _underlying_ = address(underlying);
         _vault_ = ERC4626ExtendedAddr;
         _delta_ = 0;
-        _vaultMayBeEmpty = false;
+        _vaultMayBeEmpty = true;
         _unlimitedAmount = true;
     }
 
