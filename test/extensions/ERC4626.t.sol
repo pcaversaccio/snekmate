@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: WTFPL
 pragma solidity ^0.8.18;
 
-import {Test} from "forge-std/Test.sol";
+import {ERC4626Test} from "erc4626-tests/ERC4626.test.sol";
 import {VyperDeployer} from "utils/VyperDeployer.sol";
 
 import {ERC20Mock} from "../utils/mocks/ERC20Mock.sol";
 
 import {IERC4626Extended} from "./interfaces/IERC4626Extended.sol";
 
-contract ERC4626Test is Test {
+contract ERC4626VaultTest is ERC4626Test {
     string private constant _NAME = "TokenisedVaultMock";
     string private constant _NAME_UNDERLYING = "UnderlyingTokenMock";
     string private constant _SYMBOL = "TVM";
@@ -72,7 +72,7 @@ contract ERC4626Test is Test {
         uint256 shares
     );
 
-    function setUp() public {
+    function setUp() public override {
         bytes memory args = abi.encode(
             _NAME,
             _SYMBOL,
@@ -94,6 +94,12 @@ contract ERC4626Test is Test {
                 ERC4626ExtendedAddr
             )
         );
+
+        _underlying_ = address(underlying);
+        _vault_ = ERC4626ExtendedAddr;
+        _delta_ = 0;
+        _vaultMayBeEmpty = false;
+        _unlimitedAmount = true;
     }
 
     function testInitialSetup() public {
