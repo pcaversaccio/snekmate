@@ -30,7 +30,6 @@ contract ECDSATest is Test {
 
     address private self = address(this);
     address private zeroAddress = address(0);
-    address private deployedLibrary;
 
     /**
      * @dev Transforms a standard signature into an EIP-2098
@@ -50,9 +49,7 @@ contract ECDSATest is Test {
     }
 
     function setUp() public {
-        deployedLibrary = vyperDeployer.deployContract("src/utils/", "ECDSA");
-
-        ECDSA = IECDSA(deployedLibrary);
+        ECDSA = IECDSA(vyperDeployer.deployContract("src/utils/", "ECDSA"));
     }
 
     function testRecoverWithValidSignature() public {
@@ -255,6 +252,28 @@ contract ECDSATest is Test {
         assertEq(digest1, digest2);
     }
 
+    function testToDataWithIntendedValidatorHashSelf() public {
+        bytes memory data = new bytes(42);
+        bytes32 digest1 = ECDSA.to_data_with_intended_validator_hash_self(data);
+        bytes32 digest2 = keccak256(
+            abi.encodePacked("\x19\x00", address(ECDSA), data)
+        );
+        assertEq(digest1, digest2);
+    }
+
+    function testToDataWithIntendedValidatorHash() public {
+        address validator = makeAddr("intendedValidator");
+        bytes memory data = new bytes(42);
+        bytes32 digest1 = ECDSA.to_data_with_intended_validator_hash(
+            validator,
+            data
+        );
+        bytes32 digest2 = keccak256(
+            abi.encodePacked("\x19\x00", validator, data)
+        );
+        assertEq(digest1, digest2);
+    }
+
     function testFuzzRecoverWithValidSignature(
         string calldata signer,
         string calldata message
@@ -361,6 +380,16 @@ contract ECDSATest is Test {
         assertEq(digest1, digest2);
     }
 
+    function testFuzzToDataWithIntendedValidatorHashSelf(
+        bytes calldata data
+    ) public {
+        bytes32 digest1 = ECDSA.to_data_with_intended_validator_hash_self(data);
+        bytes32 digest2 = keccak256(
+            abi.encodePacked("\x19\x00", address(ECDSA), data)
+        );
+        assertEq(digest1, digest2);
+    }
+
     function testFuzzToDataWithIntendedValidatorHash(
         address validator,
         bytes calldata data
@@ -371,16 +400,6 @@ contract ECDSATest is Test {
         );
         bytes32 digest2 = keccak256(
             abi.encodePacked("\x19\x00", validator, data)
-        );
-        assertEq(digest1, digest2);
-    }
-
-    function testFuzzToDataWithIntendedValidatorHashSelf(bytes calldata data)
-        public
-    {
-        bytes32 digest1 = ECDSA.to_data_with_intended_validator_hash_self(data);
-        bytes32 digest2 = keccak256(
-            abi.encodePacked("\x19\x00", deployedLibrary, data)
         );
         assertEq(digest1, digest2);
     }
