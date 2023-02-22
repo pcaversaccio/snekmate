@@ -16,3 +16,6 @@
 [submodule "lib/murky"]
 	path = lib/murky
 	url = https://github.com/dmfxyz/murky.git
+[submodule "lib/erc4626-tests"]
+	path = lib/erc4626-tests
+	url = https://github.com/a16z/erc4626-tests
