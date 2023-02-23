@@ -39,15 +39,17 @@ contract ERC4626VaultTest is ERC4626Test {
         );
 
     /* solhint-disable var-name-mixedcase */
-    IERC4626Extended private ERC4626Extended;
+    IERC4626Extended private ERC4626ExtendedDecimalsOffset0;
+    IERC4626Extended private ERC4626ExtendedDecimalsOffset6;
+    IERC4626Extended private ERC4626ExtendedDecimalsOffset12;
+    IERC4626Extended private ERC4626ExtendedDecimalsOffset18;
     bytes32 private _CACHED_DOMAIN_SEPARATOR;
     /* solhint-enable var-name-mixedcase */
 
     address private deployer = address(vyperDeployer);
-    address private self = address(this);
-    address private zeroAddress = address(0);
+    address private underlyingAddr = address(underlying);
     // solhint-disable-next-line var-name-mixedcase
-    address private ERC4626ExtendedAddr;
+    address private ERC4626ExtendedDecimalsOffset0Addr;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
 
@@ -73,7 +75,7 @@ contract ERC4626VaultTest is ERC4626Test {
     );
 
     function setUp() public override {
-        bytes memory args = abi.encode(
+        bytes memory argsDecimalsOffset0 = abi.encode(
             _NAME,
             _SYMBOL,
             underlying,
@@ -81,30 +83,171 @@ contract ERC4626VaultTest is ERC4626Test {
             _NAME_EIP712,
             _VERSION_EIP712
         );
-        ERC4626Extended = IERC4626Extended(
-            vyperDeployer.deployContract("src/extensions/", "ERC4626", args)
+        ERC4626ExtendedDecimalsOffset0 = IERC4626Extended(
+            vyperDeployer.deployContract(
+                "src/extensions/",
+                "ERC4626",
+                argsDecimalsOffset0
+            )
         );
-        ERC4626ExtendedAddr = address(ERC4626Extended);
+        ERC4626ExtendedDecimalsOffset0Addr = address(
+            ERC4626ExtendedDecimalsOffset0
+        );
         _CACHED_DOMAIN_SEPARATOR = keccak256(
             abi.encode(
                 _TYPE_HASH,
                 keccak256(bytes(_NAME_EIP712)),
                 keccak256(bytes(_VERSION_EIP712)),
                 block.chainid,
-                ERC4626ExtendedAddr
+                ERC4626ExtendedDecimalsOffset0Addr
             )
         );
 
-        _underlying_ = address(underlying);
-        _vault_ = ERC4626ExtendedAddr;
+        bytes memory argsDecimalsOffset6 = abi.encode(
+            _NAME,
+            _SYMBOL,
+            underlying,
+            _DECIMALS_OFFSET + 6,
+            _NAME_EIP712,
+            _VERSION_EIP712
+        );
+        ERC4626ExtendedDecimalsOffset6 = IERC4626Extended(
+            vyperDeployer.deployContract(
+                "src/extensions/",
+                "ERC4626",
+                argsDecimalsOffset6
+            )
+        );
+
+        bytes memory argsDecimalsOffset12 = abi.encode(
+            _NAME,
+            _SYMBOL,
+            underlying,
+            _DECIMALS_OFFSET + 12,
+            _NAME_EIP712,
+            _VERSION_EIP712
+        );
+        ERC4626ExtendedDecimalsOffset12 = IERC4626Extended(
+            vyperDeployer.deployContract(
+                "src/extensions/",
+                "ERC4626",
+                argsDecimalsOffset12
+            )
+        );
+
+        bytes memory argsDecimalsOffset18 = abi.encode(
+            _NAME,
+            _SYMBOL,
+            underlying,
+            _DECIMALS_OFFSET + 18,
+            _NAME_EIP712,
+            _VERSION_EIP712
+        );
+        ERC4626ExtendedDecimalsOffset18 = IERC4626Extended(
+            vyperDeployer.deployContract(
+                "src/extensions/",
+                "ERC4626",
+                argsDecimalsOffset18
+            )
+        );
+
+        /**
+         * @dev ERC-4626 property tests (https://github.com/a16z/erc4626-tests) setup.
+         */
+        _underlying_ = underlyingAddr;
+        _vault_ = ERC4626ExtendedDecimalsOffset0Addr;
         _delta_ = 0;
         _vaultMayBeEmpty = true;
         _unlimitedAmount = true;
     }
 
     function testInitialSetup() public {
-        assertEq(ERC4626Extended.name(), _NAME);
-        assertEq(ERC4626Extended.decimals(), 18);
-        assertEq(ERC4626Extended.symbol(), _SYMBOL);
+        assertEq(ERC4626ExtendedDecimalsOffset0.name(), _NAME);
+        assertEq(ERC4626ExtendedDecimalsOffset0.symbol(), _SYMBOL);
+        assertEq(ERC4626ExtendedDecimalsOffset0.decimals(), 18);
+        assertEq(ERC4626ExtendedDecimalsOffset0.asset(), underlyingAddr);
+
+        assertEq(ERC4626ExtendedDecimalsOffset6.name(), _NAME);
+        assertEq(ERC4626ExtendedDecimalsOffset6.symbol(), _SYMBOL);
+        assertEq(ERC4626ExtendedDecimalsOffset6.decimals(), 18 + 6);
+        assertEq(ERC4626ExtendedDecimalsOffset6.asset(), underlyingAddr);
+
+        assertEq(ERC4626ExtendedDecimalsOffset12.name(), _NAME);
+        assertEq(ERC4626ExtendedDecimalsOffset12.symbol(), _SYMBOL);
+        assertEq(ERC4626ExtendedDecimalsOffset12.decimals(), 18 + 12);
+        assertEq(ERC4626ExtendedDecimalsOffset12.asset(), underlyingAddr);
+
+        assertEq(ERC4626ExtendedDecimalsOffset18.name(), _NAME);
+        assertEq(ERC4626ExtendedDecimalsOffset18.symbol(), _SYMBOL);
+        assertEq(ERC4626ExtendedDecimalsOffset18.decimals(), 18 + 18);
+        assertEq(ERC4626ExtendedDecimalsOffset18.asset(), underlyingAddr);
+
+        /**
+         * @dev Check the case where the asset has not yet been created.
+         */
+        bytes memory argsDecimalsOffsetEOA = abi.encode(
+            _NAME,
+            _SYMBOL,
+            makeAddr("someAccount"),
+            _DECIMALS_OFFSET + 3,
+            _NAME_EIP712,
+            _VERSION_EIP712
+        );
+        // solhint-disable-next-line var-name-mixedcase
+        IERC4626Extended ERC4626ExtendedDecimalsOffsetEOA = IERC4626Extended(
+            vyperDeployer.deployContract(
+                "src/extensions/",
+                "ERC4626",
+                argsDecimalsOffsetEOA
+            )
+        );
+        assertEq(ERC4626ExtendedDecimalsOffsetEOA.name(), _NAME);
+        assertEq(ERC4626ExtendedDecimalsOffsetEOA.symbol(), _SYMBOL);
+        assertEq(ERC4626ExtendedDecimalsOffsetEOA.decimals(), 18 + 3);
+        assertEq(
+            ERC4626ExtendedDecimalsOffsetEOA.asset(),
+            makeAddr("someAccount")
+        );
+
+        /**
+         * @dev Check the case where success is `False`.
+         */
+        bytes memory argsDecimalsOffsetNoDecimals = abi.encode(
+            _NAME,
+            _SYMBOL,
+            deployer,
+            _DECIMALS_OFFSET + 6,
+            _NAME_EIP712,
+            _VERSION_EIP712
+        );
+        // solhint-disable-next-line var-name-mixedcase
+        IERC4626Extended ERC4626ExtendedDecimalsOffsetNoDecimals = IERC4626Extended(
+                vyperDeployer.deployContract(
+                    "src/extensions/",
+                    "ERC4626",
+                    argsDecimalsOffsetNoDecimals
+                )
+            );
+        assertEq(ERC4626ExtendedDecimalsOffsetNoDecimals.name(), _NAME);
+        assertEq(ERC4626ExtendedDecimalsOffsetNoDecimals.symbol(), _SYMBOL);
+        assertEq(ERC4626ExtendedDecimalsOffsetNoDecimals.decimals(), 18 + 6);
+        assertEq(ERC4626ExtendedDecimalsOffsetNoDecimals.asset(), deployer);
+
+        bytes memory argsDecimalsOffsetOverflow = abi.encode(
+            _NAME,
+            _SYMBOL,
+            underlying,
+            type(uint8).max,
+            _NAME_EIP712,
+            _VERSION_EIP712
+        );
+        vm.expectRevert();
+        IERC4626Extended(
+            vyperDeployer.deployContract(
+                "src/extensions/",
+                "ERC4626",
+                argsDecimalsOffsetOverflow
+            )
+        );
     }
 }

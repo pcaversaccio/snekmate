@@ -807,7 +807,7 @@ def _try_get_underlying_decimals(underlying: ERC20) -> (bool, uint8):
     success, return_data = raw_call(underlying.address, method_id("decimals()"), max_outsize=32, is_static_call=True, revert_on_failure=False)
     if (success and (len(return_data) == 32) and (convert(return_data, uint256) <= convert(max_value(uint8), uint256))):
         return (True, convert(return_data, uint8))
-    return (success, empty(uint8))
+    return (False, empty(uint8))
 
 
 @internal
