@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: WTFPL
 pragma solidity ^0.8.18;
 
+import {Test} from "forge-std/Test.sol";
 import {ERC4626Test} from "erc4626-tests/ERC4626.test.sol";
 import {VyperDeployer} from "utils/VyperDeployer.sol";
 
@@ -17,6 +18,7 @@ contract ERC4626VaultTest is ERC4626Test {
     string private constant _NAME_EIP712 = "TokenisedVaultMock";
     string private constant _VERSION_EIP712 = "1";
     uint8 private constant _DECIMALS_OFFSET = 0;
+    uint256 private constant _INITIAL_SUPPLY_UNDERLYING = type(uint8).max;
     bytes32 private constant _TYPE_HASH =
         keccak256(
             bytes(
@@ -36,7 +38,7 @@ contract ERC4626VaultTest is ERC4626Test {
             _NAME_UNDERLYING,
             _SYMBOL_UNDERLYING,
             makeAddr("initialAccount"),
-            100
+            _INITIAL_SUPPLY_UNDERLYING
         );
 
     /* solhint-disable var-name-mixedcase */
@@ -1948,5 +1950,125 @@ contract ERC4626VaultTest is ERC4626Test {
             )
         );
         assertEq(ERC4626ExtendedDecimalsOffset0.DOMAIN_SEPARATOR(), digest);
+    }
+}
+
+contract ERC4626Invariants is Test {
+    string private constant _NAME = "TokenisedVaultMock";
+    string private constant _NAME_UNDERLYING = "UnderlyingTokenMock";
+    string private constant _SYMBOL = "TVM";
+    string private constant _SYMBOL_UNDERLYING = "UTM";
+    string private constant _NAME_EIP712 = "TokenisedVaultMock";
+    string private constant _VERSION_EIP712 = "1";
+    uint8 private constant _DECIMALS_OFFSET = 9;
+    uint256 private constant _INITIAL_SUPPLY_UNDERLYING = type(uint8).max;
+
+    VyperDeployer private vyperDeployer = new VyperDeployer();
+    address private deployer = address(vyperDeployer);
+    ERC20Mock private underlying =
+        new ERC20Mock(
+            _NAME_UNDERLYING,
+            _SYMBOL_UNDERLYING,
+            deployer,
+            _INITIAL_SUPPLY_UNDERLYING
+        );
+
+    // solhint-disable-next-line var-name-mixedcase
+    IERC4626Extended private ERC4626Extended;
+    ERC4626Handler private erc4626Handler;
+
+    function setUp() public {
+        bytes memory args = abi.encode(
+            _NAME,
+            _SYMBOL,
+            underlying,
+            _DECIMALS_OFFSET,
+            _NAME_EIP712,
+            _VERSION_EIP712
+        );
+        ERC4626Extended = IERC4626Extended(
+            vyperDeployer.deployContract("src/extensions/", "ERC4626", args)
+        );
+        erc4626Handler = new ERC4626Handler(ERC4626Extended);
+        targetContract(address(erc4626Handler));
+        targetSender(deployer);
+    }
+
+    function invariantTotalSupply() public {
+        assertEq(ERC4626Extended.totalSupply(), erc4626Handler.totalSupply());
+    }
+
+    function invariantTotalAssets() public {
+        assertEq(ERC4626Extended.totalAssets(), erc4626Handler.totalAssets());
+    }
+}
+
+contract ERC4626Handler {
+    uint256 public totalSupply;
+    uint256 public totalAssets;
+
+    IERC4626Extended private vault;
+
+    constructor(IERC4626Extended vault_) {
+        vault = vault_;
+    }
+
+    function transfer(address to, uint256 amount) public {
+        vault.transfer(to, amount);
+    }
+
+    function approve(address spender, uint256 amount) public {
+        vault.approve(spender, amount);
+    }
+
+    function transferFrom(address owner, address to, uint256 amount) public {
+        vault.transferFrom(owner, to, amount);
+    }
+
+    function permit(
+        address owner,
+        address spender,
+        uint256 value,
+        uint256 deadline,
+        uint8 v,
+        bytes32 r,
+        bytes32 s
+    ) public {
+        vault.permit(owner, spender, value, deadline, v, r, s);
+    }
+
+    function increase_allowance(address spender, uint256 addedAmount) public {
+        vault.increase_allowance(spender, addedAmount);
+    }
+
+    function decrease_allowance(
+        address spender,
+        uint256 subtractedAmount
+    ) public {
+        vault.decrease_allowance(spender, subtractedAmount);
+    }
+
+    function deposit(uint256 assets, address receiver) public {
+        uint256 shares = vault.deposit(assets, receiver);
+        totalSupply += shares;
+        totalAssets += assets;
+    }
+
+    function mint(uint256 shares, address receiver) public {
+        uint256 assets = vault.mint(shares, receiver);
+        totalSupply += shares;
+        totalAssets += assets;
+    }
+
+    function withdraw(uint256 assets, address receiver, address owner) public {
+        uint256 shares = vault.withdraw(assets, receiver, owner);
+        totalSupply -= shares;
+        totalAssets -= assets;
+    }
+
+    function redeem(uint256 shares, address receiver, address owner) public {
+        uint256 assets = vault.redeem(shares, receiver, owner);
+        totalSupply -= shares;
+        totalAssets -= assets;
     }
 }
