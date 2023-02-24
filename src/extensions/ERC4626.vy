@@ -803,7 +803,9 @@ def _try_get_underlying_decimals(underlying: ERC20) -> (bool, uint8):
     # 32 bytes for the return data in the return expression at the
     # end, we also return `False` for EOA wallets instead of reverting
     # (remember that the EVM always considers a call to an EOA as
-    # successful with return data `0x`).
+    # successful with return data `0x`). Furthermore, it is important
+    # to note that an external call via `raw_call` does not perform an
+    # external code size check on the target address.
     success, return_data = raw_call(underlying.address, method_id("decimals()"), max_outsize=32, is_static_call=True, revert_on_failure=False)
     if (success and (len(return_data) == 32) and (convert(return_data, uint256) <= convert(max_value(uint8), uint256))):
         return (True, convert(return_data, uint8))
@@ -863,6 +865,11 @@ def _deposit(sender: address, receiver: address, assets: uint256, shares: uint25
     # - https://github.com/vyperlang/vyper/pull/2839,
     # - https://github.com/vyperlang/vyper/issues/2812,
     # - https://medium.com/coinmonks/missing-return-value-bug-at-least-130-tokens-affected-d67bf08521ca.
+
+    # It is important to note that an external call via interface casting
+    # always performs an external code size check on the target address unless
+    # you add the kwarg `skip_contract_check=True`. If the check fails (i.e.
+    # the target address is an EOA), the call reverts.
     assert asset.transferFrom(sender, self, assets, default_return_value=True), "ERC4626: transferFrom operation did not succeed"
     self._mint(receiver, shares)
     log Deposit(sender, receiver, assets, shares)
@@ -885,11 +892,12 @@ def _withdraw(sender: address, receiver: address, owner: address, assets: uint25
     # If `asset` is an ERC-777, `transfer` can trigger a reentrancy
     # after the transfer happens through the `tokensReceived` hook.
     # On the other hand, the `tokensToSend` hook, that is triggered
-    # before the transfer, calls the vault, which is assumed not to
+    # before the transfer, calls the vault which is assumed not to
     # be malicious. Thus, we need to do the transfer after the burn
     # so that any reentrancy would happen after the shares are burned
     # and after the assets are transferred, which is a valid state.
     self._burn(owner, shares)
+
     # To deal with (potentially) non-compliant ERC-20 tokens that do have
     # no return value, we use the kwarg `default_return_value` for external
     # calls. This function was introduced in Vyper version 0.3.4. For more
@@ -897,6 +905,11 @@ def _withdraw(sender: address, receiver: address, owner: address, assets: uint25
     # - https://github.com/vyperlang/vyper/pull/2839,
     # - https://github.com/vyperlang/vyper/issues/2812,
     # - https://medium.com/coinmonks/missing-return-value-bug-at-least-130-tokens-affected-d67bf08521ca.
+
+    # It is important to note that an external call via interface casting
+    # always performs an external code size check on the target address unless
+    # you add the kwarg `skip_contract_check=True`. If the check fails (i.e.
+    # the target address is an EOA), the call reverts.
     assert asset.transfer(receiver, assets, default_return_value=True), "ERC4626: transfer operation did not succeed"
     log Withdraw(sender, receiver, owner, assets, shares)
 

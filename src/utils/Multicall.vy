@@ -69,6 +69,9 @@ def multicall(data: DynArray[Batch, max_value(uint8)]) -> DynArray[Result, max_v
          function returns successfully if required.
          Since this function uses `CALL`, the `msg.sender`
          will be the multicall contract itself.
+    @notice It is important to note that an external call
+            via `raw_call` does not perform an external code
+            size check on the target address.
     @param data The array of `Batch` structs.
     @return DynArray The array of `Result` structs.
     """
@@ -96,6 +99,9 @@ def multicall_value(data: DynArray[BatchValue, max_value(uint8)]) -> DynArray[Re
          if required. Since this function uses `CALL`,
          the `msg.sender` will be the multicall contract
          itself.
+    @notice It is important to note that an external call
+            via `raw_call` does not perform an external code
+            size check on the target address.
     @param data The array of `BatchValue` structs.
     @return DynArray The array of `Result` structs.
     """
@@ -131,6 +137,10 @@ def multicall_self(data: DynArray[BatchSelf, max_value(uint8)]) -> DynArray[Resu
             calls in one transaction. Since the `msg.sender` is
             preserved, it's equivalent to sending multiple transactions
             from an EOA (externally-owned account, i.e. non-contract account).
+
+            Furthermore, it is important to note that an external
+            call via `raw_call` does not perform an external code
+            size check on the target address.
     @param data The array of `BatchSelf` structs.
     @return DynArray The array of `Result` structs.
     """
@@ -164,6 +174,10 @@ def multicall_value_self(data: DynArray[BatchValueSelf, max_value(uint8)]) -> Dy
             calls in one transaction. Since the `msg.sender` is
             preserved, it's equivalent to sending multiple transactions
             from an EOA (externally-owned account, i.e. non-contract account).
+
+            Furthermore, it is important to note that an external
+            call via `raw_call` does not perform an external code
+            size check on the target address.
     @param data The array of `BatchValueSelf` structs.
     @return DynArray The array of `Result` structs.
     """
@@ -192,6 +206,9 @@ def multistaticcall(data: DynArray[Batch, max_value(uint8)]) -> DynArray[Result,
     """
     @dev Aggregates static function calls, ensuring that each
          function returns successfully if required.
+    @notice It is important to note that an external call
+            via `raw_call` does not perform an external code
+            size check on the target address.
     @param data The array of `Batch` structs.
     @return DynArray The array of `Result` structs.
     """
