@@ -5,6 +5,7 @@ import {ERC4626Test} from "erc4626-tests/ERC4626.test.sol";
 import {VyperDeployer} from "utils/VyperDeployer.sol";
 
 import {ERC20Mock} from "../utils/mocks/ERC20Mock.sol";
+import {ERC20DecimalsMock} from "./mocks/ERC20DecimalsMock.sol";
 
 import {IERC4626Extended} from "./interfaces/IERC4626Extended.sol";
 
@@ -247,6 +248,45 @@ contract ERC4626VaultTest is ERC4626Test {
         assertEq(ERC4626ExtendedDecimalsOffsetNoDecimals.decimals(), 18 + 6);
         assertEq(ERC4626ExtendedDecimalsOffsetNoDecimals.asset(), deployer);
 
+        /**
+         * @dev Check the case where the return value is above the
+         * maximum value of the type `uint8`.
+         */
+        address erc20DecimalsMock = address(new ERC20DecimalsMock());
+        bytes memory argsDecimalsOffsetTooHighDecimals = abi.encode(
+            _NAME,
+            _SYMBOL,
+            erc20DecimalsMock,
+            _DECIMALS_OFFSET + 9,
+            _NAME_EIP712,
+            _VERSION_EIP712
+        );
+        // solhint-disable-next-line var-name-mixedcase
+        IERC4626Extended ERC4626ExtendedDecimalsOffsetTooHighDecimals = IERC4626Extended(
+                vyperDeployer.deployContract(
+                    "src/extensions/",
+                    "ERC4626",
+                    argsDecimalsOffsetTooHighDecimals
+                )
+            );
+        assertEq(ERC4626ExtendedDecimalsOffsetTooHighDecimals.name(), _NAME);
+        assertEq(
+            ERC4626ExtendedDecimalsOffsetTooHighDecimals.symbol(),
+            _SYMBOL
+        );
+        assertEq(
+            ERC4626ExtendedDecimalsOffsetTooHighDecimals.decimals(),
+            18 + 9
+        );
+        assertEq(
+            ERC4626ExtendedDecimalsOffsetTooHighDecimals.asset(),
+            erc20DecimalsMock
+        );
+
+        /**
+         * @dev Check the case where calculated `decimals` value overflows
+         * the `uint8` type.
+         */
         bytes memory argsDecimalsOffsetOverflow = abi.encode(
             _NAME,
             _SYMBOL,
@@ -339,7 +379,7 @@ contract ERC4626VaultTest is ERC4626Test {
         vm.expectEmit(
             true,
             true,
-            true,
+            false,
             true,
             ERC4626ExtendedDecimalsOffset0Addr
         );
@@ -359,7 +399,7 @@ contract ERC4626VaultTest is ERC4626Test {
         vm.expectEmit(
             true,
             true,
-            true,
+            false,
             true,
             ERC4626ExtendedDecimalsOffset6Addr
         );
@@ -379,7 +419,7 @@ contract ERC4626VaultTest is ERC4626Test {
         vm.expectEmit(
             true,
             true,
-            true,
+            false,
             true,
             ERC4626ExtendedDecimalsOffset12Addr
         );
@@ -399,7 +439,7 @@ contract ERC4626VaultTest is ERC4626Test {
         vm.expectEmit(
             true,
             true,
-            true,
+            false,
             true,
             ERC4626ExtendedDecimalsOffset18Addr
         );
@@ -444,6 +484,434 @@ contract ERC4626VaultTest is ERC4626Test {
             ERC4626ExtendedDecimalsOffset18.totalSupply(),
             shares * 10 ** 18
         );
+        vm.stopPrank();
+    }
+
+    function testEmptyVaultMint() public {
+        address holder = makeAddr("holder");
+        address receiver = makeAddr("receiver");
+        uint256 assets = 1;
+        uint256 shares = 1;
+        vm.startPrank(holder);
+        underlying.mint(holder, type(uint16).max);
+        underlying.approve(
+            ERC4626ExtendedDecimalsOffset0Addr,
+            type(uint256).max
+        );
+        underlying.approve(
+            ERC4626ExtendedDecimalsOffset6Addr,
+            type(uint256).max
+        );
+        underlying.approve(
+            ERC4626ExtendedDecimalsOffset12Addr,
+            type(uint256).max
+        );
+        underlying.approve(
+            ERC4626ExtendedDecimalsOffset18Addr,
+            type(uint256).max
+        );
+
+        assertEq(ERC4626ExtendedDecimalsOffset0.totalAssets(), 0);
+        assertEq(
+            ERC4626ExtendedDecimalsOffset0.maxMint(receiver),
+            type(uint256).max
+        );
+        assertEq(ERC4626ExtendedDecimalsOffset0.previewMint(shares), assets);
+
+        assertEq(ERC4626ExtendedDecimalsOffset6.totalAssets(), 0);
+        assertEq(
+            ERC4626ExtendedDecimalsOffset6.maxMint(receiver),
+            type(uint256).max
+        );
+        assertEq(
+            ERC4626ExtendedDecimalsOffset6.previewMint(shares * 10 ** 6),
+            assets
+        );
+
+        assertEq(ERC4626ExtendedDecimalsOffset12.totalAssets(), 0);
+        assertEq(
+            ERC4626ExtendedDecimalsOffset12.maxMint(receiver),
+            type(uint256).max
+        );
+        assertEq(
+            ERC4626ExtendedDecimalsOffset12.previewMint(shares * 10 ** 12),
+            assets
+        );
+
+        assertEq(ERC4626ExtendedDecimalsOffset18.totalAssets(), 0);
+        assertEq(
+            ERC4626ExtendedDecimalsOffset18.maxMint(receiver),
+            type(uint256).max
+        );
+        assertEq(
+            ERC4626ExtendedDecimalsOffset18.previewMint(shares * 10 ** 18),
+            assets
+        );
+
+        vm.expectEmit(true, true, false, true, underlyingAddr);
+        emit Transfer(holder, ERC4626ExtendedDecimalsOffset0Addr, assets);
+        vm.expectEmit(
+            true,
+            true,
+            false,
+            true,
+            ERC4626ExtendedDecimalsOffset0Addr
+        );
+        emit Transfer(zeroAddress, receiver, shares);
+        vm.expectEmit(
+            true,
+            true,
+            false,
+            true,
+            ERC4626ExtendedDecimalsOffset0Addr
+        );
+        emit Deposit(holder, receiver, assets, shares);
+        ERC4626ExtendedDecimalsOffset0.mint(shares, receiver);
+
+        vm.expectEmit(true, true, false, true, underlyingAddr);
+        emit Transfer(holder, ERC4626ExtendedDecimalsOffset6Addr, assets);
+        vm.expectEmit(
+            true,
+            true,
+            false,
+            true,
+            ERC4626ExtendedDecimalsOffset6Addr
+        );
+        emit Transfer(zeroAddress, receiver, shares * 10 ** 6);
+        vm.expectEmit(
+            true,
+            true,
+            false,
+            true,
+            ERC4626ExtendedDecimalsOffset6Addr
+        );
+        emit Deposit(holder, receiver, assets, shares * 10 ** 6);
+        ERC4626ExtendedDecimalsOffset6.mint(shares * 10 ** 6, receiver);
+
+        vm.expectEmit(true, true, false, true, underlyingAddr);
+        emit Transfer(holder, ERC4626ExtendedDecimalsOffset12Addr, assets);
+        vm.expectEmit(
+            true,
+            true,
+            false,
+            true,
+            ERC4626ExtendedDecimalsOffset12Addr
+        );
+        emit Transfer(zeroAddress, receiver, shares * 10 ** 12);
+        vm.expectEmit(
+            true,
+            true,
+            false,
+            true,
+            ERC4626ExtendedDecimalsOffset12Addr
+        );
+        emit Deposit(holder, receiver, assets, shares * 10 ** 12);
+        ERC4626ExtendedDecimalsOffset12.mint(shares * 10 ** 12, receiver);
+
+        vm.expectEmit(true, true, false, true, underlyingAddr);
+        emit Transfer(holder, ERC4626ExtendedDecimalsOffset18Addr, assets);
+        vm.expectEmit(
+            true,
+            true,
+            false,
+            true,
+            ERC4626ExtendedDecimalsOffset18Addr
+        );
+        emit Transfer(zeroAddress, receiver, shares * 10 ** 18);
+        vm.expectEmit(
+            true,
+            true,
+            false,
+            true,
+            ERC4626ExtendedDecimalsOffset18Addr
+        );
+        emit Deposit(holder, receiver, assets, shares * 10 ** 18);
+        ERC4626ExtendedDecimalsOffset18.mint(shares * 10 ** 18, receiver);
+
+        assertEq(underlying.balanceOf(holder), type(uint16).max - 4);
+        assertEq(ERC4626ExtendedDecimalsOffset0.totalAssets(), assets);
+        assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(holder), 0);
+        assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(receiver), shares);
+        assertEq(ERC4626ExtendedDecimalsOffset0.totalSupply(), shares);
+
+        assertEq(ERC4626ExtendedDecimalsOffset6.totalAssets(), assets);
+        assertEq(ERC4626ExtendedDecimalsOffset6.balanceOf(holder), 0);
+        assertEq(
+            ERC4626ExtendedDecimalsOffset6.balanceOf(receiver),
+            shares * 10 ** 6
+        );
+        assertEq(
+            ERC4626ExtendedDecimalsOffset6.totalSupply(),
+            shares * 10 ** 6
+        );
+
+        assertEq(ERC4626ExtendedDecimalsOffset12.totalAssets(), assets);
+        assertEq(ERC4626ExtendedDecimalsOffset12.balanceOf(holder), 0);
+        assertEq(
+            ERC4626ExtendedDecimalsOffset12.balanceOf(receiver),
+            shares * 10 ** 12
+        );
+        assertEq(
+            ERC4626ExtendedDecimalsOffset12.totalSupply(),
+            shares * 10 ** 12
+        );
+
+        assertEq(ERC4626ExtendedDecimalsOffset18.totalAssets(), assets);
+        assertEq(ERC4626ExtendedDecimalsOffset18.balanceOf(holder), 0);
+        assertEq(
+            ERC4626ExtendedDecimalsOffset18.balanceOf(receiver),
+            shares * 10 ** 18
+        );
+        assertEq(
+            ERC4626ExtendedDecimalsOffset18.totalSupply(),
+            shares * 10 ** 18
+        );
+        vm.stopPrank();
+    }
+
+    function testEmptyVaultwithdraw() public {
+        address holder = makeAddr("holder");
+        address receiver = makeAddr("receiver");
+        vm.startPrank(holder);
+        assertEq(ERC4626ExtendedDecimalsOffset0.totalAssets(), 0);
+        assertEq(ERC4626ExtendedDecimalsOffset0.maxWithdraw(holder), 0);
+        assertEq(ERC4626ExtendedDecimalsOffset0.previewWithdraw(0), 0);
+
+        assertEq(ERC4626ExtendedDecimalsOffset6.totalAssets(), 0);
+        assertEq(ERC4626ExtendedDecimalsOffset6.maxWithdraw(holder), 0);
+        assertEq(ERC4626ExtendedDecimalsOffset6.previewWithdraw(0), 0);
+
+        assertEq(ERC4626ExtendedDecimalsOffset12.totalAssets(), 0);
+        assertEq(ERC4626ExtendedDecimalsOffset12.maxWithdraw(holder), 0);
+        assertEq(ERC4626ExtendedDecimalsOffset12.previewWithdraw(0), 0);
+
+        assertEq(ERC4626ExtendedDecimalsOffset18.totalAssets(), 0);
+        assertEq(ERC4626ExtendedDecimalsOffset18.maxWithdraw(holder), 0);
+        assertEq(ERC4626ExtendedDecimalsOffset18.previewWithdraw(0), 0);
+
+        vm.expectEmit(
+            true,
+            true,
+            false,
+            true,
+            ERC4626ExtendedDecimalsOffset0Addr
+        );
+        emit Transfer(holder, zeroAddress, 0);
+        vm.expectEmit(true, true, false, true, underlyingAddr);
+        emit Transfer(ERC4626ExtendedDecimalsOffset0Addr, receiver, 0);
+        vm.expectEmit(
+            true,
+            true,
+            true,
+            true,
+            ERC4626ExtendedDecimalsOffset0Addr
+        );
+        emit Withdraw(holder, receiver, holder, 0, 0);
+        ERC4626ExtendedDecimalsOffset0.withdraw(0, receiver, holder);
+
+        vm.expectEmit(
+            true,
+            true,
+            false,
+            true,
+            ERC4626ExtendedDecimalsOffset6Addr
+        );
+        emit Transfer(holder, zeroAddress, 0);
+        vm.expectEmit(true, true, false, true, underlyingAddr);
+        emit Transfer(ERC4626ExtendedDecimalsOffset6Addr, receiver, 0);
+        vm.expectEmit(
+            true,
+            true,
+            true,
+            true,
+            ERC4626ExtendedDecimalsOffset6Addr
+        );
+        emit Withdraw(holder, receiver, holder, 0, 0);
+        ERC4626ExtendedDecimalsOffset6.withdraw(0, receiver, holder);
+
+        vm.expectEmit(
+            true,
+            true,
+            false,
+            true,
+            ERC4626ExtendedDecimalsOffset12Addr
+        );
+        emit Transfer(holder, zeroAddress, 0);
+        vm.expectEmit(true, true, false, true, underlyingAddr);
+        emit Transfer(ERC4626ExtendedDecimalsOffset12Addr, receiver, 0);
+        vm.expectEmit(
+            true,
+            true,
+            true,
+            true,
+            ERC4626ExtendedDecimalsOffset12Addr
+        );
+        emit Withdraw(holder, receiver, holder, 0, 0);
+        ERC4626ExtendedDecimalsOffset12.withdraw(0, receiver, holder);
+
+        vm.expectEmit(
+            true,
+            true,
+            false,
+            true,
+            ERC4626ExtendedDecimalsOffset18Addr
+        );
+        emit Transfer(holder, zeroAddress, 0);
+        vm.expectEmit(true, true, false, true, underlyingAddr);
+        emit Transfer(ERC4626ExtendedDecimalsOffset18Addr, receiver, 0);
+        vm.expectEmit(
+            true,
+            true,
+            true,
+            true,
+            ERC4626ExtendedDecimalsOffset18Addr
+        );
+        emit Withdraw(holder, receiver, holder, 0, 0);
+        ERC4626ExtendedDecimalsOffset18.withdraw(0, receiver, holder);
+
+        assertEq(underlying.balanceOf(holder), 0);
+        assertEq(ERC4626ExtendedDecimalsOffset0.totalAssets(), 0);
+        assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(holder), 0);
+        assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(receiver), 0);
+        assertEq(ERC4626ExtendedDecimalsOffset0.totalSupply(), 0);
+
+        assertEq(ERC4626ExtendedDecimalsOffset6.totalAssets(), 0);
+        assertEq(ERC4626ExtendedDecimalsOffset6.balanceOf(holder), 0);
+        assertEq(ERC4626ExtendedDecimalsOffset6.balanceOf(receiver), 0);
+        assertEq(ERC4626ExtendedDecimalsOffset6.totalSupply(), 0);
+
+        assertEq(ERC4626ExtendedDecimalsOffset12.totalAssets(), 0);
+        assertEq(ERC4626ExtendedDecimalsOffset12.balanceOf(holder), 0);
+        assertEq(ERC4626ExtendedDecimalsOffset12.balanceOf(receiver), 0);
+        assertEq(ERC4626ExtendedDecimalsOffset12.totalSupply(), 0);
+
+        assertEq(ERC4626ExtendedDecimalsOffset18.totalAssets(), 0);
+        assertEq(ERC4626ExtendedDecimalsOffset18.balanceOf(holder), 0);
+        assertEq(ERC4626ExtendedDecimalsOffset18.balanceOf(receiver), 0);
+        assertEq(ERC4626ExtendedDecimalsOffset18.totalSupply(), 0);
+        vm.stopPrank();
+    }
+
+    function testEmptyVaultRedeem() public {
+        address holder = makeAddr("holder");
+        address receiver = makeAddr("receiver");
+        vm.startPrank(holder);
+        assertEq(ERC4626ExtendedDecimalsOffset0.totalAssets(), 0);
+        assertEq(ERC4626ExtendedDecimalsOffset0.maxRedeem(holder), 0);
+        assertEq(ERC4626ExtendedDecimalsOffset0.previewRedeem(0), 0);
+
+        assertEq(ERC4626ExtendedDecimalsOffset6.totalAssets(), 0);
+        assertEq(ERC4626ExtendedDecimalsOffset6.maxRedeem(holder), 0);
+        assertEq(ERC4626ExtendedDecimalsOffset6.previewRedeem(0), 0);
+
+        assertEq(ERC4626ExtendedDecimalsOffset12.totalAssets(), 0);
+        assertEq(ERC4626ExtendedDecimalsOffset12.maxRedeem(holder), 0);
+        assertEq(ERC4626ExtendedDecimalsOffset12.previewRedeem(0), 0);
+
+        assertEq(ERC4626ExtendedDecimalsOffset18.totalAssets(), 0);
+        assertEq(ERC4626ExtendedDecimalsOffset18.maxRedeem(holder), 0);
+        assertEq(ERC4626ExtendedDecimalsOffset18.previewRedeem(0), 0);
+
+        vm.expectEmit(
+            true,
+            true,
+            false,
+            true,
+            ERC4626ExtendedDecimalsOffset0Addr
+        );
+        emit Transfer(holder, zeroAddress, 0);
+        vm.expectEmit(true, true, false, true, underlyingAddr);
+        emit Transfer(ERC4626ExtendedDecimalsOffset0Addr, receiver, 0);
+        vm.expectEmit(
+            true,
+            true,
+            true,
+            true,
+            ERC4626ExtendedDecimalsOffset0Addr
+        );
+        emit Withdraw(holder, receiver, holder, 0, 0);
+        ERC4626ExtendedDecimalsOffset0.redeem(0, receiver, holder);
+
+        vm.expectEmit(
+            true,
+            true,
+            false,
+            true,
+            ERC4626ExtendedDecimalsOffset6Addr
+        );
+        emit Transfer(holder, zeroAddress, 0);
+        vm.expectEmit(true, true, false, true, underlyingAddr);
+        emit Transfer(ERC4626ExtendedDecimalsOffset6Addr, receiver, 0);
+        vm.expectEmit(
+            true,
+            true,
+            true,
+            true,
+            ERC4626ExtendedDecimalsOffset6Addr
+        );
+        emit Withdraw(holder, receiver, holder, 0, 0);
+        ERC4626ExtendedDecimalsOffset6.redeem(0, receiver, holder);
+
+        vm.expectEmit(
+            true,
+            true,
+            false,
+            true,
+            ERC4626ExtendedDecimalsOffset12Addr
+        );
+        emit Transfer(holder, zeroAddress, 0);
+        vm.expectEmit(true, true, false, true, underlyingAddr);
+        emit Transfer(ERC4626ExtendedDecimalsOffset12Addr, receiver, 0);
+        vm.expectEmit(
+            true,
+            true,
+            true,
+            true,
+            ERC4626ExtendedDecimalsOffset12Addr
+        );
+        emit Withdraw(holder, receiver, holder, 0, 0);
+        ERC4626ExtendedDecimalsOffset12.redeem(0, receiver, holder);
+
+        vm.expectEmit(
+            true,
+            true,
+            false,
+            true,
+            ERC4626ExtendedDecimalsOffset18Addr
+        );
+        emit Transfer(holder, zeroAddress, 0);
+        vm.expectEmit(true, true, false, true, underlyingAddr);
+        emit Transfer(ERC4626ExtendedDecimalsOffset18Addr, receiver, 0);
+        vm.expectEmit(
+            true,
+            true,
+            true,
+            true,
+            ERC4626ExtendedDecimalsOffset18Addr
+        );
+        emit Withdraw(holder, receiver, holder, 0, 0);
+        ERC4626ExtendedDecimalsOffset18.redeem(0, receiver, holder);
+
+        assertEq(underlying.balanceOf(holder), 0);
+        assertEq(ERC4626ExtendedDecimalsOffset0.totalAssets(), 0);
+        assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(holder), 0);
+        assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(receiver), 0);
+        assertEq(ERC4626ExtendedDecimalsOffset0.totalSupply(), 0);
+
+        assertEq(ERC4626ExtendedDecimalsOffset6.totalAssets(), 0);
+        assertEq(ERC4626ExtendedDecimalsOffset6.balanceOf(holder), 0);
+        assertEq(ERC4626ExtendedDecimalsOffset6.balanceOf(receiver), 0);
+        assertEq(ERC4626ExtendedDecimalsOffset6.totalSupply(), 0);
+
+        assertEq(ERC4626ExtendedDecimalsOffset12.totalAssets(), 0);
+        assertEq(ERC4626ExtendedDecimalsOffset12.balanceOf(holder), 0);
+        assertEq(ERC4626ExtendedDecimalsOffset12.balanceOf(receiver), 0);
+        assertEq(ERC4626ExtendedDecimalsOffset12.totalSupply(), 0);
+
+        assertEq(ERC4626ExtendedDecimalsOffset18.totalAssets(), 0);
+        assertEq(ERC4626ExtendedDecimalsOffset18.balanceOf(holder), 0);
+        assertEq(ERC4626ExtendedDecimalsOffset18.balanceOf(receiver), 0);
+        assertEq(ERC4626ExtendedDecimalsOffset18.totalSupply(), 0);
         vm.stopPrank();
     }
 }
