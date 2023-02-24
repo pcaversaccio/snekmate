@@ -48,6 +48,7 @@ contract ERC4626VaultTest is ERC4626Test {
     /* solhint-enable var-name-mixedcase */
 
     address private deployer = address(vyperDeployer);
+    address private self = address(this);
     address private underlyingAddr = address(underlying);
     address private zeroAddress = address(0);
     /* solhint-disable var-name-mixedcase */
@@ -913,5 +914,1039 @@ contract ERC4626VaultTest is ERC4626Test {
         assertEq(ERC4626ExtendedDecimalsOffset18.balanceOf(receiver), 0);
         assertEq(ERC4626ExtendedDecimalsOffset18.totalSupply(), 0);
         vm.stopPrank();
+    }
+
+    /**
+     * @dev For the remaining tests, we only use the test contract `ERC4626ExtendedDecimalsOffset0`,
+     * as we have correctly proven the decimals offset behaviour above.
+     * @notice Forked and adjusted accordingly from here:
+     * https://github.com/transmissions11/solmate/blob/main/src/test/ERC4626.t.sol.
+     */
+    function testSingleDepositWithdraw() public {
+        address alice = makeAddr("alice");
+        uint256 assets = 100;
+        vm.startPrank(alice);
+        underlying.mint(alice, assets);
+        underlying.approve(ERC4626ExtendedDecimalsOffset0Addr, assets);
+        assertEq(
+            underlying.allowance(alice, ERC4626ExtendedDecimalsOffset0Addr),
+            assets
+        );
+        uint256 alicePreDepositBalance = underlying.balanceOf(alice);
+
+        vm.expectEmit(true, true, false, true, underlyingAddr);
+        emit Transfer(alice, ERC4626ExtendedDecimalsOffset0Addr, assets);
+        vm.expectEmit(
+            true,
+            true,
+            false,
+            true,
+            ERC4626ExtendedDecimalsOffset0Addr
+        );
+        emit Transfer(zeroAddress, alice, assets);
+        vm.expectEmit(
+            true,
+            true,
+            false,
+            true,
+            ERC4626ExtendedDecimalsOffset0Addr
+        );
+        emit Deposit(alice, alice, assets, assets);
+        uint256 aliceShareAmount = ERC4626ExtendedDecimalsOffset0.deposit(
+            assets,
+            alice
+        );
+
+        assertEq(assets, aliceShareAmount);
+        assertEq(
+            ERC4626ExtendedDecimalsOffset0.previewWithdraw(aliceShareAmount),
+            assets
+        );
+        assertEq(
+            ERC4626ExtendedDecimalsOffset0.previewDeposit(assets),
+            aliceShareAmount
+        );
+        assertEq(
+            ERC4626ExtendedDecimalsOffset0.totalSupply(),
+            aliceShareAmount
+        );
+        assertEq(ERC4626ExtendedDecimalsOffset0.totalAssets(), assets);
+        assertEq(
+            ERC4626ExtendedDecimalsOffset0.balanceOf(alice),
+            aliceShareAmount
+        );
+        assertEq(
+            ERC4626ExtendedDecimalsOffset0.convertToAssets(
+                ERC4626ExtendedDecimalsOffset0.balanceOf(alice)
+            ),
+            assets
+        );
+        assertEq(underlying.balanceOf(alice), alicePreDepositBalance - assets);
+
+        vm.expectEmit(
+            true,
+            true,
+            false,
+            true,
+            ERC4626ExtendedDecimalsOffset0Addr
+        );
+        emit Transfer(alice, zeroAddress, assets);
+        vm.expectEmit(true, true, false, true, underlyingAddr);
+        emit Transfer(ERC4626ExtendedDecimalsOffset0Addr, alice, assets);
+        vm.expectEmit(
+            true,
+            true,
+            true,
+            true,
+            ERC4626ExtendedDecimalsOffset0Addr
+        );
+        emit Withdraw(alice, alice, alice, assets, assets);
+        ERC4626ExtendedDecimalsOffset0.withdraw(assets, alice, alice);
+
+        assertEq(ERC4626ExtendedDecimalsOffset0.totalAssets(), 0);
+        assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(alice), 0);
+        assertEq(
+            ERC4626ExtendedDecimalsOffset0.convertToAssets(
+                ERC4626ExtendedDecimalsOffset0.balanceOf(alice)
+            ),
+            0
+        );
+        assertEq(underlying.balanceOf(alice), alicePreDepositBalance);
+        vm.stopPrank();
+    }
+
+    /**
+     * @notice Forked and adjusted accordingly from here:
+     * https://github.com/transmissions11/solmate/blob/main/src/test/ERC4626.t.sol.
+     */
+    function testSingleMintRedeem() public {
+        address alice = makeAddr("alice");
+        uint256 shares = 100;
+        vm.startPrank(alice);
+        underlying.mint(alice, shares);
+        underlying.approve(ERC4626ExtendedDecimalsOffset0Addr, shares);
+        assertEq(
+            underlying.allowance(alice, ERC4626ExtendedDecimalsOffset0Addr),
+            shares
+        );
+        uint256 alicePreDepositBalance = underlying.balanceOf(alice);
+
+        vm.expectEmit(true, true, false, true, underlyingAddr);
+        emit Transfer(alice, ERC4626ExtendedDecimalsOffset0Addr, shares);
+        vm.expectEmit(
+            true,
+            true,
+            false,
+            true,
+            ERC4626ExtendedDecimalsOffset0Addr
+        );
+        emit Transfer(zeroAddress, alice, shares);
+        vm.expectEmit(
+            true,
+            true,
+            false,
+            true,
+            ERC4626ExtendedDecimalsOffset0Addr
+        );
+        emit Deposit(alice, alice, shares, shares);
+        uint256 aliceAssetAmount = ERC4626ExtendedDecimalsOffset0.mint(
+            shares,
+            alice
+        );
+
+        assertEq(aliceAssetAmount, shares);
+        assertEq(
+            ERC4626ExtendedDecimalsOffset0.previewWithdraw(aliceAssetAmount),
+            shares
+        );
+        assertEq(
+            ERC4626ExtendedDecimalsOffset0.previewDeposit(shares),
+            aliceAssetAmount
+        );
+        assertEq(
+            ERC4626ExtendedDecimalsOffset0.totalSupply(),
+            aliceAssetAmount
+        );
+        assertEq(ERC4626ExtendedDecimalsOffset0.totalAssets(), shares);
+        assertEq(
+            ERC4626ExtendedDecimalsOffset0.balanceOf(alice),
+            aliceAssetAmount
+        );
+        assertEq(
+            ERC4626ExtendedDecimalsOffset0.convertToAssets(
+                ERC4626ExtendedDecimalsOffset0.balanceOf(alice)
+            ),
+            shares
+        );
+        assertEq(underlying.balanceOf(alice), alicePreDepositBalance - shares);
+
+        vm.expectEmit(
+            true,
+            true,
+            false,
+            true,
+            ERC4626ExtendedDecimalsOffset0Addr
+        );
+        emit Transfer(alice, zeroAddress, shares);
+        vm.expectEmit(true, true, false, true, underlyingAddr);
+        emit Transfer(ERC4626ExtendedDecimalsOffset0Addr, alice, shares);
+        vm.expectEmit(
+            true,
+            true,
+            true,
+            true,
+            ERC4626ExtendedDecimalsOffset0Addr
+        );
+        emit Withdraw(alice, alice, alice, shares, shares);
+        ERC4626ExtendedDecimalsOffset0.redeem(shares, alice, alice);
+
+        assertEq(ERC4626ExtendedDecimalsOffset0.totalAssets(), 0);
+        assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(alice), 0);
+        assertEq(
+            ERC4626ExtendedDecimalsOffset0.convertToAssets(
+                ERC4626ExtendedDecimalsOffset0.balanceOf(alice)
+            ),
+            0
+        );
+        assertEq(underlying.balanceOf(alice), alicePreDepositBalance);
+        vm.stopPrank();
+    }
+
+    /**
+     * @notice Forked and adjusted accordingly from here:
+     * https://github.com/transmissions11/solmate/blob/main/src/test/ERC4626.t.sol.
+     */
+    function testMultipleMintDepositRedeemWithdraw() public {
+        address alice = makeAddr("alice");
+        address bob = makeAddr("bob");
+        uint256 initialAmountAlice = 4000;
+        uint256 initialAmountBob = 7001;
+        uint256 mutationUnderlyingAmount = 3000;
+        vm.startPrank(alice);
+        underlying.mint(alice, initialAmountAlice);
+        underlying.approve(
+            ERC4626ExtendedDecimalsOffset0Addr,
+            initialAmountAlice
+        );
+        assertEq(
+            underlying.allowance(alice, ERC4626ExtendedDecimalsOffset0Addr),
+            initialAmountAlice
+        );
+        vm.stopPrank();
+
+        vm.startPrank(bob);
+        underlying.mint(bob, initialAmountBob);
+        underlying.approve(
+            ERC4626ExtendedDecimalsOffset0Addr,
+            initialAmountBob
+        );
+        assertEq(
+            underlying.allowance(bob, ERC4626ExtendedDecimalsOffset0Addr),
+            initialAmountBob
+        );
+        vm.stopPrank();
+
+        /**
+         * @dev 1. Alice mints 2000 shares (costs 2000 tokens).
+         */
+        vm.startPrank(alice);
+        uint256 aliceUnderlyingAmount = ERC4626ExtendedDecimalsOffset0.mint(
+            2000,
+            alice
+        );
+        uint256 aliceShareAmount = ERC4626ExtendedDecimalsOffset0
+            .previewDeposit(aliceUnderlyingAmount);
+        assertEq(aliceShareAmount, 2000);
+        assertEq(
+            ERC4626ExtendedDecimalsOffset0.balanceOf(alice),
+            aliceShareAmount
+        );
+        assertEq(
+            ERC4626ExtendedDecimalsOffset0.convertToAssets(
+                ERC4626ExtendedDecimalsOffset0.balanceOf(alice)
+            ),
+            aliceUnderlyingAmount
+        );
+        assertEq(
+            ERC4626ExtendedDecimalsOffset0.convertToShares(
+                aliceUnderlyingAmount
+            ),
+            ERC4626ExtendedDecimalsOffset0.balanceOf(alice)
+        );
+        assertEq(aliceUnderlyingAmount, 2000);
+        assertEq(
+            ERC4626ExtendedDecimalsOffset0.totalSupply(),
+            aliceShareAmount
+        );
+        assertEq(
+            ERC4626ExtendedDecimalsOffset0.totalAssets(),
+            aliceUnderlyingAmount
+        );
+        vm.stopPrank();
+
+        /**
+         * @dev 2. Bob deposits 4000 tokens (mints 4000 shares).
+         */
+        vm.startPrank(bob);
+        uint256 bobShareAmount = ERC4626ExtendedDecimalsOffset0.deposit(
+            4000,
+            bob
+        );
+        uint256 bobUnderlyingAmount = ERC4626ExtendedDecimalsOffset0
+            .previewWithdraw(bobShareAmount);
+        assertEq(bobUnderlyingAmount, 4000);
+        assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(bob), bobShareAmount);
+        assertEq(
+            ERC4626ExtendedDecimalsOffset0.convertToAssets(
+                ERC4626ExtendedDecimalsOffset0.balanceOf(bob)
+            ),
+            bobUnderlyingAmount
+        );
+        assertEq(
+            ERC4626ExtendedDecimalsOffset0.convertToShares(bobUnderlyingAmount),
+            ERC4626ExtendedDecimalsOffset0.balanceOf(bob)
+        );
+        assertEq(bobShareAmount, bobUnderlyingAmount);
+        uint256 preMutationShareBal = aliceShareAmount + bobShareAmount;
+        uint256 preMutationBal = aliceUnderlyingAmount + bobUnderlyingAmount;
+        assertEq(
+            ERC4626ExtendedDecimalsOffset0.totalSupply(),
+            preMutationShareBal
+        );
+        assertEq(ERC4626ExtendedDecimalsOffset0.totalAssets(), preMutationBal);
+        assertEq(ERC4626ExtendedDecimalsOffset0.totalSupply(), 6000);
+        assertEq(ERC4626ExtendedDecimalsOffset0.totalAssets(), 6000);
+        vm.stopPrank();
+
+        /**
+         * @dev 3. Vault mutates by +3000 tokens (simulated yield returned from strategy).
+         */
+        underlying.mint(
+            ERC4626ExtendedDecimalsOffset0Addr,
+            mutationUnderlyingAmount
+        );
+        assertEq(
+            ERC4626ExtendedDecimalsOffset0.totalSupply(),
+            preMutationShareBal
+        );
+        assertEq(
+            ERC4626ExtendedDecimalsOffset0.totalAssets(),
+            preMutationBal + mutationUnderlyingAmount
+        );
+        assertEq(
+            ERC4626ExtendedDecimalsOffset0.balanceOf(alice),
+            aliceShareAmount
+        );
+        assertEq(
+            ERC4626ExtendedDecimalsOffset0.convertToAssets(
+                ERC4626ExtendedDecimalsOffset0.balanceOf(alice)
+            ),
+            aliceUnderlyingAmount + (mutationUnderlyingAmount / 3) * 1 - 1
+        );
+        assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(bob), bobShareAmount);
+        assertEq(
+            ERC4626ExtendedDecimalsOffset0.convertToAssets(
+                ERC4626ExtendedDecimalsOffset0.balanceOf(bob)
+            ),
+            bobUnderlyingAmount + (mutationUnderlyingAmount / 3) * 2 - 1
+        );
+
+        /**
+         * @dev 4. Alice deposits 2000 tokens (mints 1333 shares).
+         */
+        vm.startPrank(alice);
+        ERC4626ExtendedDecimalsOffset0.deposit(2000, alice);
+        assertEq(ERC4626ExtendedDecimalsOffset0.totalSupply(), 7333);
+        assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(alice), 3333);
+        assertEq(
+            ERC4626ExtendedDecimalsOffset0.convertToAssets(
+                ERC4626ExtendedDecimalsOffset0.balanceOf(alice)
+            ),
+            4999
+        );
+        assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(bob), 4000);
+        assertEq(
+            ERC4626ExtendedDecimalsOffset0.convertToAssets(
+                ERC4626ExtendedDecimalsOffset0.balanceOf(bob)
+            ),
+            6000
+        );
+        vm.stopPrank();
+
+        /**
+         * @dev 5. Bob mints 2000 shares (costs 3001 assets).
+         * @notice Bob's assets spent got rounded up and Alices's
+         * vault assets got rounded up.
+         */
+        vm.startPrank(bob);
+        ERC4626ExtendedDecimalsOffset0.mint(2000, bob);
+        assertEq(ERC4626ExtendedDecimalsOffset0.totalSupply(), 9333);
+        assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(alice), 3333);
+        assertEq(
+            ERC4626ExtendedDecimalsOffset0.convertToAssets(
+                ERC4626ExtendedDecimalsOffset0.balanceOf(alice)
+            ),
+            4999
+        );
+        assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(bob), 6000);
+        assertEq(
+            ERC4626ExtendedDecimalsOffset0.convertToAssets(
+                ERC4626ExtendedDecimalsOffset0.balanceOf(bob)
+            ),
+            9000
+        );
+        assertEq(underlying.balanceOf(alice), 0);
+        assertEq(underlying.balanceOf(bob), 1);
+        assertEq(ERC4626ExtendedDecimalsOffset0.totalAssets(), 14000);
+        vm.stopPrank();
+
+        /**
+         * @dev 6. Vault mutates by +3000 tokens.
+         * @notice Vault holds 17001 tokens, but sum of `assetsOf()` is 17000.
+         */
+        underlying.mint(
+            ERC4626ExtendedDecimalsOffset0Addr,
+            mutationUnderlyingAmount
+        );
+        assertEq(ERC4626ExtendedDecimalsOffset0.totalAssets(), 17000);
+        assertEq(
+            ERC4626ExtendedDecimalsOffset0.convertToAssets(
+                ERC4626ExtendedDecimalsOffset0.balanceOf(alice)
+            ),
+            6070
+        );
+        assertEq(
+            ERC4626ExtendedDecimalsOffset0.convertToAssets(
+                ERC4626ExtendedDecimalsOffset0.balanceOf(bob)
+            ),
+            10928
+        );
+
+        /**
+         * @dev 7. Alice redeems 1333 shares (2428 assets).
+         */
+        vm.startPrank(alice);
+        ERC4626ExtendedDecimalsOffset0.redeem(1333, alice, alice);
+        assertEq(underlying.balanceOf(alice), 2427);
+        assertEq(ERC4626ExtendedDecimalsOffset0.totalSupply(), 8000);
+        assertEq(ERC4626ExtendedDecimalsOffset0.totalAssets(), 14573);
+        assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(alice), 2000);
+        assertEq(
+            ERC4626ExtendedDecimalsOffset0.convertToAssets(
+                ERC4626ExtendedDecimalsOffset0.balanceOf(alice)
+            ),
+            3643
+        );
+        assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(bob), 6000);
+        assertEq(
+            ERC4626ExtendedDecimalsOffset0.convertToAssets(
+                ERC4626ExtendedDecimalsOffset0.balanceOf(bob)
+            ),
+            10929
+        );
+        vm.stopPrank();
+
+        /**
+         * @dev 8. Bob withdraws 2929 assets (1608 shares).
+         */
+        vm.startPrank(bob);
+        ERC4626ExtendedDecimalsOffset0.withdraw(2929, bob, bob);
+        assertEq(underlying.balanceOf(bob), 2930);
+        assertEq(ERC4626ExtendedDecimalsOffset0.totalSupply(), 6392);
+        assertEq(ERC4626ExtendedDecimalsOffset0.totalAssets(), 11644);
+        assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(alice), 2000);
+        assertEq(
+            ERC4626ExtendedDecimalsOffset0.convertToAssets(
+                ERC4626ExtendedDecimalsOffset0.balanceOf(alice)
+            ),
+            3643
+        );
+        assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(bob), 4392);
+        assertEq(
+            ERC4626ExtendedDecimalsOffset0.convertToAssets(
+                ERC4626ExtendedDecimalsOffset0.balanceOf(bob)
+            ),
+            8000
+        );
+        vm.stopPrank();
+
+        /**
+         * @dev 9. Alice withdraws 3643 assets (2000 shares).
+         * @notice Bob's assets have been rounded back up.
+         */
+        vm.startPrank(alice);
+        ERC4626ExtendedDecimalsOffset0.withdraw(3643, alice, alice);
+        assertEq(underlying.balanceOf(alice), 6070);
+        assertEq(ERC4626ExtendedDecimalsOffset0.totalSupply(), 4392);
+        assertEq(ERC4626ExtendedDecimalsOffset0.totalAssets(), 8001);
+        assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(alice), 0);
+        assertEq(
+            ERC4626ExtendedDecimalsOffset0.convertToAssets(
+                ERC4626ExtendedDecimalsOffset0.balanceOf(alice)
+            ),
+            0
+        );
+        assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(bob), 4392);
+        assertEq(
+            ERC4626ExtendedDecimalsOffset0.convertToAssets(
+                ERC4626ExtendedDecimalsOffset0.balanceOf(bob)
+            ),
+            8000
+        );
+        vm.stopPrank();
+
+        /**
+         * @dev 10. Bob redeems 4392 shares (8001 tokens).
+         */
+        vm.startPrank(bob);
+        ERC4626ExtendedDecimalsOffset0.redeem(4392, bob, bob);
+        assertEq(underlying.balanceOf(bob), 10930);
+        assertEq(ERC4626ExtendedDecimalsOffset0.totalSupply(), 0);
+        assertEq(ERC4626ExtendedDecimalsOffset0.totalAssets(), 1);
+        assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(alice), 0);
+        assertEq(
+            ERC4626ExtendedDecimalsOffset0.convertToAssets(
+                ERC4626ExtendedDecimalsOffset0.balanceOf(alice)
+            ),
+            0
+        );
+        assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(bob), 0);
+        assertEq(
+            ERC4626ExtendedDecimalsOffset0.convertToAssets(
+                ERC4626ExtendedDecimalsOffset0.balanceOf(bob)
+            ),
+            0
+        );
+        assertEq(underlying.balanceOf(ERC4626ExtendedDecimalsOffset0Addr), 1);
+        vm.stopPrank();
+    }
+
+    function testDepositInsufficientAllowance() public {
+        underlying.mint(self, type(uint8).max);
+        underlying.approve(
+            ERC4626ExtendedDecimalsOffset0Addr,
+            type(uint8).max - 1
+        );
+        assertEq(
+            underlying.allowance(self, ERC4626ExtendedDecimalsOffset0Addr),
+            type(uint8).max - 1
+        );
+        vm.expectRevert(bytes("ERC20: insufficient allowance"));
+        ERC4626ExtendedDecimalsOffset0.deposit(type(uint8).max, self);
+    }
+
+    function testWithdrawInsufficientAssets() public {
+        underlying.mint(self, type(uint8).max);
+        underlying.approve(ERC4626ExtendedDecimalsOffset0Addr, type(uint8).max);
+        ERC4626ExtendedDecimalsOffset0.deposit(type(uint8).max, self);
+        vm.expectRevert(bytes("ERC4626: withdraw more than maximum"));
+        ERC4626ExtendedDecimalsOffset0.withdraw(
+            uint256(type(uint8).max) + 1,
+            self,
+            self
+        );
+    }
+
+    function testWithdrawInsufficientAllowance() public {
+        underlying.mint(self, type(uint8).max);
+        underlying.approve(ERC4626ExtendedDecimalsOffset0Addr, type(uint8).max);
+        ERC4626ExtendedDecimalsOffset0.deposit(type(uint8).max, self);
+        vm.expectRevert(bytes("ERC20: insufficient allowance"));
+        vm.prank(makeAddr("otherAccount"));
+        ERC4626ExtendedDecimalsOffset0.withdraw(type(uint8).max, self, self);
+    }
+
+    function testRedeemInsufficientShares() public {
+        underlying.mint(self, type(uint16).max);
+        underlying.approve(ERC4626ExtendedDecimalsOffset0Addr, type(uint8).max);
+        ERC4626ExtendedDecimalsOffset0.deposit(type(uint8).max, self);
+        vm.expectRevert(bytes("ERC4626: redeem more than maximum"));
+        ERC4626ExtendedDecimalsOffset0.redeem(
+            uint256(type(uint8).max) + 1,
+            self,
+            self
+        );
+    }
+
+    function testWithdrawWithNoAssets() public {
+        vm.expectRevert(bytes("ERC4626: withdraw more than maximum"));
+        ERC4626ExtendedDecimalsOffset0.withdraw(type(uint8).max, self, self);
+    }
+
+    function testRedeemWithNoShares() public {
+        vm.expectRevert(bytes("ERC4626: redeem more than maximum"));
+        ERC4626ExtendedDecimalsOffset0.redeem(type(uint8).max, self, self);
+    }
+
+    function testDepositWithNoApproval() public {
+        vm.expectRevert(bytes("ERC20: insufficient allowance"));
+        ERC4626ExtendedDecimalsOffset0.deposit(type(uint8).max, self);
+    }
+
+    function testMintWithNoApproval() public {
+        vm.expectRevert(bytes("ERC20: insufficient allowance"));
+        ERC4626ExtendedDecimalsOffset0.mint(type(uint8).max, self);
+    }
+
+    function testDepositZero() public {
+        ERC4626ExtendedDecimalsOffset0.deposit(0, self);
+        assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(self), 0);
+        assertEq(
+            ERC4626ExtendedDecimalsOffset0.convertToAssets(
+                ERC4626ExtendedDecimalsOffset0.balanceOf(self)
+            ),
+            0
+        );
+        assertEq(ERC4626ExtendedDecimalsOffset0.totalSupply(), 0);
+        assertEq(ERC4626ExtendedDecimalsOffset0.totalAssets(), 0);
+    }
+
+    function testMintZero() public {
+        ERC4626ExtendedDecimalsOffset0.mint(0, self);
+        assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(self), 0);
+        assertEq(
+            ERC4626ExtendedDecimalsOffset0.convertToAssets(
+                ERC4626ExtendedDecimalsOffset0.balanceOf(self)
+            ),
+            0
+        );
+        assertEq(ERC4626ExtendedDecimalsOffset0.totalSupply(), 0);
+        assertEq(ERC4626ExtendedDecimalsOffset0.totalAssets(), 0);
+    }
+
+    function testVaultInteractionsForSomeoneElse() public {
+        address alice = makeAddr("alice");
+        address bob = makeAddr("bob");
+        uint256 amount = 1000;
+        underlying.mint(alice, amount);
+        underlying.mint(bob, amount);
+
+        vm.prank(alice);
+        underlying.approve(ERC4626ExtendedDecimalsOffset0Addr, amount);
+        vm.prank(bob);
+        underlying.approve(ERC4626ExtendedDecimalsOffset0Addr, amount);
+
+        vm.startPrank(alice);
+        ERC4626ExtendedDecimalsOffset0.deposit(amount, bob);
+        assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(alice), 0);
+        assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(bob), amount);
+        assertEq(underlying.balanceOf(alice), 0);
+        vm.stopPrank();
+
+        vm.startPrank(bob);
+        ERC4626ExtendedDecimalsOffset0.mint(amount, alice);
+        assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(alice), amount);
+        assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(bob), amount);
+        assertEq(underlying.balanceOf(bob), 0);
+        vm.stopPrank();
+
+        vm.startPrank(alice);
+        ERC4626ExtendedDecimalsOffset0.redeem(amount, bob, alice);
+        assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(alice), 0);
+        assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(bob), amount);
+        assertEq(underlying.balanceOf(bob), amount);
+        vm.stopPrank();
+
+        vm.startPrank(bob);
+        vm.expectRevert(bytes("ERC4626: withdraw more than maximum"));
+        ERC4626ExtendedDecimalsOffset0.withdraw(amount, alice, bob);
+        vm.stopPrank();
+    }
+
+    function testPermitSuccess() public {
+        (address owner, uint256 key) = makeAddrAndKey("owner");
+        address spender = makeAddr("spender");
+        uint256 amount = 100;
+        uint256 nonce = ERC4626ExtendedDecimalsOffset0.nonces(owner);
+        // solhint-disable-next-line not-rely-on-time
+        uint256 deadline = block.timestamp + 100000;
+        bytes32 domainSeparator = ERC4626ExtendedDecimalsOffset0
+            .DOMAIN_SEPARATOR();
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(
+            key,
+            keccak256(
+                abi.encodePacked(
+                    "\x19\x01",
+                    domainSeparator,
+                    keccak256(
+                        abi.encode(
+                            _PERMIT_TYPE_HASH,
+                            owner,
+                            spender,
+                            amount,
+                            nonce,
+                            deadline
+                        )
+                    )
+                )
+            )
+        );
+        vm.expectEmit(true, true, false, true);
+        emit Approval(owner, spender, amount);
+        ERC4626ExtendedDecimalsOffset0.permit(
+            owner,
+            spender,
+            amount,
+            deadline,
+            v,
+            r,
+            s
+        );
+        assertEq(
+            ERC4626ExtendedDecimalsOffset0.allowance(owner, spender),
+            amount
+        );
+        assertEq(ERC4626ExtendedDecimalsOffset0.nonces(owner), 1);
+    }
+
+    function testPermitReplaySignature() public {
+        (address owner, uint256 key) = makeAddrAndKey("owner");
+        address spender = makeAddr("spender");
+        uint256 amount = 100;
+        uint256 nonce = ERC4626ExtendedDecimalsOffset0.nonces(owner);
+        // solhint-disable-next-line not-rely-on-time
+        uint256 deadline = block.timestamp + 100000;
+        bytes32 domainSeparator = ERC4626ExtendedDecimalsOffset0
+            .DOMAIN_SEPARATOR();
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(
+            key,
+            keccak256(
+                abi.encodePacked(
+                    "\x19\x01",
+                    domainSeparator,
+                    keccak256(
+                        abi.encode(
+                            _PERMIT_TYPE_HASH,
+                            owner,
+                            spender,
+                            amount,
+                            nonce,
+                            deadline
+                        )
+                    )
+                )
+            )
+        );
+        vm.expectEmit(true, true, false, true);
+        emit Approval(owner, spender, amount);
+        ERC4626ExtendedDecimalsOffset0.permit(
+            owner,
+            spender,
+            amount,
+            deadline,
+            v,
+            r,
+            s
+        );
+        vm.expectRevert(bytes("ERC20Permit: invalid signature"));
+        ERC4626ExtendedDecimalsOffset0.permit(
+            owner,
+            spender,
+            amount,
+            deadline,
+            v,
+            r,
+            s
+        );
+    }
+
+    function testPermitOtherSignature() public {
+        (address owner, uint256 key) = makeAddrAndKey("owner");
+        address spender = makeAddr("spender");
+        uint256 amount = 100;
+        uint256 nonce = ERC4626ExtendedDecimalsOffset0.nonces(owner);
+        // solhint-disable-next-line not-rely-on-time
+        uint256 deadline = block.timestamp + 100000;
+        bytes32 domainSeparator = ERC4626ExtendedDecimalsOffset0
+            .DOMAIN_SEPARATOR();
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(
+            key + 1,
+            keccak256(
+                abi.encodePacked(
+                    "\x19\x01",
+                    domainSeparator,
+                    keccak256(
+                        abi.encode(
+                            _PERMIT_TYPE_HASH,
+                            owner,
+                            spender,
+                            amount,
+                            nonce,
+                            deadline
+                        )
+                    )
+                )
+            )
+        );
+        vm.expectRevert(bytes("ERC20Permit: invalid signature"));
+        ERC4626ExtendedDecimalsOffset0.permit(
+            owner,
+            spender,
+            amount,
+            deadline,
+            v,
+            r,
+            s
+        );
+    }
+
+    function testPermitBadChainId() public {
+        (address owner, uint256 key) = makeAddrAndKey("owner");
+        address spender = makeAddr("spender");
+        uint256 amount = 100;
+        uint256 nonce = ERC4626ExtendedDecimalsOffset0.nonces(owner);
+        // solhint-disable-next-line not-rely-on-time
+        uint256 deadline = block.timestamp + 100000;
+        bytes32 domainSeparator = keccak256(
+            abi.encode(
+                _TYPE_HASH,
+                keccak256(bytes(_NAME_EIP712)),
+                keccak256(bytes(_VERSION_EIP712)),
+                block.chainid + 1,
+                ERC4626ExtendedDecimalsOffset0Addr
+            )
+        );
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(
+            key,
+            keccak256(
+                abi.encodePacked(
+                    "\x19\x01",
+                    domainSeparator,
+                    keccak256(
+                        abi.encode(
+                            _PERMIT_TYPE_HASH,
+                            owner,
+                            spender,
+                            amount,
+                            nonce,
+                            deadline
+                        )
+                    )
+                )
+            )
+        );
+        vm.expectRevert(bytes("ERC20Permit: invalid signature"));
+        ERC4626ExtendedDecimalsOffset0.permit(
+            owner,
+            spender,
+            amount,
+            deadline,
+            v,
+            r,
+            s
+        );
+    }
+
+    function testPermitBadNonce() public {
+        (address owner, uint256 key) = makeAddrAndKey("owner");
+        address spender = makeAddr("spender");
+        uint256 amount = 100;
+        uint256 nonce = 1;
+        // solhint-disable-next-line not-rely-on-time
+        uint256 deadline = block.timestamp + 100000;
+        bytes32 domainSeparator = ERC4626ExtendedDecimalsOffset0
+            .DOMAIN_SEPARATOR();
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(
+            key,
+            keccak256(
+                abi.encodePacked(
+                    "\x19\x01",
+                    domainSeparator,
+                    keccak256(
+                        abi.encode(
+                            _PERMIT_TYPE_HASH,
+                            owner,
+                            spender,
+                            amount,
+                            nonce,
+                            deadline
+                        )
+                    )
+                )
+            )
+        );
+        vm.expectRevert(bytes("ERC20Permit: invalid signature"));
+        ERC4626ExtendedDecimalsOffset0.permit(
+            owner,
+            spender,
+            amount,
+            deadline,
+            v,
+            r,
+            s
+        );
+    }
+
+    function testPermitExpiredDeadline() public {
+        (address owner, uint256 key) = makeAddrAndKey("owner");
+        address spender = makeAddr("spender");
+        uint256 amount = 100;
+        uint256 nonce = ERC4626ExtendedDecimalsOffset0.nonces(owner);
+        // solhint-disable-next-line not-rely-on-time
+        uint256 deadline = block.timestamp - 1;
+        bytes32 domainSeparator = ERC4626ExtendedDecimalsOffset0
+            .DOMAIN_SEPARATOR();
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(
+            key,
+            keccak256(
+                abi.encodePacked(
+                    "\x19\x01",
+                    domainSeparator,
+                    keccak256(
+                        abi.encode(
+                            _PERMIT_TYPE_HASH,
+                            owner,
+                            spender,
+                            amount,
+                            nonce,
+                            deadline
+                        )
+                    )
+                )
+            )
+        );
+        vm.expectRevert(bytes("ERC20Permit: expired deadline"));
+        ERC4626ExtendedDecimalsOffset0.permit(
+            owner,
+            spender,
+            amount,
+            deadline,
+            v,
+            r,
+            s
+        );
+    }
+
+    function testCachedDomainSeparator() public {
+        assertEq(
+            ERC4626ExtendedDecimalsOffset0.DOMAIN_SEPARATOR(),
+            _CACHED_DOMAIN_SEPARATOR
+        );
+    }
+
+    function testDomainSeparator() public {
+        vm.chainId(block.chainid + 1);
+        bytes32 digest = keccak256(
+            abi.encode(
+                _TYPE_HASH,
+                keccak256(bytes(_NAME_EIP712)),
+                keccak256(bytes(_VERSION_EIP712)),
+                block.chainid,
+                ERC4626ExtendedDecimalsOffset0Addr
+            )
+        );
+        assertEq(ERC4626ExtendedDecimalsOffset0.DOMAIN_SEPARATOR(), digest);
+    }
+
+    function testFuzzPermitSuccess(
+        string calldata owner,
+        string calldata spender,
+        uint16 increment
+    ) public {
+        (address ownerAddr, uint256 key) = makeAddrAndKey(owner);
+        address spenderAddr = makeAddr(spender);
+        uint256 amount = block.number;
+        uint256 nonce = ERC4626ExtendedDecimalsOffset0.nonces(ownerAddr);
+        // solhint-disable-next-line not-rely-on-time
+        uint256 deadline = block.timestamp + increment;
+        bytes32 domainSeparator = ERC4626ExtendedDecimalsOffset0
+            .DOMAIN_SEPARATOR();
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(
+            key,
+            keccak256(
+                abi.encodePacked(
+                    "\x19\x01",
+                    domainSeparator,
+                    keccak256(
+                        abi.encode(
+                            _PERMIT_TYPE_HASH,
+                            ownerAddr,
+                            spenderAddr,
+                            amount,
+                            nonce,
+                            deadline
+                        )
+                    )
+                )
+            )
+        );
+        vm.expectEmit(true, true, false, true);
+        emit Approval(ownerAddr, spenderAddr, amount);
+        ERC4626ExtendedDecimalsOffset0.permit(
+            ownerAddr,
+            spenderAddr,
+            amount,
+            deadline,
+            v,
+            r,
+            s
+        );
+        assertEq(
+            ERC4626ExtendedDecimalsOffset0.allowance(ownerAddr, spenderAddr),
+            amount
+        );
+        assertEq(ERC4626ExtendedDecimalsOffset0.nonces(ownerAddr), 1);
+    }
+
+    function testFuzzPermitInvalid(
+        string calldata owner,
+        string calldata spender,
+        uint16 increment
+    ) public {
+        vm.assume(
+            keccak256(abi.encode(owner)) != keccak256(abi.encode("ownerWrong"))
+        );
+        (address ownerAddr, ) = makeAddrAndKey(owner);
+        (, uint256 keyWrong) = makeAddrAndKey("ownerWrong");
+        address spenderAddr = makeAddr(spender);
+        uint256 amount = block.number;
+        uint256 nonce = ERC4626ExtendedDecimalsOffset0.nonces(ownerAddr);
+        // solhint-disable-next-line not-rely-on-time
+        uint256 deadline = block.timestamp + increment;
+        bytes32 domainSeparator = ERC4626ExtendedDecimalsOffset0
+            .DOMAIN_SEPARATOR();
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(
+            keyWrong,
+            keccak256(
+                abi.encodePacked(
+                    "\x19\x01",
+                    domainSeparator,
+                    keccak256(
+                        abi.encode(
+                            _PERMIT_TYPE_HASH,
+                            ownerAddr,
+                            spenderAddr,
+                            amount,
+                            nonce,
+                            deadline
+                        )
+                    )
+                )
+            )
+        );
+        vm.expectRevert(bytes("ERC20Permit: invalid signature"));
+        ERC4626ExtendedDecimalsOffset0.permit(
+            ownerAddr,
+            spenderAddr,
+            amount,
+            deadline,
+            v,
+            r,
+            s
+        );
+    }
+
+    function testFuzzDomainSeparator(uint8 increment) public {
+        vm.chainId(block.chainid + increment);
+        bytes32 digest = keccak256(
+            abi.encode(
+                _TYPE_HASH,
+                keccak256(bytes(_NAME_EIP712)),
+                keccak256(bytes(_VERSION_EIP712)),
+                block.chainid,
+                ERC4626ExtendedDecimalsOffset0Addr
+            )
+        );
+        assertEq(ERC4626ExtendedDecimalsOffset0.DOMAIN_SEPARATOR(), digest);
     }
 }
