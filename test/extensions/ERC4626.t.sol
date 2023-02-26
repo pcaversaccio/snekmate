@@ -6,7 +6,7 @@ import {ERC4626Test} from "erc4626-tests/ERC4626.test.sol";
 import {VyperDeployer} from "utils/VyperDeployer.sol";
 
 import {ERC20Mock} from "../utils/mocks/ERC20Mock.sol";
-import {ERC20DecimalsMock} from "./mocks/ERC20DecimalsMock.sol";
+import {ERC20ExcessDecimalsMock} from "./mocks/ERC20ExcessDecimalsMock.sol";
 
 import {IERC4626Extended} from "./interfaces/IERC4626Extended.sol";
 
@@ -255,11 +255,13 @@ contract ERC4626VaultTest is ERC4626Test {
          * @dev Check the case where the return value is above the
          * maximum value of the type `uint8`.
          */
-        address erc20DecimalsMock = address(new ERC20DecimalsMock());
+        address erc20ExcessDecimalsMock = address(
+            new ERC20ExcessDecimalsMock()
+        );
         bytes memory argsDecimalsOffsetTooHighDecimals = abi.encode(
             _NAME,
             _SYMBOL,
-            erc20DecimalsMock,
+            erc20ExcessDecimalsMock,
             _DECIMALS_OFFSET + 9,
             _NAME_EIP712,
             _VERSION_EIP712
@@ -283,7 +285,7 @@ contract ERC4626VaultTest is ERC4626Test {
         );
         assertEq(
             ERC4626ExtendedDecimalsOffsetTooHighDecimals.asset(),
-            erc20DecimalsMock
+            erc20ExcessDecimalsMock
         );
 
         /**
@@ -1953,7 +1955,7 @@ contract ERC4626VaultTest is ERC4626Test {
     }
 }
 
-contract ERC4626Invariants is Test {
+contract ERC4626VaultInvariants is Test {
     string private constant _NAME = "TokenisedVaultMock";
     string private constant _NAME_UNDERLYING = "UnderlyingTokenMock";
     string private constant _SYMBOL = "TVM";
@@ -1975,7 +1977,7 @@ contract ERC4626Invariants is Test {
 
     // solhint-disable-next-line var-name-mixedcase
     IERC4626Extended private ERC4626Extended;
-    ERC4626Handler private erc4626Handler;
+    ERC4626VaultHandler private erc4626VaultHandler;
 
     function setUp() public {
         bytes memory args = abi.encode(
@@ -1989,21 +1991,27 @@ contract ERC4626Invariants is Test {
         ERC4626Extended = IERC4626Extended(
             vyperDeployer.deployContract("src/extensions/", "ERC4626", args)
         );
-        erc4626Handler = new ERC4626Handler(ERC4626Extended);
-        targetContract(address(erc4626Handler));
+        erc4626VaultHandler = new ERC4626VaultHandler(ERC4626Extended);
+        targetContract(address(erc4626VaultHandler));
         targetSender(deployer);
     }
 
     function invariantTotalSupply() public {
-        assertEq(ERC4626Extended.totalSupply(), erc4626Handler.totalSupply());
+        assertEq(
+            ERC4626Extended.totalSupply(),
+            erc4626VaultHandler.totalSupply()
+        );
     }
 
     function invariantTotalAssets() public {
-        assertEq(ERC4626Extended.totalAssets(), erc4626Handler.totalAssets());
+        assertEq(
+            ERC4626Extended.totalAssets(),
+            erc4626VaultHandler.totalAssets()
+        );
     }
 }
 
-contract ERC4626Handler {
+contract ERC4626VaultHandler {
     uint256 public totalSupply;
     uint256 public totalAssets;
 
