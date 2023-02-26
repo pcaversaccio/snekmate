@@ -1278,7 +1278,7 @@ contract ERC4626VaultTest is ERC4626Test {
         vm.stopPrank();
 
         /**
-         * @dev 5. Bob mints 2000 shares (costs 3001 assets).
+         * @dev 5. Bob mints 2000 shares (costs 3000 assets).
          * @notice Bob's assets spent got rounded up and Alices's
          * vault assets got rounded up.
          */
@@ -1306,7 +1306,6 @@ contract ERC4626VaultTest is ERC4626Test {
 
         /**
          * @dev 6. Vault mutates by +3000 tokens.
-         * @notice Vault holds 17001 tokens, but sum of `assetsOf()` is 17000.
          */
         underlying.mint(
             ERC4626ExtendedDecimalsOffset0Addr,
@@ -1327,7 +1326,7 @@ contract ERC4626VaultTest is ERC4626Test {
         );
 
         /**
-         * @dev 7. Alice redeems 1333 shares (2428 assets).
+         * @dev 7. Alice redeems 1333 shares (2427 assets).
          */
         vm.startPrank(alice);
         ERC4626ExtendedDecimalsOffset0.redeem(1333, alice, alice);
@@ -1400,7 +1399,7 @@ contract ERC4626VaultTest is ERC4626Test {
         vm.stopPrank();
 
         /**
-         * @dev 10. Bob redeems 4392 shares (8001 tokens).
+         * @dev 10. Bob redeems 4392 shares (8000 tokens).
          */
         vm.startPrank(bob);
         ERC4626ExtendedDecimalsOffset0.redeem(4392, bob, bob);
