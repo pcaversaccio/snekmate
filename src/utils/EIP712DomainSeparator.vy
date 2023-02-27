@@ -13,7 +13,7 @@
 
 
 # @dev Caches the domain separator as an `immutable`
-# value, but also store the corresponding chain id
+# value, but also stores the corresponding chain id
 # to invalidate the cached domain separator if the
 # chain id changes.
 _CACHED_CHAIN_ID: immutable(uint256)

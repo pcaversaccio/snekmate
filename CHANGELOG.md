@@ -8,6 +8,8 @@
   - `Ownable`: Owner-based access control functions.
   - `Ownable2Step`: 2-step ownership transfer functions.
   - `AccessControl`: Multi-role-based access control functions.
+- **Extensions**
+  - `ERC4626`: Modern and gas-efficient ERC-4626 tokenised vault implementation. ([#74](https://github.com/pcaversaccio/snekmate/pull/74))
 - **Tokens**
   - `ERC20`: Modern and gas-efficient ERC-20 + EIP-2612 implementation. ([#17](https://github.com/pcaversaccio/snekmate/pull/17))
   - `ERC721`: Modern and gas-efficient ERC-721 + EIP-4494 implementation. ([#20](https://github.com/pcaversaccio/snekmate/pull/20))
@@ -20,5 +22,6 @@
   - `ECDSA`: Elliptic curve digital signature algorithm (ECDSA) functions.
   - `SignatureChecker`: ECDSA and EIP-1271 signature verification functions.
   - `EIP712DomainSeparator`: EIP-712 domain separator.
+  - `Math`: Standard mathematical utility functions. ([#74](https://github.com/pcaversaccio/snekmate/pull/74))
   - `MerkleProofVerification`: Merkle tree proof verification functions. ([#30](https://github.com/pcaversaccio/snekmate/pull/30))
   - `Multicall`: Multicall functions.

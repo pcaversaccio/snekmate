@@ -47,6 +47,10 @@ def distribute_ether(data: Batch):
     @notice In the event that excessive ether is sent,
             the residual amount is returned back to the
             `msg.sender`.
+
+            Furthermore, it is important to note that an
+            external call via `raw_call` does not perform
+            an external code size check on the target address.
     @param data Nested struct object that contains an array
            of tuples that contain each a recipient address &
            ether amount in wei.
@@ -88,6 +92,10 @@ def distribute_token(token: ERC20, data: Batch):
     for txn in data.txns:
         total += txn.amount
 
+    # It is important to note that an external call via interface casting
+    # always performs an external code size check on the target address unless
+    # you add the kwarg `skip_contract_check=True`. If the check fails (i.e.
+    # the target address is an EOA), the call reverts.
     assert token.transferFrom(msg.sender, self, total, default_return_value=True), "BatchDistributor: transferFrom operation did not succeed"
 
     for txn in data.txns:

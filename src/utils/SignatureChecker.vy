@@ -104,7 +104,10 @@ def _is_valid_ERC1271_signature_now(signer: address, hash: bytes32, signature: B
     # check of 32 bytes for the return data in the return expression
     # at the end, we also return `False` for EOA wallets instead
     # of reverting (remember that the EVM always considers a call
-    # to an EOA as successful with return data `0x`).
+    # to an EOA as successful with return data `0x`). Furthermore,
+    # it is important to note that an external call via `raw_call`
+    # does not perform an external code size check on the target
+    # address.
     success, return_data = \
         raw_call(signer, _abi_encode(hash, signature, method_id=IERC1271_ISVALIDSIGNATURE_SELECTOR), max_outsize=32, is_static_call=True, revert_on_failure=False)
     return (success and (len(return_data) == 32) and (convert(return_data, bytes32) == convert(IERC1271_ISVALIDSIGNATURE_SELECTOR, bytes32)))
