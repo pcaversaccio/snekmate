@@ -1,3 +1,4 @@
+# @version ^0.3.7
 """
 @title Standard Mathematical Utility Functions
 @license GNU Affero General Public License v3.0
@@ -224,3 +225,4 @@ def wad_cbrt(x: uint256) -> uint256:
         return a * 10**6
 
     return a
+
