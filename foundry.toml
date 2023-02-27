@@ -7,7 +7,7 @@ libs = ['lib']                                              # a list of library 
 remappings = []                                             # a list of remappings
 cache = true                                                # whether to cache builds or not
 cache_path = 'cache'                                        # where the cache is stored if enabled
-force = true                                                # whether to ignore the cache (clean build)
+force = false                                               # whether to ignore the cache (clean build)
 fuzz = { runs = 256 }                                       # the number of fuzz runs for tests
 invariant = { runs = 256 }                                  # the number of runs that must execute for each invariant test group
 ffi = true                                                  # whether to enable foreign function interface (ffi) cheatcodes or not
@@ -16,6 +16,7 @@ fs_permissions = [{ access = "read-write", path = "./"}]    # set read-write acc
 
 ## default overrides for the CI runs
 [profile.ci]
-fuzz = { runs = 10_000 }                                    # increase the number of fuzz runs for the tests
+force = true                                                # always perform a clean build
+fuzz = { runs = 10_000, max_test_rejects = 150_0000 }       # increase the number of fuzz runs and maximum number of combined inputs that may be rejected for the tests
 invariant = { runs = 5_000 }                                # increase the number of runs that must execute for each invariant test group
 verbosity = 4                                               # increase the verbosity of tests

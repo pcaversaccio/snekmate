@@ -13,7 +13,7 @@
 
 
 # @dev Caches the domain separator as an `immutable`
-# value, but also store the corresponding chain id
+# value, but also stores the corresponding chain id
 # to invalidate the cached domain separator if the
 # chain id changes.
 _CACHED_CHAIN_ID: immutable(uint256)
@@ -30,7 +30,7 @@ _TYPE_HASH: immutable(bytes32)
 
 # @dev A Vyper contract cannot call directly between two `external` functions.
 # To bypass this, we can use an interface.
-interface domainSeparatorV4:
+interface IEIP712DomainSeparator:
     def domain_separator_v4() -> bytes32: view
 
 
@@ -102,7 +102,7 @@ def hash_typed_data_v4(struct_hash: bytes32) -> bytes32:
     @return bytes32 The 32-byte fully encoded EIP712
             message hash for this domain.
     """
-    return self._to_typed_data_hash(domainSeparatorV4(self).domain_separator_v4(), struct_hash)
+    return self._to_typed_data_hash(IEIP712DomainSeparator(self).domain_separator_v4(), struct_hash)
 
 
 @internal
