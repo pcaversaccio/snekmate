@@ -130,3 +130,32 @@ def mul_div(x: uint256, y: uint256, denominator: uint256, roundup: bool) -> uint
         result += 1
 
     return result
+
+
+@external
+@pure
+def uint256_average(x: uint256, y: uint256) -> uint256:
+    """
+    @dev Returns the average of two 32-byte unsigned integers.
+    @notice Note that the result is rounded towards zero. For
+            more details on finding the average of two unsigned
+            integers without an overflow, please refer to:
+            https://devblogs.microsoft.com/oldnewthing/20220207-00/?p=106223.
+    @param x The first 32-byte number of the data set.
+    @param y The second 32-byte number of the data set.
+    @return uint256 The 32-byte average of `x` and `y`.
+    """
+    return unsafe_add(x & y, shift(x ^ y, -1))
+
+
+@external
+@pure
+def int256_average(x: int256, y: int256) -> int256:
+    """
+    @dev Returns the average of two 32-byte signed integers.
+    @notice Note that the result is rounded towards infinity.
+    @param x The first 32-byte number of the data set.
+    @param y The second 32-byte number of the data set.
+    @return uint256 The 32-byte average of `x` and `y`.
+    """
+    return unsafe_add(unsafe_add(shift(x, -1), shift(y, -1)), x & y & 1)

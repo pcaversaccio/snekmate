@@ -151,6 +151,56 @@ contract MathTest is Test {
         );
     }
 
+    function testUint256Average() public {
+        assertEq(math.uint256_average(83219, 219713), 151466);
+        assertEq(math.uint256_average(73220, 419712), 246466);
+        assertEq(math.uint256_average(83219, 419712), 251465);
+        assertEq(math.uint256_average(73220, 219713), 146466);
+        assertEq(
+            math.uint256_average(type(uint256).max, type(uint256).max),
+            type(uint256).max
+        );
+    }
+
+    function testInt256Average() public {
+        assertEq(math.int256_average(83219, 219713), 151466);
+        assertEq(math.int256_average(-83219, -219713), -151466);
+
+        assertEq(math.int256_average(-73220, 419712), 173246);
+        assertEq(math.int256_average(73220, -419712), -173246);
+
+        assertEq(math.int256_average(83219, -419712), -168247);
+        assertEq(math.int256_average(-83219, 419712), 168246);
+
+        assertEq(math.int256_average(73220, 219713), 146466);
+        assertEq(math.int256_average(-73220, -219713), -146467);
+
+        assertEq(
+            math.int256_average(type(int256).min, type(int256).min),
+            type(int256).min
+        );
+        assertEq(math.int256_average(type(int256).min, type(int256).max), -1);
+    }
+
+    /**
+     * @notice We use the `average` function of OpenZeppelin as a benchmark:
+     * https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/math/Math.sol.
+     */
+    function testFuzzUint256Average(uint256 x, uint256 y) public {
+        assertEq(math.uint256_average(x, y), (x & y) + ((x ^ y) / 2));
+    }
+
+    /**
+     * @notice We use the `avg` function of solady as a benchmark:
+     * https://github.com/Vectorized/solady/blob/main/src/utils/FixedPointMathLib.sol.
+     */
+    function testFuzzInt256Average(int256 x, int256 y) public {
+        assertEq(
+            math.int256_average(x, y),
+            (x >> 1) + (y >> 1) + (((x & 1) + (y & 1)) >> 1)
+        );
+    }
+
     /**
      * @notice Forked and adjusted accordingly from here:
      * https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/test/utils/math/Math.t.sol.
