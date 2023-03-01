@@ -182,6 +182,16 @@ contract MathTest is Test {
         assertEq(math.int256_average(type(int256).min, type(int256).max), -1);
     }
 
+    function testCeilDiv() public {
+        assertEq(math.ceil_div(0, 8), 0);
+        assertEq(math.ceil_div(12, 6), 2);
+        assertEq(math.ceil_div(123, 17), 8);
+        assertEq(math.ceil_div(type(uint256).max, 2), 1 << 255);
+        assertEq(math.ceil_div(type(uint256).max, 1), type(uint256).max);
+        vm.expectRevert(bytes("Math: ceil_div division by zero"));
+        math.ceil_div(1, 0);
+    }
+
     /**
      * @notice Forked and adjusted accordingly from here:
      * https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/test/utils/math/Math.t.sol.
@@ -260,5 +270,22 @@ contract MathTest is Test {
             math.int256_average(x, y),
             (x >> 1) + (y >> 1) + (((x & 1) + (y & 1)) >> 1)
         );
+    }
+
+    /**
+     * @notice Forked and adjusted accordingly from here:
+     * https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/test/utils/math/Math.t.sol.
+     */
+    function testFuzzCeilDiv(uint256 x, uint256 y) public {
+        vm.assume(y > 0);
+        uint256 result = math.ceil_div(x, y);
+        if (result == 0) {
+            assertEq(x, 0);
+        } else {
+            uint256 maxDiv = type(uint256).max / y;
+            bool overflow = maxDiv * y < x;
+            assertTrue(x > y * (result - 1));
+            assertTrue(overflow ? result == maxDiv + 1 : x <= y * result);
+        }
     }
 }
