@@ -141,9 +141,10 @@ def uint256_average(x: uint256, y: uint256) -> uint256:
             more details on finding the average of two unsigned
             integers without an overflow, please refer to:
             https://devblogs.microsoft.com/oldnewthing/20220207-00/?p=106223.
-    @param x The first 32-byte number of the data set.
-    @param y The second 32-byte number of the data set.
-    @return uint256 The 32-byte average of `x` and `y`.
+    @param x The first 32-byte unsigned integer of the data set.
+    @param y The second 32-byte unsigned integer of the data set.
+    @return uint256 The 32-byte average (rounded towards zero) of
+            `x` and `y`.
     """
     return unsafe_add(x & y, shift(x ^ y, -1))
 
@@ -154,8 +155,12 @@ def int256_average(x: int256, y: int256) -> int256:
     """
     @dev Returns the average of two 32-byte signed integers.
     @notice Note that the result is rounded towards infinity.
-    @param x The first 32-byte number of the data set.
-    @param y The second 32-byte number of the data set.
-    @return uint256 The 32-byte average of `x` and `y`.
+            For more details on finding the average of two signed
+            integers without an overflow, please refer to:
+            https://patents.google.com/patent/US6007232A/en.
+    @param x The first 32-byte signed integer of the data set.
+    @param y The second 32-byte signed integer of the data set.
+    @return uint256 The 32-byte average (rounded towards infinity)
+            of `x` and `y`.
     """
     return unsafe_add(unsafe_add(shift(x, -1), shift(y, -1)), x & y & 1)

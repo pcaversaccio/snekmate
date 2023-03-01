@@ -183,25 +183,6 @@ contract MathTest is Test {
     }
 
     /**
-     * @notice We use the `average` function of OpenZeppelin as a benchmark:
-     * https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/math/Math.sol.
-     */
-    function testFuzzUint256Average(uint256 x, uint256 y) public {
-        assertEq(math.uint256_average(x, y), (x & y) + ((x ^ y) / 2));
-    }
-
-    /**
-     * @notice We use the `avg` function of solady as a benchmark:
-     * https://github.com/Vectorized/solady/blob/main/src/utils/FixedPointMathLib.sol.
-     */
-    function testFuzzInt256Average(int256 x, int256 y) public {
-        assertEq(
-            math.int256_average(x, y),
-            (x >> 1) + (y >> 1) + (((x & 1) + (y & 1)) >> 1)
-        );
-    }
-
-    /**
      * @notice Forked and adjusted accordingly from here:
      * https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/test/utils/math/Math.t.sol.
      */
@@ -260,5 +241,24 @@ contract MathTest is Test {
         try math.mul_div(x, y, d, true) returns (uint256) {
             fail();
         } catch {}
+    }
+
+    /**
+     * @notice We use the `average` function of OpenZeppelin as a benchmark:
+     * https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/math/Math.sol.
+     */
+    function testFuzzUint256Average(uint256 x, uint256 y) public {
+        assertEq(math.uint256_average(x, y), (x & y) + ((x ^ y) / 2));
+    }
+
+    /**
+     * @notice We use the `avg` function of solady as a benchmark:
+     * https://github.com/Vectorized/solady/blob/main/src/utils/FixedPointMathLib.sol.
+     */
+    function testFuzzInt256Average(int256 x, int256 y) public {
+        assertEq(
+            math.int256_average(x, y),
+            (x >> 1) + (y >> 1) + (((x & 1) + (y & 1)) >> 1)
+        );
     }
 }
