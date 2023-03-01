@@ -384,8 +384,10 @@ contract MathTest is Test {
         if (x == 0) {
             assertEq(result, 0);
         } else if (result >= 256 || 2 ** result > x) {
+            assertTrue(roundup);
             assertTrue(2 ** (result - 1) < x);
         } else if (2 ** result < x) {
+            assertTrue(!roundup);
             assertTrue((result + 1) >= 256 || 2 ** (result + 1) > x);
         } else {
             assertEq(2 ** result, x);
@@ -401,8 +403,10 @@ contract MathTest is Test {
         if (x == 0) {
             assertEq(result, 0);
         } else if (result >= 78 || 10 ** result > x) {
+            assertTrue(roundup);
             assertTrue(10 ** (result - 1) < x);
         } else if (10 ** result < x) {
+            assertTrue(!roundup);
             assertTrue((result + 1) >= 78 || 10 ** (result + 1) > x);
         } else {
             assertEq(10 ** result, x);
@@ -418,8 +422,10 @@ contract MathTest is Test {
         if (x == 0) {
             assertEq(result, 0);
         } else if (result >= 32 || 256 ** result > x) {
+            assertTrue(roundup);
             assertTrue(256 ** (result - 1) < x);
         } else if (256 ** result < x) {
+            assertTrue(!roundup);
             assertTrue((result + 1) >= 32 || 256 ** (result + 1) > x);
         } else {
             assertEq(256 ** result, x);
