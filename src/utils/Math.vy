@@ -183,3 +183,155 @@ def ceil_div(x: uint256, y: uint256) -> uint256:
         return empty(uint256)
     else:
         return unsafe_add(unsafe_div(x - 1, y), 1)
+
+
+@external
+@pure
+def log_2(x: uint256, roundup: bool) -> uint256:
+    """
+    @dev Returns the log in base 2 of `x`, following the selected
+         rounding direction.
+    @notice Note that it returns 0 if given 0. The implementation is
+            inspired by OpenZeppelin's implementation here:
+            https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/math/Math.sol.
+    @param x The 32-byte variable.
+    @param roundup The Boolean variable that specifies whether
+           to round up or not. The default `False` is round down.
+    @return uint256 The 32-byte calculation result.
+    """
+    value_accumulator: uint256 = empty(uint256)
+    result: uint256 = empty(uint256)
+
+    if(x == empty(uint256)):
+        # For the special case `x == 0` we already return 0 here in order
+        # not to iterate through the remaining code.
+        return empty(uint256)
+
+    # The following lines cannot overflow because we have the well-known
+    # decay behaviour of `log_2(max_value(uint256)) < max_value(uint256)`.
+    if (shift(x, -128) != empty(uint256)):
+        value_accumulator = shift(x, -128)
+        result = 128
+    if (shift(value_accumulator, -64) != empty(uint256)):
+        value_accumulator = shift(value_accumulator, -64)
+        result = unsafe_add(result, 64)
+    if (shift(value_accumulator, -32) != empty(uint256)):
+        value_accumulator = shift(value_accumulator, -32)
+        result = unsafe_add(result, 32)
+    if (shift(value_accumulator, -16) != empty(uint256)):
+        value_accumulator = shift(value_accumulator, -16)
+        result = unsafe_add(result, 16)
+    if (shift(value_accumulator, -8) != empty(uint256)):
+        value_accumulator = shift(value_accumulator, -8)
+        result = unsafe_add(result, 8)
+    if (shift(value_accumulator, -4) != empty(uint256)):
+        value_accumulator = shift(value_accumulator, -4)
+        result = unsafe_add(result, 4)
+    if (shift(value_accumulator, -2) != empty(uint256)):
+        value_accumulator = shift(value_accumulator, -2)
+        result = unsafe_add(result, 2)
+    if (shift(value_accumulator, -1) != empty(uint256)):
+        result = unsafe_add(result, 1)
+
+    if (roundup and (shift(1, convert(result, int256)) < value_accumulator)):
+        result = unsafe_add(result, 1)
+
+    return result
+
+
+@external
+@pure
+def log_10(x: uint256, roundup: bool) -> uint256:
+    """
+    @dev Returns the log in base 10 of `x`, following the selected
+         rounding direction.
+    @notice Note that it returns 0 if given 0. The implementation is
+            inspired by OpenZeppelin's implementation here:
+            https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/math/Math.sol.
+    @param x The 32-byte variable.
+    @param roundup The Boolean variable that specifies whether
+           to round up or not. The default `False` is round down.
+    @return uint256 The 32-byte calculation result.
+    """
+    value_accumulator: uint256 = empty(uint256)
+    result: uint256 = empty(uint256)
+
+    if(x == empty(uint256)):
+        # For the special case `x == 0` we already return 0 here in order
+        # not to iterate through the remaining code.
+        return empty(uint256)
+
+    # The following lines cannot overflow because we have the well-known
+    # decay behaviour of `log_10(max_value(uint256)) < max_value(uint256)`.
+    if (x >= 10 ** 64):
+        value_accumulator = unsafe_div(x, 10 ** 64)
+        result = 64
+    if (value_accumulator >= 10 ** 32):
+        value_accumulator = unsafe_div(x, 10 ** 32)
+        result = unsafe_add(result, 32)
+    if (value_accumulator >= 10 ** 16):
+        value_accumulator = unsafe_div(x, 10 ** 16)
+        result = unsafe_add(result, 16)
+    if (value_accumulator >= 10 ** 8):
+        value_accumulator = unsafe_div(x, 10 ** 8)
+        result = unsafe_add(result, 8)
+    if (value_accumulator >= 10 ** 4):
+        value_accumulator = unsafe_div(x, 10 ** 4)
+        result = unsafe_add(result, 4)
+    if (value_accumulator >= 10 ** 2):
+        value_accumulator = unsafe_div(x, 10 ** 2)
+        result = unsafe_add(result, 2)
+    if (value_accumulator >= 10):
+        result = unsafe_add(result, 1)
+
+    if (roundup and (10 ** result < value_accumulator)):
+        result = unsafe_add(result, 1)
+
+    return result
+
+
+@external
+@pure
+def log_256(x: uint256, roundup: bool) -> uint256:
+    """
+    @dev Returns the log in base 256 of `x`, following the selected
+         rounding direction.
+    @notice Note that it returns 0 if given 0. Also, adding one to the
+            rounded down result gives the number of pairs of hex symbols
+            needed to represent `x` as a hex string. The implementation is
+            inspired by OpenZeppelin's implementation here:
+            https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/math/Math.sol.
+    @param x The 32-byte variable.
+    @param roundup The Boolean variable that specifies whether
+           to round up or not. The default `False` is round down.
+    @return uint256 The 32-byte calculation result.
+    """
+    value_accumulator: uint256 = empty(uint256)
+    result: uint256 = empty(uint256)
+
+    if(x == empty(uint256)):
+        # For the special case `x == 0` we already return 0 here in order
+        # not to iterate through the remaining code.
+        return empty(uint256)
+
+    # The following lines cannot overflow because we have the well-known
+    # decay behaviour of `log_256(max_value(uint256)) < max_value(uint256)`.
+    if (shift(x, -128) != empty(uint256)):
+        value_accumulator = shift(x, -128)
+        result = 16
+    if (shift(value_accumulator, -64) != empty(uint256)):
+        value_accumulator = shift(value_accumulator, -64)
+        result = unsafe_add(result, 8)
+    if (shift(value_accumulator, -32) != empty(uint256)):
+        value_accumulator = shift(value_accumulator, -32)
+        result = unsafe_add(result, 4)
+    if (shift(value_accumulator, -16) != empty(uint256)):
+        value_accumulator = shift(value_accumulator, -16)
+        result = unsafe_add(result, 2)
+    if (shift(value_accumulator, -8) != empty(uint256)):
+        result = unsafe_add(result, 1)
+
+    if (roundup and (shift(1, convert(shift(result, 3), int256)) < value_accumulator)):
+        result = unsafe_add(result, 1)
+
+    return result
