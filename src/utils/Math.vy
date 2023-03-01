@@ -146,7 +146,7 @@ def wad_cbrt(x: uint256) -> uint256:
     # input by 1e36 to increase precision. This will overflow for very large
     # numbers. So conditionally sacrifice precision.
 
-    xx: uint256 = 0
+    xx: uint256 = empty(uint256)
     if x >= 115792089237316195423570985008687907853269 * 10**18:
         xx = x
     elif x >= 115792089237316195423570985008687907853269:
@@ -164,16 +164,16 @@ def wad_cbrt(x: uint256) -> uint256:
     # 
     # A detailed explanation by Remco can be found in: https://xn--2-umb.com/22/exp-ln/
 
-    log2x: int256 = 0
-    if xx > 340282366920938463463374607431768211455:
+    log2x: int256 = empty(int256)
+    if xx > max_value(uint128):
         log2x = 128
-    if unsafe_div(xx, shift(2, log2x)) > 18446744073709551615:
+    if unsafe_div(xx, shift(2, log2x)) > max_value(uint64):
         log2x = log2x | 64
-    if unsafe_div(xx, shift(2, log2x)) > 4294967295:
+    if unsafe_div(xx, shift(2, log2x)) > max_value(uint32):
         log2x = log2x | 32
-    if unsafe_div(xx, shift(2, log2x)) > 65535:
+    if unsafe_div(xx, shift(2, log2x)) > max_value(uint16):
         log2x = log2x | 16
-    if unsafe_div(xx, shift(2, log2x)) > 255:
+    if unsafe_div(xx, shift(2, log2x)) > max_value(uint8):
         log2x = log2x | 8
     if unsafe_div(xx, shift(2, log2x)) > 15:
         log2x = log2x | 4
