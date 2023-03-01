@@ -18,9 +18,9 @@ def mul_div(x: uint256, y: uint256, denominator: uint256, roundup: bool) -> uint
          following the selected rounding direction.
     @notice The implementation is inspired by Remco Bloemen's
             implementation under the MIT license here:
-            https://xn--2-umb.com/21/muldiv. Furthermore,
-            the rounding direction design pattern is inspired
-            by OpenZeppelin's implementation here:
+            https://xn--2-umb.com/21/muldiv.
+            Furthermore, the rounding direction design pattern is
+            inspired by OpenZeppelin's implementation here:
             https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/math/Math.sol.
     @param x The 32-byte multiplicand.
     @param y The 32-byte multiplier.
@@ -164,3 +164,22 @@ def int256_average(x: int256, y: int256) -> int256:
             of `x` and `y`.
     """
     return unsafe_add(unsafe_add(shift(x, -1), shift(y, -1)), x & y & 1)
+
+
+@external
+@pure
+def ceil_div(x: uint256, y: uint256) -> uint256:
+    """
+    @dev Calculates "ceil(x / y)" for any strictly positive `y`.
+    @notice The implementation is inspired by OpenZeppelin's
+            implementation here:
+            https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/math/Math.sol.
+    @param x The 32-byte numerator.
+    @param y The 32-byte denominator.
+    @return uint256 The 32-byte rounded up result of "x/y".
+    """
+    assert y != empty(uint256), "Math: ceil_div division by zero"
+    if (x == empty(uint256)):
+        return empty(uint256)
+    else:
+        return unsafe_add(unsafe_div(x - 1, y), 1)
