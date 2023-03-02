@@ -88,19 +88,21 @@ contract MathTest is Test {
      * @notice Forked and adjusted accordingly from here:
      * https://github.com/barakman/solidity-math-utils/blob/master/project/contracts/IntegralMath.sol.
      * @param n The 32-byte variable from which the cube root is calculated.
-     * @return The cube root from `n`.
+     * @return The 32-byte cube root of `x`.
      */
     function floorCbrt(uint256 n) internal pure returns (uint256) {
-        uint256 x = 0;
-        for (uint256 y = 1 << 255; y > 0; y >>= 3) {
-            x <<= 1;
-            uint256 z = 3 * x * (x + 1) + 1;
-            if (n / y >= z) {
-                n -= y * z;
-                x += 1;
+        unchecked {
+            uint256 x = 0;
+            for (uint256 y = 1 << type(uint8).max; y > 0; y >>= 3) {
+                x <<= 1;
+                uint256 z = 3 * x * (x + 1) + 1;
+                if (n / y >= z) {
+                    n -= y * z;
+                    x += 1;
+                }
             }
+            return x;
         }
-        return x;
     }
 
     function setUp() public {
@@ -299,6 +301,52 @@ contract MathTest is Test {
         assertEq(math.log_256(type(uint256).max, true), 32);
     }
 
+    function testCbrtRoundDown() public {
+        assertEq(math.cbrt(0, false), 0);
+        assertEq(math.cbrt(1, false), 1);
+        assertEq(math.cbrt(2, false), 1);
+        assertEq(math.cbrt(3, false), 1);
+        assertEq(math.cbrt(9, false), 2);
+        assertEq(math.cbrt(27, false), 3);
+        assertEq(math.cbrt(80, false), 4);
+        assertEq(math.cbrt(81, false), 4);
+        assertEq(math.cbrt(10 ** 18, false), 10 ** 6);
+        assertEq(math.cbrt(8 * 10 ** 18, false), 2 * 10 ** 6);
+        assertEq(math.cbrt(9 * 10 ** 18, false), 2080083);
+        assertEq(math.cbrt(type(uint8).max, false), 6);
+        assertEq(math.cbrt(type(uint16).max, false), 40);
+        assertEq(math.cbrt(type(uint32).max, false), 1625);
+        assertEq(math.cbrt(type(uint64).max, false), 2642245);
+        assertEq(math.cbrt(type(uint128).max, false), 6981463658331);
+        assertEq(
+            math.cbrt(type(uint256).max, false),
+            48740834812604276470692694
+        );
+    }
+
+    function testCbrtRoundUp() public {
+        assertEq(math.cbrt(0, true), 0);
+        assertEq(math.cbrt(1, true), 1);
+        assertEq(math.cbrt(2, true), 2);
+        assertEq(math.cbrt(3, true), 2);
+        assertEq(math.cbrt(9, true), 3);
+        assertEq(math.cbrt(27, true), 3);
+        assertEq(math.cbrt(80, true), 5);
+        assertEq(math.cbrt(81, true), 5);
+        assertEq(math.cbrt(10 ** 18, true), 10 ** 6);
+        assertEq(math.cbrt(8 * 10 ** 18, true), 2 * 10 ** 6);
+        assertEq(math.cbrt(9 * 10 ** 18, true), 2080084);
+        assertEq(math.cbrt(type(uint8).max, true), 7);
+        assertEq(math.cbrt(type(uint16).max, true), 41);
+        assertEq(math.cbrt(type(uint32).max, true), 1626);
+        assertEq(math.cbrt(type(uint64).max, true), 2642246);
+        assertEq(math.cbrt(type(uint128).max, true), 6981463658332);
+        assertEq(
+            math.cbrt(type(uint256).max, true),
+            48740834812604276470692695
+        );
+    }
+
     function testWadCbrt() public {
         assertEq(math.wad_cbrt(0), 0);
         assertEq(math.wad_cbrt(1), 10 ** 12);
@@ -476,12 +524,23 @@ contract MathTest is Test {
         }
     }
 
+    function testFuzzCbrt(uint256 x, bool roundup) public {
+        uint256 result = math.cbrt(x, roundup);
+        uint256 floor = floorCbrt(x);
+        uint256 ceil = (floor ** 3 == x ? floor : floor + 1);
+        if (roundup) {
+            assertEq(result, ceil);
+        } else {
+            assertEq(result, floor);
+        }
+    }
+
     function testFuzzWadCbrt(uint256 x) public {
         uint256 result = math.wad_cbrt(x);
         uint256 floor = floorCbrt(x);
         assertTrue(
             result >= floor * 10 ** 12 && result <= (floor + 1) * 10 ** 12
         );
-        assertTrue((result / 10 ** 12) == floor);
+        assertEq(result / 10 ** 12, floor);
     }
 }

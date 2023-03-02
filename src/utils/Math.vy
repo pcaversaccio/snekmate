@@ -203,7 +203,7 @@ def log_2(x: uint256, roundup: bool) -> uint256:
     value: uint256 = x
     result: uint256 = empty(uint256)
 
-    if(x == empty(uint256)):
+    if (x == empty(uint256)):
         # For the special case `x == 0` we already return 0 here in order
         # not to iterate through the remaining code.
         return empty(uint256)
@@ -257,7 +257,7 @@ def log_10(x: uint256, roundup: bool) -> uint256:
     value: uint256 = x
     result: uint256 = empty(uint256)
 
-    if(x == empty(uint256)):
+    if (x == empty(uint256)):
         # For the special case `x == 0` we already return 0 here in order
         # not to iterate through the remaining code.
         return empty(uint256)
@@ -310,7 +310,7 @@ def log_256(x: uint256, roundup: bool) -> uint256:
     value: uint256 = x
     result: uint256 = empty(uint256)
 
-    if(x == empty(uint256)):
+    if (x == empty(uint256)):
         # For the special case `x == 0` we already return 0 here in order
         # not to iterate through the remaining code.
         return empty(uint256)
@@ -340,6 +340,48 @@ def log_256(x: uint256, roundup: bool) -> uint256:
 
 @external
 @pure
+def cbrt(x: uint256, roundup: bool) -> uint256:
+    """
+    @dev Calculates the cube root of an unsigned integer.
+    @notice Note that this function consumes about 15,000 to 17,500 gas units
+            depending on the value of `x`. The implementation is inspired
+            by barakman's implementation here:
+            https://github.com/barakman/solidity-math-utils/blob/master/project/contracts/IntegralMath.sol.
+    @param x The 32-byte variable from which the cube root is calculated.
+    @param roundup The Boolean variable that specifies whether
+           to round up or not. The default `False` is round down.
+    @return The 32-byte cube root of `x`.
+    """
+    if (x == empty(uint256)):
+        # For the special case `x == 0` we already return 0 here in order
+        # not to iterate through the remaining code.
+        return empty(uint256)
+
+    value: uint256 = x
+    y: uint256 = empty(uint256)
+    z: uint256 = empty(uint256)
+    i: uint256 = shift(1, max_value(uint8))
+
+    # With the above starting value of `i` and a loop increment of `i >>= 3`
+    # it takes 86 loops until we reach `i == 0`. Also, the following lines
+    # cannot overflow as we increase `y` from 0 and `x` is reduced from the
+    # upper end.
+    for _ in range(86):
+        y = shift(y, 1)
+        z = unsafe_add(unsafe_mul(unsafe_mul(3, y), unsafe_add(y, 1)), 1)
+        if (unsafe_div(value, i) >= z):
+            value = unsafe_sub(value, unsafe_mul(i, z))
+            y = unsafe_add(y, 1)
+        i = shift(i, -3)
+    
+    if (roundup and (unsafe_mul(unsafe_mul(y, y), y) != x)):
+        y = unsafe_add(y, 1)
+
+    return y
+
+
+@external
+@pure
 def wad_cbrt(x: uint256) -> uint256:
     """
     @dev Calculates the cube root of an unsigned integer with a precision
@@ -349,9 +391,9 @@ def wad_cbrt(x: uint256) -> uint256:
             by Curve Finance's implementation under the MIT license here:
             https://github.com/curvefi/tricrypto-ng/blob/main/contracts/CurveCryptoMathOptimized3.vy.
     @param x The 32-byte variable from which the cube root is calculated.
-    @return The cube root with a precision of 1e18 from `x`.
+    @return The 32-byte cubic root of `x` with a precision of 1e18.
     """
-    if(x == empty(uint256)):
+    if (x == empty(uint256)):
         # For the special case `x == 0` we already return 0 here in order
         # not to iterate through the remaining code.
         return empty(uint256)
