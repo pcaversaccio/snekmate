@@ -278,6 +278,29 @@ contract MathTest is Test {
         assertEq(math.log_256(type(uint256).max, true), 32);
     }
 
+    function testWadCbrt() public {
+        assertEq(math.wad_cbrt(0), 0);
+        assertEq(math.wad_cbrt(1), 10 ** 12);
+        assertEq(math.wad_cbrt(2), 1259921049894);
+        assertEq(math.wad_cbrt(3), 1442249570307);
+        assertEq(math.wad_cbrt(9), 2080083823051);
+        assertEq(math.wad_cbrt(27), 3000000000000);
+        assertEq(math.wad_cbrt(80), 4308869380063);
+        assertEq(math.wad_cbrt(81), 4326748710922);
+        assertEq(math.wad_cbrt(10 ** 18), 10 ** 18);
+        assertEq(math.wad_cbrt(8 * 10 ** 18), 2 * 10 ** 18);
+        assertEq(math.wad_cbrt(9 * 10 ** 18), 2080083823051904114);
+        assertEq(math.wad_cbrt(type(uint8).max), 6341325705384);
+        assertEq(math.wad_cbrt(type(uint16).max), 40317268530317);
+        assertEq(math.wad_cbrt(type(uint32).max), 1625498677089280);
+        assertEq(math.wad_cbrt(type(uint64).max), 2642245949629133047);
+        assertEq(math.wad_cbrt(type(uint128).max), 6981463658331559092288464);
+        assertEq(
+            math.wad_cbrt(type(uint256).max),
+            48740834812604276470692694000000000000
+        );
+    }
+
     /**
      * @notice Forked and adjusted accordingly from here:
      * https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/test/utils/math/Math.t.sol.
