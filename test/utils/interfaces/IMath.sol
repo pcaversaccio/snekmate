@@ -23,4 +23,6 @@ interface IMath {
     function log_10(uint256 x, bool roundup) external pure returns (uint256);
 
     function log_256(uint256 x, bool roundup) external pure returns (uint256);
+
+    function wad_cbrt(uint256 x) external pure returns (uint256);
 }

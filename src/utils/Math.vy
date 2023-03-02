@@ -3,6 +3,7 @@
 @title Standard Mathematical Utility Functions
 @license GNU Affero General Public License v3.0
 @author pcaversaccio
+@custom:coauthor bout3fiddy
 @notice These functions implement standard mathematical utility
         functions that are missing in the Vyper language. If a
         function is inspired by an existing implementation, it
@@ -338,95 +339,89 @@ def log_256(x: uint256, roundup: bool) -> uint256:
 
 
 @external
-@view
+@pure
 def wad_cbrt(x: uint256) -> uint256:
     """
-    @notice Calculate the cubic root of a number in 1e18 precision
-    @dev Consumes around 1500 gas units
-    @param x The number to calculate the cubic root of
-    @return The cubic root of the number
+    @dev Calculates the cube root of an unsigned integer with a precision
+         of 1e18.
+    @notice Note that this function consumes about 1,900 to 2,000 gas units
+            depending on the value of `x`. The implementation is inspired
+            by Curve Finance's implementation under the MIT license here:
+            https://github.com/curvefi/tricrypto-ng/blob/main/contracts/CurveCryptoMathOptimized3.vy.
+    @param x The 32-byte variable from which the cube root is calculated.
+    @return The cube root with a precision of 1e18 from `x`.
     """
+    if(x == empty(uint256)):
+        # For the special case `x == 0` we already return 0 here in order
+        # not to iterate through the remaining code.
+        return empty(uint256)
 
-    # Since this cubic root is for numbers at 1e18 base, we need to scale the
-    # input by 1e36 to increase precision. This will overflow for very large
-    # numbers. So conditionally sacrifice precision.
-
+    # Since this cube root is for numbers with base 1e18, we have to scale
+    # the input by 1e36 to increase the precision. This leads to an overflow
+    # for very large numbers. So we conditionally sacrifice precision.
     xx: uint256 = empty(uint256)
-    if x >= 115792089237316195423570985008687907853269 * 10**18:
+    if (x >= unsafe_mul(unsafe_div(max_value(uint256), 10 ** 36), 10 ** 18)):
         xx = x
-    elif x >= 115792089237316195423570985008687907853269:
-        xx = unsafe_mul(x, 10**18)
+    elif (x >= unsafe_div(max_value(uint256), 10 ** 36)):
+        xx = unsafe_mul(x, 10 ** 18)
     else:
-        xx = unsafe_mul(x, 10**36)
+        xx = unsafe_mul(x, 10 ** 36)
 
-    # Compute the binary logarithm of `x`
-
-    # This was inspired from Stanford's 'Bit Twiddling Hacks' by Sean Eron Anderson:
-    # https://graphics.stanford.edu/~seander/bithacks.html#IntegerLog
-    #
-    # More inspiration was derived from:
-    # https://github.com/transmissions11/solmate/blob/main/src/utils/SignedWadMath.sol
-    # 
-    # A detailed explanation by Remco can be found in: https://xn--2-umb.com/22/exp-ln/
-
-    log2x: int256 = empty(int256)
-    if xx > max_value(uint128):
+    # Compute the binary logarithm of `xx`. This approach was inspired by Sean
+    # Eron Anderson's "Bit Twiddling Hacks" from Stanford:
+    # https://graphics.stanford.edu/~seander/bithacks.html#IntegerLog.
+    # Further inspiration stems from solmate:
+    # https://github.com/transmissions11/solmate/blob/main/src/utils/SignedWadMath.sol.
+    # A detailed mathematical explanation by Remco Bloemen can be found here:
+    # https://xn--2-umb.com/22/exp-ln.
+    log2x: uint256 = empty(uint256)
+    if (xx > max_value(uint128)):
         log2x = 128
-    if unsafe_div(xx, shift(2, log2x)) > max_value(uint64):
+    if (unsafe_div(xx, shift(2, convert(log2x, int256))) > max_value(uint64)):
         log2x = log2x | 64
-    if unsafe_div(xx, shift(2, log2x)) > max_value(uint32):
+    if (unsafe_div(xx, shift(2, convert(log2x, int256))) > max_value(uint32)):
         log2x = log2x | 32
-    if unsafe_div(xx, shift(2, log2x)) > max_value(uint16):
+    if (unsafe_div(xx, shift(2, convert(log2x, int256))) > max_value(uint16)):
         log2x = log2x | 16
-    if unsafe_div(xx, shift(2, log2x)) > max_value(uint8):
+    if (unsafe_div(xx, shift(2, convert(log2x, int256))) > max_value(uint8)):
         log2x = log2x | 8
-    if unsafe_div(xx, shift(2, log2x)) > 15:
+    if (unsafe_div(xx, shift(2, convert(log2x, int256))) > 15):
         log2x = log2x | 4
-    if unsafe_div(xx, shift(2, log2x)) > 3:
+    if (unsafe_div(xx, shift(2, convert(log2x, int256))) > 3):
         log2x = log2x | 2
-    if unsafe_div(xx, shift(2, log2x)) > 1:
+    if (unsafe_div(xx, shift(2, convert(log2x, int256))) > 1):
         log2x = log2x | 1
 
-    # When we divide log2x by 3, the remainder is (log2x % 3).
-    # So if we just multiply 2**(log2x/3) and discard the remainder to calculate our
-    # guess, the newton method will need more iterations to converge to a solution,
-    # since it is missing that precision. It's a few more calculations now to do less
-    # calculations later:
-    # pow = log2(x) // 3
-    # remainder = log2(x) % 3
-    # initial_guess = 2 ** pow * cbrt(2) ** remainder
-    # substituting -> 2 = 1.26 ≈ 1260 / 1000, we get:
-    #
-    # initial_guess = 2 ** pow * 1260 ** remainder // 1000 ** remainder
+    # If we divide log2x by 3, the remainder is "log2x % 3". So if we simply
+    # multiply "2**(log2x/3)" and discard the remainder to calculate our guess,
+    # the Newton-Raphson method takes more iterations to converge to a solution
+    # because it lacks this precision. A few more calculations now in order to
+    # do fewer calculations later:
+    # - "pow = log2(x) // 3" (the operator `//` means integer division),
+    # - "remainder = log2(x) % 3",
+    # - "initial_guess = 2 ** pow * cbrt(2) ** remainder".
+    # Now substituting "2 = 1.26 ≈ 1260 / 1000", we get:
+    # - "initial_guess = 2 ** pow * 1260 ** remainder // 1000 ** remainder".
+    remainder: uint256 = log2x % 3
+    y: uint256 = unsafe_div(unsafe_mul(pow_mod256(2, unsafe_div(log2x, 3)), pow_mod256(1260, remainder)), pow_mod256(1000, remainder))
 
-    remainder: uint256 = convert(log2x, uint256) % 3
-    a: uint256 = unsafe_div(
-        unsafe_mul(
-            pow_mod256(2, unsafe_div(convert(log2x, uint256), 3)),  # <- pow
-            pow_mod256(1260, remainder),
-        ),
-        pow_mod256(1000, remainder),
-    )
+    # Since we have chosen good initial values for the cube roots, 7 Newton-Raphson
+    # iterations are just sufficient. 6 iterations would lead to non-convergences,
+    # and 8 would be one iteration too many. Without initial values, the iteration
+    # number can be up to 20 or more. The iterations are unrolled. This reduces the
+    # gas cost, but requires more bytecode.
+    y = unsafe_div(unsafe_add(unsafe_mul(2, y), unsafe_div(xx, unsafe_mul(y, y))), 3)
+    y = unsafe_div(unsafe_add(unsafe_mul(2, y), unsafe_div(xx, unsafe_mul(y, y))), 3)
+    y = unsafe_div(unsafe_add(unsafe_mul(2, y), unsafe_div(xx, unsafe_mul(y, y))), 3)
+    y = unsafe_div(unsafe_add(unsafe_mul(2, y), unsafe_div(xx, unsafe_mul(y, y))), 3)
+    y = unsafe_div(unsafe_add(unsafe_mul(2, y), unsafe_div(xx, unsafe_mul(y, y))), 3)
+    y = unsafe_div(unsafe_add(unsafe_mul(2, y), unsafe_div(xx, unsafe_mul(y, y))), 3)
+    y = unsafe_div(unsafe_add(unsafe_mul(2, y), unsafe_div(xx, unsafe_mul(y, y))), 3)
 
-    # Because we chose good initial values for cube roots, 7 newton raphson iterations
-    # are just about sufficient. 6 iterations would result in non-convergences, and 8
-    # would be one too many iterations. Without initial values, the iteration count
-    # can go up to 20 or greater. The iterations are unrolled. This reduces gas costs
-    # but takes up more bytecode:
-
-    a = unsafe_div(unsafe_add(unsafe_mul(2, a), unsafe_div(xx, unsafe_mul(a, a))), 3)
-    a = unsafe_div(unsafe_add(unsafe_mul(2, a), unsafe_div(xx, unsafe_mul(a, a))), 3)
-    a = unsafe_div(unsafe_add(unsafe_mul(2, a), unsafe_div(xx, unsafe_mul(a, a))), 3)
-    a = unsafe_div(unsafe_add(unsafe_mul(2, a), unsafe_div(xx, unsafe_mul(a, a))), 3)
-    a = unsafe_div(unsafe_add(unsafe_mul(2, a), unsafe_div(xx, unsafe_mul(a, a))), 3)
-    a = unsafe_div(unsafe_add(unsafe_mul(2, a), unsafe_div(xx, unsafe_mul(a, a))), 3)
-    a = unsafe_div(unsafe_add(unsafe_mul(2, a), unsafe_div(xx, unsafe_mul(a, a))), 3)
-
-    # If we scaled up, then we should scale down:
-
-    if x >= 115792089237316195423570985008687907853269 * 10**18:
-        return a * 10**12
-    elif x >= 115792089237316195423570985008687907853269:
-        return a * 10**6
-
-    return a
+    # Since we scaled up, we have to scale down accordingly.
+    if (x >= unsafe_mul(unsafe_div(max_value(uint256), 10 ** 36), 10 ** 18)):
+        return unsafe_mul(y, 10 ** 12)
+    elif x >= unsafe_div(max_value(uint256), 10 ** 36):
+        return unsafe_mul(y, 10 ** 6)
+    else:
+        return y
