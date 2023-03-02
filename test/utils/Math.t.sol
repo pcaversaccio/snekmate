@@ -82,6 +82,27 @@ contract MathTest is Test {
         carry = remainder < x ? 1 : 0;
     }
 
+    /**
+     * @dev An `internal` helper function for cube root calculation of an
+     * unsigned 32-byte integer.
+     * @notice Forked and adjusted accordingly from here:
+     * https://github.com/barakman/solidity-math-utils/blob/master/project/contracts/IntegralMath.sol.
+     * @param n The 32-byte variable from which the cube root is calculated.
+     * @return The cube root from `n`.
+     */
+    function floorCbrt(uint256 n) internal pure returns (uint256) {
+        uint256 x = 0;
+        for (uint256 y = 1 << 255; y > 0; y >>= 3) {
+            x <<= 1;
+            uint256 z = 3 * x * (x + 1) + 1;
+            if (n / y >= z) {
+                n -= y * z;
+                x += 1;
+            }
+        }
+        return x;
+    }
+
     function setUp() public {
         math = IMath(vyperDeployer.deployContract("src/utils/", "Math"));
     }
@@ -453,5 +474,14 @@ contract MathTest is Test {
         } else {
             assertEq(256 ** result, x);
         }
+    }
+
+    function testFuzzWadCbrt(uint256 x) public {
+        uint256 result = math.wad_cbrt(x);
+        uint256 floor = floorCbrt(x);
+        assertTrue(
+            result >= floor * 10 ** 12 && result <= (floor + 1) * 10 ** 12
+        );
+        assertTrue((result / 10 ** 12) == floor);
     }
 }
