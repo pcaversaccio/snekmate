@@ -393,15 +393,15 @@ def wad_cbrt(x: uint256) -> uint256:
         log2x = log2x | 1
 
     # If we divide log2x by 3, the remainder is "log2x % 3". So if we simply
-    # multiply "2**(log2x/3)" and discard the remainder to calculate our guess,
+    # multiply "2 ** (log2x/3)" and discard the remainder to calculate our guess,
     # the Newton-Raphson method takes more iterations to converge to a solution
     # because it lacks this precision. A few more calculations now in order to
     # do fewer calculations later:
-    # - "pow = log2(x) // 3" (the operator `//` means integer division),
-    # - "remainder = log2(x) % 3",
-    # - "initial_guess = 2 ** pow * cbrt(2) ** remainder".
+    #   - "pow = log2(x) // 3" (the operator `//` means integer division),
+    #   - "remainder = log2(x) % 3",
+    #   - "initial_guess = 2 ** pow * cbrt(2) ** remainder".
     # Now substituting "2 = 1.26 ≈ 1260 / 1000", we get:
-    # - "initial_guess = 2 ** pow * 1260 ** remainder // 1000 ** remainder".
+    #   - "initial_guess = 2 ** pow * 1260 ** remainder // 1000 ** remainder".
     remainder: uint256 = log2x % 3
     y: uint256 = unsafe_div(unsafe_mul(pow_mod256(2, unsafe_div(log2x, 3)), pow_mod256(1260, remainder)), pow_mod256(1000, remainder))
 
