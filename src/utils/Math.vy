@@ -18,9 +18,9 @@ def mul_div(x: uint256, y: uint256, denominator: uint256, roundup: bool) -> uint
          following the selected rounding direction.
     @notice The implementation is inspired by Remco Bloemen's
             implementation under the MIT license here:
-            https://xn--2-umb.com/21/muldiv. Furthermore,
-            the rounding direction design pattern is inspired
-            by OpenZeppelin's implementation here:
+            https://xn--2-umb.com/21/muldiv.
+            Furthermore, the rounding direction design pattern is
+            inspired by OpenZeppelin's implementation here:
             https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/math/Math.sol.
     @param x The 32-byte multiplicand.
     @param y The 32-byte multiplier.
@@ -133,6 +133,211 @@ def mul_div(x: uint256, y: uint256, denominator: uint256, roundup: bool) -> uint
 
 
 @external
+@pure
+def uint256_average(x: uint256, y: uint256) -> uint256:
+    """
+    @dev Returns the average of two 32-byte unsigned integers.
+    @notice Note that the result is rounded towards zero. For
+            more details on finding the average of two unsigned
+            integers without an overflow, please refer to:
+            https://devblogs.microsoft.com/oldnewthing/20220207-00/?p=106223.
+    @param x The first 32-byte unsigned integer of the data set.
+    @param y The second 32-byte unsigned integer of the data set.
+    @return uint256 The 32-byte average (rounded towards zero) of
+            `x` and `y`.
+    """
+    return unsafe_add(x & y, shift(x ^ y, -1))
+
+
+@external
+@pure
+def int256_average(x: int256, y: int256) -> int256:
+    """
+    @dev Returns the average of two 32-byte signed integers.
+    @notice Note that the result is rounded towards infinity.
+            For more details on finding the average of two signed
+            integers without an overflow, please refer to:
+            https://patents.google.com/patent/US6007232A/en.
+    @param x The first 32-byte signed integer of the data set.
+    @param y The second 32-byte signed integer of the data set.
+    @return uint256 The 32-byte average (rounded towards infinity)
+            of `x` and `y`.
+    """
+    return unsafe_add(unsafe_add(shift(x, -1), shift(y, -1)), x & y & 1)
+
+
+@external
+@pure
+def ceil_div(x: uint256, y: uint256) -> uint256:
+    """
+    @dev Calculates "ceil(x / y)" for any strictly positive `y`.
+    @notice The implementation is inspired by OpenZeppelin's
+            implementation here:
+            https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/math/Math.sol.
+    @param x The 32-byte numerator.
+    @param y The 32-byte denominator.
+    @return uint256 The 32-byte rounded up result of "x/y".
+    """
+    assert y != empty(uint256), "Math: ceil_div division by zero"
+    if (x == empty(uint256)):
+        return empty(uint256)
+    else:
+        return unsafe_add(unsafe_div(x - 1, y), 1)
+
+
+@external
+@pure
+def log_2(x: uint256, roundup: bool) -> uint256:
+    """
+    @dev Returns the log in base 2 of `x`, following the selected
+         rounding direction.
+    @notice Note that it returns 0 if given 0. The implementation is
+            inspired by OpenZeppelin's implementation here:
+            https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/math/Math.sol.
+    @param x The 32-byte variable.
+    @param roundup The Boolean variable that specifies whether
+           to round up or not. The default `False` is round down.
+    @return uint256 The 32-byte calculation result.
+    """
+    value: uint256 = x
+    result: uint256 = empty(uint256)
+
+    if(x == empty(uint256)):
+        # For the special case `x == 0` we already return 0 here in order
+        # not to iterate through the remaining code.
+        return empty(uint256)
+
+    # The following lines cannot overflow because we have the well-known
+    # decay behaviour of `log_2(max_value(uint256)) < max_value(uint256)`.
+    if (shift(x, -128) != empty(uint256)):
+        value = shift(x, -128)
+        result = 128
+    if (shift(value, -64) != empty(uint256)):
+        value = shift(value, -64)
+        result = unsafe_add(result, 64)
+    if (shift(value, -32) != empty(uint256)):
+        value = shift(value, -32)
+        result = unsafe_add(result, 32)
+    if (shift(value, -16) != empty(uint256)):
+        value = shift(value, -16)
+        result = unsafe_add(result, 16)
+    if (shift(value, -8) != empty(uint256)):
+        value = shift(value, -8)
+        result = unsafe_add(result, 8)
+    if (shift(value, -4) != empty(uint256)):
+        value = shift(value, -4)
+        result = unsafe_add(result, 4)
+    if (shift(value, -2) != empty(uint256)):
+        value = shift(value, -2)
+        result = unsafe_add(result, 2)
+    if (shift(value, -1) != empty(uint256)):
+        result = unsafe_add(result, 1)
+
+    if (roundup and (shift(1, convert(result, int256)) < x)):
+        result = unsafe_add(result, 1)
+
+    return result
+
+
+@external
+@pure
+def log_10(x: uint256, roundup: bool) -> uint256:
+    """
+    @dev Returns the log in base 10 of `x`, following the selected
+         rounding direction.
+    @notice Note that it returns 0 if given 0. The implementation is
+            inspired by OpenZeppelin's implementation here:
+            https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/math/Math.sol.
+    @param x The 32-byte variable.
+    @param roundup The Boolean variable that specifies whether
+           to round up or not. The default `False` is round down.
+    @return uint256 The 32-byte calculation result.
+    """
+    value: uint256 = x
+    result: uint256 = empty(uint256)
+
+    if(x == empty(uint256)):
+        # For the special case `x == 0` we already return 0 here in order
+        # not to iterate through the remaining code.
+        return empty(uint256)
+
+    # The following lines cannot overflow because we have the well-known
+    # decay behaviour of `log_10(max_value(uint256)) < max_value(uint256)`.
+    if (x >= 10 ** 64):
+        value = unsafe_div(x, 10 ** 64)
+        result = 64
+    if (value >= 10 ** 32):
+        value = unsafe_div(value, 10 ** 32)
+        result = unsafe_add(result, 32)
+    if (value >= 10 ** 16):
+        value = unsafe_div(value, 10 ** 16)
+        result = unsafe_add(result, 16)
+    if (value >= 10 ** 8):
+        value = unsafe_div(value, 10 ** 8)
+        result = unsafe_add(result, 8)
+    if (value >= 10 ** 4):
+        value = unsafe_div(value, 10 ** 4)
+        result = unsafe_add(result, 4)
+    if (value >= 10 ** 2):
+        value = unsafe_div(value, 10 ** 2)
+        result = unsafe_add(result, 2)
+    if (value >= 10):
+        result = unsafe_add(result, 1)
+
+    if (roundup and (10 ** result < x)):
+        result = unsafe_add(result, 1)
+
+    return result
+
+
+@external
+@pure
+def log_256(x: uint256, roundup: bool) -> uint256:
+    """
+    @dev Returns the log in base 256 of `x`, following the selected
+         rounding direction.
+    @notice Note that it returns 0 if given 0. Also, adding one to the
+            rounded down result gives the number of pairs of hex symbols
+            needed to represent `x` as a hex string. The implementation is
+            inspired by OpenZeppelin's implementation here:
+            https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/math/Math.sol.
+    @param x The 32-byte variable.
+    @param roundup The Boolean variable that specifies whether
+           to round up or not. The default `False` is round down.
+    @return uint256 The 32-byte calculation result.
+    """
+    value: uint256 = x
+    result: uint256 = empty(uint256)
+
+    if(x == empty(uint256)):
+        # For the special case `x == 0` we already return 0 here in order
+        # not to iterate through the remaining code.
+        return empty(uint256)
+
+    # The following lines cannot overflow because we have the well-known
+    # decay behaviour of `log_256(max_value(uint256)) < max_value(uint256)`.
+    if (shift(x, -128) != empty(uint256)):
+        value = shift(x, -128)
+        result = 16
+    if (shift(value, -64) != empty(uint256)):
+        value = shift(value, -64)
+        result = unsafe_add(result, 8)
+    if (shift(value, -32) != empty(uint256)):
+        value = shift(value, -32)
+        result = unsafe_add(result, 4)
+    if (shift(value, -16) != empty(uint256)):
+        value = shift(value, -16)
+        result = unsafe_add(result, 2)
+    if (shift(value, -8) != empty(uint256)):
+        result = unsafe_add(result, 1)
+
+    if (roundup and (shift(1, convert(shift(result, 3), int256)) < x)):
+        result = unsafe_add(result, 1)
+
+    return result
+
+
+@external
 @view
 def wad_cbrt(x: uint256) -> uint256:
     """
@@ -225,4 +430,3 @@ def wad_cbrt(x: uint256) -> uint256:
         return a * 10**6
 
     return a
-
