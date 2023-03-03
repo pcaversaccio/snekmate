@@ -255,8 +255,7 @@ def balanceOf(owner: address, id: uint256) -> uint256:
     @return uint256 The 32-byte token amount owned
             by `owner`.
     """
-    assert owner != empty(address), "ERC1155: address zero is not a valid owner"
-    return self._balances[id][owner]
+    return self._balance_of(owner, id)
 
 
 @external
@@ -275,7 +274,7 @@ def balanceOfBatch(owners: DynArray[address, _BATCH_SIZE], ids: DynArray[uint256
     batch_balances: DynArray[uint256, _BATCH_SIZE] = []
     idx: uint256 = 0
     for owner in owners:
-        batch_balances.append(IERC1155(self).balanceOf(owner, ids[idx]))
+        batch_balances.append(self._balance_of(owner, ids[idx]))
         # The following line cannot overflow because we have
         # limited the dynamic array `owners` by the `constant`
         # parameter `_BATCH_SIZE`, which is bounded by the
@@ -313,24 +312,7 @@ def uri(id: uint256) -> String[512]:
     @return String The maximum 512-character user-readable
             string token URI of the token type `id`.
     """
-    token_uri: String[432] = self._token_uris[id]
-
-    base_uri_length: uint256 = len(_BASE_URI)
-    # If there is no base URI, return the token URI.
-    if (base_uri_length == empty(uint256)):
-        return token_uri
-
-    # If both are set, concatenate the base URI
-    # and token URI.
-    if (len(token_uri) != empty(uint256)):
-        return concat(_BASE_URI, token_uri)
-
-    # If there is no token URI but a base URI,
-    # concatenate the base URI and token ID.
-    if (base_uri_length != empty(uint256)):
-        return concat(_BASE_URI, uint2str(id))
-    else:
-        return ""
+    return self._uri(id)
 
 
 @external
@@ -609,6 +591,23 @@ def _safe_batch_transfer_from(owner: address, to: address, ids: DynArray[uint256
 
 
 @internal
+@view
+def _balance_of(owner: address, id: uint256) -> uint256:
+    """
+    @dev Returns the amount of tokens of token type
+         `id` owned by `owner`.
+    @notice Note that `owner` cannot be the zero
+            address.
+    @param owner The 20-byte owner address.
+    @param id The 32-byte identifier of the token.
+    @return uint256 The 32-byte token amount owned
+            by `owner`.
+    """
+    assert owner != empty(address), "ERC1155: address zero is not a valid owner"
+    return self._balances[id][owner]
+
+
+@internal
 def _safe_mint(owner: address, id: uint256, amount: uint256, data: Bytes[1024]):
     """
     @dev Safely mints `amount` tokens of token type `id` and
@@ -682,6 +681,42 @@ def _safe_mint_batch(owner: address, ids: DynArray[uint256, _BATCH_SIZE], amount
 
 
 @internal
+@view
+def _uri(id: uint256) -> String[512]:
+    """
+    @dev An `internal` helper function that returns the Uniform
+         Resource Identifier (URI) for token type `id`.
+    @notice If the `id` substring is present in the URI,
+            it must be replaced by clients with the actual
+            token type ID. Note that the `uri` function must
+            not be used to check for the existence of a token
+            as it is possible for the implementation to return
+            a valid string even if the token does not exist.
+    @param id The 32-byte identifier of the token type `id`.
+    @return String The maximum 512-character user-readable
+            string token URI of the token type `id`.
+    """
+    token_uri: String[432] = self._token_uris[id]
+
+    base_uri_length: uint256 = len(_BASE_URI)
+    # If there is no base URI, return the token URI.
+    if (base_uri_length == empty(uint256)):
+        return token_uri
+
+    # If both are set, concatenate the base URI
+    # and token URI.
+    if (len(token_uri) != empty(uint256)):
+        return concat(_BASE_URI, token_uri)
+
+    # If there is no token URI but a base URI,
+    # concatenate the base URI and token ID.
+    if (base_uri_length != empty(uint256)):
+        return concat(_BASE_URI, uint2str(id))
+    else:
+        return ""
+
+
+@internal
 def _set_uri(id: uint256, token_uri: String[432]):
     """
     @dev Sets the Uniform Resource Identifier (URI)
@@ -695,7 +730,7 @@ def _set_uri(id: uint256, token_uri: String[432]):
            string URI for computing `uri`.
     """
     self._token_uris[id] = token_uri
-    log URI(IERC1155MetadataURI(self).uri(id), id)
+    log URI(self._uri(id), id)
 
 
 @internal

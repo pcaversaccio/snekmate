@@ -371,7 +371,7 @@ def totalAssets() -> uint256:
             https://eips.ethereum.org/EIPS/eip-4626#totalassets.
     @return uint256 The 32-byte total managed assets.
     """
-    return asset.balanceOf(self)
+    return self._total_assets()
 
 
 @external
@@ -418,7 +418,7 @@ def maxDeposit(receiver: address) -> uint256:
     @param receiver The 20-byte receiver address.
     @return uint256 The 32-byte maximum deposit amount.
     """
-    return max_value(uint256)
+    return self._max_deposit(receiver)
 
 
 @external
@@ -433,7 +433,7 @@ def previewDeposit(assets: uint256) -> uint256:
     @param assets The 32-byte assets amount.
     @return uint256 The simulated 32-byte returning shares amount.
     """
-    return self._convert_to_shares(assets, False)
+    return self._preview_deposit(assets)
 
 
 @external
@@ -447,8 +447,8 @@ def deposit(assets: uint256, receiver: address) -> uint256:
     @param receiver The 20-byte receiver address.
     @return uint256 The 32-byte shares amount to be created.
     """
-    assert assets <= ERC4626(self).maxDeposit(receiver), "ERC4626: deposit more than maximum"
-    shares: uint256 = ERC4626(self).previewDeposit(assets)
+    assert assets <= self._max_deposit(receiver), "ERC4626: deposit more than maximum"
+    shares: uint256 = self._preview_deposit(assets)
     self._deposit(msg.sender, receiver, assets, shares)
     return shares
 
@@ -464,7 +464,7 @@ def maxMint(receiver: address) -> uint256:
     @param receiver The 20-byte receiver address.
     @return uint256 The 32-byte maximum mint amount.
     """
-    return max_value(uint256)
+    return self._max_mint(receiver)
 
 
 @external
@@ -479,7 +479,7 @@ def previewMint(shares: uint256) -> uint256:
     @param shares The 32-byte shares amount.
     @return uint256 The simulated 32-byte required assets amount.
     """
-    return self._convert_to_assets(shares, True)
+    return self._preview_mint(shares)
 
 
 @external
@@ -493,8 +493,8 @@ def mint(shares: uint256, receiver:address) -> uint256:
     @param receiver The 20-byte receiver address.
     @return uint256 The deposited 32-byte assets amount.
     """
-    assert shares <= ERC4626(self).maxMint(receiver), "ERC4626: mint more than maximum"
-    assets: uint256 = ERC4626(self).previewMint(shares)
+    assert shares <= self._max_mint(receiver), "ERC4626: mint more than maximum"
+    assets: uint256 = self._preview_mint(shares)
     self._deposit(msg.sender, receiver, assets, shares)
     return assets
 
@@ -511,7 +511,7 @@ def maxWithdraw(owner: address) -> uint256:
     @param owner The 20-byte owner address.
     @return uint256 The 32-byte maximum withdraw amount.
     """
-    return self._convert_to_assets(self.balanceOf[owner], False)
+    return self._max_withdraw(owner)
 
 
 @external
@@ -526,7 +526,7 @@ def previewWithdraw(assets: uint256) -> uint256:
     @param assets The 32-byte assets amount.
     @return uint256 The simulated 32-byte burned shares amount.
     """
-    return self._convert_to_shares(assets, True)
+    return self._preview_withdraw(assets)
 
 
 @external
@@ -541,8 +541,8 @@ def withdraw(assets: uint256, receiver: address, owner: address) -> uint256:
     @param owner The 20-byte owner address.
     @return uint256 The burned 32-byte shares amount.
     """
-    assert assets <= ERC4626(self).maxWithdraw(receiver), "ERC4626: withdraw more than maximum"
-    shares: uint256 = ERC4626(self).previewWithdraw(assets)
+    assert assets <= self._max_withdraw(receiver), "ERC4626: withdraw more than maximum"
+    shares: uint256 = self._preview_withdraw(assets)
     self._withdraw(msg.sender, receiver, owner, assets, shares)
     return shares
 
@@ -558,7 +558,7 @@ def maxRedeem(owner: address) -> uint256:
     @param owner The 20-byte owner address.
     @return uint256 The 32-byte maximum redeemable shares amount.
     """
-    return self.balanceOf[owner]
+    return self._max_redeem(owner)
 
 
 @external
@@ -573,7 +573,7 @@ def previewRedeem(shares: uint256) -> uint256:
     @param shares The 32-byte shares amount to be redeemed.
     @return uint256 The simulated 32-byte returning assets amount.
     """
-    return self._convert_to_assets(shares, False)
+    return self._preview_redeem(shares)
 
 
 @external
@@ -588,8 +588,8 @@ def redeem(shares: uint256, receiver: address, owner: address) -> uint256:
     @param owner The 20-byte owner address.
     @return uint256 The returned 32-byte assets amount.
     """
-    assert shares <= ERC4626(self).maxRedeem(owner), "ERC4626: redeem more than maximum"
-    assets: uint256 = ERC4626(self).previewRedeem(shares)
+    assert shares <= self._max_redeem(owner), "ERC4626: redeem more than maximum"
+    assets: uint256 = self._preview_redeem(shares)
     self._withdraw(msg.sender, receiver, owner, assets, shares)
     return assets
 
@@ -814,6 +814,19 @@ def _try_get_underlying_decimals(underlying: ERC20) -> (bool, uint8):
 
 @internal
 @view
+def _total_assets() -> uint256:
+    """
+    @dev An `internal` helper function that returns the total amount
+         of the underlying asset that is managed by the vault.
+    @notice For the to be fulfilled conditions, please refer to:
+            https://eips.ethereum.org/EIPS/eip-4626#totalassets.
+    @return uint256 The 32-byte total managed assets.
+    """
+    return asset.balanceOf(self)
+
+
+@internal
+@view
 def _convert_to_shares(assets: uint256, roundup: bool) -> uint256:
     """
     @dev An `internal` conversion function (from assets to shares)
@@ -823,7 +836,7 @@ def _convert_to_shares(assets: uint256, roundup: bool) -> uint256:
            to round up or not. The default `False` is round down.
     @return uint256 The converted 32-byte shares amount.
     """
-    return self._mul_div(assets, self.totalSupply + 10 ** convert(_DECIMALS_OFFSET, uint256), ERC4626(self).totalAssets() + 1, roundup)
+    return self._mul_div(assets, self.totalSupply + 10 ** convert(_DECIMALS_OFFSET, uint256), self._total_assets() + 1, roundup)
 
 
 @internal
@@ -837,7 +850,127 @@ def _convert_to_assets(shares: uint256, roundup: bool) -> uint256:
            to round up or not. The default `False` is round down.
     @return uint256 The converted 32-byte assets amount.
     """
-    return self._mul_div(shares, ERC4626(self).totalAssets() + 1, self.totalSupply + 10 ** convert(_DECIMALS_OFFSET, uint256), roundup)
+    return self._mul_div(shares, self._total_assets() + 1, self.totalSupply + 10 ** convert(_DECIMALS_OFFSET, uint256), roundup)
+
+
+@internal
+@pure
+def _max_deposit(receiver: address) -> uint256:
+    """
+    @dev An `internal` helper function that returns the maximum
+         amount of the underlying asset that can be deposited into
+         the vault for the `receiver`, through a `deposit` call.
+    @notice For the to be fulfilled conditions, please refer to:
+            https://eips.ethereum.org/EIPS/eip-4626#maxdeposit.
+    @param receiver The 20-byte receiver address.
+    @return uint256 The 32-byte maximum deposit amount.
+    """
+    return max_value(uint256)
+
+
+@internal
+@view
+def _preview_deposit(assets: uint256) -> uint256:
+    """
+    @dev An `internal` helper function that allows an on-chain or
+         off-chain user to simulate the effects of their deposit at
+         the current block, given current on-chain conditions.
+    @notice For the to be fulfilled conditions, please refer to:
+            https://eips.ethereum.org/EIPS/eip-4626#previewdeposit.
+    @param assets The 32-byte assets amount.
+    @return uint256 The simulated 32-byte returning shares amount.
+    """
+    return self._convert_to_shares(assets, False)
+
+
+@internal
+@pure
+def _max_mint(receiver: address) -> uint256:
+    """
+    @dev An `internal` helper function that Returns the maximum
+         amount of shares that can be minted from the vault for
+         the `receiver`, through a `mint` call.
+    @notice For the to be fulfilled conditions, please refer to:
+            https://eips.ethereum.org/EIPS/eip-4626#maxmint.
+    @param receiver The 20-byte receiver address.
+    @return uint256 The 32-byte maximum mint amount.
+    """
+    return max_value(uint256)
+
+
+@internal
+@view
+def _preview_mint(shares: uint256) -> uint256:
+    """
+    @dev An `internal` helper function that allows an on-chain or
+         off-chain user to simulate the effects of their `mint` at
+         the current block, given current on-chain conditions.
+    @notice For the to be fulfilled conditions, please refer to:
+            https://eips.ethereum.org/EIPS/eip-4626#previewmint.
+    @param shares The 32-byte shares amount.
+    @return uint256 The simulated 32-byte required assets amount.
+    """
+    return self._convert_to_assets(shares, True)
+
+
+@internal
+@view
+def _max_withdraw(owner: address) -> uint256:
+    """
+    @dev An `internal` helper function that returns the maximum
+         amount of the underlying asset that can be withdrawn from
+         the owner balance in the vault, through a `withdraw` call.
+    @notice For the to be fulfilled conditions, please refer to:
+            https://eips.ethereum.org/EIPS/eip-4626#maxwithdraw.
+    @param owner The 20-byte owner address.
+    @return uint256 The 32-byte maximum withdraw amount.
+    """
+    return self._convert_to_assets(self.balanceOf[owner], False)
+
+
+@internal
+@view
+def _preview_withdraw(assets: uint256) -> uint256:
+    """
+    @dev An `internal` helper function that allows an on-chain or
+         off-chain user to simulate the effects of their withdrawal
+         at the current block, given current on-chain conditions.
+    @notice For the to be fulfilled conditions, please refer to:
+            https://eips.ethereum.org/EIPS/eip-4626#previewwithdraw.
+    @param assets The 32-byte assets amount.
+    @return uint256 The simulated 32-byte burned shares amount.
+    """
+    return self._convert_to_shares(assets, True)
+
+
+@internal
+@view
+def _max_redeem(owner: address) -> uint256:
+    """
+    @dev An `internal` helper function that returns the maximum
+         amount of vault shares that can be redeemed from the `owner`
+         balance in the vault, through a `redeem` call.
+    @notice For the to be fulfilled conditions, please refer to:
+            https://eips.ethereum.org/EIPS/eip-4626#maxredeem.
+    @param owner The 20-byte owner address.
+    @return uint256 The 32-byte maximum redeemable shares amount.
+    """
+    return self.balanceOf[owner]
+
+
+@internal
+@view
+def _preview_redeem(shares: uint256) -> uint256:
+    """
+    @dev An `internal` helper function that allows an on-chain or
+         off-chain user to simulate the effects of their redeemption
+         at the current block, given current on-chain conditions.
+    @notice For the to be fulfilled conditions, please refer to:
+            https://eips.ethereum.org/EIPS/eip-4626#previewredeem.
+    @param shares The 32-byte shares amount to be redeemed.
+    @return uint256 The simulated 32-byte returning assets amount.
+    """
+    return self._convert_to_assets(shares, False)
 
 
 @internal
