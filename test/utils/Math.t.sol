@@ -88,7 +88,7 @@ contract MathTest is Test {
      * @notice Forked and adjusted accordingly from here:
      * https://github.com/barakman/solidity-math-utils/blob/master/project/contracts/IntegralMath.sol.
      * @param n The 32-byte variable from which the cube root is calculated.
-     * @return The 32-byte cube root of `x`.
+     * @return The 32-byte cube root of `n`.
      */
     function floorCbrt(uint256 n) internal pure returns (uint256) {
         unchecked {
