@@ -28,12 +28,6 @@ _HASHED_VERSION: immutable(bytes32)
 _TYPE_HASH: immutable(bytes32)
 
 
-# @dev A Vyper contract cannot call directly between two `external` functions.
-# To bypass this, we can use an interface.
-interface IEIP712DomainSeparator:
-    def domain_separator_v4() -> bytes32: view
-
-
 @external
 @payable
 def __init__(name_: String[50], version_: String[20]):
@@ -71,6 +65,31 @@ def domain_separator_v4() -> bytes32:
     @dev Returns the domain separator for the current chain.
     @return bytes32 The 32-byte domain separator.
     """
+    return self._domain_separator_v4()
+
+
+@external
+@view
+def hash_typed_data_v4(struct_hash: bytes32) -> bytes32:
+    """
+    @dev Returns the hash of the fully encoded EIP-712
+         message for this domain.
+    @notice The definition of the hashed struct can be found here:
+            https://eips.ethereum.org/EIPS/eip-712#definition-of-hashstruct.
+    @param struct_hash The 32-byte hashed struct.
+    @return bytes32 The 32-byte fully encoded EIP712
+            message hash for this domain.
+    """
+    return self._to_typed_data_hash(self._domain_separator_v4(), struct_hash)
+
+
+@internal
+@view
+def _domain_separator_v4() -> bytes32:
+    """
+    @dev Returns the domain separator for the current chain.
+    @return bytes32 The 32-byte domain separator.
+    """
     if (self == _CACHED_SELF and chain.id == _CACHED_CHAIN_ID):
         return _CACHED_DOMAIN_SEPARATOR
     else:
@@ -88,21 +107,6 @@ def _build_domain_separator(type_hash: bytes32, name_hash: bytes32, version_hash
     @return bytes32 The 32-byte domain separator.
     """
     return keccak256(_abi_encode(type_hash, name_hash, version_hash, chain.id, self))
-
-
-@external
-@view
-def hash_typed_data_v4(struct_hash: bytes32) -> bytes32:
-    """
-    @dev Returns the hash of the fully encoded EIP-712
-         message for this domain.
-    @notice The definition of the hashed struct can be found here:
-            https://eips.ethereum.org/EIPS/eip-712#definition-of-hashstruct.
-    @param struct_hash The 32-byte hashed struct.
-    @return bytes32 The 32-byte fully encoded EIP712
-            message hash for this domain.
-    """
-    return self._to_typed_data_hash(IEIP712DomainSeparator(self).domain_separator_v4(), struct_hash)
 
 
 @internal
