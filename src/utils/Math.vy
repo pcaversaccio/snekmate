@@ -386,6 +386,18 @@ def wad_cbrt(x: uint256) -> uint256:
     return self._wad_cbrt(x)
 
 
+@external
+@pure
+def is_negative(x: int256) -> bool:
+    """
+    @dev Returns whether a 32-byte signed integer is negative.
+    @notice Note that this function returns `False` for 0.
+    @param x The 32-byte signed integer variable.
+    @return bool The verification whether `x` is negative or not.
+    """
+    return (x ^ 1 < empty(int256))
+
+
 @internal
 @pure
 def _wad_cbrt(x: uint256) -> uint256:

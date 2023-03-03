@@ -370,6 +370,16 @@ contract MathTest is Test {
         );
     }
 
+    function testIsNegative() public {
+        assertEq(math.is_negative(0), false);
+        assertEq(math.is_negative(-1), true);
+        assertEq(math.is_negative(-1 * -1), false);
+        assertEq(math.is_negative(-1 * 100), true);
+        assertEq(math.is_negative(0 * -1), false);
+        assertEq(math.is_negative(int256(type(int16).min) * 2), true);
+        assertEq(math.is_negative(type(int256).min + type(int16).max), true);
+    }
+
     /**
      * @notice Forked and adjusted accordingly from here:
      * https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/test/utils/math/Math.t.sol.
@@ -542,5 +552,13 @@ contract MathTest is Test {
             result >= floor * 10 ** 12 && result <= (floor + 1) * 10 ** 12
         );
         assertEq(result / 10 ** 12, floor);
+    }
+
+    function testFuzzIsNegative(int256 x) public {
+        if (x >= 0) {
+            assertEq(math.is_negative(x), false);
+        } else {
+            assertEq(math.is_negative(x), true);
+        }
     }
 }
