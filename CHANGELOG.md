@@ -22,6 +22,6 @@
   - `ECDSA`: Elliptic curve digital signature algorithm (ECDSA) functions.
   - `SignatureChecker`: ECDSA and EIP-1271 signature verification functions.
   - `EIP712DomainSeparator`: EIP-712 domain separator.
-  - `Math`: Standard mathematical utility functions. ([#74](https://github.com/pcaversaccio/snekmate/pull/74), [#86](https://github.com/pcaversaccio/snekmate/pull/86))
+  - `Math`: Standard mathematical utility functions. ([#74](https://github.com/pcaversaccio/snekmate/pull/74), [#77](https://github.com/pcaversaccio/snekmate/pull/77), [#86](https://github.com/pcaversaccio/snekmate/pull/86))
   - `MerkleProofVerification`: Merkle tree proof verification functions. ([#30](https://github.com/pcaversaccio/snekmate/pull/30))
   - `Multicall`: Multicall functions.

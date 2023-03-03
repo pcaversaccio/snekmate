@@ -82,6 +82,29 @@ contract MathTest is Test {
         carry = remainder < x ? 1 : 0;
     }
 
+    /**
+     * @dev An `internal` helper function for cube root calculation of an
+     * unsigned 32-byte integer.
+     * @notice Forked and adjusted accordingly from here:
+     * https://github.com/barakman/solidity-math-utils/blob/master/project/contracts/IntegralMath.sol.
+     * @param n The 32-byte variable from which the cube root is calculated.
+     * @return The 32-byte cube root of `n`.
+     */
+    function floorCbrt(uint256 n) internal pure returns (uint256) {
+        unchecked {
+            uint256 x = 0;
+            for (uint256 y = 1 << type(uint8).max; y > 0; y >>= 3) {
+                x <<= 1;
+                uint256 z = 3 * x * (x + 1) + 1;
+                if (n / y >= z) {
+                    n -= y * z;
+                    x += 1;
+                }
+            }
+            return x;
+        }
+    }
+
     function setUp() public {
         math = IMath(vyperDeployer.deployContract("src/utils/", "Math"));
     }
@@ -278,6 +301,85 @@ contract MathTest is Test {
         assertEq(math.log_256(type(uint256).max, true), 32);
     }
 
+    function testCbrtRoundDown() public {
+        assertEq(math.cbrt(0, false), 0);
+        assertEq(math.cbrt(1, false), 1);
+        assertEq(math.cbrt(2, false), 1);
+        assertEq(math.cbrt(3, false), 1);
+        assertEq(math.cbrt(9, false), 2);
+        assertEq(math.cbrt(27, false), 3);
+        assertEq(math.cbrt(80, false), 4);
+        assertEq(math.cbrt(81, false), 4);
+        assertEq(math.cbrt(10 ** 18, false), 10 ** 6);
+        assertEq(math.cbrt(8 * 10 ** 18, false), 2 * 10 ** 6);
+        assertEq(math.cbrt(9 * 10 ** 18, false), 2080083);
+        assertEq(math.cbrt(type(uint8).max, false), 6);
+        assertEq(math.cbrt(type(uint16).max, false), 40);
+        assertEq(math.cbrt(type(uint32).max, false), 1625);
+        assertEq(math.cbrt(type(uint64).max, false), 2642245);
+        assertEq(math.cbrt(type(uint128).max, false), 6981463658331);
+        assertEq(
+            math.cbrt(type(uint256).max, false),
+            48740834812604276470692694
+        );
+    }
+
+    function testCbrtRoundUp() public {
+        assertEq(math.cbrt(0, true), 0);
+        assertEq(math.cbrt(1, true), 1);
+        assertEq(math.cbrt(2, true), 2);
+        assertEq(math.cbrt(3, true), 2);
+        assertEq(math.cbrt(9, true), 3);
+        assertEq(math.cbrt(27, true), 3);
+        assertEq(math.cbrt(80, true), 5);
+        assertEq(math.cbrt(81, true), 5);
+        assertEq(math.cbrt(10 ** 18, true), 10 ** 6);
+        assertEq(math.cbrt(8 * 10 ** 18, true), 2 * 10 ** 6);
+        assertEq(math.cbrt(9 * 10 ** 18, true), 2080084);
+        assertEq(math.cbrt(type(uint8).max, true), 7);
+        assertEq(math.cbrt(type(uint16).max, true), 41);
+        assertEq(math.cbrt(type(uint32).max, true), 1626);
+        assertEq(math.cbrt(type(uint64).max, true), 2642246);
+        assertEq(math.cbrt(type(uint128).max, true), 6981463658332);
+        assertEq(
+            math.cbrt(type(uint256).max, true),
+            48740834812604276470692695
+        );
+    }
+
+    function testWadCbrt() public {
+        assertEq(math.wad_cbrt(0), 0);
+        assertEq(math.wad_cbrt(1), 10 ** 12);
+        assertEq(math.wad_cbrt(2), 1259921049894);
+        assertEq(math.wad_cbrt(3), 1442249570307);
+        assertEq(math.wad_cbrt(9), 2080083823051);
+        assertEq(math.wad_cbrt(27), 3000000000000);
+        assertEq(math.wad_cbrt(80), 4308869380063);
+        assertEq(math.wad_cbrt(81), 4326748710922);
+        assertEq(math.wad_cbrt(10 ** 18), 10 ** 18);
+        assertEq(math.wad_cbrt(8 * 10 ** 18), 2 * 10 ** 18);
+        assertEq(math.wad_cbrt(9 * 10 ** 18), 2080083823051904114);
+        assertEq(math.wad_cbrt(type(uint8).max), 6341325705384);
+        assertEq(math.wad_cbrt(type(uint16).max), 40317268530317);
+        assertEq(math.wad_cbrt(type(uint32).max), 1625498677089280);
+        assertEq(math.wad_cbrt(type(uint64).max), 2642245949629133047);
+        assertEq(math.wad_cbrt(type(uint128).max), 6981463658331559092288464);
+        assertEq(
+            math.wad_cbrt(type(uint256).max),
+            48740834812604276470692694000000000000
+        );
+    }
+
+    function testIsNegative() public {
+        assertEq(math.is_negative(0), false);
+        assertEq(math.is_negative(-1), true);
+        assertEq(math.is_negative(-1 * -1), false);
+        assertEq(math.is_negative(-1 * 100), true);
+        assertEq(math.is_negative(0 * -1), false);
+        assertEq(math.is_negative(int256(type(int16).min) * 2), true);
+        assertEq(math.is_negative(type(int256).min + type(int16).max), true);
+    }
+
     /**
      * @notice Forked and adjusted accordingly from here:
      * https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/test/utils/math/Math.t.sol.
@@ -429,6 +531,34 @@ contract MathTest is Test {
             assertTrue((result + 1) >= 32 || 256 ** (result + 1) > x);
         } else {
             assertEq(256 ** result, x);
+        }
+    }
+
+    function testFuzzCbrt(uint256 x, bool roundup) public {
+        uint256 result = math.cbrt(x, roundup);
+        uint256 floor = floorCbrt(x);
+        uint256 ceil = (floor ** 3 == x ? floor : floor + 1);
+        if (roundup) {
+            assertEq(result, ceil);
+        } else {
+            assertEq(result, floor);
+        }
+    }
+
+    function testFuzzWadCbrt(uint256 x) public {
+        uint256 result = math.wad_cbrt(x);
+        uint256 floor = floorCbrt(x);
+        assertTrue(
+            result >= floor * 10 ** 12 && result <= (floor + 1) * 10 ** 12
+        );
+        assertEq(result / 10 ** 12, floor);
+    }
+
+    function testFuzzIsNegative(int256 x) public {
+        if (x >= 0) {
+            assertEq(math.is_negative(x), false);
+        } else {
+            assertEq(math.is_negative(x), true);
         }
     }
 }

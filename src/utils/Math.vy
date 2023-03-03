@@ -3,6 +3,7 @@
 @title Standard Mathematical Utility Functions
 @license GNU Affero General Public License v3.0
 @author pcaversaccio
+@custom:coauthor bout3fiddy
 @notice These functions implement standard mathematical utility
         functions that are missing in the Vyper language. If a
         function is inspired by an existing implementation, it
@@ -202,7 +203,7 @@ def log_2(x: uint256, roundup: bool) -> uint256:
     value: uint256 = x
     result: uint256 = empty(uint256)
 
-    if(x == empty(uint256)):
+    if (x == empty(uint256)):
         # For the special case `x == 0` we already return 0 here in order
         # not to iterate through the remaining code.
         return empty(uint256)
@@ -256,7 +257,7 @@ def log_10(x: uint256, roundup: bool) -> uint256:
     value: uint256 = x
     result: uint256 = empty(uint256)
 
-    if(x == empty(uint256)):
+    if (x == empty(uint256)):
         # For the special case `x == 0` we already return 0 here in order
         # not to iterate through the remaining code.
         return empty(uint256)
@@ -309,7 +310,7 @@ def log_256(x: uint256, roundup: bool) -> uint256:
     value: uint256 = x
     result: uint256 = empty(uint256)
 
-    if(x == empty(uint256)):
+    if (x == empty(uint256)):
         # For the special case `x == 0` we already return 0 here in order
         # not to iterate through the remaining code.
         return empty(uint256)
@@ -335,3 +336,147 @@ def log_256(x: uint256, roundup: bool) -> uint256:
         result = unsafe_add(result, 1)
 
     return result
+
+
+@external
+@view
+def cbrt(x: uint256, roundup: bool) -> uint256:
+    """
+    @dev Calculates the cube root of an unsigned integer.
+    @notice Note that this function consumes about 1,950 to 2,050 gas units
+            depending on the value of `x` and `roundup`. The implementation is
+            inspired by Curve Finance's implementation under the MIT license here:
+            https://github.com/curvefi/tricrypto-ng/blob/main/contracts/CurveCryptoMathOptimized3.vy.
+    @param x The 32-byte variable from which the cube root is calculated.
+    @param roundup The Boolean variable that specifies whether
+           to round up or not. The default `False` is round down.
+    @return The 32-byte cube root of `x`.
+    """
+    if (x == empty(uint256)):
+        # For the special case `x == 0` we already return 0 here in order
+        # not to iterate through the remaining code.
+        return empty(uint256)
+
+    y: uint256 = unsafe_div(self._wad_cbrt(x), 10 ** 12)
+
+    if (roundup and (unsafe_mul(unsafe_mul(y, y), y) != x)):
+        y = unsafe_add(y, 1)
+
+    return y
+
+
+@external
+@pure
+def wad_cbrt(x: uint256) -> uint256:
+    """
+    @dev Calculates the cube root of an unsigned integer with a precision
+         of 1e18.
+    @notice Note that this function consumes about 1,850 to 1,950 gas units
+            depending on the value of `x`. The implementation is inspired
+            by Curve Finance's implementation under the MIT license here:
+            https://github.com/curvefi/tricrypto-ng/blob/main/contracts/CurveCryptoMathOptimized3.vy.
+    @param x The 32-byte variable from which the cube root is calculated.
+    @return The 32-byte cubic root of `x` with a precision of 1e18.
+    """
+    if (x == empty(uint256)):
+        # For the special case `x == 0` we already return 0 here in order
+        # not to iterate through the remaining code.
+        return empty(uint256)
+
+    return self._wad_cbrt(x)
+
+
+@external
+@pure
+def is_negative(x: int256) -> bool:
+    """
+    @dev Returns `True` if a 32-byte signed integer is negative.
+    @notice Note that this function returns `False` for 0.
+    @param x The 32-byte signed integer variable.
+    @return bool The verification whether `x` is negative or not.
+    """
+    return (x ^ 1 < empty(int256))
+
+
+@internal
+@pure
+def _wad_cbrt(x: uint256) -> uint256:
+    """
+    @dev An `internal` helper function that calculates the cube root of an
+         unsigned integer with a precision of 1e18.
+    @notice Note that this function consumes about 1,800 to 1,850 gas units
+            depending on the value of `x`. The implementation is inspired
+            by Curve Finance's implementation under the MIT license here:
+            https://github.com/curvefi/tricrypto-ng/blob/main/contracts/CurveCryptoMathOptimized3.vy.
+    @param x The 32-byte variable from which the cube root is calculated.
+    @return The 32-byte cubic root of `x` with a precision of 1e18.
+    """
+    # Since this cube root is for numbers with base 1e18, we have to scale
+    # the input by 1e36 to increase the precision. This leads to an overflow
+    # for very large numbers. So we conditionally sacrifice precision.
+    xx: uint256 = empty(uint256)
+    if (x >= unsafe_mul(unsafe_div(max_value(uint256), 10 ** 36), 10 ** 18)):
+        xx = x
+    elif (x >= unsafe_div(max_value(uint256), 10 ** 36)):
+        xx = unsafe_mul(x, 10 ** 18)
+    else:
+        xx = unsafe_mul(x, 10 ** 36)
+
+    # Compute the binary logarithm of `xx`. This approach was inspired by Sean
+    # Eron Anderson's "Bit Twiddling Hacks" from Stanford:
+    # https://graphics.stanford.edu/~seander/bithacks.html#IntegerLog.
+    # Further inspiration stems from solmate:
+    # https://github.com/transmissions11/solmate/blob/main/src/utils/SignedWadMath.sol.
+    # A detailed mathematical explanation by Remco Bloemen can be found here:
+    # https://xn--2-umb.com/22/exp-ln.
+    log2x: uint256 = empty(uint256)
+    if (xx > max_value(uint128)):
+        log2x = 128
+    if (unsafe_div(xx, shift(2, convert(log2x, int256))) > max_value(uint64)):
+        log2x = log2x | 64
+    if (unsafe_div(xx, shift(2, convert(log2x, int256))) > max_value(uint32)):
+        log2x = log2x | 32
+    if (unsafe_div(xx, shift(2, convert(log2x, int256))) > max_value(uint16)):
+        log2x = log2x | 16
+    if (unsafe_div(xx, shift(2, convert(log2x, int256))) > max_value(uint8)):
+        log2x = log2x | 8
+    if (unsafe_div(xx, shift(2, convert(log2x, int256))) > 15):
+        log2x = log2x | 4
+    if (unsafe_div(xx, shift(2, convert(log2x, int256))) > 3):
+        log2x = log2x | 2
+    if (unsafe_div(xx, shift(2, convert(log2x, int256))) > 1):
+        log2x = log2x | 1
+
+    # If we divide log2x by 3, the remainder is "log2x % 3". So if we simply
+    # multiply "2 ** (log2x/3)" and discard the remainder to calculate our guess,
+    # the Newton-Raphson method takes more iterations to converge to a solution
+    # because it lacks this precision. A few more calculations now in order to
+    # do fewer calculations later:
+    #   - "pow = log2(x) // 3" (the operator `//` means integer division),
+    #   - "remainder = log2(x) % 3",
+    #   - "initial_guess = 2 ** pow * cbrt(2) ** remainder".
+    # Now substituting "2 = 1.26 ≈ 1260 / 1000", we get:
+    #   - "initial_guess = 2 ** pow * 1260 ** remainder // 1000 ** remainder".
+    remainder: uint256 = log2x % 3
+    y: uint256 = unsafe_div(unsafe_mul(pow_mod256(2, unsafe_div(log2x, 3)), pow_mod256(1260, remainder)), pow_mod256(1000, remainder))
+
+    # Since we have chosen good initial values for the cube roots, 7 Newton-Raphson
+    # iterations are just sufficient. 6 iterations would lead to non-convergences,
+    # and 8 would be one iteration too many. Without initial values, the iteration
+    # number can be up to 20 or more. The iterations are unrolled. This reduces the
+    # gas cost, but requires more bytecode.
+    y = unsafe_div(unsafe_add(unsafe_mul(2, y), unsafe_div(xx, unsafe_mul(y, y))), 3)
+    y = unsafe_div(unsafe_add(unsafe_mul(2, y), unsafe_div(xx, unsafe_mul(y, y))), 3)
+    y = unsafe_div(unsafe_add(unsafe_mul(2, y), unsafe_div(xx, unsafe_mul(y, y))), 3)
+    y = unsafe_div(unsafe_add(unsafe_mul(2, y), unsafe_div(xx, unsafe_mul(y, y))), 3)
+    y = unsafe_div(unsafe_add(unsafe_mul(2, y), unsafe_div(xx, unsafe_mul(y, y))), 3)
+    y = unsafe_div(unsafe_add(unsafe_mul(2, y), unsafe_div(xx, unsafe_mul(y, y))), 3)
+    y = unsafe_div(unsafe_add(unsafe_mul(2, y), unsafe_div(xx, unsafe_mul(y, y))), 3)
+
+    # Since we scaled up, we have to scale down accordingly.
+    if (x >= unsafe_mul(unsafe_div(max_value(uint256), 10 ** 36), 10 ** 18)):
+        return unsafe_mul(y, 10 ** 12)
+    elif x >= unsafe_div(max_value(uint256), 10 ** 36):
+        return unsafe_mul(y, 10 ** 6)
+    else:
+        return y
