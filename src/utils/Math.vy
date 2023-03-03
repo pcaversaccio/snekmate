@@ -343,9 +343,9 @@ def log_256(x: uint256, roundup: bool) -> uint256:
 def cbrt(x: uint256, roundup: bool) -> uint256:
     """
     @dev Calculates the cube root of an unsigned integer.
-    @notice Note that this function consumes about 2,100 to 2,200 gas units
-            depending on the value of `x`. The implementation is inspired
-            by Curve Finance's implementation under the MIT license here:
+    @notice Note that this function consumes about 1,950 to 2,050 gas units
+            depending on the value of `x` and `roundup`. The implementation is
+            inspired by Curve Finance's implementation under the MIT license here:
             https://github.com/curvefi/tricrypto-ng/blob/main/contracts/CurveCryptoMathOptimized3.vy.
     @param x The 32-byte variable from which the cube root is calculated.
     @param roundup The Boolean variable that specifies whether
@@ -371,7 +371,7 @@ def wad_cbrt(x: uint256) -> uint256:
     """
     @dev Calculates the cube root of an unsigned integer with a precision
          of 1e18.
-    @notice Note that this function consumes about 1,900 to 2,000 gas units
+    @notice Note that this function consumes about 1,850 to 1,950 gas units
             depending on the value of `x`. The implementation is inspired
             by Curve Finance's implementation under the MIT license here:
             https://github.com/curvefi/tricrypto-ng/blob/main/contracts/CurveCryptoMathOptimized3.vy.
@@ -390,7 +390,7 @@ def wad_cbrt(x: uint256) -> uint256:
 @pure
 def is_negative(x: int256) -> bool:
     """
-    @dev Returns whether a 32-byte signed integer is negative.
+    @dev Returns `True` if a 32-byte signed integer is negative.
     @notice Note that this function returns `False` for 0.
     @param x The 32-byte signed integer variable.
     @return bool The verification whether `x` is negative or not.
@@ -402,9 +402,9 @@ def is_negative(x: int256) -> bool:
 @pure
 def _wad_cbrt(x: uint256) -> uint256:
     """
-    @dev Calculates the cube root of an unsigned integer with a precision
-         of 1e18.
-    @notice Note that this function consumes about 1,900 to 2,000 gas units
+    @dev An `internal` helper function that calculates the cube root of an
+         unsigned integer with a precision of 1e18.
+    @notice Note that this function consumes about 1,800 to 1,850 gas units
             depending on the value of `x`. The implementation is inspired
             by Curve Finance's implementation under the MIT license here:
             https://github.com/curvefi/tricrypto-ng/blob/main/contracts/CurveCryptoMathOptimized3.vy.
