@@ -11,12 +11,6 @@
 """
 
 
-# @dev A Vyper contract cannot call directly between two `external` functions.
-# To bypass this, we can use an interface.
-interface ICreateAddress:
-    def compute_address_rlp(deployer: address, nonce: uint256) -> address: pure
-
-
 @external
 @payable
 def __init__():
@@ -37,7 +31,7 @@ def compute_address_rlp_self(nonce: uint256) -> address:
     @param nonce The next 32-byte nonce of this contract.
     @return address The 20-byte address where a contract will be stored.
     """
-    return ICreateAddress(self).compute_address_rlp(self, nonce)
+    return self._compute_address_rlp(self, nonce)
 
 
 @external
@@ -48,6 +42,30 @@ def compute_address_rlp(deployer: address, nonce: uint256) -> address:
          if deployed via `deployer` using the `CREATE` opcode.
          For the specification of the Recursive Length Prefix (RLP)
          encoding scheme, please refer to p. 19 of the Ethereum
+         Yellow Paper (https://ethereum.github.io/yellowpaper/paper.pdf)
+         and the Ethereum Wiki (https://eth.wiki/fundamentals/rlp).
+         For further insights also, see the following issue:
+         https://github.com/transmissions11/solmate/issues/207.
+         
+         Based on the EIP-161 (https://github.com/ethereum/EIPs/blob/master/EIPS/eip-161.md)
+         specification, all contract accounts on the Ethereum mainnet
+         are initiated with `nonce = 1`. Thus, the first contract address
+         created by another contract is calculated with a non-zero nonce.
+    @param deployer The 20-byte deployer address.
+    @param nonce The next 32-byte nonce of the deployer address.
+    @return address The 20-byte address where a contract will be stored.
+    """
+    return self._compute_address_rlp(deployer, nonce)
+
+
+@internal
+@pure
+def _compute_address_rlp(deployer: address, nonce: uint256) -> address:
+    """
+    @dev An `internal` helper function that returns the address where a
+         contract will be stored if deployed via `deployer` using the
+         `CREATE` opcode. For the specification of the Recursive Length
+         Prefix (RLP) encoding scheme, please refer to p. 19 of the Ethereum
          Yellow Paper (https://ethereum.github.io/yellowpaper/paper.pdf)
          and the Ethereum Wiki (https://eth.wiki/fundamentals/rlp).
          For further insights also, see the following issue:
