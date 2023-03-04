@@ -594,8 +594,8 @@ def _safe_batch_transfer_from(owner: address, to: address, ids: DynArray[uint256
 @view
 def _balance_of(owner: address, id: uint256) -> uint256:
     """
-    @dev Returns the amount of tokens of token type
-         `id` owned by `owner`.
+    @dev An `internal` helper function that returns the
+         amount of tokens of token type `id` owned by `owner`.
     @notice Note that `owner` cannot be the zero
             address.
     @param owner The 20-byte owner address.

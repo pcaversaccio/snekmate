@@ -324,7 +324,7 @@ def balanceOf(owner: address) -> uint256:
     @return uint256 The 32-byte token amount owned
             by `owner`.
     """
-    return self._balanceOf(owner)
+    return self._balance_of(owner)
 
 
 @external
@@ -336,7 +336,7 @@ def ownerOf(token_id: uint256) -> address:
     @param token_id The 32-byte identifier of the token.
     @return address The 20-byte owner address.
     """
-    return self._ownerOf(token_id)
+    return self._owner_of(token_id)
 
 
 @external
@@ -361,7 +361,7 @@ def approve(to: address, token_id: uint256):
     @param to The 20-byte spender address.
     @param token_id The 32-byte identifier of the token.
     """
-    owner: address = self._ownerOf(token_id)
+    owner: address = self._owner_of(token_id)
     assert to != owner, "ERC721: approval to current owner"
     assert msg.sender == owner or self.isApprovedForAll[owner][msg.sender], "ERC721: approve caller is not token owner or approved for all"
     self._approve(to, token_id)
@@ -539,7 +539,7 @@ def tokenOfOwnerByIndex(owner: address, index: uint256) -> uint256:
     @return uint256 The 32-byte token ID owned by
             `owner` at index `index`.
     """
-    assert index < self._balanceOf(owner), "ERC721Enumerable: owner index out of bounds"
+    assert index < self._balance_of(owner), "ERC721Enumerable: owner index out of bounds"
     return self._owned_tokens[owner][index]
 
 
@@ -623,7 +623,7 @@ def permit(spender: address, token_id: uint256, deadline: uint256, v: uint8, r: 
     """
     assert block.timestamp <= deadline, "ERC721Permit: expired deadline"
 
-    owner: address = self._ownerOf(token_id)
+    owner: address = self._owner_of(token_id)
     current_nonce: uint256 = self.nonces[token_id]
     self.nonces[token_id] = unsafe_add(current_nonce, 1)
 
@@ -696,7 +696,7 @@ def renounce_ownership():
 
 @internal
 @view
-def _balanceOf(owner: address) -> uint256:
+def _balance_of(owner: address) -> uint256:
     """
     @dev An `internal` helper function that returns the
          amount of tokens owned by `owner`.
@@ -711,9 +711,9 @@ def _balanceOf(owner: address) -> uint256:
 
 @internal
 @view
-def _ownerOf(token_id: uint256) -> address:
+def _owner_of(token_id: uint256) -> address:
     """
-    @dev An `internal` helper function that Returns the
+    @dev An `internal` helper function that returns the
          owner of the `token_id` token.
     @notice Note that `token_id` must exist.
     @param token_id The 32-byte identifier of the token.
@@ -758,7 +758,7 @@ def _approve(to: address, token_id: uint256):
     @param token_id The 32-byte identifier of the token.
     """
     self._token_approvals[token_id] = to
-    log Approval(self._ownerOf(token_id), to, token_id)
+    log Approval(self._owner_of(token_id), to, token_id)
 
 
 @internal
@@ -798,7 +798,7 @@ def _is_approved_or_owner(spender: address, token_id: uint256) -> bool:
     @param spender The 20-byte spender address.
     @param token_id The 32-byte identifier of the token.
     """
-    owner: address = self._ownerOf(token_id)
+    owner: address = self._owner_of(token_id)
     return (spender == owner or self.isApprovedForAll[owner][spender] or self._get_approved(token_id) == spender)
 
 
@@ -894,13 +894,13 @@ def _transfer(owner: address, to: address, token_id: uint256):
     @param to The 20-byte receiver address.
     @param token_id The 32-byte identifier of the token.
     """
-    assert self._ownerOf(token_id) == owner, "ERC721: transfer from incorrect owner"
+    assert self._owner_of(token_id) == owner, "ERC721: transfer from incorrect owner"
     assert to != empty(address), "ERC721: transfer to the zero address"
     
     self._before_token_transfer(owner, to, token_id)
     # Checks that the `token_id` was not transferred by the
     # `_before_token_transfer` hook.
-    assert self._ownerOf(token_id) == owner, "ERC721: transfer from incorrect owner"
+    assert self._owner_of(token_id) == owner, "ERC721: transfer from incorrect owner"
     
     self._token_approvals[token_id] = empty(address)
     # See comment why an overflow is not possible in the
@@ -931,7 +931,7 @@ def _set_token_uri(token_id: uint256, token_uri: String[432]):
 @view
 def _total_supply() -> uint256:
     """
-    @dev An `internal` helper function that Returns the amount
+    @dev An `internal` helper function that returns the amount
          of tokens in existence.
     @return uint256 The 32-byte token supply.
     """
@@ -948,12 +948,12 @@ def _burn(token_id: uint256):
             Note that `token_id` must exist.
     @param token_id The 32-byte identifier of the token.
     """
-    owner: address = self._ownerOf(token_id)
+    owner: address = self._owner_of(token_id)
 
     self._before_token_transfer(owner, empty(address), token_id)
     # Updates ownership in case the `token_id` was
     # transferred by the `_before_token_transfer` hook.
-    owner = self._ownerOf(token_id)
+    owner = self._owner_of(token_id)
 
     self._token_approvals[token_id] = empty(address)
     # Overflow is not possible, as in this case more tokens would
@@ -1052,7 +1052,7 @@ def _add_token_to_owner_enumeration(to: address, token_id: uint256):
     @param to The 20-byte receiver address.
     @param token_id The 32-byte identifier of the token.
     """
-    length: uint256 = self._balanceOf(to)
+    length: uint256 = self._balance_of(to)
     self._owned_tokens[to][length] = token_id
     self._owned_tokens_index[token_id] = length
 
@@ -1086,7 +1086,7 @@ def _remove_token_from_owner_enumeration(owner: address, token_id:uint256):
     # To prevent a gap in `owner`'s tokens array,
     # we store the last token in the index of the
     # token to delete, and then delete the last slot.
-    last_token_index: uint256 = self._balanceOf(owner) - 1
+    last_token_index: uint256 = self._balance_of(owner) - 1
     token_index: uint256 = self._owned_tokens_index[token_id]
 
     # When the token to delete is the last token,
@@ -1233,5 +1233,5 @@ def _try_recover_vrs(hash: bytes32, v: uint256, r: uint256, s: uint256) -> addre
     signer: address = ecrecover(hash, v, r, s)
     if (signer == empty(address)):
         raise "ECDSA: invalid signature"
-    
+
     return signer
