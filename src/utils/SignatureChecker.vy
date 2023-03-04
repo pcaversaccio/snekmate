@@ -178,5 +178,5 @@ def _try_recover_vrs(hash: bytes32, v: uint256, r: uint256, s: uint256) -> addre
     signer: address = ecrecover(hash, v, r, s)
     if (signer == empty(address)):
         raise "ECDSA: invalid signature"
-    
+
     return signer

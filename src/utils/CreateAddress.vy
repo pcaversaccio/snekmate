@@ -46,7 +46,7 @@ def compute_address_rlp(deployer: address, nonce: uint256) -> address:
          and the Ethereum Wiki (https://eth.wiki/fundamentals/rlp).
          For further insights also, see the following issue:
          https://github.com/transmissions11/solmate/issues/207.
-         
+
          Based on the EIP-161 (https://github.com/ethereum/EIPs/blob/master/EIPS/eip-161.md)
          specification, all contract accounts on the Ethereum mainnet
          are initiated with `nonce = 1`. Thus, the first contract address
@@ -70,7 +70,7 @@ def _compute_address_rlp(deployer: address, nonce: uint256) -> address:
          and the Ethereum Wiki (https://eth.wiki/fundamentals/rlp).
          For further insights also, see the following issue:
          https://github.com/transmissions11/solmate/issues/207.
-         
+
          Based on the EIP-161 (https://github.com/ethereum/EIPs/blob/master/EIPS/eip-161.md)
          specification, all contract accounts on the Ethereum mainnet
          are initiated with `nonce = 1`. Thus, the first contract address
@@ -79,7 +79,6 @@ def _compute_address_rlp(deployer: address, nonce: uint256) -> address:
     @param nonce The next 32-byte nonce of the deployer address.
     @return address The 20-byte address where a contract will be stored.
     """
-
     length: bytes1 = 0x94
 
     # The theoretical allowed limit, based on EIP-2681, for an

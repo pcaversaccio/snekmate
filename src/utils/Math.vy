@@ -12,6 +12,17 @@
 
 
 @external
+@payable
+def __init__():
+    """
+    @dev To omit the opcodes for checking the `msg.value`
+         in the creation-time EVM bytecode, the constructor
+         is declared as `payable`.
+    """
+    pass
+
+
+@external
 @pure
 def mul_div(x: uint256, y: uint256, denominator: uint256, roundup: bool) -> uint256:
     """

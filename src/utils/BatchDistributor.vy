@@ -12,6 +12,8 @@
 """
 
 
+# @dev We import the `ERC20` interface, which is a
+# built-in interface of the Vyper compiler.
 from vyper.interfaces import ERC20
 
 
