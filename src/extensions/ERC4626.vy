@@ -887,7 +887,7 @@ def _preview_deposit(assets: uint256) -> uint256:
 @pure
 def _max_mint(receiver: address) -> uint256:
     """
-    @dev An `internal` helper function that Returns the maximum
+    @dev An `internal` helper function that returns the maximum
          amount of shares that can be minted from the vault for
          the `receiver`, through a `mint` call.
     @notice For the to be fulfilled conditions, please refer to:
