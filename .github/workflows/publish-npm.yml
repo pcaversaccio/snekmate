@@ -18,13 +18,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Cache node modules
+      - name: Get Yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
+
+      - name: Restore Yarn cache
         uses: actions/cache@v3
+        id: yarn-cache
         with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
-            ${{ runner.os }}-node-
+            ${{ runner.os }}-yarn-
 
       - name: Setup .npmrc file to publish to npm
         uses: actions/setup-node@v3
@@ -32,10 +37,10 @@ jobs:
           node-version: ${{ matrix.node_version }}
           registry-url: "https://registry.npmjs.org"
 
-      - name: Install npm project with a clean slate
-        run: npm ci --prefer-offline
+      - name: Install Yarn project with a clean slate
+        run: yarn install --prefer-offline --frozen-lockfile
 
       - name: Publish to npm
-        run: npm publish
+        run: yarn publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

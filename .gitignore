@@ -47,3 +47,7 @@ yarn-error.log*
 bin
 cache
 out
+
+# Python build files
+dist
+*.egg-info
