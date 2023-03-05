@@ -18,12 +18,6 @@ _MALLEABILITY_THRESHOLD: constant(bytes32) = 0x7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF5
 _SIGNATURE_INCREMENT: constant(bytes32) = 0x7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
 
 
-# @dev A Vyper contract cannot call directly between two `external` functions.
-# To bypass this, we can use an interface.
-interface IECDSA:
-    def to_data_with_intended_validator_hash(validator: address, data: Bytes[1024]) -> bytes32: pure
-
-
 @external
 @payable
 def __init__():
@@ -124,7 +118,7 @@ def to_data_with_intended_validator_hash_self(data: Bytes[1024]) -> bytes32:
     @param data The maximum 1024-byte data to be signed.
     @return bytes32 The 32-byte Ethereum signed data.
     """
-    return IECDSA(self).to_data_with_intended_validator_hash(self, data)
+    return self._to_data_with_intended_validator_hash(self, data)
 
 
 @external
@@ -141,7 +135,7 @@ def to_data_with_intended_validator_hash(validator: address, data: Bytes[1024]) 
     @param data The maximum 1024-byte data to be signed.
     @return bytes32 The 32-byte Ethereum signed data.
     """
-    return keccak256(concat(b"\x19\x00", convert(validator, bytes20), data))
+    return self._to_data_with_intended_validator_hash(validator, data)
 
 
 @internal
@@ -203,5 +197,22 @@ def _try_recover_vrs(hash: bytes32, v: uint256, r: uint256, s: uint256) -> addre
     signer: address = ecrecover(hash, v, r, s)
     if (signer == empty(address)):
         raise "ECDSA: invalid signature"
-    
+
     return signer
+
+
+@internal
+@pure
+def _to_data_with_intended_validator_hash(validator: address, data: Bytes[1024]) -> bytes32:
+    """
+    @dev An `internal` helper function that returns an Ethereum
+         signed data with `validator` as the intended validator
+         and a maximum 1024-byte payload `data`.
+    @notice This function structures the data according to
+            the version `0x00` of EIP-191:
+            https://eips.ethereum.org/EIPS/eip-191#version-0x00.
+    @param validator The 20-byte intended validator address.
+    @param data The maximum 1024-byte data to be signed.
+    @return bytes32 The 32-byte Ethereum signed data.
+    """
+    return keccak256(concat(b"\x19\x00", convert(validator, bytes20), data))

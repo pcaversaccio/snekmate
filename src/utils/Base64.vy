@@ -29,6 +29,17 @@ _TABLE_URL_CHARS: constant(String[65]) = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijkl
 
 
 @external
+@payable
+def __init__():
+    """
+    @dev To omit the opcodes for checking the `msg.value`
+         in the creation-time EVM bytecode, the constructor
+         is declared as `payable`.
+    """
+    pass
+
+
+@external
 @pure
 def encode(data: Bytes[_DATA_INPUT_BOUND], base64_url: bool) -> DynArray[String[4], _DATA_OUTPUT_BOUND]:
     """
