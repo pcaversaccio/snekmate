@@ -36,6 +36,40 @@ src
    ├─ Multicall — "Multicall Functions"
 ```
 
+## 🎛 Installation
+
+We offer three convenient ways to install the 🐍 snekmate contracts:
+
+**`PyPI`**
+
+You can install 🐍 snekmate from [PyPI](https://pypi.org/project/snekmate) with:
+
+```bash
+pip install snekmate
+```
+
+**`Foundry`**
+
+You can install 🐍 snekmate via submodules using [Foundry](https://github.com/foundry-rs/foundry) with:
+
+```bash
+forge install pcaversaccio/snekmate
+```
+
+**`npm`**
+
+You can install 🐍 snekmate from [npm](https://www.npmjs.com/package/snekmate) with:
+
+```bash
+npm install --save-dev snekmate
+```
+
+Or if you are using [Yarn](https://classic.yarnpkg.com):
+
+```bash
+yarn add --dev snekmate
+```
+
 ## 👩🏼‍⚖️ Tests
 
 This repository contains [Foundry](https://github.com/foundry-rs/foundry)-based unit tests, property-based tests (i.e. fuzzing), and invariant tests for all contracts, if applicable. All tests are run as part of the CI pipeline [`test-contracts`](./.github/workflows/test-contracts.yml).
