@@ -29,6 +29,11 @@
     "lint:check": "yarn prettier:check && yarn solhint:check && eslint --ext .js .",
     "lint:fix": "yarn prettier:fix && yarn solhint:fix && eslint --ext .js . --fix"
   },
+  "files": [
+    "src/**/*.vy",
+    "LICENSE",
+    "README.md"
+  ],
   "devDependencies": {
     "@openzeppelin/merkle-tree": "^1.0.2",
     "eslint": "^8.35.0",
