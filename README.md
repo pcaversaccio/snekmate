@@ -56,6 +56,8 @@ You can install 🐍 snekmate from [PyPI](https://pypi.org/project/snekmate) wit
 pip install snekmate
 ```
 
+> You can use `pip install snekmate -t .` to install the contracts directly into the current working directory!
+
 ### 3️⃣ npm
 
 You can install 🐍 snekmate from [npm](https://www.npmjs.com/package/snekmate) with:
