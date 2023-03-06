@@ -2,6 +2,8 @@
 
 [![Test smart contracts](https://github.com/pcaversaccio/snekmate/actions/workflows/test-contracts.yml/badge.svg)](https://github.com/pcaversaccio/snekmate/actions/workflows/test-contracts.yml)
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
+[![npm package](https://img.shields.io/npm/v/snekmate.svg)](https://www.npmjs.com/package/snekmate)
+[![PyPI package](https://img.shields.io/pypi/v/snekmate?color=blue)](https://pypi.org/project/snekmate)
 
 **State-of-the-art**, **highly opinionated**, **hyper-optimised**, and **secure** 🐍Vyper smart contract building blocks.
 
@@ -32,6 +34,40 @@ src
    ├─ Math — "Standard Mathematical Utility Functions"
    ├─ MerkleProofVerification — "Merkle Tree Proof Verification Functions"
    ├─ Multicall — "Multicall Functions"
+```
+
+## 🎛 Installation
+
+We offer three convenient ways to install the 🐍 snekmate contracts:
+
+### 1️⃣ Foundry
+
+You can install 🐍 snekmate via submodules using [Foundry](https://github.com/foundry-rs/foundry) with:
+
+```bash
+forge install pcaversaccio/snekmate
+```
+
+### 2️⃣ PyPI
+
+You can install 🐍 snekmate from [PyPI](https://pypi.org/project/snekmate) with:
+
+```bash
+pip install snekmate
+```
+
+### 3️⃣ npm
+
+You can install 🐍 snekmate from [npm](https://www.npmjs.com/package/snekmate) with:
+
+```bash
+npm install --save-dev snekmate
+```
+
+Or if you are using [Yarn](https://classic.yarnpkg.com):
+
+```bash
+yarn add --dev snekmate
 ```
 
 ## 👩🏼‍⚖️ Tests
