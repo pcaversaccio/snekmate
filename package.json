@@ -32,7 +32,8 @@
   "files": [
     "src/**/*.vy",
     "LICENSE",
-    "README.md"
+    "README.md",
+    "CHANGELOG.md"
   ],
   "devDependencies": {
     "@openzeppelin/merkle-tree": "^1.0.2",

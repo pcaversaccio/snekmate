@@ -1,2 +1,2 @@
-include README.md LICENSE pyproject.toml
+include LICENSE README.md CHANGELOG.md pyproject.toml
 graft src
