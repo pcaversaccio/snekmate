@@ -40,15 +40,7 @@ src
 
 We offer three convenient ways to install the 🐍 snekmate contracts:
 
-#### 1️⃣ `PyPI`
-
-You can install 🐍 snekmate from [PyPI](https://pypi.org/project/snekmate) with:
-
-```bash
-pip install snekmate
-```
-
-#### 2️⃣ `Foundry`
+### 1️⃣ Foundry
 
 You can install 🐍 snekmate via submodules using [Foundry](https://github.com/foundry-rs/foundry) with:
 
@@ -56,7 +48,15 @@ You can install 🐍 snekmate via submodules using [Foundry](https://github.com/
 forge install pcaversaccio/snekmate
 ```
 
-#### 3️⃣ `npm`
+### 2️⃣ PyPI
+
+You can install 🐍 snekmate from [PyPI](https://pypi.org/project/snekmate) with:
+
+```bash
+pip install snekmate
+```
+
+### 3️⃣ npm
 
 You can install 🐍 snekmate from [npm](https://www.npmjs.com/package/snekmate) with:
 
