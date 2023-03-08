@@ -1,8 +1,15 @@
 # 🕓 Changelog
 
+## `0.0.2` (Unreleased)
+
+### 💥 New Features
+
+- **Utility Functions**
+  - `Math`: Add `wad_ln` and `wad_exp` to the standard mathematical utility functions. ([#]())
+
 ## `0.0.1` (06-03-2023)
 
-### New Features
+### 💥 New Features
 
 - **Authentication**
   - `Ownable`: Owner-based access control functions.

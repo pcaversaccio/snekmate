@@ -211,44 +211,12 @@ def log_2(x: uint256, roundup: bool) -> uint256:
            to round up or not. The default `False` is round down.
     @return uint256 The 32-byte calculation result.
     """
-    value: uint256 = x
-    result: uint256 = empty(uint256)
-
     if (x == empty(uint256)):
         # For the special case `x == 0` we already return 0 here in order
         # not to iterate through the remaining code.
         return empty(uint256)
-
-    # The following lines cannot overflow because we have the well-known
-    # decay behaviour of `log_2(max_value(uint256)) < max_value(uint256)`.
-    if (shift(x, -128) != empty(uint256)):
-        value = shift(x, -128)
-        result = 128
-    if (shift(value, -64) != empty(uint256)):
-        value = shift(value, -64)
-        result = unsafe_add(result, 64)
-    if (shift(value, -32) != empty(uint256)):
-        value = shift(value, -32)
-        result = unsafe_add(result, 32)
-    if (shift(value, -16) != empty(uint256)):
-        value = shift(value, -16)
-        result = unsafe_add(result, 16)
-    if (shift(value, -8) != empty(uint256)):
-        value = shift(value, -8)
-        result = unsafe_add(result, 8)
-    if (shift(value, -4) != empty(uint256)):
-        value = shift(value, -4)
-        result = unsafe_add(result, 4)
-    if (shift(value, -2) != empty(uint256)):
-        value = shift(value, -2)
-        result = unsafe_add(result, 2)
-    if (shift(value, -1) != empty(uint256)):
-        result = unsafe_add(result, 1)
-
-    if (roundup and (shift(1, convert(result, int256)) < x)):
-        result = unsafe_add(result, 1)
-
-    return result
+    
+    return self._log_2(x, roundup)
 
 
 @external
@@ -351,6 +319,47 @@ def log_256(x: uint256, roundup: bool) -> uint256:
 
 @external
 @view
+def wad_ln(x: int256) -> int256:
+    value: int256 = x
+
+    if (x == empty(int256)):
+        # For the special case `x == 0` we already return 0 here in order
+        # not to iterate through the remaining code.
+        return empty(int256)
+
+    k: int256 = unsafe_sub(convert(self._log_2(convert(x, uint256), False), int256), 96)
+    value = shift(shift(value, unsafe_sub(159, k)), -159)
+
+    p: int256 = unsafe_add(value, 3273285459638523848632254066296)
+    p = unsafe_add(shift(unsafe_mul(p, value), -96), 24828157081833163892658089445524)
+    p = unsafe_add(shift(unsafe_mul(p, value), -96), 43456485725739037958740375743393)
+    p = unsafe_sub(shift(unsafe_mul(p, value), -96), 11111509109440967052023855526967)
+    p = unsafe_sub(shift(unsafe_mul(p, value), -96), 45023709667254063763336534515857)
+    p = unsafe_sub(shift(unsafe_mul(p, value), -96), 14706773417378608786704636184526)
+    p = unsafe_sub(unsafe_mul(p, value), shift(795164235651350426258249787498, 96))
+
+    q: int256 = unsafe_add(value, 5573035233440673466300451813936)
+    q = unsafe_add(shift(unsafe_mul(q, value), 96), 71694874799317883764090561454958)
+    q = unsafe_add(shift(unsafe_mul(q, value), 96), 283447036172924575727196451306956)
+    q = unsafe_add(shift(unsafe_mul(q, value), 96), 283447036172924575727196451306956)
+    q = unsafe_add(shift(unsafe_mul(q, value), 96), 283447036172924575727196451306956)
+    q = unsafe_add(shift(unsafe_mul(q, value), 96), 31853899698501571402653359427138)
+    q = unsafe_add(shift(unsafe_mul(q, value), 96), 909429971244387300277376558375)
+
+    r: int256 = unsafe_div(p, q)
+    return shift(unsafe_add(unsafe_add(unsafe_mul(r, 1677202110996718588342820967067443963516166),\
+        unsafe_mul(k, 16597577552685614221487285958193947469193820559219878177908093499208371)),\
+        600920179829731861736702779321621459595472258049074101567377883020018308), -174)
+
+
+# @external
+# @pure
+# def wad_exp(x: int256) -> uint256:
+#     pass
+
+
+@external
+@view
 def cbrt(x: uint256, roundup: bool) -> uint256:
     """
     @dev Calculates the cube root of an unsigned integer.
@@ -407,6 +416,55 @@ def is_negative(x: int256) -> bool:
     @return bool The verification whether `x` is negative or not.
     """
     return (x ^ 1 < empty(int256))
+
+
+@internal
+@pure
+def _log_2(x: uint256, roundup: bool) -> uint256:
+    """
+    @dev An `internal` helper function that returns the log in base 2
+         of `x`, following the selected rounding direction.
+    @notice Note that it returns 0 if given 0. The implementation is
+            inspired by OpenZeppelin's implementation here:
+            https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/math/Math.sol.
+    @param x The 32-byte variable.
+    @param roundup The Boolean variable that specifies whether
+           to round up or not. The default `False` is round down.
+    @return uint256 The 32-byte calculation result.
+    """
+    value: uint256 = x
+    result: uint256 = empty(uint256)
+
+    # The following lines cannot overflow because we have the well-known
+    # decay behaviour of `log_2(max_value(uint256)) < max_value(uint256)`.
+    if (shift(x, -128) != empty(uint256)):
+        value = shift(x, -128)
+        result = 128
+    if (shift(value, -64) != empty(uint256)):
+        value = shift(value, -64)
+        result = unsafe_add(result, 64)
+    if (shift(value, -32) != empty(uint256)):
+        value = shift(value, -32)
+        result = unsafe_add(result, 32)
+    if (shift(value, -16) != empty(uint256)):
+        value = shift(value, -16)
+        result = unsafe_add(result, 16)
+    if (shift(value, -8) != empty(uint256)):
+        value = shift(value, -8)
+        result = unsafe_add(result, 8)
+    if (shift(value, -4) != empty(uint256)):
+        value = shift(value, -4)
+        result = unsafe_add(result, 4)
+    if (shift(value, -2) != empty(uint256)):
+        value = shift(value, -2)
+        result = unsafe_add(result, 2)
+    if (shift(value, -1) != empty(uint256)):
+        result = unsafe_add(result, 1)
+
+    if (roundup and (shift(1, convert(result, int256)) < x)):
+        result = unsafe_add(result, 1)
+
+    return result
 
 
 @internal
