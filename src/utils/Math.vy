@@ -172,7 +172,7 @@ def int256_average(x: int256, y: int256) -> int256:
             https://patents.google.com/patent/US6007232A/en.
     @param x The first 32-byte signed integer of the data set.
     @param y The second 32-byte signed integer of the data set.
-    @return uint256 The 32-byte average (rounded towards infinity)
+    @return int256 The 32-byte average (rounded towards infinity)
             of `x` and `y`.
     """
     return unsafe_add(unsafe_add(shift(x, -1), shift(y, -1)), x & y & 1)
@@ -320,6 +320,17 @@ def log_256(x: uint256, roundup: bool) -> uint256:
 @external
 @view
 def wad_ln(x: int256) -> int256:
+    """
+    @dev Calculates the natural logarithm of a signed integer with a
+         precision of 1e18.
+    @notice Note that it returns 0 if given 0. Furthermore, this function
+            consumes about 1,950 to 2,050 gas units depending on the value
+            of `x`. The implementation is inspired by Remco Bloemen's
+            implementation under the MIT license here:
+            https://xn--2-umb.com/22/exp-ln.
+    @param x The 32-byte variable.
+    @return int256 The 32-byte calculation result.
+    """
     value: int256 = x
 
     if (x == empty(int256)):
@@ -327,35 +338,74 @@ def wad_ln(x: int256) -> int256:
         # not to iterate through the remaining code.
         return empty(int256)
 
+    # We want to convert x from 10**18 fixed point to 2**96 fixed point.
+    # We do this by multiplying by 2**96 / 10**18. But since
+    # ln(x * C) = ln(x) + ln(C), we can simply do nothing here
+    # and add ln(2**96 / 10**18) at the end.
+    # Reduce range of x to (1, 2) * 2**96
+    # ln(2^k * x) = k * ln(2) + ln(x)
     k: int256 = unsafe_sub(convert(self._log_2(convert(x, uint256), False), int256), 96)
     value = shift(shift(value, unsafe_sub(159, k)), -159)
 
-    p: int256 = unsafe_add(value, 3273285459638523848632254066296)
-    p = unsafe_add(shift(unsafe_mul(p, value), -96), 24828157081833163892658089445524)
+    # Evaluate using a (8, 8)-term rational approximation.
+    # p is made monic, we will multiply by a scale factor later.
+    p: int256 = unsafe_add(shift(unsafe_mul(unsafe_add(value, 3273285459638523848632254066296), value), -96),\
+                24828157081833163892658089445524)
     p = unsafe_add(shift(unsafe_mul(p, value), -96), 43456485725739037958740375743393)
     p = unsafe_sub(shift(unsafe_mul(p, value), -96), 11111509109440967052023855526967)
     p = unsafe_sub(shift(unsafe_mul(p, value), -96), 45023709667254063763336534515857)
     p = unsafe_sub(shift(unsafe_mul(p, value), -96), 14706773417378608786704636184526)
     p = unsafe_sub(unsafe_mul(p, value), shift(795164235651350426258249787498, 96))
 
-    q: int256 = unsafe_add(value, 5573035233440673466300451813936)
-    q = unsafe_add(shift(unsafe_mul(q, value), 96), 71694874799317883764090561454958)
+    # We leave p in 2**192 basis so we don't need to scale it back up for the division.
+    # q is monic by convention.
+    q: int256 = unsafe_add(shift(unsafe_mul(unsafe_add(value, 5573035233440673466300451813936), value), 96),\
+                71694874799317883764090561454958)
     q = unsafe_add(shift(unsafe_mul(q, value), 96), 283447036172924575727196451306956)
     q = unsafe_add(shift(unsafe_mul(q, value), 96), 283447036172924575727196451306956)
     q = unsafe_add(shift(unsafe_mul(q, value), 96), 283447036172924575727196451306956)
     q = unsafe_add(shift(unsafe_mul(q, value), 96), 31853899698501571402653359427138)
     q = unsafe_add(shift(unsafe_mul(q, value), 96), 909429971244387300277376558375)
 
+    # The q polynomial is known not to have zeros in the domain.
+    # No scaling required because p is already 2**96 too large.
     r: int256 = unsafe_div(p, q)
+    
+    # Finalization, we need to:
+    # - multiply by the scale factor s = 5.549…
+    # add ln(2**96 / 10**18)
+    # add k * ln(2)
+    # multiply by 10**18 / 2**96 = 5**18 >> 78
     return shift(unsafe_add(unsafe_add(unsafe_mul(r, 1677202110996718588342820967067443963516166),\
-        unsafe_mul(k, 16597577552685614221487285958193947469193820559219878177908093499208371)),\
-        600920179829731861736702779321621459595472258049074101567377883020018308), -174)
+                 unsafe_mul(k, 16597577552685614221487285958193947469193820559219878177908093499208371)),\
+                 600920179829731861736702779321621459595472258049074101567377883020018308), -174)
 
 
-# @external
-# @pure
-# def wad_exp(x: int256) -> uint256:
-#     pass
+@external
+@pure
+def wad_exp(x: int256) -> uint256:
+    value: int256 = x
+    if (x <= -42139678854452767551):
+        return empty(uint256)
+
+    assert x < 135305999368893231589, "Math: wad_exp overflow"
+
+    value = unsafe_div(shift(x, 78), 5 ** 18)
+    k: int256 = shift(unsafe_add(unsafe_div(shift(value, 96), 54916777467707473351141471128), 2 ** 95), -96)
+    value = unsafe_sub(value, unsafe_mul(k, 54916777467707473351141471128))
+
+    y: int256 = unsafe_add(shift(unsafe_mul(unsafe_add(value, 1346386616545796478920950773328), value), -96), 57155421227552351082224309758442)
+    p: int256 = unsafe_add(unsafe_mul(unsafe_add(shift(unsafe_mul(unsafe_sub(unsafe_add(y, value), 94201549194550492254356042504812), y), -96), 28719021644029726153956944680412240), value), shift(4385272521454847904659076985693276, 96))
+
+    q: int256 = unsafe_add(shift(unsafe_mul(unsafe_sub(value, 2855989394907223263936484059900), value), -96), 50020603652535783019961831881945)
+    q = unsafe_sub(shift(unsafe_mul(q, value), -96), 533845033583426703283633433725380)
+    q = unsafe_add(shift(unsafe_mul(q, value), -96), 3604857256930695427073651918091429)
+    q = unsafe_sub(shift(unsafe_mul(q, value), -96), 14423608567350463180887372962807573)
+    q = unsafe_add(shift(unsafe_mul(q, value), -96), 26449188498355588339934803723976023)
+
+    r: int256 = unsafe_div(p, q)
+
+    return convert(shift(unsafe_mul(r, 3822833074963236453042738258902158003155416615667), -unsafe_sub(195, k)), uint256)
 
 
 @external
