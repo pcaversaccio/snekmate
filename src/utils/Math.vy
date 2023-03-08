@@ -491,30 +491,8 @@ def _wad_cbrt(x: uint256) -> uint256:
     else:
         xx = unsafe_mul(x, 10 ** 36)
 
-    # Compute the binary logarithm of `xx`. This approach was inspired by Sean
-    # Eron Anderson's "Bit Twiddling Hacks" from Stanford:
-    # https://graphics.stanford.edu/~seander/bithacks.html#IntegerLog.
-    # Further inspiration stems from solmate:
-    # https://github.com/transmissions11/solmate/blob/main/src/utils/SignedWadMath.sol.
-    # A detailed mathematical explanation by Remco Bloemen can be found here:
-    # https://xn--2-umb.com/22/exp-ln.
-    log2x: uint256 = empty(uint256)
-    if (xx > max_value(uint128)):
-        log2x = 128
-    if (unsafe_div(xx, shift(2, convert(log2x, int256))) > max_value(uint64)):
-        log2x = log2x | 64
-    if (unsafe_div(xx, shift(2, convert(log2x, int256))) > max_value(uint32)):
-        log2x = log2x | 32
-    if (unsafe_div(xx, shift(2, convert(log2x, int256))) > max_value(uint16)):
-        log2x = log2x | 16
-    if (unsafe_div(xx, shift(2, convert(log2x, int256))) > max_value(uint8)):
-        log2x = log2x | 8
-    if (unsafe_div(xx, shift(2, convert(log2x, int256))) > 15):
-        log2x = log2x | 4
-    if (unsafe_div(xx, shift(2, convert(log2x, int256))) > 3):
-        log2x = log2x | 2
-    if (unsafe_div(xx, shift(2, convert(log2x, int256))) > 1):
-        log2x = log2x | 1
+    # Compute the binary logarithm of `xx`.
+    log2x: uint256 = self._log_2(xx, False)
 
     # If we divide log2x by 3, the remainder is "log2x % 3". So if we simply
     # multiply "2 ** (log2x/3)" and discard the remainder to calculate our guess,
