@@ -4,6 +4,9 @@ pragma solidity ^0.8.19;
 import {Test} from "forge-std/Test.sol";
 import {VyperDeployer} from "utils/VyperDeployer.sol";
 
+import {Math} from "openzeppelin/utils/math/Math.sol";
+import {FixedPointMathLib} from "solady/utils/FixedPointMathLib.sol";
+
 import {IMath} from "./interfaces/IMath.sol";
 
 contract MathTest is Test {
@@ -311,6 +314,27 @@ contract MathTest is Test {
         assertEq(math.log_256(type(uint256).max, true), 32);
     }
 
+    function testWadLn() public {
+        assertEq(math.wad_ln(0), 0);
+        assertEq(math.wad_ln(10 ** 18), 0);
+        assertEq(math.wad_ln(1), -41446531673892822313);
+        assertEq(math.wad_ln(42), -37708862055609454007);
+        assertEq(math.wad_ln(10 ** 4), -32236191301916639577);
+        assertEq(math.wad_ln(10 ** 9), -20723265836946411157);
+        assertEq(math.wad_ln(2718281828459045235), 999999999999999999);
+        assertEq(math.wad_ln(11723640096265400935), 2461607324344817918);
+        assertEq(math.wad_ln(2 ** 128), 47276307437780177293);
+        assertEq(math.wad_ln(2 ** 170), 76388489021297880288);
+        assertEq(math.wad_ln(type(int256).max), 135305999368893231589);
+    }
+
+    function testWadLnNegativeValues() public {
+        vm.expectRevert(bytes("Math: wad_ln undefined"));
+        math.wad_ln(-1);
+        vm.expectRevert(bytes("Math: wad_ln undefined"));
+        math.wad_ln(type(int256).min);
+    }
+
     function testCbrtRoundDown() public {
         assertEq(math.cbrt(0, false), 0);
         assertEq(math.cbrt(1, false), 1);
@@ -385,7 +409,7 @@ contract MathTest is Test {
      * https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/math/Math.sol.
      */
     function testFuzzUint256Average(uint256 x, uint256 y) public {
-        assertEq(math.uint256_average(x, y), (x & y) + ((x ^ y) / 2));
+        assertEq(math.uint256_average(x, y), Math.average(x, y));
     }
 
     /**
@@ -393,10 +417,7 @@ contract MathTest is Test {
      * https://github.com/Vectorized/solady/blob/main/src/utils/FixedPointMathLib.sol.
      */
     function testFuzzInt256Average(int256 x, int256 y) public {
-        assertEq(
-            math.int256_average(x, y),
-            (x >> 1) + (y >> 1) + (((x & 1) + (y & 1)) >> 1)
-        );
+        assertEq(math.int256_average(x, y), FixedPointMathLib.avg(x, y));
     }
 
     /**
@@ -540,6 +561,15 @@ contract MathTest is Test {
         } else {
             assertEq(256 ** result, x);
         }
+    }
+
+    /**
+     * @notice We use the `lnWad` function of solady as a benchmark:
+     * https://github.com/Vectorized/solady/blob/main/src/utils/FixedPointMathLib.sol.
+     */
+    function testFuzzWadLn(int256 x) public {
+        x = bound(x, 1, type(int256).max);
+        assertEq(math.wad_ln(x), FixedPointMathLib.lnWad(x));
     }
 
     function testFuzzCbrt(uint256 x, bool roundup) public {

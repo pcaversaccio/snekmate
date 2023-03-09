@@ -227,7 +227,7 @@ def log_2(x: uint256, roundup: bool) -> uint256:
     # not to iterate through the remaining code.
     if (x == empty(uint256)):
         return empty(uint256)
-    
+
     return self._log_2(x, roundup)
 
 
@@ -336,7 +336,7 @@ def wad_ln(x: int256) -> int256:
     @dev Calculates the natural logarithm of a signed integer with a
          precision of 1e18.
     @notice Note that it returns 0 if given 0. Furthermore, this function
-            consumes about 1,350 to 1,550 gas units depending on the value
+            consumes about 1,350 to 1,650 gas units depending on the value
             of `x`. The implementation is inspired by Remco Bloemen's
             implementation under the MIT license here:
             https://xn--2-umb.com/22/exp-ln.
@@ -344,6 +344,8 @@ def wad_ln(x: int256) -> int256:
     @return int256 The 32-byte calculation result.
     """
     value: int256 = x
+
+    assert x >= empty(int256), "Math: wad_ln undefined"
 
     # For the special case `x == 0` we already return 0 here in order
     # not to iterate through the remaining code.
@@ -358,7 +360,7 @@ def wad_ln(x: int256) -> int256:
     # Reduce the range of `x` to "(1, 2) * 2 ** 96".
     # Also remember that "ln(2^k * x) = k * ln(2) + ln(x)" holds.
     k: int256 = unsafe_sub(convert(self._log_2(convert(x, uint256), False), int256), 96)
-    value = shift(shift(value, unsafe_sub(159, k)), -159)
+    value = convert(shift(convert(convert(shift(value, unsafe_sub(159, k)), bytes32), uint256), -159), int256)
 
     # Evaluate using a "(8, 8)"-term rational approximation. Since `p` is monic,
     # we will multiply by a scaling factor later.
@@ -371,12 +373,12 @@ def wad_ln(x: int256) -> int256:
 
     # We leave `p` in the "2 ** 192" base so that we do not have to scale it up
     # again for the division. Note that `q` is monic by convention.
-    q: int256 = unsafe_add(shift(unsafe_mul(unsafe_add(value, 5573035233440673466300451813936), value), 96), 71694874799317883764090561454958)
-    q = unsafe_add(shift(unsafe_mul(q, value), 96), 283447036172924575727196451306956)
-    q = unsafe_add(shift(unsafe_mul(q, value), 96), 283447036172924575727196451306956)
-    q = unsafe_add(shift(unsafe_mul(q, value), 96), 283447036172924575727196451306956)
-    q = unsafe_add(shift(unsafe_mul(q, value), 96), 31853899698501571402653359427138)
-    q = unsafe_add(shift(unsafe_mul(q, value), 96), 909429971244387300277376558375)
+    q: int256 = unsafe_add(shift(unsafe_mul(unsafe_add(value, 5573035233440673466300451813936), value), -96), 71694874799317883764090561454958)
+    q = unsafe_add(shift(unsafe_mul(q, value), -96), 283447036172924575727196451306956)
+    q = unsafe_add(shift(unsafe_mul(q, value), -96), 401686690394027663651624208769553)
+    q = unsafe_add(shift(unsafe_mul(q, value), -96), 204048457590392012362485061816622)
+    q = unsafe_add(shift(unsafe_mul(q, value), -96), 31853899698501571402653359427138)
+    q = unsafe_add(shift(unsafe_mul(q, value), -96), 909429971244387300277376558375)
 
     # It is known that the polynomial `q` has no zeros in the domain.
     # No scaling is required, as `p` is already "2 ** 96" too large. Also,
