@@ -109,6 +109,57 @@ contract MathTest is Test {
         math = IMath(vyperDeployer.deployContract("src/utils/", "Math"));
     }
 
+    function testUint256Average() public {
+        assertEq(math.uint256_average(83219, 219713), 151466);
+        assertEq(math.uint256_average(73220, 419712), 246466);
+        assertEq(math.uint256_average(83219, 419712), 251465);
+        assertEq(math.uint256_average(73220, 219713), 146466);
+        assertEq(
+            math.uint256_average(type(uint256).max, type(uint256).max),
+            type(uint256).max
+        );
+    }
+
+    function testInt256Average() public {
+        assertEq(math.int256_average(83219, 219713), 151466);
+        assertEq(math.int256_average(-83219, -219713), -151466);
+
+        assertEq(math.int256_average(-73220, 419712), 173246);
+        assertEq(math.int256_average(73220, -419712), -173246);
+
+        assertEq(math.int256_average(83219, -419712), -168247);
+        assertEq(math.int256_average(-83219, 419712), 168246);
+
+        assertEq(math.int256_average(73220, 219713), 146466);
+        assertEq(math.int256_average(-73220, -219713), -146467);
+
+        assertEq(
+            math.int256_average(type(int256).min, type(int256).min),
+            type(int256).min
+        );
+        assertEq(math.int256_average(type(int256).min, type(int256).max), -1);
+    }
+
+    function testCeilDiv() public {
+        assertEq(math.ceil_div(0, 8), 0);
+        assertEq(math.ceil_div(12, 6), 2);
+        assertEq(math.ceil_div(123, 17), 8);
+        assertEq(math.ceil_div(type(uint256).max, 2), 1 << 255);
+        assertEq(math.ceil_div(type(uint256).max, 1), type(uint256).max);
+        vm.expectRevert(bytes("Math: ceil_div division by zero"));
+        math.ceil_div(1, 0);
+    }
+
+    function testIsNegative() public {
+        assertEq(math.is_negative(0), false);
+        assertEq(math.is_negative(-1), true);
+        assertEq(math.is_negative(-1 * -1), false);
+        assertEq(math.is_negative(-1 * 100), true);
+        assertEq(math.is_negative(0 * -1), false);
+        assertEq(math.is_negative(int256(type(int16).min) * 2), true);
+        assertEq(math.is_negative(type(int256).min + type(int16).max), true);
+    }
+
     function testMulDivDivisionByZero() public {
         vm.expectRevert(bytes("Math: mul_div division by zero"));
         math.mul_div(1, 1, 0, false);
@@ -172,47 +223,6 @@ contract MathTest is Test {
             math.mul_div(maxUint256, maxUint256, maxUint256, true),
             maxUint256
         );
-    }
-
-    function testUint256Average() public {
-        assertEq(math.uint256_average(83219, 219713), 151466);
-        assertEq(math.uint256_average(73220, 419712), 246466);
-        assertEq(math.uint256_average(83219, 419712), 251465);
-        assertEq(math.uint256_average(73220, 219713), 146466);
-        assertEq(
-            math.uint256_average(type(uint256).max, type(uint256).max),
-            type(uint256).max
-        );
-    }
-
-    function testInt256Average() public {
-        assertEq(math.int256_average(83219, 219713), 151466);
-        assertEq(math.int256_average(-83219, -219713), -151466);
-
-        assertEq(math.int256_average(-73220, 419712), 173246);
-        assertEq(math.int256_average(73220, -419712), -173246);
-
-        assertEq(math.int256_average(83219, -419712), -168247);
-        assertEq(math.int256_average(-83219, 419712), 168246);
-
-        assertEq(math.int256_average(73220, 219713), 146466);
-        assertEq(math.int256_average(-73220, -219713), -146467);
-
-        assertEq(
-            math.int256_average(type(int256).min, type(int256).min),
-            type(int256).min
-        );
-        assertEq(math.int256_average(type(int256).min, type(int256).max), -1);
-    }
-
-    function testCeilDiv() public {
-        assertEq(math.ceil_div(0, 8), 0);
-        assertEq(math.ceil_div(12, 6), 2);
-        assertEq(math.ceil_div(123, 17), 8);
-        assertEq(math.ceil_div(type(uint256).max, 2), 1 << 255);
-        assertEq(math.ceil_div(type(uint256).max, 1), type(uint256).max);
-        vm.expectRevert(bytes("Math: ceil_div division by zero"));
-        math.ceil_div(1, 0);
     }
 
     function testLog2RoundDown() public {
@@ -370,14 +380,48 @@ contract MathTest is Test {
         );
     }
 
-    function testIsNegative() public {
-        assertEq(math.is_negative(0), false);
-        assertEq(math.is_negative(-1), true);
-        assertEq(math.is_negative(-1 * -1), false);
-        assertEq(math.is_negative(-1 * 100), true);
-        assertEq(math.is_negative(0 * -1), false);
-        assertEq(math.is_negative(int256(type(int16).min) * 2), true);
-        assertEq(math.is_negative(type(int256).min + type(int16).max), true);
+    /**
+     * @notice We use the `average` function of OpenZeppelin as a benchmark:
+     * https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/math/Math.sol.
+     */
+    function testFuzzUint256Average(uint256 x, uint256 y) public {
+        assertEq(math.uint256_average(x, y), (x & y) + ((x ^ y) / 2));
+    }
+
+    /**
+     * @notice We use the `avg` function of solady as a benchmark:
+     * https://github.com/Vectorized/solady/blob/main/src/utils/FixedPointMathLib.sol.
+     */
+    function testFuzzInt256Average(int256 x, int256 y) public {
+        assertEq(
+            math.int256_average(x, y),
+            (x >> 1) + (y >> 1) + (((x & 1) + (y & 1)) >> 1)
+        );
+    }
+
+    /**
+     * @notice Forked and adjusted accordingly from here:
+     * https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/test/utils/math/Math.t.sol.
+     */
+    function testFuzzCeilDiv(uint256 x, uint256 y) public {
+        vm.assume(y > 0);
+        uint256 result = math.ceil_div(x, y);
+        if (result == 0) {
+            assertEq(x, 0);
+        } else {
+            uint256 maxDiv = type(uint256).max / y;
+            bool overflow = maxDiv * y < x;
+            assertTrue(x > y * (result - 1));
+            assertTrue(overflow ? result == maxDiv + 1 : x <= y * result);
+        }
+    }
+
+    function testFuzzIsNegative(int256 x) public {
+        if (x >= 0) {
+            assertEq(math.is_negative(x), false);
+        } else {
+            assertEq(math.is_negative(x), true);
+        }
     }
 
     /**
@@ -439,42 +483,6 @@ contract MathTest is Test {
         try math.mul_div(x, y, d, true) returns (uint256) {
             fail();
         } catch {}
-    }
-
-    /**
-     * @notice We use the `average` function of OpenZeppelin as a benchmark:
-     * https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/math/Math.sol.
-     */
-    function testFuzzUint256Average(uint256 x, uint256 y) public {
-        assertEq(math.uint256_average(x, y), (x & y) + ((x ^ y) / 2));
-    }
-
-    /**
-     * @notice We use the `avg` function of solady as a benchmark:
-     * https://github.com/Vectorized/solady/blob/main/src/utils/FixedPointMathLib.sol.
-     */
-    function testFuzzInt256Average(int256 x, int256 y) public {
-        assertEq(
-            math.int256_average(x, y),
-            (x >> 1) + (y >> 1) + (((x & 1) + (y & 1)) >> 1)
-        );
-    }
-
-    /**
-     * @notice Forked and adjusted accordingly from here:
-     * https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/test/utils/math/Math.t.sol.
-     */
-    function testFuzzCeilDiv(uint256 x, uint256 y) public {
-        vm.assume(y > 0);
-        uint256 result = math.ceil_div(x, y);
-        if (result == 0) {
-            assertEq(x, 0);
-        } else {
-            uint256 maxDiv = type(uint256).max / y;
-            bool overflow = maxDiv * y < x;
-            assertTrue(x > y * (result - 1));
-            assertTrue(overflow ? result == maxDiv + 1 : x <= y * result);
-        }
     }
 
     /**
@@ -552,13 +560,5 @@ contract MathTest is Test {
             result >= floor * 10 ** 12 && result <= (floor + 1) * 10 ** 12
         );
         assertEq(result / 10 ** 12, floor);
-    }
-
-    function testFuzzIsNegative(int256 x) public {
-        if (x >= 0) {
-            assertEq(math.is_negative(x), false);
-        } else {
-            assertEq(math.is_negative(x), true);
-        }
     }
 }
