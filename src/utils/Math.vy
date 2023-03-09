@@ -330,13 +330,13 @@ def log_256(x: uint256, roundup: bool) -> uint256:
 
 
 @external
-@view
+@pure
 def wad_ln(x: int256) -> int256:
     """
     @dev Calculates the natural logarithm of a signed integer with a
          precision of 1e18.
     @notice Note that it returns 0 if given 0. Furthermore, this function
-            consumes about 1,350 to 1,650 gas units depending on the value
+            consumes about 1,400 to 1,650 gas units depending on the value
             of `x`. The implementation is inspired by Remco Bloemen's
             implementation under the MIT license here:
             https://xn--2-umb.com/22/exp-ln.
@@ -403,7 +403,7 @@ def wad_exp(x: int256) -> int256:
     """
     @dev Calculates the natural exponential function of a signed integer with
          a precision of 1e18.
-    @notice Note that this function consumes about 790 gas units. The implementation
+    @notice Note that this function consumes about 810 gas units. The implementation
             is inspired by Remco Bloemen's implementation under the MIT license here:
             https://xn--2-umb.com/22/exp-ln.
     @param x The 32-byte variable.
@@ -460,7 +460,7 @@ def wad_exp(x: int256) -> int256:
 
 
 @external
-@view
+@pure
 def cbrt(x: uint256, roundup: bool) -> uint256:
     """
     @dev Calculates the cube root of an unsigned integer.
