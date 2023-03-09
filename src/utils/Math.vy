@@ -24,6 +24,71 @@ def __init__():
 
 @external
 @pure
+def uint256_average(x: uint256, y: uint256) -> uint256:
+    """
+    @dev Returns the average of two 32-byte unsigned integers.
+    @notice Note that the result is rounded towards zero. For
+            more details on finding the average of two unsigned
+            integers without an overflow, please refer to:
+            https://devblogs.microsoft.com/oldnewthing/20220207-00/?p=106223.
+    @param x The first 32-byte unsigned integer of the data set.
+    @param y The second 32-byte unsigned integer of the data set.
+    @return uint256 The 32-byte average (rounded towards zero) of
+            `x` and `y`.
+    """
+    return unsafe_add(x & y, shift(x ^ y, -1))
+
+
+@external
+@pure
+def int256_average(x: int256, y: int256) -> int256:
+    """
+    @dev Returns the average of two 32-byte signed integers.
+    @notice Note that the result is rounded towards infinity.
+            For more details on finding the average of two signed
+            integers without an overflow, please refer to:
+            https://patents.google.com/patent/US6007232A/en.
+    @param x The first 32-byte signed integer of the data set.
+    @param y The second 32-byte signed integer of the data set.
+    @return int256 The 32-byte average (rounded towards infinity)
+            of `x` and `y`.
+    """
+    return unsafe_add(unsafe_add(shift(x, -1), shift(y, -1)), x & y & 1)
+
+
+@external
+@pure
+def ceil_div(x: uint256, y: uint256) -> uint256:
+    """
+    @dev Calculates "ceil(x / y)" for any strictly positive `y`.
+    @notice The implementation is inspired by OpenZeppelin's
+            implementation here:
+            https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/math/Math.sol.
+    @param x The 32-byte numerator.
+    @param y The 32-byte denominator.
+    @return uint256 The 32-byte rounded up result of "x/y".
+    """
+    assert y != empty(uint256), "Math: ceil_div division by zero"
+    if (x == empty(uint256)):
+        return empty(uint256)
+    else:
+        return unsafe_add(unsafe_div(x - 1, y), 1)
+
+
+@external
+@pure
+def is_negative(x: int256) -> bool:
+    """
+    @dev Returns `True` if a 32-byte signed integer is negative.
+    @notice Note that this function returns `False` for 0.
+    @param x The 32-byte signed integer variable.
+    @return bool The verification whether `x` is negative or not.
+    """
+    return (x ^ 1 < empty(int256))
+
+
+@external
+@pure
 def mul_div(x: uint256, y: uint256, denominator: uint256, roundup: bool) -> uint256:
     """
     @dev Calculates "(x * y) / denominator" in 512-bit precision,
@@ -142,59 +207,6 @@ def mul_div(x: uint256, y: uint256, denominator: uint256, roundup: bool) -> uint
         result += 1
 
     return result
-
-
-@external
-@pure
-def uint256_average(x: uint256, y: uint256) -> uint256:
-    """
-    @dev Returns the average of two 32-byte unsigned integers.
-    @notice Note that the result is rounded towards zero. For
-            more details on finding the average of two unsigned
-            integers without an overflow, please refer to:
-            https://devblogs.microsoft.com/oldnewthing/20220207-00/?p=106223.
-    @param x The first 32-byte unsigned integer of the data set.
-    @param y The second 32-byte unsigned integer of the data set.
-    @return uint256 The 32-byte average (rounded towards zero) of
-            `x` and `y`.
-    """
-    return unsafe_add(x & y, shift(x ^ y, -1))
-
-
-@external
-@pure
-def int256_average(x: int256, y: int256) -> int256:
-    """
-    @dev Returns the average of two 32-byte signed integers.
-    @notice Note that the result is rounded towards infinity.
-            For more details on finding the average of two signed
-            integers without an overflow, please refer to:
-            https://patents.google.com/patent/US6007232A/en.
-    @param x The first 32-byte signed integer of the data set.
-    @param y The second 32-byte signed integer of the data set.
-    @return int256 The 32-byte average (rounded towards infinity)
-            of `x` and `y`.
-    """
-    return unsafe_add(unsafe_add(shift(x, -1), shift(y, -1)), x & y & 1)
-
-
-@external
-@pure
-def ceil_div(x: uint256, y: uint256) -> uint256:
-    """
-    @dev Calculates "ceil(x / y)" for any strictly positive `y`.
-    @notice The implementation is inspired by OpenZeppelin's
-            implementation here:
-            https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/math/Math.sol.
-    @param x The 32-byte numerator.
-    @param y The 32-byte denominator.
-    @return uint256 The 32-byte rounded up result of "x/y".
-    """
-    assert y != empty(uint256), "Math: ceil_div division by zero"
-    if (x == empty(uint256)):
-        return empty(uint256)
-    else:
-        return unsafe_add(unsafe_div(x - 1, y), 1)
 
 
 @external
@@ -389,9 +401,8 @@ def wad_exp(x: int256) -> int256:
     """
     @dev Calculates the natural exponential function of a signed integer with
          a precision of 1e18.
-    @notice Note that this function consumes about 1,350 to 1,550 gas units
-            depending on the value of `x`. The implementation is inspired by
-            Remco Bloemen's implementation under the MIT license here:
+    @notice Note that this function consumes about 790 gas units. The implementation
+            is inspired by Remco Bloemen's implementation under the MIT license here:
             https://xn--2-umb.com/22/exp-ln.
     @param x The 32-byte variable.
     @return int256 The 32-byte calculation result.
@@ -492,18 +503,6 @@ def wad_cbrt(x: uint256) -> uint256:
         return empty(uint256)
 
     return self._wad_cbrt(x)
-
-
-@external
-@pure
-def is_negative(x: int256) -> bool:
-    """
-    @dev Returns `True` if a 32-byte signed integer is negative.
-    @notice Note that this function returns `False` for 0.
-    @param x The 32-byte signed integer variable.
-    @return bool The verification whether `x` is negative or not.
-    """
-    return (x ^ 1 < empty(int256))
 
 
 @internal
