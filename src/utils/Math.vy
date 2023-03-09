@@ -456,7 +456,7 @@ def wad_exp(x: int256) -> int256:
     #   - the factor "1e18 / 2 ** 96" for the base conversion.
     # We do this all at once, with an intermediate result in "2**213" base,
     # so that the final right shift always gives a positive value.
-    return shift(unsafe_mul(r, 3822833074963236453042738258902158003155416615667), -unsafe_sub(195, k))
+    return convert(shift(unsafe_mul(convert(convert(r, bytes32), uint256), 3822833074963236453042738258902158003155416615667), -unsafe_sub(195, k)), int256)
 
 
 @external

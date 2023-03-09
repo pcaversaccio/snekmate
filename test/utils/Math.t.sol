@@ -335,6 +335,41 @@ contract MathTest is Test {
         math.wad_ln(type(int256).min);
     }
 
+    function testWadExp() public {
+        assertEq(math.wad_exp(-42139678854452767551), 0);
+        assertEq(math.wad_exp(-3 * 10 ** 18), 49787068367863942);
+        assertEq(math.wad_exp(-2 * 10 ** 18), 135335283236612691);
+        assertEq(math.wad_exp(-1 * 10 ** 18), 367879441171442321);
+        assertEq(math.wad_exp(-0.5 * 10 ** 18), 606530659712633423);
+        assertEq(math.wad_exp(-0.3 * 10 ** 18), 740818220681717866);
+        assertEq(math.wad_exp(0), 10 ** 18);
+        assertEq(math.wad_exp(0.3 * 10 ** 18), 1349858807576003103);
+        assertEq(math.wad_exp(0.5 * 10 ** 18), 1648721270700128146);
+        assertEq(math.wad_exp(1 * 10 ** 18), 2718281828459045235);
+        assertEq(math.wad_exp(2 * 10 ** 18), 7389056098930650227);
+        assertEq(math.wad_exp(3 * 10 ** 18), 20085536923187667741);
+        assertEq(math.wad_exp(10 * 10 ** 18), 22026465794806716516980);
+        assertEq(
+            math.wad_exp(50 * 10 ** 18),
+            5184705528587072464148529318587763226117
+        );
+        assertEq(
+            math.wad_exp(100 * 10 ** 18),
+            26881171418161354484134666106240937146178367581647816351662017
+        );
+        assertEq(
+            math.wad_exp(135305999368893231588),
+            57896044618658097650144101621524338577433870140581303254786265309376407432913
+        );
+    }
+
+    function testWadExpOverflow() public {
+        vm.expectRevert(bytes("Math: wad_exp overflow"));
+        math.wad_exp(135305999368893231589);
+        vm.expectRevert(bytes("Math: wad_exp overflow"));
+        math.wad_exp(type(int256).max);
+    }
+
     function testCbrtRoundDown() public {
         assertEq(math.cbrt(0, false), 0);
         assertEq(math.cbrt(1, false), 1);
@@ -570,6 +605,15 @@ contract MathTest is Test {
     function testFuzzWadLn(int256 x) public {
         x = bound(x, 1, type(int256).max);
         assertEq(math.wad_ln(x), FixedPointMathLib.lnWad(x));
+    }
+
+    /**
+     * @notice We use the `expWad` function of solady as a benchmark:
+     * https://github.com/Vectorized/solady/blob/main/src/utils/FixedPointMathLib.sol.
+     */
+    function testFuzzWadExp(int256 x) public {
+        x = bound(x, type(int256).min, 135305999368893231588);
+        assertEq(math.wad_exp(x), FixedPointMathLib.expWad(x));
     }
 
     function testFuzzCbrt(uint256 x, bool roundup) public {
