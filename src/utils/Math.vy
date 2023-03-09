@@ -211,9 +211,9 @@ def log_2(x: uint256, roundup: bool) -> uint256:
            to round up or not. The default `False` is round down.
     @return uint256 The 32-byte calculation result.
     """
+    # For the special case `x == 0` we already return 0 here in order
+    # not to iterate through the remaining code.
     if (x == empty(uint256)):
-        # For the special case `x == 0` we already return 0 here in order
-        # not to iterate through the remaining code.
         return empty(uint256)
     
     return self._log_2(x, roundup)
@@ -236,9 +236,9 @@ def log_10(x: uint256, roundup: bool) -> uint256:
     value: uint256 = x
     result: uint256 = empty(uint256)
 
+    # For the special case `x == 0` we already return 0 here in order
+    # not to iterate through the remaining code.
     if (x == empty(uint256)):
-        # For the special case `x == 0` we already return 0 here in order
-        # not to iterate through the remaining code.
         return empty(uint256)
 
     # The following lines cannot overflow because we have the well-known
@@ -289,9 +289,9 @@ def log_256(x: uint256, roundup: bool) -> uint256:
     value: uint256 = x
     result: uint256 = empty(uint256)
 
+    # For the special case `x == 0` we already return 0 here in order
+    # not to iterate through the remaining code.
     if (x == empty(uint256)):
-        # For the special case `x == 0` we already return 0 here in order
-        # not to iterate through the remaining code.
         return empty(uint256)
 
     # The following lines cannot overflow because we have the well-known
@@ -333,9 +333,9 @@ def wad_ln(x: int256) -> int256:
     """
     value: int256 = x
 
+    # For the special case `x == 0` we already return 0 here in order
+    # not to iterate through the remaining code.
     if (x == empty(int256)):
-        # For the special case `x == 0` we already return 0 here in order
-        # not to iterate through the remaining code.
         return empty(int256)
 
     # We want to convert `x` from "10 ** 18" fixed point to "2 ** 96"
@@ -386,7 +386,20 @@ def wad_ln(x: int256) -> int256:
 @external
 @pure
 def wad_exp(x: int256) -> uint256:
+    """
+    @dev Calculates the natural exponential function of a signed integer with
+         a precision of 1e18.
+    @notice Note that this function consumes about 1,350 to 1,550 gas units
+            depending on the value of `x`. The implementation is inspired by
+            Remco Bloemen's implementation under the MIT license here:
+            https://xn--2-umb.com/22/exp-ln.
+    @param x The 32-byte variable.
+    @return uint256 The 32-byte calculation result.
+    """
     value: int256 = x
+
+    # If the result is `< 0.5`, we return zero. This happens when we have the following:
+    # "x <= floor(log(0.5e18) * 1e18) ~ -42e18".
     if (x <= -42139678854452767551):
         return empty(uint256)
 
@@ -424,9 +437,9 @@ def cbrt(x: uint256, roundup: bool) -> uint256:
            to round up or not. The default `False` is round down.
     @return The 32-byte cube root of `x`.
     """
+    # For the special case `x == 0` we already return 0 here in order
+    # not to iterate through the remaining code.
     if (x == empty(uint256)):
-        # For the special case `x == 0` we already return 0 here in order
-        # not to iterate through the remaining code.
         return empty(uint256)
 
     y: uint256 = unsafe_div(self._wad_cbrt(x), 10 ** 12)
@@ -450,9 +463,9 @@ def wad_cbrt(x: uint256) -> uint256:
     @param x The 32-byte variable from which the cube root is calculated.
     @return The 32-byte cubic root of `x` with a precision of 1e18.
     """
+    # For the special case `x == 0` we already return 0 here in order
+    # not to iterate through the remaining code.
     if (x == empty(uint256)):
-        # For the special case `x == 0` we already return 0 here in order
-        # not to iterate through the remaining code.
         return empty(uint256)
 
     return self._wad_cbrt(x)
