@@ -7,7 +7,22 @@
 @notice These functions implement standard mathematical utility
         functions that are missing in the Vyper language. If a
         function is inspired by an existing implementation, it
-        is properly referenced in the function docstring.
+        is properly referenced in the function docstring. The
+        following functions have been added for convenience:
+        - `uint256_average` (`external` `pure` function),
+        - `int256_average` (`external` `pure` function),
+        - `ceil_div` (`external` `pure` function),
+        - `is_negative` (`external` `pure` function),
+        - `mul_div` (`external` `pure` function),
+        - `log_2` (`external` `pure` function),
+        - `log_10` (`external` `pure` function),
+        - `log_256` (`external` `pure` function),
+        - `wad_ln` (`external` `pure` function),
+        - `wad_exp` (`external` `pure` function),
+        - `cbrt` (`external` `pure` function),
+        - `wad_cbrt` (`external` `pure` function),
+        - `_log_2` (`internal` `pure` function),
+        - `_wad_cbrt` (`internal` `pure` function).
 """
 
 
