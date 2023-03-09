@@ -413,7 +413,7 @@ def wad_exp(x: int256) -> uint256:
 def cbrt(x: uint256, roundup: bool) -> uint256:
     """
     @dev Calculates the cube root of an unsigned integer.
-    @notice Note that this function consumes about 1,950 to 2,050 gas units
+    @notice Note that this function consumes about 1,600 to 1,800 gas units
             depending on the value of `x` and `roundup`. The implementation is
             inspired by Curve Finance's implementation under the MIT license here:
             https://github.com/curvefi/tricrypto-ng/blob/main/contracts/CurveCryptoMathOptimized3.vy.
@@ -441,7 +441,7 @@ def wad_cbrt(x: uint256) -> uint256:
     """
     @dev Calculates the cube root of an unsigned integer with a precision
          of 1e18.
-    @notice Note that this function consumes about 1,850 to 1,950 gas units
+    @notice Note that this function consumes about 1,500 to 1,700 gas units
             depending on the value of `x`. The implementation is inspired
             by Curve Finance's implementation under the MIT license here:
             https://github.com/curvefi/tricrypto-ng/blob/main/contracts/CurveCryptoMathOptimized3.vy.
@@ -523,7 +523,7 @@ def _wad_cbrt(x: uint256) -> uint256:
     """
     @dev An `internal` helper function that calculates the cube root of an
          unsigned integer with a precision of 1e18.
-    @notice Note that this function consumes about 1,800 to 1,850 gas units
+    @notice Note that this function consumes about 1,450 to 1,650 gas units
             depending on the value of `x`. The implementation is inspired
             by Curve Finance's implementation under the MIT license here:
             https://github.com/curvefi/tricrypto-ng/blob/main/contracts/CurveCryptoMathOptimized3.vy.
