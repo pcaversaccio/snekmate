@@ -324,7 +324,7 @@ def wad_ln(x: int256) -> int256:
     @dev Calculates the natural logarithm of a signed integer with a
          precision of 1e18.
     @notice Note that it returns 0 if given 0. Furthermore, this function
-            consumes about 1,950 to 2,050 gas units depending on the value
+            consumes about 1,350 to 1,550 gas units depending on the value
             of `x`. The implementation is inspired by Remco Bloemen's
             implementation under the MIT license here:
             https://xn--2-umb.com/22/exp-ln.
@@ -338,44 +338,46 @@ def wad_ln(x: int256) -> int256:
         # not to iterate through the remaining code.
         return empty(int256)
 
-    # We want to convert x from 10**18 fixed point to 2**96 fixed point.
-    # We do this by multiplying by 2**96 / 10**18. But since
-    # ln(x * C) = ln(x) + ln(C), we can simply do nothing here
-    # and add ln(2**96 / 10**18) at the end.
-    # Reduce range of x to (1, 2) * 2**96
-    # ln(2^k * x) = k * ln(2) + ln(x)
+    # We want to convert `x` from "10 ** 18" fixed point to "2 ** 96"
+    # fixed point. We do this by multiplying by "2 ** 96 / 10 ** 18".
+    # But since "ln(x * C) = ln(x) + ln(C)" holds, we can just do nothing
+    # here and add "ln(2 ** 96 / 10 ** 18)" at the end.
+
+    # Reduce the range of `x` to "(1, 2) * 2 ** 96".
+    # Also remember that "ln(2^k * x) = k * ln(2) + ln(x)" holds.
     k: int256 = unsafe_sub(convert(self._log_2(convert(x, uint256), False), int256), 96)
     value = shift(shift(value, unsafe_sub(159, k)), -159)
 
-    # Evaluate using a (8, 8)-term rational approximation.
-    # p is made monic, we will multiply by a scale factor later.
-    p: int256 = unsafe_add(shift(unsafe_mul(unsafe_add(value, 3273285459638523848632254066296), value), -96),\
-                24828157081833163892658089445524)
+    # Evaluate using a "(8, 8)"-term rational approximation. Since `p` is monic,
+    # we will multiply by a scaling factor later.
+    p: int256 = unsafe_add(shift(unsafe_mul(unsafe_add(value, 3273285459638523848632254066296), value), -96), 24828157081833163892658089445524)
     p = unsafe_add(shift(unsafe_mul(p, value), -96), 43456485725739037958740375743393)
     p = unsafe_sub(shift(unsafe_mul(p, value), -96), 11111509109440967052023855526967)
     p = unsafe_sub(shift(unsafe_mul(p, value), -96), 45023709667254063763336534515857)
     p = unsafe_sub(shift(unsafe_mul(p, value), -96), 14706773417378608786704636184526)
     p = unsafe_sub(unsafe_mul(p, value), shift(795164235651350426258249787498, 96))
 
-    # We leave p in 2**192 basis so we don't need to scale it back up for the division.
-    # q is monic by convention.
-    q: int256 = unsafe_add(shift(unsafe_mul(unsafe_add(value, 5573035233440673466300451813936), value), 96),\
-                71694874799317883764090561454958)
+    # We leave `p` in the "2 ** 192" base so that we do not have to scale it up
+    # again for the division. Note that `q` is monic by convention.
+    q: int256 = unsafe_add(shift(unsafe_mul(unsafe_add(value, 5573035233440673466300451813936), value), 96), 71694874799317883764090561454958)
     q = unsafe_add(shift(unsafe_mul(q, value), 96), 283447036172924575727196451306956)
     q = unsafe_add(shift(unsafe_mul(q, value), 96), 283447036172924575727196451306956)
     q = unsafe_add(shift(unsafe_mul(q, value), 96), 283447036172924575727196451306956)
     q = unsafe_add(shift(unsafe_mul(q, value), 96), 31853899698501571402653359427138)
     q = unsafe_add(shift(unsafe_mul(q, value), 96), 909429971244387300277376558375)
 
-    # The q polynomial is known not to have zeros in the domain.
-    # No scaling required because p is already 2**96 too large.
+    # It is known that the polynomial `q` has no zeros in the domain.
+    # No scaling required, as `p` is already "2 ** 96" too large. Also,
+    # `r` is in the range "(0, 0.125) * 2 ** 96" after the division.
     r: int256 = unsafe_div(p, q)
-    
-    # Finalization, we need to:
-    # - multiply by the scale factor s = 5.549…
-    # add ln(2**96 / 10**18)
-    # add k * ln(2)
-    # multiply by 10**18 / 2**96 = 5**18 >> 78
+
+    # To finalise the calculation, we have to proceed with the following steps:
+    #   - multiply by the scaling factor "s = 5.549...",
+    #   - add "ln(2 ** 96 / 10 ** 18)",
+    #   - add "k * ln(2)", and
+    #   - multiply by "10 ** 18 / 2 ** 96 = 5 ** 18 >> 78".
+    # In order to perform the most gas-efficient calculation, we carry out all
+    # these steps in one expression.
     return shift(unsafe_add(unsafe_add(unsafe_mul(r, 1677202110996718588342820967067443963516166),\
                  unsafe_mul(k, 16597577552685614221487285958193947469193820559219878177908093499208371)),\
                  600920179829731861736702779321621459595472258049074101567377883020018308), -174)
@@ -533,16 +535,16 @@ def _wad_cbrt(x: uint256) -> uint256:
     # Since this cube root is for numbers with base 1e18, we have to scale
     # the input by 1e36 to increase the precision. This leads to an overflow
     # for very large numbers. So we conditionally sacrifice precision.
-    xx: uint256 = empty(uint256)
+    value: uint256 = empty(uint256)
     if (x >= unsafe_mul(unsafe_div(max_value(uint256), 10 ** 36), 10 ** 18)):
-        xx = x
+        value = x
     elif (x >= unsafe_div(max_value(uint256), 10 ** 36)):
-        xx = unsafe_mul(x, 10 ** 18)
+        value = unsafe_mul(x, 10 ** 18)
     else:
-        xx = unsafe_mul(x, 10 ** 36)
+        value = unsafe_mul(x, 10 ** 36)
 
-    # Compute the binary logarithm of `xx`.
-    log2x: uint256 = self._log_2(xx, False)
+    # Compute the binary logarithm of `value`.
+    log2x: uint256 = self._log_2(value, False)
 
     # If we divide log2x by 3, the remainder is "log2x % 3". So if we simply
     # multiply "2 ** (log2x/3)" and discard the remainder to calculate our guess,
@@ -562,13 +564,13 @@ def _wad_cbrt(x: uint256) -> uint256:
     # and 8 would be one iteration too many. Without initial values, the iteration
     # number can be up to 20 or more. The iterations are unrolled. This reduces the
     # gas cost, but requires more bytecode.
-    y = unsafe_div(unsafe_add(unsafe_mul(2, y), unsafe_div(xx, unsafe_mul(y, y))), 3)
-    y = unsafe_div(unsafe_add(unsafe_mul(2, y), unsafe_div(xx, unsafe_mul(y, y))), 3)
-    y = unsafe_div(unsafe_add(unsafe_mul(2, y), unsafe_div(xx, unsafe_mul(y, y))), 3)
-    y = unsafe_div(unsafe_add(unsafe_mul(2, y), unsafe_div(xx, unsafe_mul(y, y))), 3)
-    y = unsafe_div(unsafe_add(unsafe_mul(2, y), unsafe_div(xx, unsafe_mul(y, y))), 3)
-    y = unsafe_div(unsafe_add(unsafe_mul(2, y), unsafe_div(xx, unsafe_mul(y, y))), 3)
-    y = unsafe_div(unsafe_add(unsafe_mul(2, y), unsafe_div(xx, unsafe_mul(y, y))), 3)
+    y = unsafe_div(unsafe_add(unsafe_mul(2, y), unsafe_div(value, unsafe_mul(y, y))), 3)
+    y = unsafe_div(unsafe_add(unsafe_mul(2, y), unsafe_div(value, unsafe_mul(y, y))), 3)
+    y = unsafe_div(unsafe_add(unsafe_mul(2, y), unsafe_div(value, unsafe_mul(y, y))), 3)
+    y = unsafe_div(unsafe_add(unsafe_mul(2, y), unsafe_div(value, unsafe_mul(y, y))), 3)
+    y = unsafe_div(unsafe_add(unsafe_mul(2, y), unsafe_div(value, unsafe_mul(y, y))), 3)
+    y = unsafe_div(unsafe_add(unsafe_mul(2, y), unsafe_div(value, unsafe_mul(y, y))), 3)
+    y = unsafe_div(unsafe_add(unsafe_mul(2, y), unsafe_div(value, unsafe_mul(y, y))), 3)
 
     # Since we scaled up, we have to scale down accordingly.
     if (x >= unsafe_mul(unsafe_div(max_value(uint256), 10 ** 36), 10 ** 18)):
