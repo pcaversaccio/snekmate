@@ -5,6 +5,7 @@ import {Test} from "forge-std/Test.sol";
 import {VyperDeployer} from "utils/VyperDeployer.sol";
 
 import {Math} from "openzeppelin/utils/math/Math.sol";
+import {wadExp, wadLn} from "solmate/utils/SignedWadMath.sol";
 import {FixedPointMathLib} from "solady/utils/FixedPointMathLib.sol";
 
 import {IMath} from "./interfaces/IMath.sol";
@@ -600,20 +601,28 @@ contract MathTest is Test {
 
     /**
      * @notice We use the `lnWad` function of solady as a benchmark:
-     * https://github.com/Vectorized/solady/blob/main/src/utils/FixedPointMathLib.sol.
+     * https://github.com/Vectorized/solady/blob/main/src/utils/FixedPointMathLib.sol,
+     * as well as the function `wadLn` of solmate:
+     * https://github.com/transmissions11/solmate/blob/main/src/utils/SignedWadMath.sol.
      */
     function testFuzzWadLn(int256 x) public {
         x = bound(x, 1, type(int256).max);
-        assertEq(math.wad_ln(x), FixedPointMathLib.lnWad(x));
+        int256 result = math.wad_ln(x);
+        assertEq(result, FixedPointMathLib.lnWad(x));
+        assertEq(result, wadLn(x));
     }
 
     /**
      * @notice We use the `expWad` function of solady as a benchmark:
-     * https://github.com/Vectorized/solady/blob/main/src/utils/FixedPointMathLib.sol.
+     * https://github.com/Vectorized/solady/blob/main/src/utils/FixedPointMathLib.sol,
+     * as well as the function `wadExp` of solmate:
+     * https://github.com/transmissions11/solmate/blob/main/src/utils/SignedWadMath.sol.
      */
     function testFuzzWadExp(int256 x) public {
         x = bound(x, type(int256).min, 135305999368893231588);
-        assertEq(math.wad_exp(x), FixedPointMathLib.expWad(x));
+        int256 result = math.wad_exp(x);
+        assertEq(result, FixedPointMathLib.expWad(x));
+        assertEq(result, wadExp(x));
     }
 
     function testFuzzCbrt(uint256 x, bool roundup) public {

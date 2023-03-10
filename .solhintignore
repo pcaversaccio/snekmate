@@ -1,6 +1,7 @@
 node_modules
 lib/murky
 lib/solady
+lib/solmate
 lib/prb-test
 lib/forge-std
 lib/create-util
