@@ -373,8 +373,13 @@ def wad_ln(x: int256) -> int256:
     # here and add "ln(2 ** 96 / 10 ** 18)" at the end.
 
     # Reduce the range of `x` to "(1, 2) * 2 ** 96".
-    # Also remember that "ln(2^k * x) = k * ln(2) + ln(x)" holds.
+    # Also remember that "ln(2 ** k * x) = k * ln(2) + ln(x)" holds.
     k: int256 = unsafe_sub(convert(self._log_2(convert(x, uint256), False), int256), 96)
+    # Note that to circumvent Vyper's safecast feature for the potentially
+    # negative expression `value <<= uint256(159 - k)`, we first convert the
+    # expression `value <<= uint256(159 - k)` to `bytes32` and subsequently
+    # to `uint256`. Remember that the EVM default behaviour is to use two's
+    # complement representation to handle signed integers.
     value = convert(shift(convert(convert(shift(value, unsafe_sub(159, k)), bytes32), uint256), -159), int256)
 
     # Evaluate using a "(8, 8)"-term rational approximation. Since `p` is monic,
@@ -471,6 +476,11 @@ def wad_exp(x: int256) -> int256:
     #   - the factor "1e18 / 2 ** 96" for the base conversion.
     # We do this all at once, with an intermediate result in "2**213" base,
     # so that the final right shift always gives a positive value.
+
+    # Note that to circumvent Vyper's safecast feature for the potentially
+    # negative parameter value `r`, we first convert `r` to `bytes32` and
+    # subsequently to `uint256`. Remember that the EVM default behaviour is
+    # to use two's complement representation to handle signed integers.
     return convert(shift(unsafe_mul(convert(convert(r, bytes32), uint256), 3822833074963236453042738258902158003155416615667), -unsafe_sub(195, k)), int256)
 
 
@@ -627,7 +637,7 @@ def _wad_cbrt(x: uint256) -> uint256:
     # Since we scaled up, we have to scale down accordingly.
     if (x >= unsafe_mul(unsafe_div(max_value(uint256), 10 ** 36), 10 ** 18)):
         return unsafe_mul(y, 10 ** 12)
-    elif x >= unsafe_div(max_value(uint256), 10 ** 36):
+    elif (x >= unsafe_div(max_value(uint256), 10 ** 36)):
         return unsafe_mul(y, 10 ** 6)
     else:
         return y
