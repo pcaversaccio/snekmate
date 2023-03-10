@@ -1,5 +1,7 @@
 utils/=lib/utils/
 murky/=lib/murky/src/
+solady/=lib/solady/src/
+solmate/=lib/solmate/src/
 prb/test/=lib/prb-test/src/
 forge-std/=lib/forge-std/src/
 erc4626-tests/=lib/erc4626-tests/

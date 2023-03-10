@@ -4,6 +4,10 @@ pragma solidity ^0.8.19;
 import {Test} from "forge-std/Test.sol";
 import {VyperDeployer} from "utils/VyperDeployer.sol";
 
+import {Math} from "openzeppelin/utils/math/Math.sol";
+import {wadExp, wadLn} from "solmate/utils/SignedWadMath.sol";
+import {FixedPointMathLib} from "solady/utils/FixedPointMathLib.sol";
+
 import {IMath} from "./interfaces/IMath.sol";
 
 contract MathTest is Test {
@@ -109,6 +113,57 @@ contract MathTest is Test {
         math = IMath(vyperDeployer.deployContract("src/utils/", "Math"));
     }
 
+    function testUint256Average() public {
+        assertEq(math.uint256_average(83219, 219713), 151466);
+        assertEq(math.uint256_average(73220, 419712), 246466);
+        assertEq(math.uint256_average(83219, 419712), 251465);
+        assertEq(math.uint256_average(73220, 219713), 146466);
+        assertEq(
+            math.uint256_average(type(uint256).max, type(uint256).max),
+            type(uint256).max
+        );
+    }
+
+    function testInt256Average() public {
+        assertEq(math.int256_average(83219, 219713), 151466);
+        assertEq(math.int256_average(-83219, -219713), -151466);
+
+        assertEq(math.int256_average(-73220, 419712), 173246);
+        assertEq(math.int256_average(73220, -419712), -173246);
+
+        assertEq(math.int256_average(83219, -419712), -168247);
+        assertEq(math.int256_average(-83219, 419712), 168246);
+
+        assertEq(math.int256_average(73220, 219713), 146466);
+        assertEq(math.int256_average(-73220, -219713), -146467);
+
+        assertEq(
+            math.int256_average(type(int256).min, type(int256).min),
+            type(int256).min
+        );
+        assertEq(math.int256_average(type(int256).min, type(int256).max), -1);
+    }
+
+    function testCeilDiv() public {
+        assertEq(math.ceil_div(0, 8), 0);
+        assertEq(math.ceil_div(12, 6), 2);
+        assertEq(math.ceil_div(123, 17), 8);
+        assertEq(math.ceil_div(type(uint256).max, 2), 1 << 255);
+        assertEq(math.ceil_div(type(uint256).max, 1), type(uint256).max);
+        vm.expectRevert(bytes("Math: ceil_div division by zero"));
+        math.ceil_div(1, 0);
+    }
+
+    function testIsNegative() public {
+        assertEq(math.is_negative(0), false);
+        assertEq(math.is_negative(-1), true);
+        assertEq(math.is_negative(-1 * -1), false);
+        assertEq(math.is_negative(-1 * 100), true);
+        assertEq(math.is_negative(0 * -1), false);
+        assertEq(math.is_negative(int256(type(int16).min) * 2), true);
+        assertEq(math.is_negative(type(int256).min + type(int16).max), true);
+    }
+
     function testMulDivDivisionByZero() public {
         vm.expectRevert(bytes("Math: mul_div division by zero"));
         math.mul_div(1, 1, 0, false);
@@ -172,47 +227,6 @@ contract MathTest is Test {
             math.mul_div(maxUint256, maxUint256, maxUint256, true),
             maxUint256
         );
-    }
-
-    function testUint256Average() public {
-        assertEq(math.uint256_average(83219, 219713), 151466);
-        assertEq(math.uint256_average(73220, 419712), 246466);
-        assertEq(math.uint256_average(83219, 419712), 251465);
-        assertEq(math.uint256_average(73220, 219713), 146466);
-        assertEq(
-            math.uint256_average(type(uint256).max, type(uint256).max),
-            type(uint256).max
-        );
-    }
-
-    function testInt256Average() public {
-        assertEq(math.int256_average(83219, 219713), 151466);
-        assertEq(math.int256_average(-83219, -219713), -151466);
-
-        assertEq(math.int256_average(-73220, 419712), 173246);
-        assertEq(math.int256_average(73220, -419712), -173246);
-
-        assertEq(math.int256_average(83219, -419712), -168247);
-        assertEq(math.int256_average(-83219, 419712), 168246);
-
-        assertEq(math.int256_average(73220, 219713), 146466);
-        assertEq(math.int256_average(-73220, -219713), -146467);
-
-        assertEq(
-            math.int256_average(type(int256).min, type(int256).min),
-            type(int256).min
-        );
-        assertEq(math.int256_average(type(int256).min, type(int256).max), -1);
-    }
-
-    function testCeilDiv() public {
-        assertEq(math.ceil_div(0, 8), 0);
-        assertEq(math.ceil_div(12, 6), 2);
-        assertEq(math.ceil_div(123, 17), 8);
-        assertEq(math.ceil_div(type(uint256).max, 2), 1 << 255);
-        assertEq(math.ceil_div(type(uint256).max, 1), type(uint256).max);
-        vm.expectRevert(bytes("Math: ceil_div division by zero"));
-        math.ceil_div(1, 0);
     }
 
     function testLog2RoundDown() public {
@@ -301,6 +315,62 @@ contract MathTest is Test {
         assertEq(math.log_256(type(uint256).max, true), 32);
     }
 
+    function testWadLn() public {
+        assertEq(math.wad_ln(0), 0);
+        assertEq(math.wad_ln(10 ** 18), 0);
+        assertEq(math.wad_ln(1), -41446531673892822313);
+        assertEq(math.wad_ln(42), -37708862055609454007);
+        assertEq(math.wad_ln(10 ** 4), -32236191301916639577);
+        assertEq(math.wad_ln(10 ** 9), -20723265836946411157);
+        assertEq(math.wad_ln(2718281828459045235), 999999999999999999);
+        assertEq(math.wad_ln(11723640096265400935), 2461607324344817918);
+        assertEq(math.wad_ln(2 ** 128), 47276307437780177293);
+        assertEq(math.wad_ln(2 ** 170), 76388489021297880288);
+        assertEq(math.wad_ln(type(int256).max), 135305999368893231589);
+    }
+
+    function testWadLnNegativeValues() public {
+        vm.expectRevert(bytes("Math: wad_ln undefined"));
+        math.wad_ln(-1);
+        vm.expectRevert(bytes("Math: wad_ln undefined"));
+        math.wad_ln(type(int256).min);
+    }
+
+    function testWadExp() public {
+        assertEq(math.wad_exp(-42139678854452767551), 0);
+        assertEq(math.wad_exp(-3 * 10 ** 18), 49787068367863942);
+        assertEq(math.wad_exp(-2 * 10 ** 18), 135335283236612691);
+        assertEq(math.wad_exp(-1 * 10 ** 18), 367879441171442321);
+        assertEq(math.wad_exp(-0.5 * 10 ** 18), 606530659712633423);
+        assertEq(math.wad_exp(-0.3 * 10 ** 18), 740818220681717866);
+        assertEq(math.wad_exp(0), 10 ** 18);
+        assertEq(math.wad_exp(0.3 * 10 ** 18), 1349858807576003103);
+        assertEq(math.wad_exp(0.5 * 10 ** 18), 1648721270700128146);
+        assertEq(math.wad_exp(1 * 10 ** 18), 2718281828459045235);
+        assertEq(math.wad_exp(2 * 10 ** 18), 7389056098930650227);
+        assertEq(math.wad_exp(3 * 10 ** 18), 20085536923187667741);
+        assertEq(math.wad_exp(10 * 10 ** 18), 22026465794806716516980);
+        assertEq(
+            math.wad_exp(50 * 10 ** 18),
+            5184705528587072464148529318587763226117
+        );
+        assertEq(
+            math.wad_exp(100 * 10 ** 18),
+            26881171418161354484134666106240937146178367581647816351662017
+        );
+        assertEq(
+            math.wad_exp(135305999368893231588),
+            57896044618658097650144101621524338577433870140581303254786265309376407432913
+        );
+    }
+
+    function testWadExpOverflow() public {
+        vm.expectRevert(bytes("Math: wad_exp overflow"));
+        math.wad_exp(135305999368893231589);
+        vm.expectRevert(bytes("Math: wad_exp overflow"));
+        math.wad_exp(type(int256).max);
+    }
+
     function testCbrtRoundDown() public {
         assertEq(math.cbrt(0, false), 0);
         assertEq(math.cbrt(1, false), 1);
@@ -370,14 +440,45 @@ contract MathTest is Test {
         );
     }
 
-    function testIsNegative() public {
-        assertEq(math.is_negative(0), false);
-        assertEq(math.is_negative(-1), true);
-        assertEq(math.is_negative(-1 * -1), false);
-        assertEq(math.is_negative(-1 * 100), true);
-        assertEq(math.is_negative(0 * -1), false);
-        assertEq(math.is_negative(int256(type(int16).min) * 2), true);
-        assertEq(math.is_negative(type(int256).min + type(int16).max), true);
+    /**
+     * @notice We use the `average` function of OpenZeppelin as a benchmark:
+     * https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/math/Math.sol.
+     */
+    function testFuzzUint256Average(uint256 x, uint256 y) public {
+        assertEq(math.uint256_average(x, y), Math.average(x, y));
+    }
+
+    /**
+     * @notice We use the `avg` function of solady as a benchmark:
+     * https://github.com/Vectorized/solady/blob/main/src/utils/FixedPointMathLib.sol.
+     */
+    function testFuzzInt256Average(int256 x, int256 y) public {
+        assertEq(math.int256_average(x, y), FixedPointMathLib.avg(x, y));
+    }
+
+    /**
+     * @notice Forked and adjusted accordingly from here:
+     * https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/test/utils/math/Math.t.sol.
+     */
+    function testFuzzCeilDiv(uint256 x, uint256 y) public {
+        vm.assume(y > 0);
+        uint256 result = math.ceil_div(x, y);
+        if (result == 0) {
+            assertEq(x, 0);
+        } else {
+            uint256 maxDiv = type(uint256).max / y;
+            bool overflow = maxDiv * y < x;
+            assertTrue(x > y * (result - 1));
+            assertTrue(overflow ? result == maxDiv + 1 : x <= y * result);
+        }
+    }
+
+    function testFuzzIsNegative(int256 x) public {
+        if (x >= 0) {
+            assertEq(math.is_negative(x), false);
+        } else {
+            assertEq(math.is_negative(x), true);
+        }
     }
 
     /**
@@ -442,42 +543,6 @@ contract MathTest is Test {
     }
 
     /**
-     * @notice We use the `average` function of OpenZeppelin as a benchmark:
-     * https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/math/Math.sol.
-     */
-    function testFuzzUint256Average(uint256 x, uint256 y) public {
-        assertEq(math.uint256_average(x, y), (x & y) + ((x ^ y) / 2));
-    }
-
-    /**
-     * @notice We use the `avg` function of solady as a benchmark:
-     * https://github.com/Vectorized/solady/blob/main/src/utils/FixedPointMathLib.sol.
-     */
-    function testFuzzInt256Average(int256 x, int256 y) public {
-        assertEq(
-            math.int256_average(x, y),
-            (x >> 1) + (y >> 1) + (((x & 1) + (y & 1)) >> 1)
-        );
-    }
-
-    /**
-     * @notice Forked and adjusted accordingly from here:
-     * https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/test/utils/math/Math.t.sol.
-     */
-    function testFuzzCeilDiv(uint256 x, uint256 y) public {
-        vm.assume(y > 0);
-        uint256 result = math.ceil_div(x, y);
-        if (result == 0) {
-            assertEq(x, 0);
-        } else {
-            uint256 maxDiv = type(uint256).max / y;
-            bool overflow = maxDiv * y < x;
-            assertTrue(x > y * (result - 1));
-            assertTrue(overflow ? result == maxDiv + 1 : x <= y * result);
-        }
-    }
-
-    /**
      * @notice Forked and adjusted accordingly from here:
      * https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/test/utils/math/Math.t.sol.
      */
@@ -534,6 +599,32 @@ contract MathTest is Test {
         }
     }
 
+    /**
+     * @notice We use the `lnWad` function of solady as a benchmark:
+     * https://github.com/Vectorized/solady/blob/main/src/utils/FixedPointMathLib.sol,
+     * as well as the function `wadLn` of solmate:
+     * https://github.com/transmissions11/solmate/blob/main/src/utils/SignedWadMath.sol.
+     */
+    function testFuzzWadLn(int256 x) public {
+        x = bound(x, 1, type(int256).max);
+        int256 result = math.wad_ln(x);
+        assertEq(result, FixedPointMathLib.lnWad(x));
+        assertEq(result, wadLn(x));
+    }
+
+    /**
+     * @notice We use the `expWad` function of solady as a benchmark:
+     * https://github.com/Vectorized/solady/blob/main/src/utils/FixedPointMathLib.sol,
+     * as well as the function `wadExp` of solmate:
+     * https://github.com/transmissions11/solmate/blob/main/src/utils/SignedWadMath.sol.
+     */
+    function testFuzzWadExp(int256 x) public {
+        x = bound(x, type(int256).min, 135305999368893231588);
+        int256 result = math.wad_exp(x);
+        assertEq(result, FixedPointMathLib.expWad(x));
+        assertEq(result, wadExp(x));
+    }
+
     function testFuzzCbrt(uint256 x, bool roundup) public {
         uint256 result = math.cbrt(x, roundup);
         uint256 floor = floorCbrt(x);
@@ -552,13 +643,5 @@ contract MathTest is Test {
             result >= floor * 10 ** 12 && result <= (floor + 1) * 10 ** 12
         );
         assertEq(result / 10 ** 12, floor);
-    }
-
-    function testFuzzIsNegative(int256 x) public {
-        if (x >= 0) {
-            assertEq(math.is_negative(x), false);
-        } else {
-            assertEq(math.is_negative(x), true);
-        }
     }
 }

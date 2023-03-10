@@ -7,7 +7,22 @@
 @notice These functions implement standard mathematical utility
         functions that are missing in the Vyper language. If a
         function is inspired by an existing implementation, it
-        is properly referenced in the function docstring.
+        is properly referenced in the function docstring. The
+        following functions have been added for convenience:
+        - `uint256_average` (`external` `pure` function),
+        - `int256_average` (`external` `pure` function),
+        - `ceil_div` (`external` `pure` function),
+        - `is_negative` (`external` `pure` function),
+        - `mul_div` (`external` `pure` function),
+        - `log_2` (`external` `pure` function),
+        - `log_10` (`external` `pure` function),
+        - `log_256` (`external` `pure` function),
+        - `wad_ln` (`external` `pure` function),
+        - `wad_exp` (`external` `pure` function),
+        - `cbrt` (`external` `pure` function),
+        - `wad_cbrt` (`external` `pure` function),
+        - `_log_2` (`internal` `pure` function),
+        - `_wad_cbrt` (`internal` `pure` function).
 """
 
 
@@ -20,6 +35,71 @@ def __init__():
          is declared as `payable`.
     """
     pass
+
+
+@external
+@pure
+def uint256_average(x: uint256, y: uint256) -> uint256:
+    """
+    @dev Returns the average of two 32-byte unsigned integers.
+    @notice Note that the result is rounded towards zero. For
+            more details on finding the average of two unsigned
+            integers without an overflow, please refer to:
+            https://devblogs.microsoft.com/oldnewthing/20220207-00/?p=106223.
+    @param x The first 32-byte unsigned integer of the data set.
+    @param y The second 32-byte unsigned integer of the data set.
+    @return uint256 The 32-byte average (rounded towards zero) of
+            `x` and `y`.
+    """
+    return unsafe_add(x & y, shift(x ^ y, -1))
+
+
+@external
+@pure
+def int256_average(x: int256, y: int256) -> int256:
+    """
+    @dev Returns the average of two 32-byte signed integers.
+    @notice Note that the result is rounded towards infinity.
+            For more details on finding the average of two signed
+            integers without an overflow, please refer to:
+            https://patents.google.com/patent/US6007232A/en.
+    @param x The first 32-byte signed integer of the data set.
+    @param y The second 32-byte signed integer of the data set.
+    @return int256 The 32-byte average (rounded towards infinity)
+            of `x` and `y`.
+    """
+    return unsafe_add(unsafe_add(shift(x, -1), shift(y, -1)), x & y & 1)
+
+
+@external
+@pure
+def ceil_div(x: uint256, y: uint256) -> uint256:
+    """
+    @dev Calculates "ceil(x / y)" for any strictly positive `y`.
+    @notice The implementation is inspired by OpenZeppelin's
+            implementation here:
+            https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/math/Math.sol.
+    @param x The 32-byte numerator.
+    @param y The 32-byte denominator.
+    @return uint256 The 32-byte rounded up result of "x/y".
+    """
+    assert y != empty(uint256), "Math: ceil_div division by zero"
+    if (x == empty(uint256)):
+        return empty(uint256)
+    else:
+        return unsafe_add(unsafe_div(x - 1, y), 1)
+
+
+@external
+@pure
+def is_negative(x: int256) -> bool:
+    """
+    @dev Returns `True` if a 32-byte signed integer is negative.
+    @notice Note that this function returns `False` for 0.
+    @param x The 32-byte signed integer variable.
+    @return bool The verification whether `x` is negative or not.
+    """
+    return (x ^ 1 < empty(int256))
 
 
 @external
@@ -146,59 +226,6 @@ def mul_div(x: uint256, y: uint256, denominator: uint256, roundup: bool) -> uint
 
 @external
 @pure
-def uint256_average(x: uint256, y: uint256) -> uint256:
-    """
-    @dev Returns the average of two 32-byte unsigned integers.
-    @notice Note that the result is rounded towards zero. For
-            more details on finding the average of two unsigned
-            integers without an overflow, please refer to:
-            https://devblogs.microsoft.com/oldnewthing/20220207-00/?p=106223.
-    @param x The first 32-byte unsigned integer of the data set.
-    @param y The second 32-byte unsigned integer of the data set.
-    @return uint256 The 32-byte average (rounded towards zero) of
-            `x` and `y`.
-    """
-    return unsafe_add(x & y, shift(x ^ y, -1))
-
-
-@external
-@pure
-def int256_average(x: int256, y: int256) -> int256:
-    """
-    @dev Returns the average of two 32-byte signed integers.
-    @notice Note that the result is rounded towards infinity.
-            For more details on finding the average of two signed
-            integers without an overflow, please refer to:
-            https://patents.google.com/patent/US6007232A/en.
-    @param x The first 32-byte signed integer of the data set.
-    @param y The second 32-byte signed integer of the data set.
-    @return uint256 The 32-byte average (rounded towards infinity)
-            of `x` and `y`.
-    """
-    return unsafe_add(unsafe_add(shift(x, -1), shift(y, -1)), x & y & 1)
-
-
-@external
-@pure
-def ceil_div(x: uint256, y: uint256) -> uint256:
-    """
-    @dev Calculates "ceil(x / y)" for any strictly positive `y`.
-    @notice The implementation is inspired by OpenZeppelin's
-            implementation here:
-            https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/math/Math.sol.
-    @param x The 32-byte numerator.
-    @param y The 32-byte denominator.
-    @return uint256 The 32-byte rounded up result of "x/y".
-    """
-    assert y != empty(uint256), "Math: ceil_div division by zero"
-    if (x == empty(uint256)):
-        return empty(uint256)
-    else:
-        return unsafe_add(unsafe_div(x - 1, y), 1)
-
-
-@external
-@pure
 def log_2(x: uint256, roundup: bool) -> uint256:
     """
     @dev Returns the log in base 2 of `x`, following the selected
@@ -211,44 +238,12 @@ def log_2(x: uint256, roundup: bool) -> uint256:
            to round up or not. The default `False` is round down.
     @return uint256 The 32-byte calculation result.
     """
-    value: uint256 = x
-    result: uint256 = empty(uint256)
-
+    # For the special case `x == 0` we already return 0 here in order
+    # not to iterate through the remaining code.
     if (x == empty(uint256)):
-        # For the special case `x == 0` we already return 0 here in order
-        # not to iterate through the remaining code.
         return empty(uint256)
 
-    # The following lines cannot overflow because we have the well-known
-    # decay behaviour of `log_2(max_value(uint256)) < max_value(uint256)`.
-    if (shift(x, -128) != empty(uint256)):
-        value = shift(x, -128)
-        result = 128
-    if (shift(value, -64) != empty(uint256)):
-        value = shift(value, -64)
-        result = unsafe_add(result, 64)
-    if (shift(value, -32) != empty(uint256)):
-        value = shift(value, -32)
-        result = unsafe_add(result, 32)
-    if (shift(value, -16) != empty(uint256)):
-        value = shift(value, -16)
-        result = unsafe_add(result, 16)
-    if (shift(value, -8) != empty(uint256)):
-        value = shift(value, -8)
-        result = unsafe_add(result, 8)
-    if (shift(value, -4) != empty(uint256)):
-        value = shift(value, -4)
-        result = unsafe_add(result, 4)
-    if (shift(value, -2) != empty(uint256)):
-        value = shift(value, -2)
-        result = unsafe_add(result, 2)
-    if (shift(value, -1) != empty(uint256)):
-        result = unsafe_add(result, 1)
-
-    if (roundup and (shift(1, convert(result, int256)) < x)):
-        result = unsafe_add(result, 1)
-
-    return result
+    return self._log_2(x, roundup)
 
 
 @external
@@ -268,9 +263,9 @@ def log_10(x: uint256, roundup: bool) -> uint256:
     value: uint256 = x
     result: uint256 = empty(uint256)
 
+    # For the special case `x == 0` we already return 0 here in order
+    # not to iterate through the remaining code.
     if (x == empty(uint256)):
-        # For the special case `x == 0` we already return 0 here in order
-        # not to iterate through the remaining code.
         return empty(uint256)
 
     # The following lines cannot overflow because we have the well-known
@@ -321,9 +316,9 @@ def log_256(x: uint256, roundup: bool) -> uint256:
     value: uint256 = x
     result: uint256 = empty(uint256)
 
+    # For the special case `x == 0` we already return 0 here in order
+    # not to iterate through the remaining code.
     if (x == empty(uint256)):
-        # For the special case `x == 0` we already return 0 here in order
-        # not to iterate through the remaining code.
         return empty(uint256)
 
     # The following lines cannot overflow because we have the well-known
@@ -350,11 +345,151 @@ def log_256(x: uint256, roundup: bool) -> uint256:
 
 
 @external
-@view
+@pure
+def wad_ln(x: int256) -> int256:
+    """
+    @dev Calculates the natural logarithm of a signed integer with a
+         precision of 1e18.
+    @notice Note that it returns 0 if given 0. Furthermore, this function
+            consumes about 1,400 to 1,650 gas units depending on the value
+            of `x`. The implementation is inspired by Remco Bloemen's
+            implementation under the MIT license here:
+            https://xn--2-umb.com/22/exp-ln.
+    @param x The 32-byte variable.
+    @return int256 The 32-byte calculation result.
+    """
+    value: int256 = x
+
+    assert x >= empty(int256), "Math: wad_ln undefined"
+
+    # For the special case `x == 0` we already return 0 here in order
+    # not to iterate through the remaining code.
+    if (x == empty(int256)):
+        return empty(int256)
+
+    # We want to convert `x` from "10 ** 18" fixed point to "2 ** 96"
+    # fixed point. We do this by multiplying by "2 ** 96 / 10 ** 18".
+    # But since "ln(x * C) = ln(x) + ln(C)" holds, we can just do nothing
+    # here and add "ln(2 ** 96 / 10 ** 18)" at the end.
+
+    # Reduce the range of `x` to "(1, 2) * 2 ** 96".
+    # Also remember that "ln(2 ** k * x) = k * ln(2) + ln(x)" holds.
+    k: int256 = unsafe_sub(convert(self._log_2(convert(x, uint256), False), int256), 96)
+    # Note that to circumvent Vyper's safecast feature for the potentially
+    # negative expression `value <<= uint256(159 - k)`, we first convert the
+    # expression `value <<= uint256(159 - k)` to `bytes32` and subsequently
+    # to `uint256`. Remember that the EVM default behaviour is to use two's
+    # complement representation to handle signed integers.
+    value = convert(shift(convert(convert(shift(value, unsafe_sub(159, k)), bytes32), uint256), -159), int256)
+
+    # Evaluate using a "(8, 8)"-term rational approximation. Since `p` is monic,
+    # we will multiply by a scaling factor later.
+    p: int256 = unsafe_add(shift(unsafe_mul(unsafe_add(value, 3273285459638523848632254066296), value), -96), 24828157081833163892658089445524)
+    p = unsafe_add(shift(unsafe_mul(p, value), -96), 43456485725739037958740375743393)
+    p = unsafe_sub(shift(unsafe_mul(p, value), -96), 11111509109440967052023855526967)
+    p = unsafe_sub(shift(unsafe_mul(p, value), -96), 45023709667254063763336534515857)
+    p = unsafe_sub(shift(unsafe_mul(p, value), -96), 14706773417378608786704636184526)
+    p = unsafe_sub(unsafe_mul(p, value), shift(795164235651350426258249787498, 96))
+
+    # We leave `p` in the "2 ** 192" base so that we do not have to scale it up
+    # again for the division. Note that `q` is monic by convention.
+    q: int256 = unsafe_add(shift(unsafe_mul(unsafe_add(value, 5573035233440673466300451813936), value), -96), 71694874799317883764090561454958)
+    q = unsafe_add(shift(unsafe_mul(q, value), -96), 283447036172924575727196451306956)
+    q = unsafe_add(shift(unsafe_mul(q, value), -96), 401686690394027663651624208769553)
+    q = unsafe_add(shift(unsafe_mul(q, value), -96), 204048457590392012362485061816622)
+    q = unsafe_add(shift(unsafe_mul(q, value), -96), 31853899698501571402653359427138)
+    q = unsafe_add(shift(unsafe_mul(q, value), -96), 909429971244387300277376558375)
+
+    # It is known that the polynomial `q` has no zeros in the domain.
+    # No scaling is required, as `p` is already "2 ** 96" too large. Also,
+    # `r` is in the range "(0, 0.125) * 2 ** 96" after the division.
+    r: int256 = unsafe_div(p, q)
+
+    # To finalise the calculation, we have to proceed with the following steps:
+    #   - multiply by the scaling factor "s = 5.549...",
+    #   - add "ln(2 ** 96 / 10 ** 18)",
+    #   - add "k * ln(2)", and
+    #   - multiply by "10 ** 18 / 2 ** 96 = 5 ** 18 >> 78".
+    # In order to perform the most gas-efficient calculation, we carry out all
+    # these steps in one expression.
+    return shift(unsafe_add(unsafe_add(unsafe_mul(r, 1677202110996718588342820967067443963516166),\
+                 unsafe_mul(k, 16597577552685614221487285958193947469193820559219878177908093499208371)),\
+                 600920179829731861736702779321621459595472258049074101567377883020018308), -174)
+
+
+@external
+@pure
+def wad_exp(x: int256) -> int256:
+    """
+    @dev Calculates the natural exponential function of a signed integer with
+         a precision of 1e18.
+    @notice Note that this function consumes about 810 gas units. The implementation
+            is inspired by Remco Bloemen's implementation under the MIT license here:
+            https://xn--2-umb.com/22/exp-ln.
+    @param x The 32-byte variable.
+    @return int256 The 32-byte calculation result.
+    """
+    value: int256 = x
+
+    # If the result is `< 0.5`, we return zero. This happens when we have the following:
+    # "x <= floor(log(0.5e18) * 1e18) ~ -42e18".
+    if (x <= -42139678854452767551):
+        return empty(int256)
+
+    # When the result is "> (2 ** 255 - 1) / 1e18" we cannot represent it as a signed integer.
+    # This happens when "x >= floor(log((2 ** 255 - 1) / 1e18) * 1e18) ~ 135".
+    assert x < 135305999368893231589, "Math: wad_exp overflow"
+
+    # `x` is now in the range "(-42, 136) * 1e18". Convert to "(-42, 136) * 2 ** 96" for higher
+    # intermediate precision and a binary base. This base conversion is a multiplication with
+    # "1e18 / 2 ** 96 = 5 ** 18 / 2 ** 78".
+    value = unsafe_div(shift(x, 78), 5 ** 18)
+
+    # Reduce the range of `x` to "(-½ ln 2, ½ ln 2) * 2 ** 96" by factoring out powers of two
+    # so that "exp(x) = exp(x') * 2 ** k", where `k` is a signer integer. Solving this gives
+    # "k = round(x / log(2))" and "x' = x - k * log(2)". Thus, `k` is in the range "[-61, 195]".
+    k: int256 = shift(unsafe_add(unsafe_div(shift(value, 96), 54916777467707473351141471128), 2 ** 95), -96)
+    value = unsafe_sub(value, unsafe_mul(k, 54916777467707473351141471128))
+
+    # Evaluate using a "(6, 7)"-term rational approximation. Since `p` is monic,
+    # we will multiply by a scaling factor later.
+    y: int256 = unsafe_add(shift(unsafe_mul(unsafe_add(value, 1346386616545796478920950773328), value), -96), 57155421227552351082224309758442)
+    p: int256 = unsafe_add(unsafe_mul(unsafe_add(shift(unsafe_mul(unsafe_sub(unsafe_add(y, value), 94201549194550492254356042504812), y), -96),\
+                           28719021644029726153956944680412240), value), shift(4385272521454847904659076985693276, 96))
+
+    # We leave `p` in the "2 ** 192" base so that we do not have to scale it up
+    # again for the division.
+    q: int256 = unsafe_add(shift(unsafe_mul(unsafe_sub(value, 2855989394907223263936484059900), value), -96), 50020603652535783019961831881945)
+    q = unsafe_sub(shift(unsafe_mul(q, value), -96), 533845033583426703283633433725380)
+    q = unsafe_add(shift(unsafe_mul(q, value), -96), 3604857256930695427073651918091429)
+    q = unsafe_sub(shift(unsafe_mul(q, value), -96), 14423608567350463180887372962807573)
+    q = unsafe_add(shift(unsafe_mul(q, value), -96), 26449188498355588339934803723976023)
+
+    # The polynomial `q` has no zeros in the range because all its roots are complex.
+    # No scaling is required, as `p` is already "2 ** 96" too large. Also,
+    # `r` is in the range "(0.09, 0.25) * 2**96" after the division.
+    r: int256 = unsafe_div(p, q)
+
+    # To finalise the calculation, we have to multiply `r` by:
+    #   - the scale factor "s = ~6.031367120",
+    #   - the factor "2 ** k" from the range reduction, and
+    #   - the factor "1e18 / 2 ** 96" for the base conversion.
+    # We do this all at once, with an intermediate result in "2**213" base,
+    # so that the final right shift always gives a positive value.
+
+    # Note that to circumvent Vyper's safecast feature for the potentially
+    # negative parameter value `r`, we first convert `r` to `bytes32` and
+    # subsequently to `uint256`. Remember that the EVM default behaviour is
+    # to use two's complement representation to handle signed integers.
+    return convert(shift(unsafe_mul(convert(convert(r, bytes32), uint256), 3822833074963236453042738258902158003155416615667), -unsafe_sub(195, k)), int256)
+
+
+@external
+@pure
 def cbrt(x: uint256, roundup: bool) -> uint256:
     """
     @dev Calculates the cube root of an unsigned integer.
-    @notice Note that this function consumes about 1,950 to 2,050 gas units
+    @notice Note that this function consumes about 1,600 to 1,800 gas units
             depending on the value of `x` and `roundup`. The implementation is
             inspired by Curve Finance's implementation under the MIT license here:
             https://github.com/curvefi/tricrypto-ng/blob/main/contracts/CurveCryptoMathOptimized3.vy.
@@ -363,9 +498,9 @@ def cbrt(x: uint256, roundup: bool) -> uint256:
            to round up or not. The default `False` is round down.
     @return The 32-byte cube root of `x`.
     """
+    # For the special case `x == 0` we already return 0 here in order
+    # not to iterate through the remaining code.
     if (x == empty(uint256)):
-        # For the special case `x == 0` we already return 0 here in order
-        # not to iterate through the remaining code.
         return empty(uint256)
 
     y: uint256 = unsafe_div(self._wad_cbrt(x), 10 ** 12)
@@ -382,31 +517,68 @@ def wad_cbrt(x: uint256) -> uint256:
     """
     @dev Calculates the cube root of an unsigned integer with a precision
          of 1e18.
-    @notice Note that this function consumes about 1,850 to 1,950 gas units
+    @notice Note that this function consumes about 1,500 to 1,700 gas units
             depending on the value of `x`. The implementation is inspired
             by Curve Finance's implementation under the MIT license here:
             https://github.com/curvefi/tricrypto-ng/blob/main/contracts/CurveCryptoMathOptimized3.vy.
     @param x The 32-byte variable from which the cube root is calculated.
     @return The 32-byte cubic root of `x` with a precision of 1e18.
     """
+    # For the special case `x == 0` we already return 0 here in order
+    # not to iterate through the remaining code.
     if (x == empty(uint256)):
-        # For the special case `x == 0` we already return 0 here in order
-        # not to iterate through the remaining code.
         return empty(uint256)
 
     return self._wad_cbrt(x)
 
 
-@external
+@internal
 @pure
-def is_negative(x: int256) -> bool:
+def _log_2(x: uint256, roundup: bool) -> uint256:
     """
-    @dev Returns `True` if a 32-byte signed integer is negative.
-    @notice Note that this function returns `False` for 0.
-    @param x The 32-byte signed integer variable.
-    @return bool The verification whether `x` is negative or not.
+    @dev An `internal` helper function that returns the log in base 2
+         of `x`, following the selected rounding direction.
+    @notice Note that it returns 0 if given 0. The implementation is
+            inspired by OpenZeppelin's implementation here:
+            https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/math/Math.sol.
+    @param x The 32-byte variable.
+    @param roundup The Boolean variable that specifies whether
+           to round up or not. The default `False` is round down.
+    @return uint256 The 32-byte calculation result.
     """
-    return (x ^ 1 < empty(int256))
+    value: uint256 = x
+    result: uint256 = empty(uint256)
+
+    # The following lines cannot overflow because we have the well-known
+    # decay behaviour of `log_2(max_value(uint256)) < max_value(uint256)`.
+    if (shift(x, -128) != empty(uint256)):
+        value = shift(x, -128)
+        result = 128
+    if (shift(value, -64) != empty(uint256)):
+        value = shift(value, -64)
+        result = unsafe_add(result, 64)
+    if (shift(value, -32) != empty(uint256)):
+        value = shift(value, -32)
+        result = unsafe_add(result, 32)
+    if (shift(value, -16) != empty(uint256)):
+        value = shift(value, -16)
+        result = unsafe_add(result, 16)
+    if (shift(value, -8) != empty(uint256)):
+        value = shift(value, -8)
+        result = unsafe_add(result, 8)
+    if (shift(value, -4) != empty(uint256)):
+        value = shift(value, -4)
+        result = unsafe_add(result, 4)
+    if (shift(value, -2) != empty(uint256)):
+        value = shift(value, -2)
+        result = unsafe_add(result, 2)
+    if (shift(value, -1) != empty(uint256)):
+        result = unsafe_add(result, 1)
+
+    if (roundup and (shift(1, convert(result, int256)) < x)):
+        result = unsafe_add(result, 1)
+
+    return result
 
 
 @internal
@@ -415,7 +587,7 @@ def _wad_cbrt(x: uint256) -> uint256:
     """
     @dev An `internal` helper function that calculates the cube root of an
          unsigned integer with a precision of 1e18.
-    @notice Note that this function consumes about 1,800 to 1,850 gas units
+    @notice Note that this function consumes about 1,450 to 1,650 gas units
             depending on the value of `x`. The implementation is inspired
             by Curve Finance's implementation under the MIT license here:
             https://github.com/curvefi/tricrypto-ng/blob/main/contracts/CurveCryptoMathOptimized3.vy.
@@ -425,38 +597,16 @@ def _wad_cbrt(x: uint256) -> uint256:
     # Since this cube root is for numbers with base 1e18, we have to scale
     # the input by 1e36 to increase the precision. This leads to an overflow
     # for very large numbers. So we conditionally sacrifice precision.
-    xx: uint256 = empty(uint256)
+    value: uint256 = empty(uint256)
     if (x >= unsafe_mul(unsafe_div(max_value(uint256), 10 ** 36), 10 ** 18)):
-        xx = x
+        value = x
     elif (x >= unsafe_div(max_value(uint256), 10 ** 36)):
-        xx = unsafe_mul(x, 10 ** 18)
+        value = unsafe_mul(x, 10 ** 18)
     else:
-        xx = unsafe_mul(x, 10 ** 36)
+        value = unsafe_mul(x, 10 ** 36)
 
-    # Compute the binary logarithm of `xx`. This approach was inspired by Sean
-    # Eron Anderson's "Bit Twiddling Hacks" from Stanford:
-    # https://graphics.stanford.edu/~seander/bithacks.html#IntegerLog.
-    # Further inspiration stems from solmate:
-    # https://github.com/transmissions11/solmate/blob/main/src/utils/SignedWadMath.sol.
-    # A detailed mathematical explanation by Remco Bloemen can be found here:
-    # https://xn--2-umb.com/22/exp-ln.
-    log2x: uint256 = empty(uint256)
-    if (xx > max_value(uint128)):
-        log2x = 128
-    if (unsafe_div(xx, shift(2, convert(log2x, int256))) > max_value(uint64)):
-        log2x = log2x | 64
-    if (unsafe_div(xx, shift(2, convert(log2x, int256))) > max_value(uint32)):
-        log2x = log2x | 32
-    if (unsafe_div(xx, shift(2, convert(log2x, int256))) > max_value(uint16)):
-        log2x = log2x | 16
-    if (unsafe_div(xx, shift(2, convert(log2x, int256))) > max_value(uint8)):
-        log2x = log2x | 8
-    if (unsafe_div(xx, shift(2, convert(log2x, int256))) > 15):
-        log2x = log2x | 4
-    if (unsafe_div(xx, shift(2, convert(log2x, int256))) > 3):
-        log2x = log2x | 2
-    if (unsafe_div(xx, shift(2, convert(log2x, int256))) > 1):
-        log2x = log2x | 1
+    # Compute the binary logarithm of `value`.
+    log2x: uint256 = self._log_2(value, False)
 
     # If we divide log2x by 3, the remainder is "log2x % 3". So if we simply
     # multiply "2 ** (log2x/3)" and discard the remainder to calculate our guess,
@@ -476,18 +626,18 @@ def _wad_cbrt(x: uint256) -> uint256:
     # and 8 would be one iteration too many. Without initial values, the iteration
     # number can be up to 20 or more. The iterations are unrolled. This reduces the
     # gas cost, but requires more bytecode.
-    y = unsafe_div(unsafe_add(unsafe_mul(2, y), unsafe_div(xx, unsafe_mul(y, y))), 3)
-    y = unsafe_div(unsafe_add(unsafe_mul(2, y), unsafe_div(xx, unsafe_mul(y, y))), 3)
-    y = unsafe_div(unsafe_add(unsafe_mul(2, y), unsafe_div(xx, unsafe_mul(y, y))), 3)
-    y = unsafe_div(unsafe_add(unsafe_mul(2, y), unsafe_div(xx, unsafe_mul(y, y))), 3)
-    y = unsafe_div(unsafe_add(unsafe_mul(2, y), unsafe_div(xx, unsafe_mul(y, y))), 3)
-    y = unsafe_div(unsafe_add(unsafe_mul(2, y), unsafe_div(xx, unsafe_mul(y, y))), 3)
-    y = unsafe_div(unsafe_add(unsafe_mul(2, y), unsafe_div(xx, unsafe_mul(y, y))), 3)
+    y = unsafe_div(unsafe_add(unsafe_mul(2, y), unsafe_div(value, unsafe_mul(y, y))), 3)
+    y = unsafe_div(unsafe_add(unsafe_mul(2, y), unsafe_div(value, unsafe_mul(y, y))), 3)
+    y = unsafe_div(unsafe_add(unsafe_mul(2, y), unsafe_div(value, unsafe_mul(y, y))), 3)
+    y = unsafe_div(unsafe_add(unsafe_mul(2, y), unsafe_div(value, unsafe_mul(y, y))), 3)
+    y = unsafe_div(unsafe_add(unsafe_mul(2, y), unsafe_div(value, unsafe_mul(y, y))), 3)
+    y = unsafe_div(unsafe_add(unsafe_mul(2, y), unsafe_div(value, unsafe_mul(y, y))), 3)
+    y = unsafe_div(unsafe_add(unsafe_mul(2, y), unsafe_div(value, unsafe_mul(y, y))), 3)
 
     # Since we scaled up, we have to scale down accordingly.
     if (x >= unsafe_mul(unsafe_div(max_value(uint256), 10 ** 36), 10 ** 18)):
         return unsafe_mul(y, 10 ** 12)
-    elif x >= unsafe_div(max_value(uint256), 10 ** 36):
+    elif (x >= unsafe_div(max_value(uint256), 10 ** 36)):
         return unsafe_mul(y, 10 ** 6)
     else:
         return y
