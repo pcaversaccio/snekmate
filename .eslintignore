@@ -8,6 +8,6 @@ lib/create-util
 lib/erc4626-tests
 lib/solidity-bytes-utils
 lib/openzeppelin-contracts
-bin
 cache
 out
+dist
