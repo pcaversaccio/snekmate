@@ -2737,6 +2737,7 @@ contract ERC1155Test is Test {
             false
         );
         address receiver = address(erc1155ReceiverMock);
+        vm.assume(owner != receiver);
         uint256[] memory ids = new uint256[](2);
         uint256[] memory amounts = new uint256[](2);
         bytes memory data = new bytes(0);
@@ -2796,6 +2797,7 @@ contract ERC1155Test is Test {
             false
         );
         address receiver = address(erc1155ReceiverMock);
+        vm.assume(owner != receiver);
         /**
          * To avoid a stack-too-deep error, we do not generate the
          * data input via a separate parameter here.
