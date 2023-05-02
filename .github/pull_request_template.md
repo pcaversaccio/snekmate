@@ -15,10 +15,12 @@ Please:
 - [ ] Because this PR includes a **new feature**, the change was previously discussed in an [issue](https://github.com/pcaversaccio/snekmate/issues) or in the [discussions](https://github.com/pcaversaccio/snekmate/discussions) section.
 - [x] I didn't do anything of this.
 
-#### 🐶 Cute Animal Picture
-
-![Put a link to a cute animal picture inside the parenthesis-->]()
-
 ---
 
 <!-- Add a description of your PR here -->
+
+---
+
+#### 🐶 Cute Animal Picture
+
+![Put a link to a cute animal picture inside the parenthesis-->]()
