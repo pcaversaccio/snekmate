@@ -2498,6 +2498,7 @@ contract ERC1155Test is Test {
             false
         );
         address receiver = address(erc1155ReceiverMock);
+        vm.assume(owner != receiver);
         bytes memory data = new bytes(0);
         vm.startPrank(deployer);
         ERC1155Extended.safe_mint(owner, id1, amount1, data);
@@ -2567,6 +2568,7 @@ contract ERC1155Test is Test {
             false
         );
         address receiver = address(erc1155ReceiverMock);
+        vm.assume(owner != receiver);
         vm.startPrank(deployer);
         ERC1155Extended.safe_mint(owner, id1, amount1, data);
         ERC1155Extended.safe_mint(owner, id2, amount2, data);
@@ -2737,6 +2739,7 @@ contract ERC1155Test is Test {
             false
         );
         address receiver = address(erc1155ReceiverMock);
+        vm.assume(owner != receiver);
         uint256[] memory ids = new uint256[](2);
         uint256[] memory amounts = new uint256[](2);
         bytes memory data = new bytes(0);
@@ -2796,6 +2799,7 @@ contract ERC1155Test is Test {
             false
         );
         address receiver = address(erc1155ReceiverMock);
+        vm.assume(owner != receiver);
         /**
          * To avoid a stack-too-deep error, we do not generate the
          * data input via a separate parameter here.

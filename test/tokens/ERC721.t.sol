@@ -1993,6 +1993,7 @@ contract ERC721Test is Test {
             ERC721ReceiverMock.Error.None
         );
         address receiver = address(erc721ReceiverMock);
+        vm.assume(owner != receiver);
         vm.startPrank(deployer);
         ERC721Extended.safe_mint(owner, uri1);
         ERC721Extended.safe_mint(owner, uri2);

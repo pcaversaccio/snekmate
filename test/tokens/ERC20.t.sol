@@ -1242,6 +1242,7 @@ contract ERC20Test is Test {
         uint256 give = type(uint128).max;
         deal(ERC20ExtendedAddr, owner, give, true);
         uint256 totalSupply = ERC20Extended.totalSupply();
+        vm.startPrank(owner);
         vm.expectEmit(true, true, false, true);
         emit Transfer(owner, zeroAddress, amount);
         ERC20Extended.burn(amount);
