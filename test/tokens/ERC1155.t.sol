@@ -2498,6 +2498,7 @@ contract ERC1155Test is Test {
             false
         );
         address receiver = address(erc1155ReceiverMock);
+        vm.assume(owner != receiver);
         bytes memory data = new bytes(0);
         vm.startPrank(deployer);
         ERC1155Extended.safe_mint(owner, id1, amount1, data);
@@ -2567,6 +2568,7 @@ contract ERC1155Test is Test {
             false
         );
         address receiver = address(erc1155ReceiverMock);
+        vm.assume(owner != receiver);
         vm.startPrank(deployer);
         ERC1155Extended.safe_mint(owner, id1, amount1, data);
         ERC1155Extended.safe_mint(owner, id2, amount2, data);
