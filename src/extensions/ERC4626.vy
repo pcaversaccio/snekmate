@@ -64,7 +64,7 @@ implements: ERC20
 # @dev We import and implement the `IERC20Permit`
 # interface, which is written using standard Vyper
 # syntax.
-import src.tokens.interfaces.IERC20Permit as IERC20Permit
+from ..tokens.interfaces.IERC20Permit import IERC20Permit
 implements: IERC20Permit
 
 
