@@ -1942,7 +1942,8 @@ contract ERC721Test is Test {
             owner != approved &&
                 owner != operator &&
                 owner != zeroAddress &&
-                owner.code.length == 0
+                owner.code.length == 0 &&
+                owner != makeAddr("receiver")
         );
         string memory uri1 = "my_awesome_nft_uri_1";
         string memory uri2 = "my_awesome_nft_uri_2";
@@ -1983,7 +1984,8 @@ contract ERC721Test is Test {
             owner != approved &&
                 owner != operator &&
                 owner != zeroAddress &&
-                owner.code.length == 0
+                owner.code.length == 0 &&
+                owner != makeAddr("receiver")
         );
         string memory uri1 = "my_awesome_nft_uri_1";
         string memory uri2 = "my_awesome_nft_uri_2";

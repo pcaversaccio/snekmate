@@ -302,7 +302,7 @@ def uri(id: uint256) -> String[512]:
     """
     @dev Returns the Uniform Resource Identifier (URI)
          for token type `id`.
-    @notice If the `\{id\}` substring is present in the URI,
+    @notice If the `{id}` substring is present in the URI,
             it must be replaced by clients with the actual
             token type ID. Note that the `uri` function must
             not be used to check for the existence of a token
@@ -686,7 +686,7 @@ def _uri(id: uint256) -> String[512]:
     """
     @dev An `internal` helper function that returns the Uniform
          Resource Identifier (URI) for token type `id`.
-    @notice If the `\{id\}` substring is present in the URI,
+    @notice If the `{id}` substring is present in the URI,
             it must be replaced by clients with the actual
             token type ID. Note that the `uri` function must
             not be used to check for the existence of a token
@@ -712,7 +712,7 @@ def _uri(id: uint256) -> String[512]:
     # concatenate the base URI and token ID.
     if (base_uri_length != empty(uint256)):
         # Please note that for projects where the
-        # substring `\{id\}` is present in the URI
+        # substring `{id}` is present in the URI
         # and this URI is to be set as `_BASE_URI`,
         # it is recommended to remove the following
         # concatenation and simply return `_BASE_URI`
