@@ -50,7 +50,7 @@ def uri(_id: uint256) -> String[512]:
     """
     @dev Returns the Uniform Resource Identifier (URI)
          for token type `_id`.
-    @notice If the `\{id\}` substring is present in the URI,
+    @notice If the `id` substring is present in the URI,
             it must be replaced by clients with the actual
             token type ID. Note that the `uri` function must
             not be used to check for the existence of a token
