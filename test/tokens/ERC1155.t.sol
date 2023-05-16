@@ -2518,6 +2518,7 @@ contract ERC1155Test is Test {
         vm.stopPrank();
 
         address operator = makeAddr("operator");
+        vm.assume(owner != operator);
         bool approved = true;
         vm.startPrank(owner);
         vm.expectEmit(true, true, false, true);
@@ -2587,6 +2588,7 @@ contract ERC1155Test is Test {
         vm.stopPrank();
 
         address operator = makeAddr("operator");
+        vm.assume(owner != operator);
         bool approved = true;
         vm.startPrank(owner);
         vm.expectEmit(true, true, false, true);
