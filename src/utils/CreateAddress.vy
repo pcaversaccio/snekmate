@@ -128,4 +128,4 @@ def _convert_keccak256_2_address(digest: bytes32) -> address:
     @param digest The 32-byte keccak256 digest.
     @return address The converted 20-byte address.
     """
-    return convert(convert(digest, uint256) & max_value(uint160), address)
+    return convert(convert(digest, uint256) & convert(max_value(uint160), uint256), address)
