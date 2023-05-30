@@ -1,4 +1,4 @@
-# @version ^0.3.7
+# @version ^0.3.9
 """
 @title Modern and Gas-Efficient ERC-721 + EIP-4494 Implementation
 @license GNU Affero General Public License v3.0

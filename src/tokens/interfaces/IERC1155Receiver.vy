@@ -1,4 +1,4 @@
-# @version ^0.3.7
+# @version ^0.3.9
 """
 @title EIP-1155 Token Receiver Interface Definition
 @license GNU Affero General Public License v3.0
