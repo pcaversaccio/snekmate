@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.19;
+pragma solidity ^0.8.20;
 
 import {Ownable} from "openzeppelin/access/Ownable.sol";
 import {IERC1271} from "openzeppelin/interfaces/IERC1271.sol";
@@ -13,9 +13,7 @@ import {ECDSA} from "openzeppelin/utils/cryptography/ECDSA.sol";
  * @dev Allows to mock a correct ERC-1271 implementation.
  */
 contract ERC1271WalletMock is Ownable, IERC1271 {
-    constructor(address originalOwner_) {
-        _transferOwnership(originalOwner_);
-    }
+    constructor(address originalOwner_) Ownable(originalOwner_) {}
 
     /**
      * @dev Returns the 4-byte magic value `0x1626ba7e` if the verification passes.

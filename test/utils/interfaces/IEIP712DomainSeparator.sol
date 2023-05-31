@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: WTFPL
-pragma solidity ^0.8.19;
+pragma solidity ^0.8.20;
 
 interface IEIP712DomainSeparator {
     function domain_separator_v4() external view returns (bytes32);
