@@ -9,6 +9,8 @@ jobs:
       matrix:
         os:
           - ubuntu-latest
+        architecture:
+          - x64
         python-version:
           - 3.11
 
@@ -20,6 +22,7 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
+          architecture: ${{ matrix.architecture }}
 
       - name: Install pypa/build
         run: >-
