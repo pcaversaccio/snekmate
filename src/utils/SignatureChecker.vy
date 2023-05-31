@@ -1,4 +1,4 @@
-# @version ^0.3.7
+# @version ^0.3.9
 """
 @title ECDSA and EIP-1271 Signature Verification Functions
 @license GNU Affero General Public License v3.0

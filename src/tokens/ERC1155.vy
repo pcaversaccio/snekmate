@@ -1,4 +1,4 @@
-# @version ^0.3.7
+# @version ^0.3.9
 """
 @title Modern and Gas-Efficient ERC-1155 Implementation
 @license GNU Affero General Public License v3.0
@@ -67,7 +67,7 @@ _SUPPORTED_INTERFACES: constant(bytes4[3]) = [
 
 
 # @dev Stores the upper bound for batch calls.
-_BATCH_SIZE: constant(uint16) = max_value(uint8)
+_BATCH_SIZE: constant(uint16) = 255
 
 
 # @dev Stores the base URI for computing `uri`.

@@ -1,4 +1,4 @@
-# @version ^0.3.7
+# @version ^0.3.9
 """
 @title Base64 Encoding and Decoding Functions
 @license GNU Affero General Public License v3.0
@@ -63,7 +63,7 @@ def encode(data: Bytes[_DATA_INPUT_BOUND], base64_url: bool) -> DynArray[String[
     """
     data_length: uint256 = len(data)
     if (data_length == empty(uint256)):
-        return empty(DynArray[String[4], 1])
+        return empty(DynArray[String[4], _DATA_OUTPUT_BOUND])
 
     # If the length of the unencoded input is not
     # a multiple of three, the encoded output must

@@ -1,4 +1,4 @@
-# @version ^0.3.7
+# @version ^0.3.9
 """
 @title Batch Sending Both Native and ERC-20 Tokens
 @license GNU Affero General Public License v3.0

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: WTFPL
-pragma solidity ^0.8.19;
+pragma solidity ^0.8.20;
 
 interface IBase64 {
     function encode(
