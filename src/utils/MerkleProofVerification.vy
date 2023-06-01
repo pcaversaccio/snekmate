@@ -1,6 +1,7 @@
 # @version ^0.3.9
 """
 @title Merkle Tree Proof Verification Functions
+@custom:contract-name MerkleProofVerification
 @license GNU Affero General Public License v3.0
 @author pcaversaccio
 @notice The Merkle tree and the corresponding proofs can be generated

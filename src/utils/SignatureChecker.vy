@@ -1,6 +1,7 @@
 # @version ^0.3.9
 """
 @title ECDSA and EIP-1271 Signature Verification Functions
+@custom:contract-name SignatureChecker
 @license GNU Affero General Public License v3.0
 @author pcaversaccio
 @notice Signature verification helper functions that can be used

@@ -1,6 +1,7 @@
 # @version ^0.3.9
 """
 @title Modern and Gas-Efficient ERC-1155 Implementation
+@custom:contract-name ERC1155
 @license GNU Affero General Public License v3.0
 @author pcaversaccio
 @custom:coauthor jtriley.eth

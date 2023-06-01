@@ -1,6 +1,7 @@
 # @version ^0.3.9
 """
 @title AccessControl Interface Definition
+@custom:contract-name IAccessControl
 @license GNU Affero General Public License v3.0
 @author pcaversaccio
 @notice The interface definition of `AccessControl`

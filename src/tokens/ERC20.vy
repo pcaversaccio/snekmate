@@ -1,6 +1,7 @@
 # @version ^0.3.9
 """
 @title Modern and Gas-Efficient ERC-20 + EIP-2612 Implementation
+@custom:contract-name ERC20
 @license GNU Affero General Public License v3.0
 @author pcaversaccio
 @notice These functions implement the ERC-20

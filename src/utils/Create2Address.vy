@@ -1,6 +1,7 @@
 # @version ^0.3.9
 """
 @title `CREATE2` EVM Opcode Utility Functions for Address Calculations
+@custom:contract-name Create2Address
 @license GNU Affero General Public License v3.0
 @author pcaversaccio
 @notice These functions can be used to compute in advance the address
