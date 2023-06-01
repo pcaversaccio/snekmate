@@ -32,14 +32,14 @@ jobs:
           python-version: ${{ matrix.python-version }}
           architecture: ${{ matrix.architecture }}
 
-      - name: Install Vyper
-        run: pip install vyper
-
-      - name: Install Ape
-        run: pip install eth-ape
+      - name: Install Ape Vyper
+        run: pip install ape-vyper
 
       - name: Check Ape compilation
         run: ape compile
+
+      - name: Install Vyper
+        run: pip install vyper
 
       - name: Check userdoc and devdoc compilation
         run: python scripts/compile.py
