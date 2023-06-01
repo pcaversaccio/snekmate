@@ -22,8 +22,8 @@
     "url": "https://github.com/pcaversaccio/snekmate/issues"
   },
   "scripts": {
-    "prettier:check": "prettier -c **/*.{md,sol,js,json,yml}",
-    "prettier:fix": "prettier -w **/*.{md,sol,js,json,yml}",
+    "prettier:check": "prettier -c **/*.{md,sol,js,json,yml,yaml}",
+    "prettier:fix": "prettier -w **/*.{md,sol,js,json,yml,yaml}",
     "solhint:check": "npx solhint '**/*.sol'",
     "solhint:fix": "npx solhint '**/*.sol' --fix",
     "lint:check": "yarn prettier:check && yarn solhint:check && eslint --ext .js .",
