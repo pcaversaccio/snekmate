@@ -9,6 +9,7 @@
       }
     ],
     "no-empty-blocks": "off",
-    "func-name-mixedcase": "off"
+    "func-name-mixedcase": "off",
+    "private-vars-leading-underscore": "off"
   }
 }

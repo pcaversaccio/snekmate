@@ -1,8 +1,7 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.19;
+pragma solidity ^0.8.20;
 
 import {Create2} from "openzeppelin/utils/Create2.sol";
-import {ERC1820Implementer} from "openzeppelin/utils/introspection/ERC1820Implementer.sol";
 
 /**
  * @title Create2Impl
@@ -21,16 +20,6 @@ contract Create2Impl {
      */
     function deploy(uint256 value, bytes32 salt, bytes memory code) public {
         Create2.deploy(value, salt, code);
-    }
-
-    /**
-     * @dev Deploys an `ERC1820Implementer` contract using `CREATE2`. The address
-     * where the contract will be deployed can be known in advance via `computeAddress`.
-     * @param value The 32-byte ether value used to create the contract address.
-     * @param salt The 32-byte random value used to create the contract address.
-     */
-    function deployERC1820Implementer(uint256 value, bytes32 salt) public {
-        Create2.deploy(value, salt, type(ERC1820Implementer).creationCode);
     }
 
     /**

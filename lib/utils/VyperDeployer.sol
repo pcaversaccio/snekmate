@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: WTFPL
-pragma solidity ^0.8.19;
+pragma solidity ^0.8.20;
 
 import {Create} from "create-util/Create.sol";
 
@@ -31,7 +31,7 @@ interface _CheatCodes {
  */
 contract VyperDeployer is Create {
     address private constant HEVM_ADDRESS =
-        address(bytes20(uint160(uint256(keccak256("hevm cheat code")))));
+        address(uint160(uint256(keccak256("hevm cheat code"))));
     address private self = address(this);
 
     /**
