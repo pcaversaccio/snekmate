@@ -1,6 +1,7 @@
 # @version ^0.3.9
 """
 @title EIP-4906 Interface Definition
+@custom:contract-name IERC4906
 @license GNU Affero General Public License v3.0
 @author pcaversaccio
 @notice The ERC-4906 standard is an extension of EIP-721.

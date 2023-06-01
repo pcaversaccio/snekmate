@@ -1,6 +1,7 @@
 # @version ^0.3.9
 """
 @title EIP-721 Optional Enumeration Interface Definition
+@custom:contract-name IERC721Enumerable
 @license GNU Affero General Public License v3.0
 @author pcaversaccio
 @notice The enumeration extension is optional for an ERC-721

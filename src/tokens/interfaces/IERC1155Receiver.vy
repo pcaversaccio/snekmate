@@ -1,6 +1,7 @@
 # @version ^0.3.9
 """
 @title EIP-1155 Token Receiver Interface Definition
+@custom:contract-name IERC1155Receiver
 @license GNU Affero General Public License v3.0
 @author pcaversaccio
 @notice The interface definition for any contract

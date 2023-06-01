@@ -1,6 +1,7 @@
 # @version ^0.3.9
 """
 @title EIP-712 Domain Separator
+@custom:contract-name EIP712DomainSeparator
 @license GNU Affero General Public License v3.0
 @author pcaversaccio
 @notice These functions are part of EIP-712: https://eips.ethereum.org/EIPS/eip-712.

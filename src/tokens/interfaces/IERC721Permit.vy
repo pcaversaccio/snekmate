@@ -1,6 +1,7 @@
 # @version ^0.3.9
 """
 @title EIP-4494 Interface Definition
+@custom:contract-name IERC721Permit
 @license GNU Affero General Public License v3.0
 @author pcaversaccio
 @notice The `permit` function implements approvals via

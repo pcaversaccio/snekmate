@@ -1,6 +1,7 @@
 # @version ^0.3.9
 """
 @title 2-Step Ownership Transfer Functions
+@custom:contract-name Ownable2Step
 @license GNU Affero General Public License v3.0
 @author pcaversaccio
 @notice These functions can be used to implement a basic access

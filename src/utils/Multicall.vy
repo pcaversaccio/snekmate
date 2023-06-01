@@ -1,6 +1,7 @@
 # @version ^0.3.9
 """
 @title Multicall Functions
+@custom:contract-name Multicall
 @license GNU Affero General Public License v3.0
 @author pcaversaccio
 @notice These functions can be used to batch together multiple external

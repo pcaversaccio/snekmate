@@ -1,6 +1,7 @@
 # @version ^0.3.9
 """
 @title Modern and Gas-Efficient ERC-721 + EIP-4494 Implementation
+@custom:contract-name ERC721
 @license GNU Affero General Public License v3.0
 @author pcaversaccio
 @notice These functions implement the ERC-721

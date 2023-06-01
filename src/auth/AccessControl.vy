@@ -1,6 +1,7 @@
 # @version ^0.3.9
 """
 @title Multi-Role-Based Access Control Functions
+@custom:contract-name AccessControl
 @license GNU Affero General Public License v3.0
 @author pcaversaccio
 @notice These functions can be used to implement role-based access

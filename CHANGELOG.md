@@ -4,6 +4,8 @@
 
 ### 💥 New Features
 
+- **General**
+  - All 🐍 snekmate contracts now contain an _Ethereum Natural Language Specification Format_ (NatSpec) `custom` field `@custom:contract-name`. The underlying rationale is that the block explorers plan to use `@custom:contract-name` as contract name and `@title` as fallback. ([#124](https://github.com/pcaversaccio/snekmate/pull/124))
 - **Utility Functions**
   - [`Math`](https://github.com/pcaversaccio/snekmate/blob/v0.0.2/src/utils/Math.vy): Add `wad_ln` and `wad_exp` to the standard mathematical utility functions. ([#91](https://github.com/pcaversaccio/snekmate/pull/91))
 

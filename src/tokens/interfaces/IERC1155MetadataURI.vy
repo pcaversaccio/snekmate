@@ -1,6 +1,7 @@
 # @version ^0.3.9
 """
 @title EIP-1155 Optional Metadata Interface Definition
+@custom:contract-name IERC1155MetadataURI
 @license GNU Affero General Public License v3.0
 @author pcaversaccio
 @notice The metadata extension is optional for an ERC-1155

@@ -1,6 +1,7 @@
 # @version ^0.3.9
 """
 @title EIP-2612 Interface Definition
+@custom:contract-name IERC20Permit
 @license GNU Affero General Public License v3.0
 @author pcaversaccio
 @notice The `permit` function implements approvals via
