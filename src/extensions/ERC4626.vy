@@ -68,8 +68,8 @@ from ..tokens.interfaces.IERC20Permit import IERC20Permit
 implements: IERC20Permit
 
 
-# @dev We import the `ERC4626` interface, which is a
-# built-in interface of the Vyper compiler.
+# @dev We import and implement the `ERC4626` interface,
+# which is a built-in interface of the Vyper compiler.
 from vyper.interfaces import ERC4626
 implements: ERC4626
 
