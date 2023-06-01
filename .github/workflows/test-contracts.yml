@@ -61,8 +61,11 @@ jobs:
         with:
           version: nightly
 
+      - name: Check userdoc and devdoc compilation
+        run: python scripts/compile.py
+
       - name: Show the Foundry CI config
-        run: "forge config"
+        run: forge config
         env:
           FOUNDRY_PROFILE: ci
 
@@ -72,7 +75,7 @@ jobs:
           FOUNDRY_PROFILE: ci
 
       - name: Show the Foundry default config
-        run: "forge config"
+        run: forge config
         env:
           FOUNDRY_PROFILE: default
 
