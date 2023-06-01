@@ -11,6 +11,11 @@
 
 ### ♻️ Refactoring
 
+- **Extensions**
+  - [`ERC4626`](https://github.com/pcaversaccio/snekmate/blob/v0.0.2/src/extensions/ERC4626.vy): Add `implements` interface `ERC20Detailed` and `ERC4626`. ([#125](https://github.com/pcaversaccio/snekmate/pull/125))
+- **Tokens**
+  - [`ERC20`](https://github.com/pcaversaccio/snekmate/blob/v0.0.2/src/tokens/ERC20.vy): Add `implements` interface `ERC20Detailed`. ([#125](https://github.com/pcaversaccio/snekmate/pull/125))
+  - [`ERC721`](https://github.com/pcaversaccio/snekmate/blob/v0.0.2/src/tokens/ERC721.vy): Add `implements` interface `IERC721Metadata`. ([#125](https://github.com/pcaversaccio/snekmate/pull/125))
 - **Utility Functions**
   - [`Math`](https://github.com/pcaversaccio/snekmate/blob/v0.0.2/src/utils/Math.vy): Use directly 🐍 snekmate's [`log_2`](https://github.com/pcaversaccio/snekmate/blob/v0.0.1/src/utils/Math.vy#L202) function in the internal calculation of `wad_cbrt`. ([#91](https://github.com/pcaversaccio/snekmate/pull/91))
 

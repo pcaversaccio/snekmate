@@ -51,15 +51,14 @@
 
 # @dev We import and implement the `ERC20` interface,
 # which is a built-in interface of the Vyper compiler.
-# @notice We do not import and implement the interface
-# `ERC20Detailed` (https://github.com/vyperlang/vyper/blob/master/vyper/builtins/interfaces/ERC20Detailed.py)
-# to be able to declare `name`, `symbol`, and `decimals`
-# as `immutable` variables. This is a known compiler bug
-# (https://github.com/vyperlang/vyper/issues/3130) and
-# we will import and implement the interface `ERC20Detailed`
-# once it is fixed.
 from vyper.interfaces import ERC20
 implements: ERC20
+
+
+# @dev We import and implement the `ERC20Detailed` interface,
+# which is a built-in interface of the Vyper compiler.
+from vyper.interfaces import ERC20Detailed
+implements: ERC20Detailed
 
 
 # @dev We import and implement the `IERC20Permit`
@@ -69,15 +68,10 @@ from ..tokens.interfaces.IERC20Permit import IERC20Permit
 implements: IERC20Permit
 
 
-# @dev We import the `ERC4626` interface, which is a
-# built-in interface of the Vyper compiler.
-# @notice We do not implement the interface `ERC4626`
-# (https://github.com/vyperlang/vyper/blob/master/vyper/builtins/interfaces/ERC4626.py)
-# to be able to declare `asset` as an `immutable` variable.
-# This is a known compiler bug (https://github.com/vyperlang/vyper/issues/3130)
-# and we will implement the interface `ERC4626` once it
-# is fixed.
+# @dev We import and implement the `ERC4626` interface,
+# which is a built-in interface of the Vyper compiler.
 from vyper.interfaces import ERC4626
+implements: ERC4626
 
 
 # @dev Constant used as part of the ECDSA recovery function.

@@ -47,15 +47,15 @@ implements: ERC165
 
 # @dev We import and implement the `ERC721` interface,
 # which is a built-in interface of the Vyper compiler.
-# @notice We do not import the interface `IERC721Metadata`
-# (https://github.com/pcaversaccio/snekmate/blob/main/src/tokens/interfaces/IERC721Metadata.vy)
-# to be able to declare `name` and `symbol` as
-# `immutable` variables. This is a known compiler
-# bug (https://github.com/vyperlang/vyper/issues/3130)
-# and we will import the interface `IERC721Metadata`
-# once it is fixed.
 from vyper.interfaces import ERC721
 implements: ERC721
+
+
+# @dev We import and implement the `IERC721Metadata`
+# interface, which is written using standard Vyper
+# syntax.
+import interfaces.IERC721Metadata as IERC721Metadata
+implements: IERC721Metadata
 
 
 # @dev We import and implement the `IERC721Enumerable`
