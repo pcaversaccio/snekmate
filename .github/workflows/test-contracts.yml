@@ -35,6 +35,15 @@ jobs:
       - name: Install Vyper
         run: pip install vyper
 
+      - name: Install Ape
+        run: pip install eth-ape
+
+      - name: Check Ape compilation
+        run: ape compile
+
+      - name: Check userdoc and devdoc compilation
+        run: python scripts/compile.py
+
       - name: Get Yarn cache directory path
         id: yarn-cache-dir-path
         run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
@@ -60,9 +69,6 @@ jobs:
         uses: foundry-rs/foundry-toolchain@v1
         with:
           version: nightly
-
-      - name: Check userdoc and devdoc compilation
-        run: python scripts/compile.py
 
       - name: Show the Foundry CI config
         run: forge config
