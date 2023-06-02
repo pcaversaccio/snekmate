@@ -106,9 +106,9 @@ def encode(data: Bytes[_DATA_INPUT_BOUND], base64_url: bool) -> DynArray[String[
         #
         # 63 (or `0x3F`) is `000000000000000000111111` in binary.
         # Thus, the bitwise `AND` operation is redundant.
-        c1: uint256 = shift(chunk, -18)
-        c2: uint256 = shift(chunk, -12) & 63
-        c3: uint256 = shift(chunk, -6) & 63
+        c1: uint256 = chunk >> 18
+        c2: uint256 = (chunk >> 12) & 63
+        c3: uint256 = (chunk >> 6) & 63
         c4: uint256 = chunk & 63
 
         # Base64 encoding with an URL and filename-safe
@@ -194,12 +194,12 @@ def decode(data: String[_DATA_OUTPUT_BOUND], base64_url: bool) -> DynArray[Bytes
             # We concatenate the 6-bit index in the Base64
             # character list, which gives the 24-bit number
             # for the original three characters.
-            chunk_bytes: uint256 = shift(c1, 18) | shift(c2, 12) | shift(c3, 6) | c4
+            chunk_bytes: uint256 = (c1 << 18) | (c2 << 12) | (c3 << 6) | c4
 
             # We split the 24-bit number into the original
             # three 8-bit characters.
-            b1: bytes1 = convert(convert(shift(chunk_bytes, -16) & 255, uint8), bytes1)
-            b2: bytes1 = convert(convert(shift(chunk_bytes, -8) & 255, uint8), bytes1)
+            b1: bytes1 = convert(convert((chunk_bytes >> 16) & 255, uint8), bytes1)
+            b2: bytes1 = convert(convert((chunk_bytes >> 8) & 255, uint8), bytes1)
             b3: bytes1 = convert(convert(chunk_bytes & 255, uint8), bytes1)
 
             # Case 1: padding of "=" as part of the
@@ -231,12 +231,12 @@ def decode(data: String[_DATA_OUTPUT_BOUND], base64_url: bool) -> DynArray[Bytes
             c3: uint256 = self._index_of(slice(chunk, 2, 1), False)
             c4: uint256 = self._index_of(slice(chunk, 3, 1), False)
 
-            chunk_bytes: uint256 = shift(c1, 18) | shift(c2, 12) | shift(c3, 6) | c4
+            chunk_bytes: uint256 = (c1 << 18) | (c2 << 12) | (c3 << 6) | c4
 
             # We split the 24-bit number into the original
             # three 8-bit characters.
-            b1: bytes1 = convert(convert(shift(chunk_bytes, -16) & 255, uint8), bytes1)
-            b2: bytes1 = convert(convert(shift(chunk_bytes, -8) & 255, uint8), bytes1)
+            b1: bytes1 = convert(convert((chunk_bytes >> 16) & 255, uint8), bytes1)
+            b2: bytes1 = convert(convert((chunk_bytes >> 8) & 255, uint8), bytes1)
             b3: bytes1 = convert(convert(chunk_bytes & 255, uint8), bytes1)
 
             # Case 1: padding of "=" as part of the

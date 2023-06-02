@@ -171,7 +171,7 @@ def _try_recover_r_vs(hash: bytes32, r: uint256, vs: uint256) -> address:
     # We do not check for an overflow here since the shift operation
     # `vs >> 255` results essentially in a `uint8` type (0 or 1) and
     # we use `uint256` as result type.
-    v: uint256 = unsafe_add((vs >> 255), 27)
+    v: uint256 = unsafe_add(vs >> 255, 27)
     return self._try_recover_vrs(hash, v, r, s)
 
 
