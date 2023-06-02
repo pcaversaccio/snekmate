@@ -52,7 +52,7 @@ def uint256_average(x: uint256, y: uint256) -> uint256:
     @return uint256 The 32-byte average (rounded towards zero) of
             `x` and `y`.
     """
-    return unsafe_add(x & y, shift(x ^ y, -1))
+    return unsafe_add(x & y, (x ^ y) >> 1)
 
 
 @external
@@ -69,7 +69,7 @@ def int256_average(x: int256, y: int256) -> int256:
     @return int256 The 32-byte average (rounded towards infinity)
             of `x` and `y`.
     """
-    return unsafe_add(unsafe_add(shift(x, -1), shift(y, -1)), x & y & 1)
+    return unsafe_add(unsafe_add(x >> 1, y >> 1), x & y & 1)
 
 
 @external
@@ -324,22 +324,22 @@ def log_256(x: uint256, roundup: bool) -> uint256:
 
     # The following lines cannot overflow because we have the well-known
     # decay behaviour of `log_256(max_value(uint256)) < max_value(uint256)`.
-    if (shift(x, -128) != empty(uint256)):
-        value = shift(x, -128)
+    if (x >> 128 != empty(uint256)):
+        value = x >> 128
         result = 16
-    if (shift(value, -64) != empty(uint256)):
-        value = shift(value, -64)
+    if (value >> 64 != empty(uint256)):
+        value = value >> 64
         result = unsafe_add(result, 8)
-    if (shift(value, -32) != empty(uint256)):
-        value = shift(value, -32)
+    if (value >> 32 != empty(uint256)):
+        value = value >> 32
         result = unsafe_add(result, 4)
-    if (shift(value, -16) != empty(uint256)):
-        value = shift(value, -16)
+    if (value >> 16 != empty(uint256)):
+        value = value >> 16
         result = unsafe_add(result, 2)
-    if (shift(value, -8) != empty(uint256)):
+    if (value >> 8 != empty(uint256)):
         result = unsafe_add(result, 1)
 
-    if (roundup and (shift(1, convert(shift(result, 3), int256)) < x)):
+    if (roundup and ((1 << (result << 3)) < x)):
         result = unsafe_add(result, 1)
 
     return result
@@ -381,25 +381,25 @@ def wad_ln(x: int256) -> int256:
     # expression `value <<= uint256(159 - k)` to `bytes32` and subsequently
     # to `uint256`. Remember that the EVM default behaviour is to use two's
     # complement representation to handle signed integers.
-    value = convert(shift(convert(convert(shift(value, unsafe_sub(159, k)), bytes32), uint256), -159), int256)
+    value = convert(convert(convert(value << convert(unsafe_sub(159, k), uint256), bytes32), uint256) >> 159, int256)
 
     # Evaluate using a "(8, 8)"-term rational approximation. Since `p` is monic,
     # we will multiply by a scaling factor later.
-    p: int256 = unsafe_add(shift(unsafe_mul(unsafe_add(value, 3273285459638523848632254066296), value), -96), 24828157081833163892658089445524)
-    p = unsafe_add(shift(unsafe_mul(p, value), -96), 43456485725739037958740375743393)
-    p = unsafe_sub(shift(unsafe_mul(p, value), -96), 11111509109440967052023855526967)
-    p = unsafe_sub(shift(unsafe_mul(p, value), -96), 45023709667254063763336534515857)
-    p = unsafe_sub(shift(unsafe_mul(p, value), -96), 14706773417378608786704636184526)
-    p = unsafe_sub(unsafe_mul(p, value), shift(795164235651350426258249787498, 96))
+    p: int256 = unsafe_add(unsafe_mul(unsafe_add(value, 3273285459638523848632254066296), value) >> 96, 24828157081833163892658089445524)
+    p = unsafe_add(unsafe_mul(p, value) >> 96, 43456485725739037958740375743393)
+    p = unsafe_sub(unsafe_mul(p, value) >> 96, 11111509109440967052023855526967)
+    p = unsafe_sub(unsafe_mul(p, value) >> 96, 45023709667254063763336534515857)
+    p = unsafe_sub(unsafe_mul(p, value) >> 96, 14706773417378608786704636184526)
+    p = unsafe_sub(unsafe_mul(p, value), 795164235651350426258249787498 << 96)
 
     # We leave `p` in the "2 ** 192" base so that we do not have to scale it up
     # again for the division. Note that `q` is monic by convention.
-    q: int256 = unsafe_add(shift(unsafe_mul(unsafe_add(value, 5573035233440673466300451813936), value), -96), 71694874799317883764090561454958)
-    q = unsafe_add(shift(unsafe_mul(q, value), -96), 283447036172924575727196451306956)
-    q = unsafe_add(shift(unsafe_mul(q, value), -96), 401686690394027663651624208769553)
-    q = unsafe_add(shift(unsafe_mul(q, value), -96), 204048457590392012362485061816622)
-    q = unsafe_add(shift(unsafe_mul(q, value), -96), 31853899698501571402653359427138)
-    q = unsafe_add(shift(unsafe_mul(q, value), -96), 909429971244387300277376558375)
+    q: int256 = unsafe_add(unsafe_mul(unsafe_add(value, 5573035233440673466300451813936), value) >> 96, 71694874799317883764090561454958)
+    q = unsafe_add(unsafe_mul(q, value) >> 96, 283447036172924575727196451306956)
+    q = unsafe_add(unsafe_mul(q, value) >> 96, 401686690394027663651624208769553)
+    q = unsafe_add(unsafe_mul(q, value) >> 96, 204048457590392012362485061816622)
+    q = unsafe_add(unsafe_mul(q, value) >> 96, 31853899698501571402653359427138)
+    q = unsafe_add(unsafe_mul(q, value) >> 96, 909429971244387300277376558375)
 
     # It is known that the polynomial `q` has no zeros in the domain.
     # No scaling is required, as `p` is already "2 ** 96" too large. Also,
@@ -413,9 +413,9 @@ def wad_ln(x: int256) -> int256:
     #   - multiply by "10 ** 18 / 2 ** 96 = 5 ** 18 >> 78".
     # In order to perform the most gas-efficient calculation, we carry out all
     # these steps in one expression.
-    return shift(unsafe_add(unsafe_add(unsafe_mul(r, 1677202110996718588342820967067443963516166),\
-                 unsafe_mul(k, 16597577552685614221487285958193947469193820559219878177908093499208371)),\
-                 600920179829731861736702779321621459595472258049074101567377883020018308), -174)
+    return unsafe_add(unsafe_add(unsafe_mul(r, 1677202110996718588342820967067443963516166),\
+           unsafe_mul(k, 16597577552685614221487285958193947469193820559219878177908093499208371)),\
+           600920179829731861736702779321621459595472258049074101567377883020018308) >> 174
 
 
 @external
@@ -444,27 +444,27 @@ def wad_exp(x: int256) -> int256:
     # `x` is now in the range "(-42, 136) * 1e18". Convert to "(-42, 136) * 2 ** 96" for higher
     # intermediate precision and a binary base. This base conversion is a multiplication with
     # "1e18 / 2 ** 96 = 5 ** 18 / 2 ** 78".
-    value = unsafe_div(shift(x, 78), 5 ** 18)
+    value = unsafe_div(x << 78, 5 ** 18)
 
     # Reduce the range of `x` to "(-½ ln 2, ½ ln 2) * 2 ** 96" by factoring out powers of two
     # so that "exp(x) = exp(x') * 2 ** k", where `k` is a signer integer. Solving this gives
     # "k = round(x / log(2))" and "x' = x - k * log(2)". Thus, `k` is in the range "[-61, 195]".
-    k: int256 = shift(unsafe_add(unsafe_div(shift(value, 96), 54916777467707473351141471128), 2 ** 95), -96)
+    k: int256 = unsafe_add(unsafe_div(value << 96, 54916777467707473351141471128), 2 ** 95) >> 96
     value = unsafe_sub(value, unsafe_mul(k, 54916777467707473351141471128))
 
     # Evaluate using a "(6, 7)"-term rational approximation. Since `p` is monic,
     # we will multiply by a scaling factor later.
-    y: int256 = unsafe_add(shift(unsafe_mul(unsafe_add(value, 1346386616545796478920950773328), value), -96), 57155421227552351082224309758442)
-    p: int256 = unsafe_add(unsafe_mul(unsafe_add(shift(unsafe_mul(unsafe_sub(unsafe_add(y, value), 94201549194550492254356042504812), y), -96),\
-                           28719021644029726153956944680412240), value), shift(4385272521454847904659076985693276, 96))
+    y: int256 = unsafe_add(unsafe_mul(unsafe_add(value, 1346386616545796478920950773328), value) >> 96, 57155421227552351082224309758442)
+    p: int256 = unsafe_add(unsafe_mul(unsafe_add(unsafe_mul(unsafe_sub(unsafe_add(y, value), 94201549194550492254356042504812), y) >> 96,\
+                           28719021644029726153956944680412240), value), 4385272521454847904659076985693276 << 96)
 
     # We leave `p` in the "2 ** 192" base so that we do not have to scale it up
     # again for the division.
-    q: int256 = unsafe_add(shift(unsafe_mul(unsafe_sub(value, 2855989394907223263936484059900), value), -96), 50020603652535783019961831881945)
-    q = unsafe_sub(shift(unsafe_mul(q, value), -96), 533845033583426703283633433725380)
-    q = unsafe_add(shift(unsafe_mul(q, value), -96), 3604857256930695427073651918091429)
-    q = unsafe_sub(shift(unsafe_mul(q, value), -96), 14423608567350463180887372962807573)
-    q = unsafe_add(shift(unsafe_mul(q, value), -96), 26449188498355588339934803723976023)
+    q: int256 = unsafe_add(unsafe_mul(unsafe_sub(value, 2855989394907223263936484059900), value) >> 96, 50020603652535783019961831881945)
+    q = unsafe_sub(unsafe_mul(q, value) >> 96, 533845033583426703283633433725380)
+    q = unsafe_add(unsafe_mul(q, value) >> 96, 3604857256930695427073651918091429)
+    q = unsafe_sub(unsafe_mul(q, value) >> 96, 14423608567350463180887372962807573)
+    q = unsafe_add(unsafe_mul(q, value) >> 96, 26449188498355588339934803723976023)
 
     # The polynomial `q` has no zeros in the range because all its roots are complex.
     # No scaling is required, as `p` is already "2 ** 96" too large. Also,
@@ -482,7 +482,8 @@ def wad_exp(x: int256) -> int256:
     # negative parameter value `r`, we first convert `r` to `bytes32` and
     # subsequently to `uint256`. Remember that the EVM default behaviour is
     # to use two's complement representation to handle signed integers.
-    return convert(shift(unsafe_mul(convert(convert(r, bytes32), uint256), 3822833074963236453042738258902158003155416615667), -unsafe_sub(195, k)), int256)
+    return convert(unsafe_mul(convert(convert(r, bytes32), uint256), 3822833074963236453042738258902158003155416615667) >>\
+           convert(unsafe_sub(195, k), uint256), int256)
 
 
 @external
@@ -552,31 +553,31 @@ def _log_2(x: uint256, roundup: bool) -> uint256:
 
     # The following lines cannot overflow because we have the well-known
     # decay behaviour of `log_2(max_value(uint256)) < max_value(uint256)`.
-    if (shift(x, -128) != empty(uint256)):
-        value = shift(x, -128)
+    if (x >> 128 != empty(uint256)):
+        value = x >> 128
         result = 128
-    if (shift(value, -64) != empty(uint256)):
-        value = shift(value, -64)
+    if (value >> 64 != empty(uint256)):
+        value = value >> 64
         result = unsafe_add(result, 64)
-    if (shift(value, -32) != empty(uint256)):
-        value = shift(value, -32)
+    if (value >> 32 != empty(uint256)):
+        value = value >> 32
         result = unsafe_add(result, 32)
-    if (shift(value, -16) != empty(uint256)):
-        value = shift(value, -16)
+    if (value >> 16 != empty(uint256)):
+        value = value >> 16
         result = unsafe_add(result, 16)
-    if (shift(value, -8) != empty(uint256)):
-        value = shift(value, -8)
+    if (value >> 8 != empty(uint256)):
+        value = value >> 8
         result = unsafe_add(result, 8)
-    if (shift(value, -4) != empty(uint256)):
-        value = shift(value, -4)
+    if (value >> 4 != empty(uint256)):
+        value = value >> 4
         result = unsafe_add(result, 4)
-    if (shift(value, -2) != empty(uint256)):
-        value = shift(value, -2)
+    if (value >> 2 != empty(uint256)):
+        value = value >> 2
         result = unsafe_add(result, 2)
-    if (shift(value, -1) != empty(uint256)):
+    if (value >> 1 != empty(uint256)):
         result = unsafe_add(result, 1)
 
-    if (roundup and (shift(1, convert(result, int256)) < x)):
+    if (roundup and ((1 << result) < x)):
         result = unsafe_add(result, 1)
 
     return result
