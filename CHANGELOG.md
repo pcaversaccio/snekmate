@@ -17,7 +17,12 @@
   - [`ERC20`](https://github.com/pcaversaccio/snekmate/blob/v0.0.2/src/tokens/ERC20.vy): Add `implements` interface `ERC20Detailed`. ([#125](https://github.com/pcaversaccio/snekmate/pull/125))
   - [`ERC721`](https://github.com/pcaversaccio/snekmate/blob/v0.0.2/src/tokens/ERC721.vy): Add `implements` interface `IERC721Metadata`. ([#125](https://github.com/pcaversaccio/snekmate/pull/125))
 - **Utility Functions**
-  - [`Math`](https://github.com/pcaversaccio/snekmate/blob/v0.0.2/src/utils/Math.vy): Use directly 🐍 snekmate's [`log_2`](https://github.com/pcaversaccio/snekmate/blob/v0.0.1/src/utils/Math.vy#L202) function in the internal calculation of `wad_cbrt`. ([#91](https://github.com/pcaversaccio/snekmate/pull/91))
+  - [`Base64`](https://github.com/pcaversaccio/snekmate/blob/v0.0.2/src/utils/Base64.vy): Use the shift operators `>>` and `<<` introduced in Vyper [`0.3.8`](https://github.com/vyperlang/vyper/releases/tag/v0.3.8) instead of the `shift` instruction. ([#127](https://github.com/pcaversaccio/snekmate/pull/127))
+  - [`ECDSA`](https://github.com/pcaversaccio/snekmate/blob/v0.0.2/src/utils/ECDSA.vy): Use the shift operators `>>` and `<<` introduced in Vyper [`0.3.8`](https://github.com/vyperlang/vyper/releases/tag/v0.3.8) instead of the `shift` instruction. ([#127](https://github.com/pcaversaccio/snekmate/pull/127))
+  - [`SignatureChecker`](https://github.com/pcaversaccio/snekmate/blob/v0.0.2/src/utils/SignatureChecker.vy): Use the shift operators `>>` and `<<` introduced in Vyper [`0.3.8`](https://github.com/vyperlang/vyper/releases/tag/v0.3.8) instead of the `shift` instruction. ([#127](https://github.com/pcaversaccio/snekmate/pull/127))
+  - [`Math`](https://github.com/pcaversaccio/snekmate/blob/v0.0.2/src/utils/Math.vy):
+    - Use directly 🐍 snekmate's [`log_2`](https://github.com/pcaversaccio/snekmate/blob/v0.0.1/src/utils/Math.vy#L202) function in the internal calculation of `wad_cbrt`. ([#91](https://github.com/pcaversaccio/snekmate/pull/91))
+    - Use the shift operators `>>` and `<<` introduced in Vyper [`0.3.8`](https://github.com/vyperlang/vyper/releases/tag/v0.3.8) instead of the `shift` instruction. ([#127](https://github.com/pcaversaccio/snekmate/pull/127))
 
 ### ❗️ Breaking Change
 
