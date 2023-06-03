@@ -11,6 +11,8 @@
 
 ### ♻️ Refactoring
 
+- **General**
+  - All 🐍 snekmate contracts are now guaranteed to compile with the Vyper CLI flags `userdoc` and `devdoc`, and, if using the [Ape framework](https://github.com/ApeWorX/ape), with `ape compile`. ([#126](https://github.com/pcaversaccio/snekmate/pull/126))
 - **Extensions**
   - [`ERC4626`](https://github.com/pcaversaccio/snekmate/blob/v0.0.2/src/extensions/ERC4626.vy): Add `implements` interface `ERC20Detailed` and `ERC4626`. ([#125](https://github.com/pcaversaccio/snekmate/pull/125))
 - **Tokens**
