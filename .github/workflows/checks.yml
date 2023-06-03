@@ -13,6 +13,10 @@ jobs:
       matrix:
         os:
           - ubuntu-latest
+        architecture:
+          - x64
+        python-version:
+          - 3.11
         node_version:
           - 18
 
@@ -43,6 +47,18 @@ jobs:
 
       - name: Prettier and lint
         run: yarn lint:check
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+          architecture: ${{ matrix.architecture }}
+
+      - name: Check formatting with Black
+        uses: psf/black@stable
+        with:
+          options: "--check --verbose"
+          src: "./scripts"
 
   codespell:
     runs-on: ${{ matrix.os }}

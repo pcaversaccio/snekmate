@@ -35,6 +35,17 @@ jobs:
       - name: Install Vyper
         run: pip install vyper
 
+      - name: Check userdoc and devdoc compilation
+        run: python scripts/compile.py
+
+      - name: Setup Ape
+        uses: ApeWorX/github-action@v1
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Check Ape compilation
+        run: ape compile
+
       - name: Get Yarn cache directory path
         id: yarn-cache-dir-path
         run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
@@ -62,7 +73,7 @@ jobs:
           version: nightly
 
       - name: Show the Foundry CI config
-        run: "forge config"
+        run: forge config
         env:
           FOUNDRY_PROFILE: ci
 
@@ -72,7 +83,7 @@ jobs:
           FOUNDRY_PROFILE: ci
 
       - name: Show the Foundry default config
-        run: "forge config"
+        run: forge config
         env:
           FOUNDRY_PROFILE: default
 

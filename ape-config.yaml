@@ -1,0 +1,7 @@
+name: snekmate
+contracts_folder: src
+default_ecosystem: ethereum
+plugins:
+  - name: vyper
+vyper:
+  evm_version: shanghai

@@ -15,16 +15,18 @@
 
         Roles can be used to represent a set of permissions. To restrict
         access to a function call, use the `external` function `hasRole`
-        or the `internal` function `_check_role`:
+        or the `internal` function `_check_role` (to avoid any NatSpec
+        parsing error, no `@` character is added to the visibility decorator
+        `@external` in the following examples; please add them accordingly):
         ```vy
-        @external
+        external
         def foo():
             assert self.hasRole[MY_ROLE][msg.sender], "AccessControl: account is missing role"
             ...
 
         OR
 
-        @external
+        external
         def foo():
             self._check_role(MY_ROLE, msg.sender)
             ...

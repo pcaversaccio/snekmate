@@ -11,6 +11,8 @@
 
 ### ♻️ Refactoring
 
+- **General**
+  - All 🐍 snekmate contracts are now guaranteed to compile with the Vyper CLI flags `userdoc` and `devdoc`, and, if using the [Ape framework](https://github.com/ApeWorX/ape), with `ape compile`. ([#126](https://github.com/pcaversaccio/snekmate/pull/126))
 - **Extensions**
   - [`ERC4626`](https://github.com/pcaversaccio/snekmate/blob/v0.0.2/src/extensions/ERC4626.vy): Add `implements` interface `ERC20Detailed` and `ERC4626`. ([#125](https://github.com/pcaversaccio/snekmate/pull/125))
 - **Tokens**
@@ -27,6 +29,10 @@
 ### ❗️ Breaking Change
 
 - All 🐍 snekmate contracts now target the Vyper version [`0.3.9`](https://github.com/vyperlang/vyper/releases/tag/v0.3.9). It is strongly recommended to upgrade accordingly your local Vyper version prior to using the 🐍 snekmate contracts. **Important:** The default EVM version since Vyper version `0.3.8` is set to `shanghai` (i.e. the EVM includes the [`PUSH0`](https://eips.ethereum.org/EIPS/eip-3855) instruction). If you intend to deploy on an EVM chain with no `PUSH0` support, you must compile the 🐍 snekmate contracts with the `--evm-version paris` option; e.g. `vyper --evm-version paris utils/Math.vy`. ([#122](https://github.com/pcaversaccio/snekmate/pull/122))
+
+### 👀 Full Changelog
+
+- [`v0.0.1...v0.0.2`](https://github.com/pcaversaccio/snekmate/compare/v0.0.1...v0.0.2)
 
 ## `0.0.1` (06-03-2023)
 
