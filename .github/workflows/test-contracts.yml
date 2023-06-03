@@ -32,6 +32,12 @@ jobs:
           python-version: ${{ matrix.python-version }}
           architecture: ${{ matrix.architecture }}
 
+      - name: Install Vyper
+        run: pip install vyper
+
+      - name: Check userdoc and devdoc compilation
+        run: python scripts/compile.py
+
       - name: Setup Ape
         uses: ApeWorX/github-action@v1
         with:
@@ -39,12 +45,6 @@ jobs:
 
       - name: Check Ape compilation
         run: ape compile
-
-      - name: Install Vyper
-        run: pip install vyper
-
-      - name: Check userdoc and devdoc compilation
-        run: python scripts/compile.py
 
       - name: Get Yarn cache directory path
         id: yarn-cache-dir-path
