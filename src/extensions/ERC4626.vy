@@ -241,15 +241,7 @@ def __init__(name_: String[25], symbol_: String[5], asset_: ERC20, decimals_offs
     # some way.
     success, decoded_decimals = self._try_get_underlying_decimals(asset_)
 
-    underlying_decimals: uint8 = empty(uint8)
-    # Due to a known compiler bug (https://github.com/vyperlang/vyper/issues/3278),
-    # we use a local variable for the first value assignment.
-    if (success):
-        underlying_decimals = decoded_decimals
-    else:
-        underlying_decimals = 18
-
-    _UNDERLYING_DECIMALS = underlying_decimals
+    _UNDERLYING_DECIMALS = decoded_decimals if success else 18
     _DECIMALS_OFFSET = decimals_offset_
     # The following line uses intentionally checked arithmetic
     # to prevent a theoretically possible overflow.
