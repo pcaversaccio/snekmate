@@ -117,9 +117,9 @@ asset: public(immutable(ERC20))
 
 
 # @dev Caches the domain separator as an `immutable`
-# value, but also stores the corresponding chain id
+# value, but also stores the corresponding chain ID
 # to invalidate the cached domain separator if the
-# chain id changes.
+# chain ID changes.
 _CACHED_CHAIN_ID: immutable(uint256)
 _CACHED_SELF: immutable(address)
 _CACHED_DOMAIN_SEPARATOR: immutable(bytes32)

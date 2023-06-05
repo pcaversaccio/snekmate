@@ -58,7 +58,7 @@ contract EIP712DomainSeparatorTest is Test {
 
     function testDomainSeparatorV4() public {
         /**
-         * @dev We change the chain id here to access the "else" branch
+         * @dev We change the chain ID here to access the "else" branch
          * in the function `domain_separator_v4`.
          */
         vm.chainId(block.chainid + 1);
@@ -104,7 +104,7 @@ contract EIP712DomainSeparatorTest is Test {
 
     function testFuzzDomainSeparatorV4(uint8 increment) public {
         /**
-         * @dev We change the chain id here to access the "else" branch
+         * @dev We change the chain ID here to access the "else" branch
          * in the function `domain_separator_v4`.
          */
         vm.chainId(block.chainid + increment);
