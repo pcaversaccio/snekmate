@@ -86,7 +86,7 @@ def ceil_div(x: uint256, y: uint256) -> uint256:
     """
     assert y != empty(uint256), "Math: ceil_div division by zero"
     # Due to a known compiler bug (https://github.com/vyperlang/vyper/issues/3480),
-    # we use `0` instead of `empty(uint256)` as return type.
+    # we use `0` instead of `empty(uint256)` as return value.
     return 0 if (x == empty(uint256)) else unsafe_add(unsafe_div(x - 1, y), 1)
 
 
