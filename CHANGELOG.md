@@ -14,7 +14,9 @@
 - **General**
   - All 🐍 snekmate contracts are now guaranteed to compile with the Vyper CLI flags `userdoc` and `devdoc`, and, if using the [Ape framework](https://github.com/ApeWorX/ape), with `ape compile`. ([#126](https://github.com/pcaversaccio/snekmate/pull/126))
 - **Extensions**
-  - [`ERC4626`](https://github.com/pcaversaccio/snekmate/blob/v0.0.2/src/extensions/ERC4626.vy): Add `implements` interface `ERC20Detailed` and `ERC4626`. ([#125](https://github.com/pcaversaccio/snekmate/pull/125))
+  - [`ERC4626`](https://github.com/pcaversaccio/snekmate/blob/v0.0.2/src/extensions/ERC4626.vy):
+    - Add `implements` interface `ERC20Detailed` and `ERC4626`. ([#125](https://github.com/pcaversaccio/snekmate/pull/125))
+    - Use of the ternary operator introduced in Vyper [`0.3.8`](https://github.com/vyperlang/vyper/releases/tag/v0.3.8) in the constructor for the `immutable` variable assignment of `_UNDERLYING_DECIMALS` instead of an `if-else` statement. ([#128](https://github.com/pcaversaccio/snekmate/pull/128))
 - **Tokens**
   - [`ERC20`](https://github.com/pcaversaccio/snekmate/blob/v0.0.2/src/tokens/ERC20.vy): Add `implements` interface `ERC20Detailed`. ([#125](https://github.com/pcaversaccio/snekmate/pull/125))
   - [`ERC721`](https://github.com/pcaversaccio/snekmate/blob/v0.0.2/src/tokens/ERC721.vy): Add `implements` interface `IERC721Metadata`. ([#125](https://github.com/pcaversaccio/snekmate/pull/125))
@@ -25,6 +27,7 @@
   - [`Math`](https://github.com/pcaversaccio/snekmate/blob/v0.0.2/src/utils/Math.vy):
     - Use directly 🐍 snekmate's [`log_2`](https://github.com/pcaversaccio/snekmate/blob/v0.0.1/src/utils/Math.vy#L202) function in the internal calculation of `wad_cbrt`. ([#91](https://github.com/pcaversaccio/snekmate/pull/91))
     - Use the shift operators `>>` and `<<` introduced in Vyper [`0.3.8`](https://github.com/vyperlang/vyper/releases/tag/v0.3.8) instead of the `shift` instruction. ([#127](https://github.com/pcaversaccio/snekmate/pull/127))
+    - Use of the ternary operator introduced in Vyper [`0.3.8`](https://github.com/vyperlang/vyper/releases/tag/v0.3.8) in the function `ceil_div` instead of an `if-else` statement. ([#128](https://github.com/pcaversaccio/snekmate/pull/128))
 
 ### ❗️ Breaking Change
 
