@@ -102,6 +102,25 @@ contract EIP712DomainSeparatorTest is Test {
         assertEq(digest1, digest2);
     }
 
+    function testEIP712Domain() public {
+        (
+            bytes1 fields,
+            string memory name,
+            string memory version,
+            uint256 chainId,
+            address verifyingContract,
+            bytes32 salt,
+            uint256[] memory extensions
+        ) = EIP712domainSeparator.eip712Domain();
+        assertEq(fields, hex"0f");
+        assertEq(name, _NAME);
+        assertEq(version, _VERSION);
+        assertEq(chainId, block.chainid);
+        assertEq(verifyingContract, address(EIP712domainSeparator));
+        assertEq(salt, bytes32(0));
+        assertEq(extensions, new uint256[](0));
+    }
+
     function testFuzzDomainSeparatorV4(uint8 increment) public {
         /**
          * @dev We change the chain ID here to access the "else" branch
@@ -148,5 +167,38 @@ contract EIP712DomainSeparatorTest is Test {
             )
         );
         assertEq(digest1, digest2);
+    }
+
+    function testFuzzEIP712Domain(
+        bytes1 randomHex,
+        uint8 increment,
+        bytes32 randomSalt,
+        uint256[] calldata randomExtensions
+    ) public {
+        vm.assume(
+            randomHex != hex"0f" &&
+                increment != 0 &&
+                randomSalt != bytes32(0) &&
+                randomExtensions.length != 0
+        );
+        (
+            bytes1 fields,
+            string memory name,
+            string memory version,
+            uint256 chainId,
+            address verifyingContract,
+            bytes32 salt,
+            uint256[] memory extensions
+        ) = EIP712domainSeparator.eip712Domain();
+        assertTrue(fields != randomHex);
+        assertEq(name, _NAME);
+        assertEq(version, _VERSION);
+        assertTrue(chainId != block.chainid + increment);
+        assertEq(verifyingContract, address(EIP712domainSeparator));
+        assertTrue(salt != randomSalt);
+        assertTrue(
+            keccak256(abi.encode(extensions)) !=
+                keccak256(abi.encode(randomExtensions))
+        );
     }
 }
