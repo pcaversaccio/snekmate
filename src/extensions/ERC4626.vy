@@ -11,10 +11,14 @@
         been added for convenience:
         - `permit` (`external` function),
         - `nonces` (`external` `view` function),
-        - `DOMAIN_SEPARATOR` (`external` `view` function).
+        - `DOMAIN_SEPARATOR` (`external` `view` function),
+        - `eip712Domain` (`external` `view` function).
         The `permit` function implements approvals via
         EIP-712 secp256k1 signatures:
         https://eips.ethereum.org/EIPS/eip-2612.
+        In addition, this contract also implements the EIP-5267
+        function `eip712Domain`:
+        https://eips.ethereum.org/EIPS/eip-5267.
         The implementation is inspired by OpenZeppelin's
         implementation here:
         https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC20/extensions/ERC4626.sol,

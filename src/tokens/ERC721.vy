@@ -22,6 +22,7 @@
         - `permit` (`external` function),
         - `nonces` (`external` `view` function),
         - `DOMAIN_SEPARATOR` (`external` `view` function),
+        - `eip712Domain` (`external` `view` function),
         - `owner` (`external` `view` function),
         - `transfer_ownership` (`external` function),
         - `renounce_ownership` (`external` function),
@@ -31,6 +32,12 @@
         The `permit` function implements approvals via
         EIP-712 secp256k1 signatures for ERC-721 tokens:
         https://eips.ethereum.org/EIPS/eip-4494.
+        In addition, this contract also implements the EIP-5267
+        function `eip712Domain`:
+        https://eips.ethereum.org/EIPS/eip-5267.
+        Eventually, this contract also implements the EIP-4906
+        metadata update extension:
+        https://eips.ethereum.org/EIPS/eip-4906.
         The implementation is inspired by OpenZeppelin's
         implementation here:
         https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC721/ERC721.sol,
