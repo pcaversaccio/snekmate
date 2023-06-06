@@ -11,7 +11,7 @@ error Reverted(address emitter);
  * @title MockCallee
  * @author pcaversaccio
  * @notice Forked and adjusted accordingly from here:
- * https://github.com/mds1/multicall/blob/master/src/test/mocks/MockCallee.sol.
+ * https://github.com/mds1/multicall/blob/main/src/test/mocks/MockCallee.sol.
  * @dev Receives calls from the multicaller.
  */
 contract MockCallee {

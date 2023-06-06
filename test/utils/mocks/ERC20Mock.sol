@@ -7,7 +7,7 @@ import {ERC20} from "openzeppelin/token/ERC20/ERC20.sol";
  * @title ERC20Mock
  * @author pcaversaccio
  * @notice Forked and adjusted accordingly from here:
- * https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/mocks/ERC20Mock.sol.
+ * https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/mocks/token/ERC20Mock.sol.
  * @dev Allows to mock a simple ERC-20 implementation.
  */
 contract ERC20Mock is ERC20 {
