@@ -8,6 +8,8 @@
         These functions implement the version of encoding known
         as "v4" as implemented by the JSON-RPC method:
         https://docs.metamask.io/guide/signing-data.html#sign-typed-data-v4.
+        In addition, this contract also implements EIP-5267:
+        https://eips.ethereum.org/EIPS/eip-5267.
         The implementation is inspired by OpenZeppelin's implementation here:
         https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/cryptography/draft-EIP712.sol.
 """
@@ -75,9 +77,9 @@ def __init__(name_: String[50], version_: String[20]):
     _HASHED_NAME = keccak256(name_)
     _HASHED_VERSION = keccak256(version_)
 
+    _CACHED_DOMAIN_SEPARATOR = self._build_domain_separator()
     _CACHED_CHAIN_ID = chain.id
     _CACHED_SELF = self
-    _CACHED_DOMAIN_SEPARATOR = self._build_domain_separator()
 
 
 @external
@@ -127,6 +129,7 @@ def eip712Domain() -> (bytes1, String[50], String[20], uint256, address, bytes32
     @return bytes32 The 32-byte disambiguation salt for the protocol.
     @return DynArray The 32-byte array of EIP-712 extensions.
     """
+    # Note that `\x0f` equals `01111`.
     return (convert(b"\x0f", bytes1), _NAME, _VERSION, chain.id, self, empty(bytes32), empty(DynArray[uint256, 128]))
 
 
