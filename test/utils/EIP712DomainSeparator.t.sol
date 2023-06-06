@@ -29,6 +29,9 @@ contract EIP712DomainSeparatorTest is Test {
     // solhint-disable-next-line var-name-mixedcase
     bytes32 private _CACHED_DOMAIN_SEPARATOR;
 
+    // solhint-disable-next-line var-name-mixedcase
+    address private EIP712domainSeparatorAddr;
+
     function setUp() public {
         bytes memory args = abi.encode(_NAME, _VERSION);
         EIP712domainSeparator = IEIP712DomainSeparator(
@@ -38,13 +41,14 @@ contract EIP712DomainSeparatorTest is Test {
                 args
             )
         );
+        EIP712domainSeparatorAddr = address(EIP712domainSeparator);
         _CACHED_DOMAIN_SEPARATOR = keccak256(
             abi.encode(
                 _TYPE_HASH,
                 keccak256(bytes(_NAME)),
                 keccak256(bytes(_VERSION)),
                 block.chainid,
-                address(EIP712domainSeparator)
+                EIP712domainSeparatorAddr
             )
         );
     }
@@ -68,7 +72,7 @@ contract EIP712DomainSeparatorTest is Test {
                 keccak256(bytes(_NAME)),
                 keccak256(bytes(_VERSION)),
                 block.chainid,
-                address(EIP712domainSeparator)
+                EIP712domainSeparatorAddr
             )
         );
         assertEq(EIP712domainSeparator.domain_separator_v4(), digest);
@@ -116,7 +120,7 @@ contract EIP712DomainSeparatorTest is Test {
         assertEq(name, _NAME);
         assertEq(version, _VERSION);
         assertEq(chainId, block.chainid);
-        assertEq(verifyingContract, address(EIP712domainSeparator));
+        assertEq(verifyingContract, EIP712domainSeparatorAddr);
         assertEq(salt, bytes32(0));
         assertEq(extensions, new uint256[](0));
     }
@@ -133,7 +137,7 @@ contract EIP712DomainSeparatorTest is Test {
                 keccak256(bytes(_NAME)),
                 keccak256(bytes(_VERSION)),
                 block.chainid,
-                address(EIP712domainSeparator)
+                EIP712domainSeparatorAddr
             )
         );
         assertEq(EIP712domainSeparator.domain_separator_v4(), digest);
@@ -194,7 +198,7 @@ contract EIP712DomainSeparatorTest is Test {
         assertEq(name, _NAME);
         assertEq(version, _VERSION);
         assertTrue(chainId != block.chainid + increment);
-        assertEq(verifyingContract, address(EIP712domainSeparator));
+        assertEq(verifyingContract, EIP712domainSeparatorAddr);
         assertTrue(salt != randomSalt);
         assertTrue(
             keccak256(abi.encode(extensions)) !=
