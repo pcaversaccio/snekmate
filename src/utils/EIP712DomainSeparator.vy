@@ -76,7 +76,6 @@ def __init__(name_: String[50], version_: String[20]):
     _VERSION = version_
     _HASHED_NAME = keccak256(name_)
     _HASHED_VERSION = keccak256(version_)
-
     _CACHED_DOMAIN_SEPARATOR = self._build_domain_separator()
     _CACHED_CHAIN_ID = chain.id
     _CACHED_SELF = self

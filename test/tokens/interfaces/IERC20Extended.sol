@@ -3,8 +3,9 @@ pragma solidity ^0.8.20;
 
 import {IERC20Metadata} from "openzeppelin/token/ERC20/extensions/IERC20Metadata.sol";
 import {IERC20Permit} from "openzeppelin/token/ERC20/extensions/IERC20Permit.sol";
+import {IERC5267} from "openzeppelin/interfaces/IERC5267.sol";
 
-interface IERC20Extended is IERC20Metadata, IERC20Permit {
+interface IERC20Extended is IERC20Metadata, IERC20Permit, IERC5267 {
     function increase_allowance(
         address spender,
         uint256 addedAmount

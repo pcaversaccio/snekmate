@@ -1877,6 +1877,25 @@ contract ERC721Test is Test {
         assertEq(ERC721Extended.DOMAIN_SEPARATOR(), digest);
     }
 
+    function testEIP712Domain() public {
+        (
+            bytes1 fields,
+            string memory name,
+            string memory version,
+            uint256 chainId,
+            address verifyingContract,
+            bytes32 salt,
+            uint256[] memory extensions
+        ) = ERC721Extended.eip712Domain();
+        assertEq(fields, hex"0f");
+        assertEq(name, _NAME_EIP712);
+        assertEq(version, _VERSION_EIP712);
+        assertEq(chainId, block.chainid);
+        assertEq(verifyingContract, ERC721ExtendedAddr);
+        assertEq(salt, bytes32(0));
+        assertEq(extensions, new uint256[](0));
+    }
+
     function testHasOwner() public {
         assertEq(ERC721Extended.owner(), deployer);
     }
@@ -2418,10 +2437,43 @@ contract ERC721Test is Test {
                 keccak256(bytes(_NAME_EIP712)),
                 keccak256(bytes(_VERSION_EIP712)),
                 block.chainid,
-                ERC721Extended
+                ERC721ExtendedAddr
             )
         );
         assertEq(ERC721Extended.DOMAIN_SEPARATOR(), digest);
+    }
+
+    function testFuzzEIP712Domain(
+        bytes1 randomHex,
+        uint8 increment,
+        bytes32 randomSalt,
+        uint256[] calldata randomExtensions
+    ) public {
+        vm.assume(
+            randomHex != hex"0f" &&
+                increment != 0 &&
+                randomSalt != bytes32(0) &&
+                randomExtensions.length != 0
+        );
+        (
+            bytes1 fields,
+            string memory name,
+            string memory version,
+            uint256 chainId,
+            address verifyingContract,
+            bytes32 salt,
+            uint256[] memory extensions
+        ) = ERC721Extended.eip712Domain();
+        assertTrue(fields != randomHex);
+        assertEq(name, _NAME_EIP712);
+        assertEq(version, _VERSION_EIP712);
+        assertTrue(chainId != block.chainid + increment);
+        assertEq(verifyingContract, ERC721ExtendedAddr);
+        assertTrue(salt != randomSalt);
+        assertTrue(
+            keccak256(abi.encode(extensions)) !=
+                keccak256(abi.encode(randomExtensions))
+        );
     }
 
     function testFuzzTransferOwnershipSuccess(

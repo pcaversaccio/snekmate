@@ -1841,6 +1841,25 @@ contract ERC4626VaultTest is ERC4626Test {
         assertEq(ERC4626ExtendedDecimalsOffset0.DOMAIN_SEPARATOR(), digest);
     }
 
+    function testEIP712Domain() public {
+        (
+            bytes1 fields,
+            string memory name,
+            string memory version,
+            uint256 chainId,
+            address verifyingContract,
+            bytes32 salt,
+            uint256[] memory extensions
+        ) = ERC4626ExtendedDecimalsOffset0.eip712Domain();
+        assertEq(fields, hex"0f");
+        assertEq(name, _NAME_EIP712);
+        assertEq(version, _VERSION_EIP712);
+        assertEq(chainId, block.chainid);
+        assertEq(verifyingContract, ERC4626ExtendedDecimalsOffset0Addr);
+        assertEq(salt, bytes32(0));
+        assertEq(extensions, new uint256[](0));
+    }
+
     function testFuzzPermitSuccess(
         string calldata owner,
         string calldata spender,
@@ -1951,6 +1970,39 @@ contract ERC4626VaultTest is ERC4626Test {
             )
         );
         assertEq(ERC4626ExtendedDecimalsOffset0.DOMAIN_SEPARATOR(), digest);
+    }
+
+    function testFuzzEIP712Domain(
+        bytes1 randomHex,
+        uint8 increment,
+        bytes32 randomSalt,
+        uint256[] calldata randomExtensions
+    ) public {
+        vm.assume(
+            randomHex != hex"0f" &&
+                increment != 0 &&
+                randomSalt != bytes32(0) &&
+                randomExtensions.length != 0
+        );
+        (
+            bytes1 fields,
+            string memory name,
+            string memory version,
+            uint256 chainId,
+            address verifyingContract,
+            bytes32 salt,
+            uint256[] memory extensions
+        ) = ERC4626ExtendedDecimalsOffset0.eip712Domain();
+        assertTrue(fields != randomHex);
+        assertEq(name, _NAME_EIP712);
+        assertEq(version, _VERSION_EIP712);
+        assertTrue(chainId != block.chainid + increment);
+        assertEq(verifyingContract, ERC4626ExtendedDecimalsOffset0Addr);
+        assertTrue(salt != randomSalt);
+        assertTrue(
+            keccak256(abi.encode(extensions)) !=
+                keccak256(abi.encode(randomExtensions))
+        );
     }
 }
 

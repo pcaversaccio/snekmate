@@ -78,6 +78,12 @@ import interfaces.IERC4906 as IERC4906
 implements: IERC4906
 
 
+# @dev We import and implement the `IERC5267` interface,
+# which is written using standard Vyper syntax.
+from ..utils.interfaces.IERC5267 import IERC5267
+implements: IERC5267
+
+
 # @dev We import the `IERC721Receiver` interface, which
 # is written using standard Vyper syntax.
 import interfaces.IERC721Receiver as IERC721Receiver
@@ -99,6 +105,10 @@ _SUPPORTED_INTERFACES: constant(bytes4[6]) = [
 
 # @dev Constant used as part of the ECDSA recovery function.
 _MALLEABILITY_THRESHOLD: constant(bytes32) = 0x7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF5D576E7357A4501DDFE92F46681B20A0
+
+
+# @dev The 32-byte type hash for the EIP-712 domain separator.
+_TYPE_HASH: constant(bytes32) = keccak256("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)")
 
 
 # @dev The 32-byte type hash of the `permit` function.
@@ -130,16 +140,22 @@ _BASE_URI: immutable(String[80])
 # value, but also stores the corresponding chain ID
 # to invalidate the cached domain separator if the
 # chain ID changes.
-_CACHED_CHAIN_ID: immutable(uint256)
-_CACHED_SELF: immutable(address)
 _CACHED_DOMAIN_SEPARATOR: immutable(bytes32)
+_CACHED_CHAIN_ID: immutable(uint256)
 
 
-# @dev `immutable` variables to store the name,
-# version, and type hash during contract creation.
+# @dev Caches `self` to `immutable` storage to avoid
+# potential issues if a vanilla contract is used in
+# a `delegatecall` context.
+_CACHED_SELF: immutable(address)
+
+
+# @dev `immutable` variables to store the (hashed)
+# name and (hashed) version during contract creation.
+_NAME: immutable(String[50])
 _HASHED_NAME: immutable(bytes32)
+_VERSION: immutable(String[20])
 _HASHED_VERSION: immutable(bytes32)
-_TYPE_HASH: immutable(bytes32)
 
 
 # @dev Mapping from owner to operator approvals.
@@ -245,6 +261,12 @@ event BatchMetadataUpdate:
     token_id: uint256
 
 
+# @dev May be emitted to signal that the domain could
+# have changed.
+event EIP712DomainChanged:
+    pass
+
+
 # @dev Emitted when the ownership is transferred
 # from `previous_owner` to `new_owner`.
 event OwnershipTransferred:
@@ -291,15 +313,13 @@ def __init__(name_: String[25], symbol_: String[5], base_uri_: String[80], name_
     self.is_minter[msg.sender] = True
     log RoleMinterChanged(msg.sender, True)
 
-    hashed_name: bytes32 = keccak256(convert(name_eip712_, Bytes[50]))
-    hashed_version: bytes32 = keccak256(convert(version_eip712_, Bytes[20]))
-    type_hash: bytes32 = keccak256(convert("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)", Bytes[82]))
-    _HASHED_NAME = hashed_name
-    _HASHED_VERSION = hashed_version
-    _TYPE_HASH = type_hash
+    _NAME = name_eip712_
+    _VERSION = version_eip712_
+    _HASHED_NAME = keccak256(name_eip712_)
+    _HASHED_VERSION = keccak256(version_eip712_)
+    _CACHED_DOMAIN_SEPARATOR = self._build_domain_separator()
     _CACHED_CHAIN_ID = chain.id
     _CACHED_SELF = self
-    _CACHED_DOMAIN_SEPARATOR = self._build_domain_separator(type_hash, hashed_name, hashed_version)
 
 
 @external
@@ -645,6 +665,32 @@ def DOMAIN_SEPARATOR() -> bytes32:
     @return bytes32 The 32-byte domain separator.
     """
     return self._domain_separator_v4()
+
+
+@external
+@view
+def eip712Domain() -> (bytes1, String[50], String[20], uint256, address, bytes32, DynArray[uint256, 128]):
+    """
+    @dev Returns the fields and values that describe the domain
+         separator used by this contract for EIP-712 signatures.
+    @notice The bits in the 1-byte bit map are read from the least
+            significant to the most significant, and fields are indexed
+            in the order that is specified by EIP-712, identical to the
+            order in which they are listed in the function type.
+    @return bytes1 The 1-byte bit map where bit `i` is set to 1
+            if and only if domain field `i` is present (`0 ≤ i ≤ 4`).
+    @return String The maximum 50-character user-readable string name
+            of the signing domain, i.e. the name of the dApp or protocol.
+    @return String The maximum 20-character current main version of
+            the signing domain. Signatures from different versions are
+            not compatible.
+    @return uint256 The 32-byte EIP-155 chain ID.
+    @return address The 20-byte address of the verifying contract.
+    @return bytes32 The 32-byte disambiguation salt for the protocol.
+    @return DynArray The 32-byte array of EIP-712 extensions.
+    """
+    # Note that `\x0f` equals `01111`.
+    return (convert(b"\x0f", bytes1), _NAME, _VERSION, chain.id, self, empty(bytes32), empty(DynArray[uint256, 128]))
 
 
 @external
@@ -1173,18 +1219,18 @@ def _domain_separator_v4() -> bytes32:
     if (self == _CACHED_SELF and chain.id == _CACHED_CHAIN_ID):
         return _CACHED_DOMAIN_SEPARATOR
     else:
-        return self._build_domain_separator(_TYPE_HASH, _HASHED_NAME, _HASHED_VERSION)
+        return self._build_domain_separator()
 
 
 @internal
 @view
-def _build_domain_separator(type_hash: bytes32, name_hash: bytes32, version_hash: bytes32) -> bytes32:
+def _build_domain_separator() -> bytes32:
     """
     @dev Sourced from {EIP712DomainSeparator-_build_domain_separator}.
     @notice See {EIP712DomainSeparator-_build_domain_separator}
             for the function docstring.
     """
-    return keccak256(_abi_encode(type_hash, name_hash, version_hash, chain.id, self))
+    return keccak256(_abi_encode(_TYPE_HASH, _HASHED_NAME, _HASHED_VERSION, chain.id, self))
 
 
 @internal
