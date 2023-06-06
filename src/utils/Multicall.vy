@@ -5,7 +5,11 @@
 @license GNU Affero General Public License v3.0
 @author pcaversaccio
 @notice These functions can be used to batch together multiple external
-        function calls into one single external function call.
+        function calls into one single external function call. Please note
+        that this contract is written in the most agnostic way possible and
+        users should adjust statically allocatable memory to their specific
+        needs before deploying it:
+        https://github.com/pcaversaccio/snekmate/discussions/82.
         The implementation is inspired by Matt Solomon's implementation here:
         https://github.com/mds1/multicall/blob/master/src/Multicall3.sol.
 @custom:security Make sure you understand how `msg.sender` works in `CALL` vs
