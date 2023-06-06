@@ -1,12 +1,18 @@
 # 🕓 Changelog
 
-## `0.0.2` (Unreleased)
+## `0.0.2` (07-06-2023)
 
 ### 💥 New Features
 
 - **General**
   - All 🐍 snekmate contracts now contain an _Ethereum Natural Language Specification Format_ (NatSpec) `custom` field `@custom:contract-name`. The underlying rationale is that the block explorers plan to use `@custom:contract-name` as contract name and `@title` as fallback. ([#124](https://github.com/pcaversaccio/snekmate/pull/124))
+- **Extensions**
+  - [`ERC4626`](https://github.com/pcaversaccio/snekmate/blob/v0.0.2/src/extensions/ERC4626.vy): Implements additionally the interface [`IERC5267`](https://github.com/pcaversaccio/snekmate/blob/v0.0.2/src/utils/interfaces/IERC5267.vy). ([#129](https://github.com/pcaversaccio/snekmate/pull/129))
+- **Tokens**
+  - [`ERC20`](https://github.com/pcaversaccio/snekmate/blob/v0.0.2/src/tokens/ERC20.vy): Implements additionally the interface [`IERC5267`](https://github.com/pcaversaccio/snekmate/blob/v0.0.2/src/utils/interfaces/IERC5267.vy). ([#129](https://github.com/pcaversaccio/snekmate/pull/129))
+  - [`ERC721`](https://github.com/pcaversaccio/snekmate/blob/v0.0.2/src/tokens/ERC721.vy): Implements additionally the interface [`IERC5267`](https://github.com/pcaversaccio/snekmate/blob/v0.0.2/src/utils/interfaces/IERC5267.vy). ([#129](https://github.com/pcaversaccio/snekmate/pull/129))
 - **Utility Functions**
+  - [`EIP712DomainSeparator`](https://github.com/pcaversaccio/snekmate/blob/v0.0.2/src/utils/EIP712DomainSeparator.vy): Implements additionally the interface [`IERC5267`](https://github.com/pcaversaccio/snekmate/blob/v0.0.2/src/utils/interfaces/IERC5267.vy). ([#129](https://github.com/pcaversaccio/snekmate/pull/129))
   - [`Math`](https://github.com/pcaversaccio/snekmate/blob/v0.0.2/src/utils/Math.vy): Add `wad_ln` and `wad_exp` to the standard mathematical utility functions. ([#91](https://github.com/pcaversaccio/snekmate/pull/91))
 
 ### ♻️ Refactoring

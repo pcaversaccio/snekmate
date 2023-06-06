@@ -6,7 +6,7 @@
 @author pcaversaccio
 @notice The ERC-4906 standard is an extension of EIP-721.
         It adds a `MetadataUpdate` event to EIP-721 tokens.
-        The ERC-165 identifier for this interface is 0x49064906.
+        The ERC-165 identifier for this interface is `0x49064906`.
         For more details, please refer to:
         https://eips.ethereum.org/EIPS/eip-4906.
 

@@ -1,6 +1,6 @@
 {
   "name": "snekmate",
-  "version": "0.0.1",
+  "version": "0.0.2-rc.1",
   "description": "State-of-the-art, highly opinionated, hyper-optimised, and secure Vyper smart contract building blocks.",
   "author": "Pascal Marco Caversaccio <pascal.caversaccio@hotmail.ch>",
   "license": "AGPL-3.0",
@@ -39,7 +39,7 @@
     "@openzeppelin/merkle-tree": "^1.0.4",
     "eslint": "^8.42.0",
     "eslint-config-prettier": "^8.8.0",
-    "ethers": "^6.4.1",
+    "ethers": "^6.4.2",
     "keccak256": "^1.0.6",
     "merkletreejs": "^0.3.10",
     "prettier": "^2.8.8",

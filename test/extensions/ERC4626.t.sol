@@ -1841,6 +1841,36 @@ contract ERC4626VaultTest is ERC4626Test {
         assertEq(ERC4626ExtendedDecimalsOffset0.DOMAIN_SEPARATOR(), digest);
     }
 
+    function testEIP712Domain() public {
+        (
+            bytes1 fields,
+            string memory name,
+            string memory version,
+            uint256 chainId,
+            address verifyingContract,
+            bytes32 salt,
+            uint256[] memory extensions
+        ) = ERC4626ExtendedDecimalsOffset0.eip712Domain();
+        assertEq(fields, hex"0f");
+        assertEq(name, _NAME_EIP712);
+        assertEq(version, _VERSION_EIP712);
+        assertEq(chainId, block.chainid);
+        assertEq(verifyingContract, ERC4626ExtendedDecimalsOffset0Addr);
+        assertEq(salt, bytes32(0));
+        assertEq(extensions, new uint256[](0));
+
+        bytes32 digest = keccak256(
+            abi.encode(
+                _TYPE_HASH,
+                keccak256(bytes(name)),
+                keccak256(bytes(version)),
+                chainId,
+                verifyingContract
+            )
+        );
+        assertEq(ERC4626ExtendedDecimalsOffset0.DOMAIN_SEPARATOR(), digest);
+    }
+
     function testFuzzPermitSuccess(
         string calldata owner,
         string calldata spender,
@@ -1948,6 +1978,50 @@ contract ERC4626VaultTest is ERC4626Test {
                 keccak256(bytes(_VERSION_EIP712)),
                 block.chainid,
                 ERC4626ExtendedDecimalsOffset0Addr
+            )
+        );
+        assertEq(ERC4626ExtendedDecimalsOffset0.DOMAIN_SEPARATOR(), digest);
+    }
+
+    function testFuzzEIP712Domain(
+        bytes1 randomHex,
+        uint8 increment,
+        bytes32 randomSalt,
+        uint256[] calldata randomExtensions
+    ) public {
+        vm.assume(
+            randomHex != hex"0f" &&
+                randomSalt != bytes32(0) &&
+                randomExtensions.length != 0
+        );
+        vm.chainId(block.chainid + increment);
+        (
+            bytes1 fields,
+            string memory name,
+            string memory version,
+            uint256 chainId,
+            address verifyingContract,
+            bytes32 salt,
+            uint256[] memory extensions
+        ) = ERC4626ExtendedDecimalsOffset0.eip712Domain();
+        assertTrue(fields != randomHex);
+        assertEq(name, _NAME_EIP712);
+        assertEq(version, _VERSION_EIP712);
+        assertEq(chainId, block.chainid);
+        assertEq(verifyingContract, ERC4626ExtendedDecimalsOffset0Addr);
+        assertTrue(salt != randomSalt);
+        assertTrue(
+            keccak256(abi.encode(extensions)) !=
+                keccak256(abi.encode(randomExtensions))
+        );
+
+        bytes32 digest = keccak256(
+            abi.encode(
+                _TYPE_HASH,
+                keccak256(bytes(name)),
+                keccak256(bytes(version)),
+                chainId,
+                verifyingContract
             )
         );
         assertEq(ERC4626ExtendedDecimalsOffset0.DOMAIN_SEPARATOR(), digest);

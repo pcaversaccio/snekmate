@@ -29,6 +29,9 @@ contract EIP712DomainSeparatorTest is Test {
     // solhint-disable-next-line var-name-mixedcase
     bytes32 private _CACHED_DOMAIN_SEPARATOR;
 
+    // solhint-disable-next-line var-name-mixedcase
+    address private EIP712domainSeparatorAddr;
+
     function setUp() public {
         bytes memory args = abi.encode(_NAME, _VERSION);
         EIP712domainSeparator = IEIP712DomainSeparator(
@@ -38,13 +41,14 @@ contract EIP712DomainSeparatorTest is Test {
                 args
             )
         );
+        EIP712domainSeparatorAddr = address(EIP712domainSeparator);
         _CACHED_DOMAIN_SEPARATOR = keccak256(
             abi.encode(
                 _TYPE_HASH,
                 keccak256(bytes(_NAME)),
                 keccak256(bytes(_VERSION)),
                 block.chainid,
-                address(EIP712domainSeparator)
+                EIP712domainSeparatorAddr
             )
         );
     }
@@ -58,7 +62,7 @@ contract EIP712DomainSeparatorTest is Test {
 
     function testDomainSeparatorV4() public {
         /**
-         * @dev We change the chain id here to access the "else" branch
+         * @dev We change the chain ID here to access the "else" branch
          * in the function `domain_separator_v4`.
          */
         vm.chainId(block.chainid + 1);
@@ -68,7 +72,7 @@ contract EIP712DomainSeparatorTest is Test {
                 keccak256(bytes(_NAME)),
                 keccak256(bytes(_VERSION)),
                 block.chainid,
-                address(EIP712domainSeparator)
+                EIP712domainSeparatorAddr
             )
         );
         assertEq(EIP712domainSeparator.domain_separator_v4(), digest);
@@ -102,9 +106,39 @@ contract EIP712DomainSeparatorTest is Test {
         assertEq(digest1, digest2);
     }
 
+    function testEIP712Domain() public {
+        (
+            bytes1 fields,
+            string memory name,
+            string memory version,
+            uint256 chainId,
+            address verifyingContract,
+            bytes32 salt,
+            uint256[] memory extensions
+        ) = EIP712domainSeparator.eip712Domain();
+        assertEq(fields, hex"0f");
+        assertEq(name, _NAME);
+        assertEq(version, _VERSION);
+        assertEq(chainId, block.chainid);
+        assertEq(verifyingContract, EIP712domainSeparatorAddr);
+        assertEq(salt, bytes32(0));
+        assertEq(extensions, new uint256[](0));
+
+        bytes32 digest = keccak256(
+            abi.encode(
+                _TYPE_HASH,
+                keccak256(bytes(name)),
+                keccak256(bytes(version)),
+                chainId,
+                verifyingContract
+            )
+        );
+        assertEq(EIP712domainSeparator.domain_separator_v4(), digest);
+    }
+
     function testFuzzDomainSeparatorV4(uint8 increment) public {
         /**
-         * @dev We change the chain id here to access the "else" branch
+         * @dev We change the chain ID here to access the "else" branch
          * in the function `domain_separator_v4`.
          */
         vm.chainId(block.chainid + increment);
@@ -114,7 +148,7 @@ contract EIP712DomainSeparatorTest is Test {
                 keccak256(bytes(_NAME)),
                 keccak256(bytes(_VERSION)),
                 block.chainid,
-                address(EIP712domainSeparator)
+                EIP712domainSeparatorAddr
             )
         );
         assertEq(EIP712domainSeparator.domain_separator_v4(), digest);
@@ -148,5 +182,49 @@ contract EIP712DomainSeparatorTest is Test {
             )
         );
         assertEq(digest1, digest2);
+    }
+
+    function testFuzzEIP712Domain(
+        bytes1 randomHex,
+        uint8 increment,
+        bytes32 randomSalt,
+        uint256[] calldata randomExtensions
+    ) public {
+        vm.assume(
+            randomHex != hex"0f" &&
+                randomSalt != bytes32(0) &&
+                randomExtensions.length != 0
+        );
+        vm.chainId(block.chainid + increment);
+        (
+            bytes1 fields,
+            string memory name,
+            string memory version,
+            uint256 chainId,
+            address verifyingContract,
+            bytes32 salt,
+            uint256[] memory extensions
+        ) = EIP712domainSeparator.eip712Domain();
+        assertTrue(fields != randomHex);
+        assertEq(name, _NAME);
+        assertEq(version, _VERSION);
+        assertEq(chainId, block.chainid);
+        assertEq(verifyingContract, EIP712domainSeparatorAddr);
+        assertTrue(salt != randomSalt);
+        assertTrue(
+            keccak256(abi.encode(extensions)) !=
+                keccak256(abi.encode(randomExtensions))
+        );
+
+        bytes32 digest = keccak256(
+            abi.encode(
+                _TYPE_HASH,
+                keccak256(bytes(name)),
+                keccak256(bytes(version)),
+                chainId,
+                verifyingContract
+            )
+        );
+        assertEq(EIP712domainSeparator.domain_separator_v4(), digest);
     }
 }
