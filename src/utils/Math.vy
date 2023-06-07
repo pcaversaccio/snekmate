@@ -493,7 +493,7 @@ def cbrt(x: uint256, roundup: bool) -> uint256:
     @notice Note that this function consumes about 1,600 to 1,800 gas units
             depending on the value of `x` and `roundup`. The implementation is
             inspired by Curve Finance's implementation under the MIT license here:
-            https://github.com/curvefi/tricrypto-ng/blob/main/contracts/CurveCryptoMathOptimized3.vy.
+            https://github.com/curvefi/tricrypto-ng/blob/main/contracts/main/CurveCryptoMathOptimized3.vy.
     @param x The 32-byte variable from which the cube root is calculated.
     @param roundup The Boolean variable that specifies whether
            to round up or not. The default `False` is round down.
@@ -521,7 +521,7 @@ def wad_cbrt(x: uint256) -> uint256:
     @notice Note that this function consumes about 1,500 to 1,700 gas units
             depending on the value of `x`. The implementation is inspired
             by Curve Finance's implementation under the MIT license here:
-            https://github.com/curvefi/tricrypto-ng/blob/main/contracts/CurveCryptoMathOptimized3.vy.
+            https://github.com/curvefi/tricrypto-ng/blob/main/contracts/main/CurveCryptoMathOptimized3.vy.
     @param x The 32-byte variable from which the cube root is calculated.
     @return The 32-byte cubic root of `x` with a precision of 1e18.
     """
