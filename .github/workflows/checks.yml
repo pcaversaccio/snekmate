@@ -83,6 +83,8 @@ jobs:
       matrix:
         os:
           - ubuntu-latest
+        ruby-version:
+          - 3.2
 
     steps:
       - name: Checkout
@@ -91,7 +93,7 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 3.2
+          ruby-version: ${{ matrix.ruby-version }}
           bundler-cache: true
 
       - name: Install awesome_bot
