@@ -11,7 +11,7 @@
         In addition, this contract also implements EIP-5267:
         https://eips.ethereum.org/EIPS/eip-5267.
         The implementation is inspired by OpenZeppelin's implementation here:
-        https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/cryptography/draft-EIP712.sol.
+        https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/cryptography/EIP712.sol.
 """
 
 

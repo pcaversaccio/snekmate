@@ -11,7 +11,7 @@
         needs before deploying it:
         https://github.com/pcaversaccio/snekmate/discussions/82.
         The implementation is inspired by Matt Solomon's implementation here:
-        https://github.com/mds1/multicall/blob/master/src/Multicall3.sol.
+        https://github.com/mds1/multicall/blob/main/src/Multicall3.sol.
 @custom:security Make sure you understand how `msg.sender` works in `CALL` vs
                  `DELEGATECALL` to the multicall contract, as well as the risks
                  of using `msg.value` in a multicall. To learn more about the latter, see:
