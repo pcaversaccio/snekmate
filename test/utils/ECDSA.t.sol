@@ -15,7 +15,7 @@ import {IECDSA} from "./interfaces/IECDSA.sol";
 error InvalidSignatureLength(address emitter);
 
 /**
- * @dev Error that occurs when the signature value 's' is invalid.
+ * @dev Error that occurs when the signature value `s` is invalid.
  * @param emitter The contract that emits the error.
  */
 error InvalidSignatureSValue(address emitter);
