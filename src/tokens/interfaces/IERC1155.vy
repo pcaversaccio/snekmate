@@ -100,6 +100,13 @@ def safeTransferFrom(_from: address, _to: address, _id: uint256, _value: uint256
             `_to` refers to a smart contract, it must implement
             {IERC1155Receiver-onERC1155Received} and return the
             acceptance magic value.
+
+            WARNING: This function can potentially allow a reentrancy
+            attack when transferring tokens to an untrusted contract,
+            when invoking {IERC1155Receiver-onERC1155Received} on the
+            receiver. Ensure to follow the checks-effects-interactions
+            (CEI) pattern and consider employing reentrancy guards when
+            interacting with untrusted contracts.
     @param _from The 20-byte address which previously
            owned the token.
     @param _to The 20-byte receiver address.
@@ -120,6 +127,13 @@ def safeBatchTransferFrom(_from: address, _to: address, _ids: DynArray[uint256, 
             same length. Also, if `_to` refers to a smart
             contract, it must implement {IERC1155Receiver-onERC1155BatchReceived}
             and return the acceptance magic value.
+
+            WARNING: This function can potentially allow a reentrancy
+            attack when transferring tokens to an untrusted contract,
+            when invoking {IERC1155Receiver-onERC1155BatchReceived} on
+            the receiver. Ensure to follow the checks-effects-interactions
+            (CEI) pattern and consider employing reentrancy guards when
+            interacting with untrusted contracts.
     @param _from The 20-byte address which previously
            owned the token.
     @param _to The 20-byte receiver address.

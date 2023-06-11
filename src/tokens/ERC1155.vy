@@ -205,6 +205,13 @@ def safeTransferFrom(owner: address, to: address, id: uint256, amount: uint256, 
             `to` refers to a smart contract, it must implement
             {IERC1155Receiver-onERC1155Received} and return the
             acceptance magic value.
+
+            WARNING: This function can potentially allow a reentrancy
+            attack when transferring tokens to an untrusted contract,
+            when invoking {IERC1155Receiver-onERC1155Received} on the
+            receiver. We ensure that we consistently follow the checks-
+            effects-interactions (CEI) pattern to avoid being vulnerable
+            to this type of attack.
     @param owner The 20-byte address which previously
            owned the token.
     @param to The 20-byte receiver address.
@@ -227,6 +234,13 @@ def safeBatchTransferFrom(owner: address, to: address, ids: DynArray[uint256, _B
             same length. Also, if `to` refers to a smart
             contract, it must implement {IERC1155Receiver-onERC1155BatchReceived}
             and return the acceptance magic value.
+
+            WARNING: This function can potentially allow a reentrancy
+            attack when transferring tokens to an untrusted contract,
+            when invoking {IERC1155Receiver-onERC1155BatchReceived} on
+            the receiver. We ensure that we consistently follow the
+            checks-effects-interactions (CEI) pattern to avoid being
+            vulnerable to this type of attack.
     @param owner The 20-byte address which previously
            owned the token.
     @param to The 20-byte receiver address.
@@ -515,6 +529,13 @@ def _safe_transfer_from(owner: address, to: address, id: uint256, amount: uint25
             of at least `amount`. Furthermore, if `to` refers
             to a smart contract, it must implement {IERC1155Receiver-onERC1155Received}
             and return the acceptance magic value.
+
+            WARNING: This `internal` function can potentially
+            allow a reentrancy attack when transferring tokens
+            to an untrusted contract, when invoking {IERC1155Receiver-onERC1155Received}
+            on the receiver. We ensure that we consistently follow
+            the checks-effects-interactions (CEI) pattern to avoid
+            being vulnerable to this type of attack.
     @param owner The 20-byte address which previously
            owned the token.
     @param to The 20-byte receiver address.
@@ -551,6 +572,13 @@ def _safe_batch_transfer_from(owner: address, to: address, ids: DynArray[uint256
             same length. Also, if `to` refers to a smart
             contract, it must implement {IERC1155Receiver-onERC1155BatchReceived}
             and return the acceptance magic value.
+
+            WARNING: This `internal` function can potentially
+            allow a reentrancy attack when transferring tokens
+            to an untrusted contract, when invoking {IERC1155Receiver-onERC1155BatchReceived}
+            on the receiver. We ensure that we consistently follow
+            the checks-effects-interactions (CEI) pattern to avoid
+            being vulnerable to this type of attack.
     @param owner The 20-byte address which previously
            owned the token.
     @param to The 20-byte receiver address.
@@ -618,6 +646,14 @@ def _safe_mint(owner: address, id: uint256, amount: uint256, data: Bytes[1024]):
             Also, if `owner` refers to a smart contract, it must implement
             {IERC1155Receiver-onERC1155Received}, which is called
             upon a safe transfer.
+
+            WARNING: This `internal` function without access
+            restriction can potentially allow a reentrancy
+            attack when transferring tokens to an untrusted
+            contract, when invoking {IERC1155Receiver-onERC1155Received}
+            on the receiver. We ensure that we consistently
+            follow the checks-effects-interactions (CEI) pattern
+            to avoid being vulnerable to this type of attack.
     @param owner The 20-byte owner address.
     @param id The 32-byte identifier of the token.
     @param amount The 32-byte token amount to be created.
@@ -647,6 +683,14 @@ def _safe_mint_batch(owner: address, ids: DynArray[uint256, _BATCH_SIZE], amount
             same length. Also, if `owner` refers to a smart contract,
             it must implement {IERC1155Receiver-onERC1155BatchReceived},
             which is called upon a safe transfer.
+
+            WARNING: This `internal` function without access
+            restriction can potentially allow a reentrancy
+            attack when transferring tokens to an untrusted
+            contract, when invoking {IERC1155Receiver-onERC1155BatchReceived}
+            on the receiver. We ensure that we consistently
+            follow the checks-effects-interactions (CEI) pattern
+            to avoid being vulnerable to this type of attack.
     @param owner The 20-byte owner address.
     @param ids The 32-byte array of token identifiers. Note
            that the order and length must match the 32-byte
