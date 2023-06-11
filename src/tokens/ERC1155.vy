@@ -530,12 +530,12 @@ def _safe_transfer_from(owner: address, to: address, id: uint256, amount: uint25
             to a smart contract, it must implement {IERC1155Receiver-onERC1155Received}
             and return the acceptance magic value.
 
-            WARNING: This function can potentially allow a reentrancy
-            attack when transferring tokens to an untrusted contract,
-            when invoking {IERC1155Receiver-onERC1155Received} on the
-            receiver. We ensure that we consistently follow the checks-
-            effects-interactions (CEI) pattern to avoid being vulnerable
-            to this type of attack.
+            WARNING: This `internal` function can potentially
+            allow a reentrancy attack when transferring tokens
+            to an untrusted contract, when invoking {IERC1155Receiver-onERC1155Received}
+            on the receiver. We ensure that we consistently follow
+            the checks-effects-interactions (CEI) pattern to avoid
+            being vulnerable to this type of attack.
     @param owner The 20-byte address which previously
            owned the token.
     @param to The 20-byte receiver address.
@@ -573,12 +573,12 @@ def _safe_batch_transfer_from(owner: address, to: address, ids: DynArray[uint256
             contract, it must implement {IERC1155Receiver-onERC1155BatchReceived}
             and return the acceptance magic value.
 
-            WARNING: This function can potentially allow a reentrancy
-            attack when transferring tokens to an untrusted contract,
-            when invoking {IERC1155Receiver-onERC1155BatchReceived} on
-            the receiver. We ensure that we consistently follow the
-            checks-effects-interactions (CEI) pattern to avoid being
-            vulnerable to this type of attack.
+            WARNING: This `internal` function can potentially
+            allow a reentrancy attack when transferring tokens
+            to an untrusted contract, when invoking {IERC1155Receiver-onERC1155BatchReceived}
+            on the receiver. We ensure that we consistently follow
+            the checks-effects-interactions (CEI) pattern to avoid
+            being vulnerable to this type of attack.
     @param owner The 20-byte address which previously
            owned the token.
     @param to The 20-byte receiver address.
