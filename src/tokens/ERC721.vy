@@ -445,13 +445,6 @@ def transferFrom(owner: address, to: address, token_id: uint256):
             IMPORTANT: The function is declared as `payable`
             to comply with the EIP-721 standard definition:
             https://eips.ethereum.org/EIPS/eip-721.
-
-            WARNING: This function can potentially allow a reentrancy
-            attack when transferring tokens to an untrusted contract,
-            when invoking {IERC721Receiver-onERC721Received} on the
-            receiver. We ensure that we consistently follow the checks-
-            effects-interactions (CEI) pattern to avoid being vulnerable
-            to this type of attack.
     @param owner The 20-byte owner address.
     @param to The 20-byte receiver address.
     @param token_id The 32-byte identifier of the token.
