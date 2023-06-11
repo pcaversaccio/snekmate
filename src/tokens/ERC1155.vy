@@ -405,13 +405,6 @@ def safe_mint(owner: address, id: uint256, amount: uint256, data: Bytes[1024]):
             if `owner` refers to a smart contract, it must implement
             {IERC1155Receiver-onERC1155Received}, which is called
             upon a safe transfer.
-
-            WARNING: This function can potentially allow a reentrancy
-            attack when transferring tokens to an untrusted contract,
-            when invoking {IERC1155Receiver-onERC1155Received} on the
-            receiver. We ensure that we consistently follow the checks-
-            effects-interactions (CEI) pattern to avoid being vulnerable
-            to this type of attack.
     @param owner The 20-byte owner address.
     @param id The 32-byte identifier of the token.
     @param amount The 32-byte token amount to be created.
@@ -430,13 +423,6 @@ def safe_mint_batch(owner: address, ids: DynArray[uint256, _BATCH_SIZE], amounts
             same length. Also, if `owner` refers to a smart contract,
             it must implement {IERC1155Receiver-onERC1155BatchReceived},
             which is called upon a safe transfer.
-
-            WARNING: This function can potentially allow a reentrancy
-            attack when transferring tokens to an untrusted contract,
-            when invoking {IERC1155Receiver-onERC1155BatchReceived} on
-            the receiver. We ensure that we consistently follow the
-            checks-effects-interactions (CEI) pattern to avoid being
-            vulnerable to this type of attack.
     @param owner The 20-byte owner address.
     @param ids The 32-byte array of token identifiers. Note
            that the order and length must match the 32-byte
@@ -661,12 +647,13 @@ def _safe_mint(owner: address, id: uint256, amount: uint256, data: Bytes[1024]):
             {IERC1155Receiver-onERC1155Received}, which is called
             upon a safe transfer.
 
-            WARNING: This function can potentially allow a reentrancy
-            attack when transferring tokens to an untrusted contract,
-            when invoking {IERC1155Receiver-onERC1155Received} on the
-            receiver. We ensure that we consistently follow the checks-
-            effects-interactions (CEI) pattern to avoid being vulnerable
-            to this type of attack.
+            WARNING: This `internal` function without access
+            restriction can potentially allow a reentrancy
+            attack when transferring tokens to an untrusted
+            contract, when invoking {IERC1155Receiver-onERC1155Received}
+            on the receiver. We ensure that we consistently
+            follow the checks-effects-interactions (CEI) pattern
+            to avoid being vulnerable to this type of attack.
     @param owner The 20-byte owner address.
     @param id The 32-byte identifier of the token.
     @param amount The 32-byte token amount to be created.
@@ -697,12 +684,13 @@ def _safe_mint_batch(owner: address, ids: DynArray[uint256, _BATCH_SIZE], amount
             it must implement {IERC1155Receiver-onERC1155BatchReceived},
             which is called upon a safe transfer.
 
-            WARNING: This function can potentially allow a reentrancy
-            attack when transferring tokens to an untrusted contract,
-            when invoking {IERC1155Receiver-onERC1155BatchReceived} on
-            the receiver. We ensure that we consistently follow the
-            checks-effects-interactions (CEI) pattern to avoid being
-            vulnerable to this type of attack.
+            WARNING: This `internal` function without access
+            restriction can potentially allow a reentrancy
+            attack when transferring tokens to an untrusted
+            contract, when invoking {IERC1155Receiver-onERC1155BatchReceived}
+            on the receiver. We ensure that we consistently
+            follow the checks-effects-interactions (CEI) pattern
+            to avoid being vulnerable to this type of attack.
     @param owner The 20-byte owner address.
     @param ids The 32-byte array of token identifiers. Note
            that the order and length must match the 32-byte

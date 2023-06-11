@@ -442,10 +442,16 @@ def transferFrom(owner: address, to: address, token_id: uint256):
             is not `owner`, it must be approved to move this
             token by either `approve` or `setApprovalForAll`.
 
-            IMPORTANT: The function is declared as
-            `payable` to comply with the EIP-721
-            standard definition:
+            IMPORTANT: The function is declared as `payable`
+            to comply with the EIP-721 standard definition:
             https://eips.ethereum.org/EIPS/eip-721.
+
+            WARNING: This function can potentially allow a reentrancy
+            attack when transferring tokens to an untrusted contract,
+            when invoking {IERC721Receiver-onERC721Received} on the
+            receiver. We ensure that we consistently follow the checks-
+            effects-interactions (CEI) pattern to avoid being vulnerable
+            to this type of attack.
     @param owner The 20-byte owner address.
     @param to The 20-byte receiver address.
     @param token_id The 32-byte identifier of the token.
@@ -479,10 +485,16 @@ def safeTransferFrom(owner: address, to: address, token_id: uint256, data: Bytes
             information here:
             https://github.com/vyperlang/vyper/issues/903.
 
-            IMPORTANT: The function is declared as
-            `payable` to comply with the EIP-721
-            standard definition:
+            IMPORTANT: The function is declared as `payable`
+            to comply with the EIP-721 standard definition:
             https://eips.ethereum.org/EIPS/eip-721.
+
+            WARNING: This function can potentially allow a reentrancy
+            attack when transferring tokens to an untrusted contract,
+            when invoking {IERC721Receiver-onERC721Received} on the
+            receiver. We ensure that we consistently follow the checks-
+            effects-interactions (CEI) pattern to avoid being vulnerable
+            to this type of attack.
     @param owner The 20-byte owner address.
     @param to The 20-byte receiver address.
     @param token_id The 32-byte identifier of the token.
@@ -864,6 +876,14 @@ def _safe_mint(owner: address, token_id: uint256, data: Bytes[1024]):
             refers to a smart contract, it must implement
             {IERC721Receiver-onERC721Received}, which is called
             upon a safe transfer.
+
+            WARNING: This `internal` function without access
+            restriction can potentially allow a reentrancy
+            attack when transferring tokens to an untrusted
+            contract, when invoking {IERC721Receiver-onERC721Received}
+            on the receiver. We ensure that we consistently
+            follow the checks-effects-interactions (CEI) pattern
+            to avoid being vulnerable to this type of attack.
     @param owner The 20-byte owner address.
     @param token_id The 32-byte identifier of the token.
     @param data The maximum 1024-byte additional data
@@ -924,6 +944,13 @@ def _safe_transfer(owner: address, to: address, token_id: uint256, data: Bytes[1
             refers to a smart contract, it must implement
             {IERC721Receiver-onERC721Received}, which is
             called upon a safe transfer.
+
+            WARNING: This `internal` function can potentially
+            allow a reentrancy attack when transferring tokens
+            to an untrusted contract, when invoking {IERC721Receiver-onERC721Received}
+            on the receiver. We ensure that we consistently
+            follow the checks-effects-interactions (CEI) pattern
+            to avoid being vulnerable to this type of attack.
     @param owner The 20-byte owner address.
     @param to The 20-byte receiver address.
     @param token_id The 32-byte identifier of the token.
