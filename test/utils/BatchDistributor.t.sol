@@ -4,6 +4,8 @@ pragma solidity ^0.8.20;
 import {Test} from "forge-std/Test.sol";
 import {VyperDeployer} from "utils/VyperDeployer.sol";
 
+import {IERC20Errors} from "openzeppelin/interfaces/draft-IERC6093.sol";
+
 import {ERC20Mock} from "./mocks/ERC20Mock.sol";
 
 import {IBatchDistributor} from "./interfaces/IBatchDistributor.sol";
@@ -294,7 +296,14 @@ contract BatchDistributorTest is Test {
             txns: transaction
         });
 
-        vm.expectRevert(bytes("ERC20: insufficient allowance"));
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                IERC20Errors.ERC20InsufficientAllowance.selector,
+                address(batchDistributor),
+                99,
+                100
+            )
+        );
         batchDistributor.distribute_token(erc20Mock, batch);
         assertEq(erc20Mock.balanceOf(address(batchDistributor)), 0);
         vm.stopPrank();
@@ -330,7 +339,14 @@ contract BatchDistributorTest is Test {
             txns: transaction
         });
 
-        vm.expectRevert(bytes("ERC20: transfer amount exceeds balance"));
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                IERC20Errors.ERC20InsufficientBalance.selector,
+                arg3,
+                100,
+                120
+            )
+        );
         batchDistributor.distribute_token(erc20Mock, batch);
         assertEq(erc20Mock.balanceOf(address(batchDistributor)), 0);
         vm.stopPrank();

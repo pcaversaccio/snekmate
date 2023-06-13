@@ -5,6 +5,8 @@ import {Test} from "forge-std/Test.sol";
 import {ERC4626Test} from "erc4626-tests/ERC4626.test.sol";
 import {VyperDeployer} from "utils/VyperDeployer.sol";
 
+import {IERC20Errors} from "openzeppelin/interfaces/draft-IERC6093.sol";
+
 import {ERC20Mock} from "../utils/mocks/ERC20Mock.sol";
 import {ERC20ExcessDecimalsMock} from "./mocks/ERC20ExcessDecimalsMock.sol";
 
@@ -1434,7 +1436,14 @@ contract ERC4626VaultTest is ERC4626Test {
             underlying.allowance(self, ERC4626ExtendedDecimalsOffset0Addr),
             type(uint8).max - 1
         );
-        vm.expectRevert(bytes("ERC20: insufficient allowance"));
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                IERC20Errors.ERC20InsufficientAllowance.selector,
+                ERC4626ExtendedDecimalsOffset0Addr,
+                type(uint8).max - 1,
+                type(uint8).max
+            )
+        );
         ERC4626ExtendedDecimalsOffset0.deposit(type(uint8).max, self);
     }
 
@@ -1482,12 +1491,26 @@ contract ERC4626VaultTest is ERC4626Test {
     }
 
     function testDepositWithNoApproval() public {
-        vm.expectRevert(bytes("ERC20: insufficient allowance"));
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                IERC20Errors.ERC20InsufficientAllowance.selector,
+                ERC4626ExtendedDecimalsOffset0Addr,
+                0,
+                type(uint8).max
+            )
+        );
         ERC4626ExtendedDecimalsOffset0.deposit(type(uint8).max, self);
     }
 
     function testMintWithNoApproval() public {
-        vm.expectRevert(bytes("ERC20: insufficient allowance"));
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                IERC20Errors.ERC20InsufficientAllowance.selector,
+                ERC4626ExtendedDecimalsOffset0Addr,
+                0,
+                type(uint8).max
+            )
+        );
         ERC4626ExtendedDecimalsOffset0.mint(type(uint8).max, self);
     }
 
