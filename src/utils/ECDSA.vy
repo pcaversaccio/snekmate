@@ -12,7 +12,9 @@
         https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/cryptography/ECDSA.sol.
 @custom:security Signatures must not be used as unique identifiers since the
                  `ecrecover` EVM precompile allows for malleable (non-unique)
-                 signatures.
+                 signatures (see EIP-2: https://eips.ethereum.org/EIPS/eip-2)
+                 or signatures can be malleablised using EIP-2098:
+                 https://eips.ethereum.org/EIPS/eip-2098.
 """
 
 
