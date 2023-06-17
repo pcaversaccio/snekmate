@@ -2,7 +2,7 @@
 """
 @title Elliptic Curve Digital Signature Algorithm (ECDSA) Functions
 @custom:contract-name ECDSA
-@license GNU Affero General Public License v3.0
+@license GNU Affero General Public License v3.0 only
 @author pcaversaccio
 @notice These functions can be used to verify that a message was signed
         by the holder of the private key of a given address. Additionally,

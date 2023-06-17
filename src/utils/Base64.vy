@@ -2,7 +2,7 @@
 """
 @title Base64 Encoding and Decoding Functions
 @custom:contract-name Base64
-@license GNU Affero General Public License v3.0
+@license GNU Affero General Public License v3.0 only
 @author pcaversaccio
 @notice These functions can be used to encode bytes or to decode strings
         using the Base64 binary-to-text encoding scheme. For more details,

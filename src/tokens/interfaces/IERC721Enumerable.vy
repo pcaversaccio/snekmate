@@ -2,7 +2,7 @@
 """
 @title EIP-721 Optional Enumeration Interface Definition
 @custom:contract-name IERC721Enumerable
-@license GNU Affero General Public License v3.0
+@license GNU Affero General Public License v3.0 only
 @author pcaversaccio
 @notice The enumeration extension is optional for an ERC-721
         smart contract. This allows a contract to publish its

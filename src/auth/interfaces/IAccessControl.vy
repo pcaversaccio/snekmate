@@ -2,7 +2,7 @@
 """
 @title AccessControl Interface Definition
 @custom:contract-name IAccessControl
-@license GNU Affero General Public License v3.0
+@license GNU Affero General Public License v3.0 only
 @author pcaversaccio
 @notice The interface definition of `AccessControl`
         to support the ERC-165 detection. In order

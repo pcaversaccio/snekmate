@@ -2,7 +2,7 @@
 """
 @title EIP-1155 Interface Definition
 @custom:contract-name IERC1155
-@license GNU Affero General Public License v3.0
+@license GNU Affero General Public License v3.0 only
 @author pcaversaccio
 @notice The required interface definition of an ERC-1155
         compliant smart contract as defined in:

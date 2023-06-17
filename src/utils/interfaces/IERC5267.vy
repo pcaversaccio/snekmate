@@ -2,7 +2,7 @@
 """
 @title EIP-5267 Interface Definition
 @custom:contract-name IERC5267
-@license GNU Affero General Public License v3.0
+@license GNU Affero General Public License v3.0 only
 @author pcaversaccio
 @notice The ERC-5267 standard complements the EIP-712 standard
         by standardising how contracts should publish the fields

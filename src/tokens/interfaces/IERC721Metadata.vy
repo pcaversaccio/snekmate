@@ -2,7 +2,7 @@
 """
 @title EIP-721 Optional Metadata Interface Definition
 @custom:contract-name IERC721Metadata
-@license GNU Affero General Public License v3.0
+@license GNU Affero General Public License v3.0 only
 @author pcaversaccio
 @notice The metadata extension is optional for an ERC-721
         smart contract. This allows a smart contract to

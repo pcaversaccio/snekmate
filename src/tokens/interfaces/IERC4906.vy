@@ -2,7 +2,7 @@
 """
 @title EIP-4906 Interface Definition
 @custom:contract-name IERC4906
-@license GNU Affero General Public License v3.0
+@license GNU Affero General Public License v3.0 only
 @author pcaversaccio
 @notice The ERC-4906 standard is an extension of EIP-721.
         It adds a `MetadataUpdate` event to EIP-721 tokens.

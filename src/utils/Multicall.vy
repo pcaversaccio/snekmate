@@ -2,7 +2,7 @@
 """
 @title Multicall Functions
 @custom:contract-name Multicall
-@license GNU Affero General Public License v3.0
+@license GNU Affero General Public License v3.0 only
 @author pcaversaccio
 @notice These functions can be used to batch together multiple external
         function calls into one single external function call. Please note

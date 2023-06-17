@@ -2,7 +2,7 @@
 """
 @title ECDSA and EIP-1271 Signature Verification Functions
 @custom:contract-name SignatureChecker
-@license GNU Affero General Public License v3.0
+@license GNU Affero General Public License v3.0 only
 @author pcaversaccio
 @notice Signature verification helper functions that can be used
         instead of `ECDSA.recover_sig` to seamlessly support both
