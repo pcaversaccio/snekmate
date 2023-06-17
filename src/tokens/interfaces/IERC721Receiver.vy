@@ -2,7 +2,7 @@
 """
 @title EIP-721 Token Receiver Interface Definition
 @custom:contract-name IERC721Receiver
-@license GNU Affero General Public License v3.0
+@license GNU Affero General Public License v3.0 only
 @author pcaversaccio
 @notice The interface definition for any contract
         that wants to support safe transfers from

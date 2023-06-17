@@ -2,7 +2,7 @@
 """
 @title Owner-Based Access Control Functions
 @custom:contract-name Ownable
-@license GNU Affero General Public License v3.0
+@license GNU Affero General Public License v3.0 only
 @author pcaversaccio
 @notice These functions can be used to implement a basic access
         control mechanism, where there is an account (an owner)

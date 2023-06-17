@@ -2,7 +2,7 @@
 """
 @title Merkle Tree Proof Verification Functions
 @custom:contract-name MerkleProofVerification
-@license GNU Affero General Public License v3.0
+@license GNU Affero General Public License v3.0 only
 @author pcaversaccio
 @notice The Merkle tree and the corresponding proofs can be generated
         using the following JavaScript libraries:

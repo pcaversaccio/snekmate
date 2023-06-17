@@ -4,7 +4,7 @@ version = "0.0.2"
 description = "State-of-the-art, highly opinionated, hyper-optimised, and secure Vyper smart contract building blocks."
 readme = {file = "README.md", content-type = "text/markdown"}
 requires-python = ">=3.10"
-license = {text = "AGPL-3.0 License"}
+license = {text = "AGPL-3.0-only License"}
 keywords = ["security", "library", "ethereum", "smart-contracts", "evm", "vyper", "vyper-contracts"]
 authors = [
   {name = "Pascal Marco Caversaccio", email = "pascal.caversaccio@hotmail.ch"},

@@ -2,7 +2,7 @@
 """
 @title Batch Sending Both Native and ERC-20 Tokens
 @custom:contract-name BatchDistributor
-@license GNU Affero General Public License v3.0
+@license GNU Affero General Public License v3.0 only
 @author pcaversaccio
 @notice These functions can be used for batch sending
         both native and ERC-20 tokens. The implementation

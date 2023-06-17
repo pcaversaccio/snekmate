@@ -2,7 +2,7 @@
 """
 @title EIP-4494 Interface Definition
 @custom:contract-name IERC721Permit
-@license GNU Affero General Public License v3.0
+@license GNU Affero General Public License v3.0 only
 @author pcaversaccio
 @notice The `permit` function implements approvals via
         EIP-712 secp256k1 signatures for ERC-721 tokens:

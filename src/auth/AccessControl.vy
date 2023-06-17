@@ -2,7 +2,7 @@
 """
 @title Multi-Role-Based Access Control Functions
 @custom:contract-name AccessControl
-@license GNU Affero General Public License v3.0
+@license GNU Affero General Public License v3.0 only
 @author pcaversaccio
 @notice These functions can be used to implement role-based access
         control mechanisms. Roles are referred to by their `bytes32`

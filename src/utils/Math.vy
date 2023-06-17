@@ -2,7 +2,7 @@
 """
 @title Standard Mathematical Utility Functions
 @custom:contract-name Math
-@license GNU Affero General Public License v3.0
+@license GNU Affero General Public License v3.0 only
 @author pcaversaccio
 @custom:coauthor bout3fiddy
 @notice These functions implement standard mathematical utility
