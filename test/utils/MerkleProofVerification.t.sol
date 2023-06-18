@@ -442,6 +442,48 @@ contract MerkleProofVerificationTest is Test {
         );
     }
 
+    /**
+     * @notice This is a unit test linked to OpenZeppelin's Security Advisory:
+     * https://github.com/OpenZeppelin/openzeppelin-contracts/security/advisories/GHSA-wprv-93r4-jj2p.
+     * Note that Snekmate's implementation is not vulnerable by design,
+     * as you cannot consume out-of-bound hashes in Vyper. For further
+     * insights also, see the following Twitter thread:
+     * https://twitter.com/0xDACA/status/1669846430528286722.
+     */
+    function testMaliciousMultiProofVerify() public {
+        /**
+         * @dev Create a Merkle tree that contains a zero leaf at depth 1.
+         */
+        bytes32[] memory leaves = new bytes32[](2);
+        leaves[0] = keccak256(abi.encode("real leaf"));
+        leaves[1] = bytes32(0);
+        bytes32 root = merkleGenerator.hashLeafPairs(leaves[0], leaves[1]);
+
+        bytes32[] memory maliciousLeaves = new bytes32[](2);
+        maliciousLeaves[0] = keccak256(abi.encode("malicious"));
+        maliciousLeaves[1] = keccak256(abi.encode("leaves"));
+
+        /**
+         * @dev Now we can pass any malicious fake leaves as valid.
+         */
+        bytes32[] memory maliciousProof = new bytes32[](2);
+        maliciousProof[0] = leaves[0];
+        maliciousProof[1] = leaves[0];
+
+        bool[] memory maliciousProofFlags = new bool[](3);
+        maliciousProofFlags[0] = true;
+        maliciousProofFlags[1] = true;
+        maliciousProofFlags[2] = false;
+
+        vm.expectRevert();
+        merkleProofVerification.multi_proof_verify(
+            maliciousProof,
+            maliciousProofFlags,
+            root,
+            maliciousLeaves
+        );
+    }
+
     function testInvalidMultiProof() public {
         string[] memory cmdsCorrectRoot = new string[](2);
         cmdsCorrectRoot[0] = "node";
