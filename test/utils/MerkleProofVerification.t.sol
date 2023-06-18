@@ -443,7 +443,7 @@ contract MerkleProofVerificationTest is Test {
     }
 
     /**
-     * @notice This is a unit test linked to OpenZeppelin's Security Advisory:
+     * @notice This is a unit test linked to OpenZeppelin's security advisory:
      * https://github.com/OpenZeppelin/openzeppelin-contracts/security/advisories/GHSA-wprv-93r4-jj2p.
      * Note that Snekmate's implementation is not vulnerable by design,
      * as you cannot consume out-of-bound hashes in Vyper. For further
