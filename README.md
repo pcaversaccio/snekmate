@@ -18,6 +18,7 @@ src
 │  ├─ Ownable2Step — "2-Step Ownership Transfer Functions"
 │  ├─ AccessControl — "Multi-Role-Based Access Control Functions"
 ├─ extensions
+│  ├─ ERC2981 — "ERC-721 and ERC-1155 Compatible ERC-2981 Reference Implementation"
 │  ├─ ERC4626 — "Modern and Gas-Efficient ERC-4626 Tokenised Vault Implementation"
 ├─ tokens
 │  ├─ ERC20 — "Modern and Gas-Efficient ERC-20 + EIP-2612 Implementation"
@@ -83,6 +84,7 @@ This repository contains [Foundry](https://github.com/foundry-rs/foundry)-based 
 | `Ownable`                 |       ✅       |            ✅            |         ✅          |
 | `Ownable2Step`            |       ✅       |            ✅            |         ✅          |
 | `AccessControl`           |       ✅       |            ✅            |         ✅          |
+| `ERC2981`                 |       ✅       |            ✅            |         ✅          |
 | `ERC4626`                 |       ✅       |            ✅            |         ✅          |
 | `ERC20`                   |       ✅       |            ✅            |         ✅          |
 | `ERC721`                  |       ✅       |            ✅            |         ✅          |
