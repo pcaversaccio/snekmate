@@ -21,6 +21,18 @@ from vyper.interfaces import ERC165
 implements: ERC165
 
 
+# @dev We import the `ERC721` interface, which is a built-in
+# interface of the Vyper compiler, to highlight the association
+# of the custom `IERC721Enumerable` interface with the built-in
+# `ERC721` interface.
+# @notice The interface `IERC721Enumerable` must be used in conjunction
+# with the built-in interface `ERC721` to be EIP-721 compatible.
+# If you want to use this interface as a stand-alone interface,
+# you must add `implements: ERC721` to this interface and implement
+# all required events and functions accordingly.
+from vyper.interfaces import ERC721
+
+
 @external
 @view
 def supportsInterface(interfaceId: bytes4) -> bool:

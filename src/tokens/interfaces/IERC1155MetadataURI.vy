@@ -29,6 +29,18 @@ from vyper.interfaces import ERC165
 implements: ERC165
 
 
+# @dev We import the `IERC1155` interface, which is written
+# using standard Vyper syntax, to highlight the association
+# of the custom `IERC1155MetadataURI` interface with the custom
+# `IERC1155` interface.
+# @notice The interface `IERC1155MetadataURI` must be used in
+# conjunction with the custom interface `IERC1155` to be EIP-1155
+# compatible. If you want to use this interface as a stand-alone
+# interface, you must add `implements: IERC1155` to this interface
+# and implement all required events and functions accordingly.
+import IERC1155 as IERC1155
+
+
 @external
 @view
 def supportsInterface(interfaceId: bytes4) -> bool:

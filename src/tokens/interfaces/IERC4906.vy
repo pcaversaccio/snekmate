@@ -21,6 +21,18 @@ from vyper.interfaces import ERC165
 implements: ERC165
 
 
+# @dev We import the `ERC721` interface, which is a built-in
+# interface of the Vyper compiler, to highlight the association
+# of the custom `IERC4906` interface with the built-in `ERC721`
+# interface.
+# @notice The interface `IERC4906` must be used in conjunction
+# with the built-in interface `ERC721` to be EIP-721 compatible.
+# If you want to use this interface as a stand-alone interface,
+# you must add `implements: ERC721` to this interface and implement
+# all required events and functions accordingly.
+from vyper.interfaces import ERC721
+
+
 # @dev Emitted when the metadata of a token is changed.
 # Thus, third-party platforms, such as NFT marketplaces,
 # can update the images and associated attributes of the
