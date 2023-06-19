@@ -50,7 +50,7 @@ def royaltyInfo(_tokenId: uint256, _salePrice: uint256) -> (address, uint256):
     @param _tokenId The 32-byte identifier of the token.
     @param _salePrice The 32-byte sale price of the NFT asset
            specified by `_tokenId`.
-    @return address The 20-byte address of who should be sent
+    @return address The 20-byte address of the recipient of
             the royalty payment.
     @return uint256 The 32-byte royalty payment amount for
             `_salePrice`.
