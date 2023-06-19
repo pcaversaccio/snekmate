@@ -224,7 +224,7 @@ contract ECDSATest is Test {
         uint256 sTooHigh = uint256(s) +
             0x7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF5D576E7357A4501DDFE92F46681B20A0;
         bytes memory signature = abi.encodePacked(r, bytes32(sTooHigh), v);
-        vm.expectRevert(bytes("ECDSA: invalid signature 's' value"));
+        vm.expectRevert(bytes("ECDSA: invalid signature `s` value"));
         ECDSA.recover_sig(hash, signature);
 
         /**
