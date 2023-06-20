@@ -757,3 +757,69 @@ contract ERC2981Test is Test {
         ERC2981Extended.renounce_ownership();
     }
 }
+
+contract ERC2981Invariants is Test {
+    VyperDeployer private vyperDeployer = new VyperDeployer();
+
+    // solhint-disable-next-line var-name-mixedcase
+    IERC2981Extended private ERC2981Extended;
+    ERC2981Handler private erc2981Handler;
+
+    address private deployer = address(vyperDeployer);
+
+    function setUp() public {
+        ERC2981Extended = IERC2981Extended(
+            vyperDeployer.deployContract("src/extensions/", "ERC2981")
+        );
+        erc2981Handler = new ERC2981Handler(ERC2981Extended, deployer);
+        targetContract(address(erc2981Handler));
+        targetSender(deployer);
+    }
+
+    function invariantOwner() public {
+        assertEq(ERC2981Extended.owner(), erc2981Handler.owner());
+    }
+}
+
+contract ERC2981Handler {
+    address public owner;
+
+    IERC2981Extended private erc2981;
+
+    address private zeroAddress = address(0);
+
+    constructor(IERC2981Extended erc2981_, address owner_) {
+        erc2981 = erc2981_;
+        owner = owner_;
+    }
+
+    function set_default_royalty(address receiver, uint96 feeNumerator) public {
+        erc2981.set_default_royalty(receiver, feeNumerator);
+    }
+
+    function delete_default_royalty() public {
+        erc2981.delete_default_royalty();
+    }
+
+    function set_token_royalty(
+        uint256 tokenId,
+        address receiver,
+        uint96 feeNumerator
+    ) public {
+        erc2981.set_token_royalty(tokenId, receiver, feeNumerator);
+    }
+
+    function reset_token_royalty(uint256 tokenId) public {
+        erc2981.reset_token_royalty(tokenId);
+    }
+
+    function transfer_ownership(address newOwner) public {
+        erc2981.transfer_ownership(newOwner);
+        owner = newOwner;
+    }
+
+    function renounce_ownership() public {
+        erc2981.renounce_ownership();
+        owner = zeroAddress;
+    }
+}
