@@ -11,10 +11,10 @@
         ERC-1155 contract. The royalty information can be specified globally
         for all token IDs via the access-restricted function `set_default_royalty`,
         and/or individually for specific token IDs via the access-restricted
-        function `set_token_royalty`. The latter takes precedence over the first.
-        Furthermore, the royalty is specified as a fraction of sale price. The
-        `internal` state variable `_fee_denominator` defaults to `10_000`, meaning
-        the fee is specified in basis points by default.
+        function `set_token_royalty`. The latter takes precedence over the
+        first. Furthermore, the royalty is specified as a fraction of the sale
+        price. The `internal` state variable `_fee_denominator` defaults to
+        `10_000`, meaning the fee is specified in basis points by default.
 
         IMPORTANT: The ERC-2981 standard only specifies a way to signal royalty
         information and does not enforce its payment:
@@ -27,7 +27,7 @@
 @custom:security If you integrate this contract with an ERC-721 contract, please
                  consider clearing the royalty information from storage on calling
                  `burn` (to avoid any NatSpec parsing error, no `@` character is added
-                 to the visibility decorator `@internal` in the following examples;
+                 to the visibility decorator `@internal` in the following example;
                  please add them accordingly):
                  ```vy
                  internal
