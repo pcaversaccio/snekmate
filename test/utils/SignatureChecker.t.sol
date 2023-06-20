@@ -109,7 +109,7 @@ contract SignatureCheckerTest is Test {
             bytes32(sTooHigh),
             v
         );
-        vm.expectRevert(bytes("ECDSA: invalid signature 's' value"));
+        vm.expectRevert(bytes("ECDSA: invalid signature `s` value"));
         signatureChecker.is_valid_signature_now(alice, hash, signatureInvalid);
         assertTrue(
             !signatureChecker.is_valid_ERC1271_signature_now(
