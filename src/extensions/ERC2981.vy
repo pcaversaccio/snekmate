@@ -111,6 +111,13 @@ def __init__():
             to 10,000 so that the fee is in basis points by
             default. Also, the `owner` role will be assigned
             to the `msg.sender`.
+
+            IMPORTANT: The `_default_royalty_info` is set to
+            the EVM default values `receiver = empty(address)`
+            and `royalty_fraction = empty(uint96)`. If you want
+            to set your own default values during contract creation,
+            you can call `self._default_royalty(receiver, fee_numerator)`
+            in the constructor.
     """
     self._fee_denominator = 10_000
     self._transfer_ownership(msg.sender)
