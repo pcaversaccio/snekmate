@@ -88,8 +88,8 @@ _token_royalty_info: HashMap[uint256, RoyaltyInfo]
 
 # @dev The denominator with which to interpret the fee set
 # in `_set_token_royalty` and `_set_default_royalty` as a
-# fraction of the sale price. Defaults to 10,000 so fees are
-# expressed in basis points.
+# fraction of the sale price. Defaults to `10_000` so fees
+# are expressed in basis points.
 _fee_denominator: uint256
 
 
@@ -108,7 +108,7 @@ def __init__():
          in the creation-time EVM bytecode, the constructor
          is declared as `payable`.
     @notice We set the default value of `_fee_denominator`
-            to 10,000 so that the fee is in basis points by
+            to `10_000` so that the fee is in basis points by
             default. Also, the `owner` role will be assigned
             to the `msg.sender`.
 
