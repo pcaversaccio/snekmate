@@ -287,7 +287,7 @@ contract ERC2981Test is Test {
         vm.stopPrank();
     }
 
-    function testRoyaltyInfoOverflow() public {
+    function testRoyaltyInfoRoyaltyAmountOverflow() public {
         address owner = deployer;
         vm.startPrank(owner);
         ERC2981Extended.set_default_royalty(makeAddr("receiver"), 10);
@@ -400,9 +400,8 @@ contract ERC2981Test is Test {
         vm.assume(receiver != zeroAddress && tokenId1 != tokenId2);
         royaltyFraction = uint96(bound(royaltyFraction, 0, 5_000));
         salePrice = bound(salePrice, 0, type(uint240).max);
-        address owner = deployer;
         uint256 royalty = (salePrice * royaltyFraction) / 10_000;
-        vm.startPrank(owner);
+        vm.startPrank(deployer);
         ERC2981Extended.set_default_royalty(receiver, royaltyFraction);
         (address receiverAddr1, uint256 royaltyAmount1) = ERC2981Extended
             .royaltyInfo(tokenId1, salePrice);
