@@ -28,7 +28,7 @@
                  consider clearing the royalty information from storage on calling
                  `burn` (to avoid any NatSpec parsing error, no `@` character is added
                  to the visibility decorator `@internal` in the following example;
-                 please add them accordingly):
+                 please add it accordingly):
                  ```vy
                  internal
                  def _burn(token_id: uint256):
