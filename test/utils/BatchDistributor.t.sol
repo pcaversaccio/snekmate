@@ -383,7 +383,10 @@ contract BatchDistributorTest is Test {
         address initialAccount,
         uint256 initialAmount
     ) public {
-        vm.assume(initialAccount != zeroAddress);
+        vm.assume(
+            initialAccount != zeroAddress &&
+                initialAccount != batchDistributorAddr
+        );
         initialAmount = bound(
             initialAmount,
             type(uint16).max,
