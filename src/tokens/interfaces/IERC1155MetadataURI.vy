@@ -29,16 +29,28 @@ from vyper.interfaces import ERC165
 implements: ERC165
 
 
+# @dev We import the `IERC1155` interface, which is written
+# using standard Vyper syntax, to highlight the association
+# of the custom `IERC1155MetadataURI` interface with the custom
+# `IERC1155` interface.
+# @notice The interface `IERC1155MetadataURI` must be used in
+# conjunction with the custom interface `IERC1155` to be EIP-1155
+# compatible. If you want to use this interface as a stand-alone
+# interface, you must add `implements: IERC1155` to this interface
+# and implement all required events and functions accordingly.
+import IERC1155 as IERC1155
+
+
 @external
 @view
-def supportsInterface(interface_id: bytes4) -> bool:
+def supportsInterface(interfaceId: bytes4) -> bool:
     """
     @dev Returns `True` if this contract implements the
-         interface defined by `interface_id`.
+         interface defined by `interfaceId`.
     @notice For more details on how these identifiers are
             created, please refer to:
             https://eips.ethereum.org/EIPS/eip-165.
-    @param interface_id The 4-byte interface identifier.
+    @param interfaceId The 4-byte interface identifier.
     @return bool The verification whether the contract
             implements the interface or not.
     """

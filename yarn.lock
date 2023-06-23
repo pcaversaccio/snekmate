@@ -271,10 +271,10 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
-"@openzeppelin/merkle-tree@^1.0.4":
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/@openzeppelin/merkle-tree/-/merkle-tree-1.0.4.tgz#9019c2990ffdb56fca232c210d1e1132cbd68924"
-  integrity sha512-gNMYRgIn7mkPWpE2sBGfE12fFM5pfbGrDr0leaMdCkmFyccQlqWYL4p0FedcVqN6X0ETJGTa+UKF1fUWAzv9VQ==
+"@openzeppelin/merkle-tree@^1.0.5":
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/@openzeppelin/merkle-tree/-/merkle-tree-1.0.5.tgz#4836d377777a7e39f31674f06ec3d6909def7913"
+  integrity sha512-JkwG2ysdHeIphrScNxYagPy6jZeNONgDRyqU6lbFgE8HKCZFSkcP8r6AjZs+3HZk4uRNV0kNBBzuWhKQ3YV7Kw==
   dependencies:
     "@ethersproject/abi" "^5.7.0"
     ethereum-cryptography "^1.1.2"

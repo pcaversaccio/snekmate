@@ -2,10 +2,19 @@
 
 ## [`0.0.3`](https://github.com/pcaversaccio/snekmate/releases/tag/v0.0.3) (Unreleased)
 
+### 💥 New Features
+
+- **Extensions**
+  - [`ERC2981`](https://github.com/pcaversaccio/snekmate/blob/v0.0.3/src/extensions/ERC2981.vy): An [`ERC-721`](https://eips.ethereum.org/EIPS/eip-721) and [`ERC-1155`](https://eips.ethereum.org/EIPS/eip-1155) compatible [`ERC-2981`](https://eips.ethereum.org/EIPS/eip-2981) reference implementation. ([#138](https://github.com/pcaversaccio/snekmate/pull/138))
+
 ### 🥢 Test Coverage
 
 - **Utility Functions**
   - [`MerkleProofVerificationTest`](https://github.com/pcaversaccio/snekmate/blob/v0.0.3/test/utils/MerkleProofVerification.t.sol): Add an additional test for a possible `multi_proof_verify` invariant violation. ([#137](https://github.com/pcaversaccio/snekmate/pull/137))
+
+### 👀 Full Changelog
+
+- [`v0.0.2...v0.0.3`](https://github.com/pcaversaccio/snekmate/compare/v0.0.2...v0.0.3)
 
 ## [`0.0.2`](https://github.com/pcaversaccio/snekmate/releases/tag/v0.0.2) (07-06-2023)
 
