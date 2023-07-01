@@ -39,7 +39,7 @@ jobs:
         run: python scripts/compile.py
 
       - name: Setup Ape
-        uses: ApeWorX/github-action@v1
+        uses: ApeWorX/github-action@v2
         with:
           python-version: ${{ matrix.python-version }}
 
