@@ -824,7 +824,7 @@ contract ERC20Test is Test {
         uint256 amount = 100;
         uint256 nonce = ERC20Extended.nonces(owner);
         // solhint-disable-next-line not-rely-on-time
-        uint256 deadline = block.timestamp + 100000;
+        uint256 deadline = block.timestamp + 100_000;
         bytes32 domainSeparator = ERC20Extended.DOMAIN_SEPARATOR();
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(
             key,
@@ -858,7 +858,7 @@ contract ERC20Test is Test {
         uint256 amount = 100;
         uint256 nonce = ERC20Extended.nonces(owner);
         // solhint-disable-next-line not-rely-on-time
-        uint256 deadline = block.timestamp + 100000;
+        uint256 deadline = block.timestamp + 100_000;
         bytes32 domainSeparator = ERC20Extended.DOMAIN_SEPARATOR();
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(
             key,
@@ -892,7 +892,7 @@ contract ERC20Test is Test {
         uint256 amount = 100;
         uint256 nonce = ERC20Extended.nonces(owner);
         // solhint-disable-next-line not-rely-on-time
-        uint256 deadline = block.timestamp + 100000;
+        uint256 deadline = block.timestamp + 100_000;
         bytes32 domainSeparator = ERC20Extended.DOMAIN_SEPARATOR();
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(
             key + 1,
@@ -923,7 +923,7 @@ contract ERC20Test is Test {
         uint256 amount = 100;
         uint256 nonce = ERC20Extended.nonces(owner);
         // solhint-disable-next-line not-rely-on-time
-        uint256 deadline = block.timestamp + 100000;
+        uint256 deadline = block.timestamp + 100_000;
         bytes32 domainSeparator = keccak256(
             abi.encode(
                 _TYPE_HASH,
@@ -962,7 +962,7 @@ contract ERC20Test is Test {
         uint256 amount = 100;
         uint256 nonce = 1;
         // solhint-disable-next-line not-rely-on-time
-        uint256 deadline = block.timestamp + 100000;
+        uint256 deadline = block.timestamp + 100_000;
         bytes32 domainSeparator = ERC20Extended.DOMAIN_SEPARATOR();
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(
             key,

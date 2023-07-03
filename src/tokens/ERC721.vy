@@ -455,7 +455,7 @@ def transferFrom(owner: address, to: address, token_id: uint256):
 
 @external
 @payable
-def safeTransferFrom(owner: address, to: address, token_id: uint256, data: Bytes[1024]=b""):
+def safeTransferFrom(owner: address, to: address, token_id: uint256, data: Bytes[1_024]=b""):
     """
     @dev Safely transfers `token_id` token from `owner`
          to `to`.
@@ -491,7 +491,7 @@ def safeTransferFrom(owner: address, to: address, token_id: uint256, data: Bytes
     @param owner The 20-byte owner address.
     @param to The 20-byte receiver address.
     @param token_id The 32-byte identifier of the token.
-    @param data The maximum 1024-byte additional data
+    @param data The maximum 1,024-byte additional data
            with no specified format that is sent
            to `to`.
     """
@@ -862,7 +862,7 @@ def _is_approved_or_owner(spender: address, token_id: uint256) -> bool:
 
 
 @internal
-def _safe_mint(owner: address, token_id: uint256, data: Bytes[1024]):
+def _safe_mint(owner: address, token_id: uint256, data: Bytes[1_024]):
     """
     @dev Safely mints `token_id` and transfers it to `owner`.
     @notice Note that `token_id` must not exist. Also, if `owner`
@@ -879,7 +879,7 @@ def _safe_mint(owner: address, token_id: uint256, data: Bytes[1024]):
             to avoid being vulnerable to this type of attack.
     @param owner The 20-byte owner address.
     @param token_id The 32-byte identifier of the token.
-    @param data The maximum 1024-byte additional data
+    @param data The maximum 1,024-byte additional data
            with no specified format that is sent
            to `owner`.
     """
@@ -920,7 +920,7 @@ def _mint(owner: address, token_id: uint256):
 
 
 @internal
-def _safe_transfer(owner: address, to: address, token_id: uint256, data: Bytes[1024]):
+def _safe_transfer(owner: address, to: address, token_id: uint256, data: Bytes[1_024]):
     """
     @dev Safely transfers `token_id` token from
          `owner` to `to`, checking first that contract
@@ -947,7 +947,7 @@ def _safe_transfer(owner: address, to: address, token_id: uint256, data: Bytes[1
     @param owner The 20-byte owner address.
     @param to The 20-byte receiver address.
     @param token_id The 32-byte identifier of the token.
-    @param data The maximum 1024-byte additional data
+    @param data The maximum 1,024-byte additional data
            with no specified format that is sent
            to `to`.
     """
@@ -1046,7 +1046,7 @@ def _burn(token_id: uint256):
 
 
 @internal
-def _check_on_erc721_received(owner: address, to: address, token_id: uint256, data: Bytes[1024]) -> bool:
+def _check_on_erc721_received(owner: address, to: address, token_id: uint256, data: Bytes[1_024]) -> bool:
     """
     @dev An `internal` function that invokes {IERC721Receiver-onERC721Received}
          on a target address. The call is not executed
@@ -1055,7 +1055,7 @@ def _check_on_erc721_received(owner: address, to: address, token_id: uint256, da
            owned the token.
     @param to The 20-byte address receiver address.
     @param token_id The 32-byte identifier of the token.
-    @param data The maximum 1024-byte additional data
+    @param data The maximum 1,024-byte additional data
            with no specified format.
     @return bool The verification whether the call correctly
             returned the expected magic value.

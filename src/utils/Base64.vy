@@ -18,8 +18,8 @@
 # allowed. For an n-byte input to be encoded, the
 # space required for the Base64-encoded content
 # (without line breaks) is "4 * ceil(n/3)" characters.
-_DATA_INPUT_BOUND: constant(uint256) = 1024
-_DATA_OUTPUT_BOUND: constant(uint256) = 1368
+_DATA_INPUT_BOUND: constant(uint256) = 1_024
+_DATA_OUTPUT_BOUND: constant(uint256) = 1_368
 
 
 # @dev Defines the Base64 encoding tables. For encoding
@@ -53,7 +53,7 @@ def encode(data: Bytes[_DATA_INPUT_BOUND], base64_url: bool) -> DynArray[String[
             Vyper does not support a mutable `Bytes`
             type). To circumvent this issue, we choose
             a dynamic array as the return type.
-    @param data The maximum 1024-byte data to be
+    @param data The maximum 1,024-byte data to be
            Base64-encoded.
     @param base64_url The Boolean variable that specifies
            whether to use a URL and filename-safe alphabet
@@ -124,7 +124,7 @@ def encode(data: Bytes[_DATA_INPUT_BOUND], base64_url: bool) -> DynArray[String[
         # The following line cannot overflow because we have
         # limited the for loop by the `constant` parameter
         # `_DATA_INPUT_BOUND`, which is bounded by the
-        # maximum value of `1024`.
+        # maximum value of `1_024`.
         idx = unsafe_add(idx, 3)
 
         # We break the loop once we reach the end of `data`

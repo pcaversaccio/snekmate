@@ -193,7 +193,7 @@ def supportsInterface(interface_id: bytes4) -> bool:
 
 
 @external
-def safeTransferFrom(owner: address, to: address, id: uint256, amount: uint256, data: Bytes[1024]):
+def safeTransferFrom(owner: address, to: address, id: uint256, amount: uint256, data: Bytes[1_024]):
     """
     @dev Transfers `amount` tokens of token type `id` from
          `owner` to `to`.
@@ -218,7 +218,7 @@ def safeTransferFrom(owner: address, to: address, id: uint256, amount: uint256, 
     @param id The 32-byte identifier of the token.
     @param amount The 32-byte token amount that is
            being transferred.
-    @param data The maximum 1024-byte additional data
+    @param data The maximum 1,024-byte additional data
            with no specified format.
     """
     assert owner == msg.sender or self.isApprovedForAll[owner][msg.sender], "ERC1155: caller is not token owner or approved"
@@ -227,7 +227,7 @@ def safeTransferFrom(owner: address, to: address, id: uint256, amount: uint256, 
 
 @external
 def safeBatchTransferFrom(owner: address, to: address, ids: DynArray[uint256, _BATCH_SIZE], amounts: DynArray[uint256, _BATCH_SIZE],
-                          data: Bytes[1024]):
+                          data: Bytes[1_024]):
     """
     @dev Batched version of `safeTransferFrom`.
     @notice Note that `ids` and `amounts` must have the
@@ -250,7 +250,7 @@ def safeBatchTransferFrom(owner: address, to: address, ids: DynArray[uint256, _B
     @param amounts The 32-byte array of token amounts that are
            being transferred. Note that the order and length must
            match the 32-byte `ids` array.
-    @param data The maximum 1024-byte additional data
+    @param data The maximum 1,024-byte additional data
            with no specified format.
     """
     assert owner == msg.sender or self.isApprovedForAll[owner][msg.sender], "ERC1155: caller is not token owner or approved"
@@ -396,7 +396,7 @@ def burn_batch(owner: address, ids: DynArray[uint256, _BATCH_SIZE], amounts: Dyn
 
 
 @external
-def safe_mint(owner: address, id: uint256, amount: uint256, data: Bytes[1024]):
+def safe_mint(owner: address, id: uint256, amount: uint256, data: Bytes[1_024]):
     """
     @dev Safely mints `amount` tokens of token type `id` and
          transfers them to `owner`.
@@ -408,7 +408,7 @@ def safe_mint(owner: address, id: uint256, amount: uint256, data: Bytes[1024]):
     @param owner The 20-byte owner address.
     @param id The 32-byte identifier of the token.
     @param amount The 32-byte token amount to be created.
-    @param data The maximum 1024-byte additional data
+    @param data The maximum 1,024-byte additional data
            with no specified format.
     """
     assert self.is_minter[msg.sender], "AccessControl: access is denied"
@@ -416,7 +416,7 @@ def safe_mint(owner: address, id: uint256, amount: uint256, data: Bytes[1024]):
 
 
 @external
-def safe_mint_batch(owner: address, ids: DynArray[uint256, _BATCH_SIZE], amounts: DynArray[uint256, _BATCH_SIZE], data: Bytes[1024]):
+def safe_mint_batch(owner: address, ids: DynArray[uint256, _BATCH_SIZE], amounts: DynArray[uint256, _BATCH_SIZE], data: Bytes[1_024]):
     """
     @dev Batched version of `safe_mint`.
     @notice Note that `ids` and `amounts` must have the
@@ -430,7 +430,7 @@ def safe_mint_batch(owner: address, ids: DynArray[uint256, _BATCH_SIZE], amounts
     @param amounts The 32-byte array of token amounts that are
            being created. Note that the order and length must
            match the 32-byte `ids` array.
-    @param data The maximum 1024-byte additional data
+    @param data The maximum 1,024-byte additional data
            with no specified format.
     """
     assert self.is_minter[msg.sender], "AccessControl: access is denied"
@@ -520,7 +520,7 @@ def _set_approval_for_all(owner: address, operator: address, approved: bool):
 
 
 @internal
-def _safe_transfer_from(owner: address, to: address, id: uint256, amount: uint256, data: Bytes[1024]):
+def _safe_transfer_from(owner: address, to: address, id: uint256, amount: uint256, data: Bytes[1_024]):
     """
     @dev Transfers `amount` tokens of token type `id` from
          `owner` to `to`.
@@ -542,7 +542,7 @@ def _safe_transfer_from(owner: address, to: address, id: uint256, amount: uint25
     @param id The 32-byte identifier of the token.
     @param amount The 32-byte token amount that is
            being transferred.
-    @param data The maximum 1024-byte additional data
+    @param data The maximum 1,024-byte additional data
            with no specified format.
     """
     assert to != empty(address), "ERC1155: transfer to the zero address"
@@ -565,7 +565,7 @@ def _safe_transfer_from(owner: address, to: address, id: uint256, amount: uint25
 
 @internal
 def _safe_batch_transfer_from(owner: address, to: address, ids: DynArray[uint256, _BATCH_SIZE], amounts: DynArray[uint256, _BATCH_SIZE],
-                              data: Bytes[1024]):
+                              data: Bytes[1_024]):
     """
     @dev Batched version of `_safe_transfer_from`.
     @notice Note that `ids` and `amounts` must have the
@@ -588,7 +588,7 @@ def _safe_batch_transfer_from(owner: address, to: address, ids: DynArray[uint256
     @param amounts The 32-byte array of token amounts that are
            being transferred. Note that the order and length must
            match the 32-byte `ids` array.
-    @param data The maximum 1024-byte additional data
+    @param data The maximum 1,024-byte additional data
            with no specified format.
     """
     assert len(ids) == len(amounts), "ERC1155: ids and amounts length mismatch"
@@ -637,7 +637,7 @@ def _balance_of(owner: address, id: uint256) -> uint256:
 
 
 @internal
-def _safe_mint(owner: address, id: uint256, amount: uint256, data: Bytes[1024]):
+def _safe_mint(owner: address, id: uint256, amount: uint256, data: Bytes[1_024]):
     """
     @dev Safely mints `amount` tokens of token type `id` and
          transfers them to `owner`.
@@ -657,7 +657,7 @@ def _safe_mint(owner: address, id: uint256, amount: uint256, data: Bytes[1024]):
     @param owner The 20-byte owner address.
     @param id The 32-byte identifier of the token.
     @param amount The 32-byte token amount to be created.
-    @param data The maximum 1024-byte additional data
+    @param data The maximum 1,024-byte additional data
            with no specified format.
     """
     assert owner != empty(address), "ERC1155: mint to the zero address"
@@ -676,7 +676,7 @@ def _safe_mint(owner: address, id: uint256, amount: uint256, data: Bytes[1024]):
 
 
 @internal
-def _safe_mint_batch(owner: address, ids: DynArray[uint256, _BATCH_SIZE], amounts: DynArray[uint256, _BATCH_SIZE], data: Bytes[1024]):
+def _safe_mint_batch(owner: address, ids: DynArray[uint256, _BATCH_SIZE], amounts: DynArray[uint256, _BATCH_SIZE], data: Bytes[1_024]):
     """
     @dev Batched version of `_safe_mint`.
     @notice Note that `ids` and `amounts` must have the
@@ -698,7 +698,7 @@ def _safe_mint_batch(owner: address, ids: DynArray[uint256, _BATCH_SIZE], amount
     @param amounts The 32-byte array of token amounts that are
            being created. Note that the order and length must
            match the 32-byte `ids` array.
-    @param data The maximum 1024-byte additional data
+    @param data The maximum 1,024-byte additional data
            with no specified format.
     """
     assert len(ids) == len(amounts), "ERC1155: ids and amounts length mismatch"
@@ -845,7 +845,7 @@ def _burn_batch(owner: address, ids: DynArray[uint256, _BATCH_SIZE], amounts: Dy
 
 
 @internal
-def _check_on_erc1155_received(owner: address, to: address, id: uint256, amount: uint256, data: Bytes[1024]) -> bool:
+def _check_on_erc1155_received(owner: address, to: address, id: uint256, amount: uint256, data: Bytes[1_024]) -> bool:
     """
     @dev An `internal` function that invokes {IERC1155Receiver-onERC1155Received}
          on a target address. The call is not executed
@@ -856,7 +856,7 @@ def _check_on_erc1155_received(owner: address, to: address, id: uint256, amount:
     @param id The 32-byte identifier of the token.
     @param amount The 32-byte token amount that is
            being transferred.
-    @param data The maximum 1024-byte additional data
+    @param data The maximum 1,024-byte additional data
            with no specified format.
     @return bool The verification whether the call correctly
             returned the expected magic value.
@@ -874,7 +874,7 @@ def _check_on_erc1155_received(owner: address, to: address, id: uint256, amount:
 
 @internal
 def _check_on_erc1155_batch_received(owner: address, to: address, ids: DynArray[uint256, _BATCH_SIZE], amounts: DynArray[uint256, _BATCH_SIZE],
-                                     data: Bytes[1024]) -> bool:
+                                     data: Bytes[1_024]) -> bool:
     """
     @dev An `internal` function that invokes {IERC1155Receiver-onERC1155BatchReceived}
          on a target address. The call is not executed
@@ -885,7 +885,7 @@ def _check_on_erc1155_batch_received(owner: address, to: address, ids: DynArray[
     @param ids The 32-byte array of token identifiers.
     @param amounts The 32-byte array of token amounts that are
            being transferred.
-    @param data The maximum 1024-byte additional data
+    @param data The maximum 1,024-byte additional data
            with no specified format.
     @return bool The verification whether the call correctly
             returned the expected magic value.
@@ -903,7 +903,7 @@ def _check_on_erc1155_batch_received(owner: address, to: address, ids: DynArray[
 
 @internal
 def _before_token_transfer(owner: address, to: address, ids: DynArray[uint256, _BATCH_SIZE], amounts: DynArray[uint256, _BATCH_SIZE],
-                           data: Bytes[1024]):
+                           data: Bytes[1_024]):
     """
     @dev Hook that is called before any token transfer.
          This includes minting and burning, as well as
@@ -931,7 +931,7 @@ def _before_token_transfer(owner: address, to: address, ids: DynArray[uint256, _
     @param amounts The 32-byte array of token amounts that are
            being transferred. Note that the order and length must
            match the 32-byte `ids` array.
-    @param data The maximum 1024-byte additional data
+    @param data The maximum 1,024-byte additional data
            with no specified format.
     """
     if (owner == empty(address)):
@@ -963,7 +963,7 @@ def _before_token_transfer(owner: address, to: address, ids: DynArray[uint256, _
 
 @internal
 def _after_token_transfer(owner: address, to: address, ids: DynArray[uint256, _BATCH_SIZE], amounts: DynArray[uint256, _BATCH_SIZE],
-                          data: Bytes[1024]):
+                          data: Bytes[1_024]):
     """
     @dev Hook that is called after any token transfer.
          This includes minting and burning, as well as
@@ -991,7 +991,7 @@ def _after_token_transfer(owner: address, to: address, ids: DynArray[uint256, _B
     @param amounts The 32-byte array of token amounts that are
            being transferred. Note that the order and length must
            match the 32-byte `ids` array.
-    @param data The maximum 1024-byte additional data
+    @param data The maximum 1,024-byte additional data
            with no specified format.
     """
     pass

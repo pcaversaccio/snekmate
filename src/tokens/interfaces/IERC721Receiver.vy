@@ -16,7 +16,7 @@
 
 
 @external
-def onERC721Received(_operator: address, _from: address, _tokenId: uint256, _data: Bytes[1024]) -> bytes4:
+def onERC721Received(_operator: address, _from: address, _tokenId: uint256, _data: Bytes[1_024]) -> bytes4:
     """
     @dev Whenever a `_tokenId` token is transferred to
          this contract via `safeTransferFrom` by
@@ -30,7 +30,7 @@ def onERC721Received(_operator: address, _from: address, _tokenId: uint256, _dat
     @param _from The 20-byte address which previously
            owned the token.
     @param _tokenId The 32-byte identifier of the token.
-    @param _data The maximum 1024-byte additional data
+    @param _data The maximum 1,024-byte additional data
            with no specified format.
     @return bytes4 The 4-byte function selector of `onERC721Received`.
     """

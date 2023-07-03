@@ -84,7 +84,7 @@ contract EIP712DomainSeparatorTest is Test {
         uint256 value = 100;
         uint256 nonce = 1;
         // solhint-disable-next-line not-rely-on-time
-        uint256 deadline = block.timestamp + 100000;
+        uint256 deadline = block.timestamp + 100_000;
         bytes32 structHash = keccak256(
             abi.encode(
                 _PERMIT_TYPE_HASH,
