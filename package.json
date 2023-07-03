@@ -37,7 +37,7 @@
   ],
   "devDependencies": {
     "@openzeppelin/merkle-tree": "^1.0.5",
-    "eslint": "^8.43.0",
+    "eslint": "^8.44.0",
     "eslint-config-prettier": "^8.8.0",
     "ethers": "^6.6.2",
     "keccak256": "^1.0.6",
