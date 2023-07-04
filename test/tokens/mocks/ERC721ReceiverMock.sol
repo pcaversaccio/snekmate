@@ -11,7 +11,8 @@ import {IERC721Receiver} from "openzeppelin/token/ERC721/IERC721Receiver.sol";
  * @dev Allows to test receiving ERC-721 tokens as a smart contract.
  */
 contract ERC721ReceiverMock is IERC721Receiver {
-    bytes4 private immutable _retval;
+    // solhint-disable-next-line var-name-mixedcase
+    bytes4 private immutable _RETVAL;
 
     enum Error {
         None,
@@ -19,13 +20,14 @@ contract ERC721ReceiverMock is IERC721Receiver {
         RevertWithoutMessage,
         Panic
     }
-    Error private immutable _error;
+    // solhint-disable-next-line var-name-mixedcase
+    Error private immutable _ERROR;
 
     event Received(address operator, address from, uint256 tokenId, bytes data);
 
     constructor(bytes4 retval_, Error error_) {
-        _retval = retval_;
-        _error = error_;
+        _RETVAL = retval_;
+        _ERROR = error_;
     }
 
     /**
@@ -44,16 +46,16 @@ contract ERC721ReceiverMock is IERC721Receiver {
         uint256 tokenId,
         bytes memory data
     ) public override returns (bytes4) {
-        if (_error == Error.RevertWithMessage) {
+        if (_ERROR == Error.RevertWithMessage) {
             revert("ERC721ReceiverMock: reverting");
-        } else if (_error == Error.RevertWithoutMessage) {
+        } else if (_ERROR == Error.RevertWithoutMessage) {
             // solhint-disable-next-line reason-string
             revert();
-        } else if (_error == Error.Panic) {
+        } else if (_ERROR == Error.Panic) {
             uint256 a = uint256(0) / uint256(0);
             a;
         }
         emit Received(operator, from, tokenId, data);
-        return _retval;
+        return _RETVAL;
     }
 }

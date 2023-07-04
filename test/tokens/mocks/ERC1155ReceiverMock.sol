@@ -13,10 +13,10 @@ import {IERC1155Receiver} from "openzeppelin/token/ERC1155/IERC1155Receiver.sol"
  * @notice Allows to test receiving ERC-1155 tokens as a smart contract.
  */
 contract ERC1155ReceiverMock is ERC165, IERC1155Receiver {
-    bytes4 private _recRetval;
-    bool private _recReverts;
-    bytes4 private _batRetval;
-    bool private _batReverts;
+    bytes4 private recRetval;
+    bool private recReverts;
+    bytes4 private batRetval;
+    bool private batReverts;
 
     event Received(
         address indexed operator,
@@ -40,10 +40,10 @@ contract ERC1155ReceiverMock is ERC165, IERC1155Receiver {
         bytes4 batRetval_,
         bool batReverts_
     ) {
-        _recRetval = recRetval_;
-        _recReverts = recReverts_;
-        _batRetval = batRetval_;
-        _batReverts = batReverts_;
+        recRetval = recRetval_;
+        recReverts = recReverts_;
+        batRetval = batRetval_;
+        batReverts = batReverts_;
     }
 
     /**
@@ -67,9 +67,9 @@ contract ERC1155ReceiverMock is ERC165, IERC1155Receiver {
         bytes memory data
     ) external returns (bytes4) {
         // solhint-disable-next-line reason-string
-        require(!_recReverts, "ERC1155ReceiverMock: reverting on receive");
+        require(!recReverts, "ERC1155ReceiverMock: reverting on receive");
         emit Received(operator, from, id, amount, data);
-        return _recRetval;
+        return recRetval;
     }
 
     /**
@@ -93,11 +93,8 @@ contract ERC1155ReceiverMock is ERC165, IERC1155Receiver {
         bytes memory data
     ) external returns (bytes4) {
         // solhint-disable-next-line reason-string
-        require(
-            !_batReverts,
-            "ERC1155ReceiverMock: reverting on batch receive"
-        );
+        require(!batReverts, "ERC1155ReceiverMock: reverting on batch receive");
         emit BatchReceived(operator, from, ids, amounts, data);
-        return _batRetval;
+        return batRetval;
     }
 }
