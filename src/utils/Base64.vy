@@ -80,7 +80,7 @@ def encode(data: Bytes[_DATA_INPUT_BOUND], base64_url: bool) -> DynArray[String[
         data_padded = data
 
     char_chunks: DynArray[String[4], _DATA_OUTPUT_BOUND] = []
-    idx: uint256 = 0
+    idx: uint256 = empty(uint256)
     for _ in range(_DATA_INPUT_BOUND):
         # For the Base64 encoding, three bytes (= chunk)
         # of the bytestream (= 24 bits) are divided into
@@ -158,7 +158,7 @@ def decode(data: String[_DATA_OUTPUT_BOUND], base64_url: bool) -> DynArray[Bytes
             type). To circumvent this issue, we choose
             a dynamic array as the return type. Note
             that line breaks are not supported.
-    @param data The maximum 1368-byte data to be
+    @param data The maximum 1,368-byte data to be
            Base64-decoded.
     @param base64_url The Boolean variable that specifies
            whether to use a URL and filename-safe alphabet
@@ -172,10 +172,10 @@ def decode(data: String[_DATA_OUTPUT_BOUND], base64_url: bool) -> DynArray[Bytes
 
     # If the length of the encoded input is not a
     # multiple of four, it is an invalid input.
-    assert data_length % 4 == 0, "Base64: length mismatch"
+    assert data_length % 4 == empty(uint256), "Base64: length mismatch"
 
     result: DynArray[Bytes[3], _DATA_INPUT_BOUND] = []
-    idx: uint256 = 0
+    idx: uint256 = empty(uint256)
     for _ in range(_DATA_OUTPUT_BOUND):
         # Each of these four characters represents
         # a 6-bit index in the Base64 character list
@@ -218,7 +218,7 @@ def decode(data: String[_DATA_OUTPUT_BOUND], base64_url: bool) -> DynArray[Bytes
             # The following line cannot overflow because we have
             # limited the for loop by the `constant` parameter
             # `_DATA_OUTPUT_BOUND`, which is bounded by the
-            # maximum value of `1368`.
+            # maximum value of `1_368`.
             idx = unsafe_add(idx, 4)
 
             # We break the loop once we reach the end of `data`.
@@ -255,7 +255,7 @@ def decode(data: String[_DATA_OUTPUT_BOUND], base64_url: bool) -> DynArray[Bytes
             # The following line cannot overflow because we have
             # limited the for loop by the `constant` parameter
             # `_DATA_OUTPUT_BOUND`, which is bounded by the
-            # maximum value of `1368`.
+            # maximum value of `1_368`.
             idx = unsafe_add(idx, 4)
 
             # We break the loop once we reach the end of `data`.
@@ -278,7 +278,7 @@ def _index_of(char: String[1], base64_url: bool) -> uint256:
     @return uint256 The 32-byte index position of the string
             `char` in the Base64 encoding table.
     """
-    pos: uint256 = 0
+    pos: uint256 = empty(uint256)
     for _ in range(len(_TABLE_URL_CHARS)):
         # Base64 encoding with an URL and filename-safe
         # alphabet.

@@ -287,7 +287,7 @@ def balanceOfBatch(owners: DynArray[address, _BATCH_SIZE], ids: DynArray[uint256
     """
     assert len(owners) == len(ids), "ERC1155: owners and ids length mismatch"
     batch_balances: DynArray[uint256, _BATCH_SIZE] = []
-    idx: uint256 = 0
+    idx: uint256 = empty(uint256)
     for owner in owners:
         batch_balances.append(self._balance_of(owner, ids[idx]))
         # The following line cannot overflow because we have
@@ -358,7 +358,7 @@ def exists(id: uint256) -> bool:
     @return bool The verification whether `id` exists
             or not.
     """
-    return self.total_supply[id] != 0
+    return self.total_supply[id] != empty(uint256)
 
 
 @external
@@ -596,7 +596,7 @@ def _safe_batch_transfer_from(owner: address, to: address, ids: DynArray[uint256
 
     self._before_token_transfer(owner, to, ids, amounts, data)
 
-    idx: uint256 = 0
+    idx: uint256 = empty(uint256)
     for id in ids:
         amount: uint256 = amounts[idx]
         owner_balance: uint256 = self._balances[id][owner]
@@ -706,7 +706,7 @@ def _safe_mint_batch(owner: address, ids: DynArray[uint256, _BATCH_SIZE], amount
 
     self._before_token_transfer(empty(address), owner, ids, amounts, data)
 
-    idx: uint256 = 0
+    idx: uint256 = empty(uint256)
     for id in ids:
         # In the next line, an overflow is not possible
         # due to an arithmetic check of the entire token
@@ -827,7 +827,7 @@ def _burn_batch(owner: address, ids: DynArray[uint256, _BATCH_SIZE], amounts: Dy
 
     self._before_token_transfer(owner, empty(address), ids, amounts, b"")
 
-    idx: uint256 = 0
+    idx: uint256 = empty(uint256)
     for id in ids:
         amount: uint256 = amounts[idx]
         owner_balance: uint256 = self._balances[id][owner]
@@ -935,7 +935,7 @@ def _before_token_transfer(owner: address, to: address, ids: DynArray[uint256, _
            with no specified format.
     """
     if (owner == empty(address)):
-        idx: uint256 = 0
+        idx: uint256 = empty(uint256)
         for id in ids:
             # The following line uses intentionally checked arithmetic
             # to ensure that the total supply for each token type `id`
@@ -948,7 +948,7 @@ def _before_token_transfer(owner: address, to: address, ids: DynArray[uint256, _
             idx = unsafe_add(idx, 1)
 
     if (to == empty(address)):
-        idx: uint256 = 0
+        idx: uint256 = empty(uint256)
         for id in ids:
             amount: uint256 = amounts[idx]
             supply: uint256 = self.total_supply[id]

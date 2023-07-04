@@ -58,13 +58,13 @@ def recover_sig(hash: bytes32, signature: Bytes[65]) -> address:
     sig_length: uint256 = len(signature)
     # 65-byte case: r,s,v standard signature.
     if (sig_length == 65):
-        r: uint256 = extract32(signature, 0, output_type=uint256)
+        r: uint256 = extract32(signature, empty(uint256), output_type=uint256)
         s: uint256 = extract32(signature, 32, output_type=uint256)
         v: uint256 = convert(slice(signature, 64, 1), uint256)
         return self._try_recover_vrs(hash, v, r, s)
     # 64-byte case: r,vs signature; see: https://eips.ethereum.org/EIPS/eip-2098.
     elif (sig_length == 64):
-        r: uint256 = extract32(signature, 0, output_type=uint256)
+        r: uint256 = extract32(signature, empty(uint256), output_type=uint256)
         vs: uint256 = extract32(signature, 32, output_type=uint256)
         return self._try_recover_r_vs(hash, r, vs)
     else:
