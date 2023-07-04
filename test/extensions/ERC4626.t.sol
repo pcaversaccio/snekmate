@@ -1125,9 +1125,9 @@ contract ERC4626VaultTest is ERC4626Test {
     function testMultipleMintDepositRedeemWithdraw() public {
         address alice = makeAddr("alice");
         address bob = makeAddr("bob");
-        uint256 initialAmountAlice = 4000;
-        uint256 initialAmountBob = 7001;
-        uint256 mutationUnderlyingAmount = 3000;
+        uint256 initialAmountAlice = 4_000;
+        uint256 initialAmountBob = 7_001;
+        uint256 mutationUnderlyingAmount = 3_000;
         vm.startPrank(alice);
         underlying.mint(alice, initialAmountAlice);
         underlying.approve(
@@ -1153,16 +1153,16 @@ contract ERC4626VaultTest is ERC4626Test {
         vm.stopPrank();
 
         /**
-         * @dev 1. Alice mints 2000 shares (costs 2000 tokens).
+         * @dev 1. Alice mints 2,000 shares (costs 2,000 tokens).
          */
         vm.startPrank(alice);
         uint256 aliceUnderlyingAmount = ERC4626ExtendedDecimalsOffset0.mint(
-            2000,
+            2_000,
             alice
         );
         uint256 aliceShareAmount = ERC4626ExtendedDecimalsOffset0
             .previewDeposit(aliceUnderlyingAmount);
-        assertEq(aliceShareAmount, 2000);
+        assertEq(aliceShareAmount, 2_000);
         assertEq(
             ERC4626ExtendedDecimalsOffset0.balanceOf(alice),
             aliceShareAmount
@@ -1179,7 +1179,7 @@ contract ERC4626VaultTest is ERC4626Test {
             ),
             ERC4626ExtendedDecimalsOffset0.balanceOf(alice)
         );
-        assertEq(aliceUnderlyingAmount, 2000);
+        assertEq(aliceUnderlyingAmount, 2_000);
         assertEq(
             ERC4626ExtendedDecimalsOffset0.totalSupply(),
             aliceShareAmount
@@ -1191,16 +1191,16 @@ contract ERC4626VaultTest is ERC4626Test {
         vm.stopPrank();
 
         /**
-         * @dev 2. Bob deposits 4000 tokens (mints 4000 shares).
+         * @dev 2. Bob deposits 4,000 tokens (mints 4,000 shares).
          */
         vm.startPrank(bob);
         uint256 bobShareAmount = ERC4626ExtendedDecimalsOffset0.deposit(
-            4000,
+            4_000,
             bob
         );
         uint256 bobUnderlyingAmount = ERC4626ExtendedDecimalsOffset0
             .previewWithdraw(bobShareAmount);
-        assertEq(bobUnderlyingAmount, 4000);
+        assertEq(bobUnderlyingAmount, 4_000);
         assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(bob), bobShareAmount);
         assertEq(
             ERC4626ExtendedDecimalsOffset0.convertToAssets(
@@ -1220,12 +1220,12 @@ contract ERC4626VaultTest is ERC4626Test {
             preMutationShareBal
         );
         assertEq(ERC4626ExtendedDecimalsOffset0.totalAssets(), preMutationBal);
-        assertEq(ERC4626ExtendedDecimalsOffset0.totalSupply(), 6000);
-        assertEq(ERC4626ExtendedDecimalsOffset0.totalAssets(), 6000);
+        assertEq(ERC4626ExtendedDecimalsOffset0.totalSupply(), 6_000);
+        assertEq(ERC4626ExtendedDecimalsOffset0.totalAssets(), 6_000);
         vm.stopPrank();
 
         /**
-         * @dev 3. Vault mutates by +3000 tokens (simulated yield returned from strategy).
+         * @dev 3. Vault mutates by +3,000 tokens (simulated yield returned from strategy).
          */
         underlying.mint(
             ERC4626ExtendedDecimalsOffset0Addr,
@@ -1258,132 +1258,132 @@ contract ERC4626VaultTest is ERC4626Test {
         );
 
         /**
-         * @dev 4. Alice deposits 2000 tokens (mints 1333 shares).
+         * @dev 4. Alice deposits 2,000 tokens (mints 1,333 shares).
          */
         vm.startPrank(alice);
-        ERC4626ExtendedDecimalsOffset0.deposit(2000, alice);
-        assertEq(ERC4626ExtendedDecimalsOffset0.totalSupply(), 7333);
-        assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(alice), 3333);
+        ERC4626ExtendedDecimalsOffset0.deposit(2_000, alice);
+        assertEq(ERC4626ExtendedDecimalsOffset0.totalSupply(), 7_333);
+        assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(alice), 3_333);
         assertEq(
             ERC4626ExtendedDecimalsOffset0.convertToAssets(
                 ERC4626ExtendedDecimalsOffset0.balanceOf(alice)
             ),
-            4999
+            4_999
         );
-        assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(bob), 4000);
+        assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(bob), 4_000);
         assertEq(
             ERC4626ExtendedDecimalsOffset0.convertToAssets(
                 ERC4626ExtendedDecimalsOffset0.balanceOf(bob)
             ),
-            6000
+            6_000
         );
         vm.stopPrank();
 
         /**
-         * @dev 5. Bob mints 2000 shares (costs 3000 assets).
+         * @dev 5. Bob mints 2,000 shares (costs 3,000 assets).
          * @notice Bob's assets spent got rounded up and Alices's
          * vault assets got rounded up.
          */
         vm.startPrank(bob);
-        ERC4626ExtendedDecimalsOffset0.mint(2000, bob);
-        assertEq(ERC4626ExtendedDecimalsOffset0.totalSupply(), 9333);
-        assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(alice), 3333);
+        ERC4626ExtendedDecimalsOffset0.mint(2_000, bob);
+        assertEq(ERC4626ExtendedDecimalsOffset0.totalSupply(), 9_333);
+        assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(alice), 3_333);
         assertEq(
             ERC4626ExtendedDecimalsOffset0.convertToAssets(
                 ERC4626ExtendedDecimalsOffset0.balanceOf(alice)
             ),
-            4999
+            4_999
         );
-        assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(bob), 6000);
+        assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(bob), 6_000);
         assertEq(
             ERC4626ExtendedDecimalsOffset0.convertToAssets(
                 ERC4626ExtendedDecimalsOffset0.balanceOf(bob)
             ),
-            9000
+            9_000
         );
         assertEq(underlying.balanceOf(alice), 0);
         assertEq(underlying.balanceOf(bob), 1);
-        assertEq(ERC4626ExtendedDecimalsOffset0.totalAssets(), 14000);
+        assertEq(ERC4626ExtendedDecimalsOffset0.totalAssets(), 14_000);
         vm.stopPrank();
 
         /**
-         * @dev 6. Vault mutates by +3000 tokens.
+         * @dev 6. Vault mutates by +3,000 tokens.
          */
         underlying.mint(
             ERC4626ExtendedDecimalsOffset0Addr,
             mutationUnderlyingAmount
         );
-        assertEq(ERC4626ExtendedDecimalsOffset0.totalAssets(), 17000);
+        assertEq(ERC4626ExtendedDecimalsOffset0.totalAssets(), 17_000);
         assertEq(
             ERC4626ExtendedDecimalsOffset0.convertToAssets(
                 ERC4626ExtendedDecimalsOffset0.balanceOf(alice)
             ),
-            6070
+            6_070
         );
         assertEq(
             ERC4626ExtendedDecimalsOffset0.convertToAssets(
                 ERC4626ExtendedDecimalsOffset0.balanceOf(bob)
             ),
-            10928
+            10_928
         );
 
         /**
-         * @dev 7. Alice redeems 1333 shares (2427 assets).
+         * @dev 7. Alice redeems 1,333 shares (2,427 assets).
          */
         vm.startPrank(alice);
-        ERC4626ExtendedDecimalsOffset0.redeem(1333, alice, alice);
-        assertEq(underlying.balanceOf(alice), 2427);
-        assertEq(ERC4626ExtendedDecimalsOffset0.totalSupply(), 8000);
-        assertEq(ERC4626ExtendedDecimalsOffset0.totalAssets(), 14573);
-        assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(alice), 2000);
+        ERC4626ExtendedDecimalsOffset0.redeem(1_333, alice, alice);
+        assertEq(underlying.balanceOf(alice), 2_427);
+        assertEq(ERC4626ExtendedDecimalsOffset0.totalSupply(), 8_000);
+        assertEq(ERC4626ExtendedDecimalsOffset0.totalAssets(), 14_573);
+        assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(alice), 2_000);
         assertEq(
             ERC4626ExtendedDecimalsOffset0.convertToAssets(
                 ERC4626ExtendedDecimalsOffset0.balanceOf(alice)
             ),
-            3643
+            3_643
         );
-        assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(bob), 6000);
+        assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(bob), 6_000);
         assertEq(
             ERC4626ExtendedDecimalsOffset0.convertToAssets(
                 ERC4626ExtendedDecimalsOffset0.balanceOf(bob)
             ),
-            10929
+            10_929
         );
         vm.stopPrank();
 
         /**
-         * @dev 8. Bob withdraws 2929 assets (1608 shares).
+         * @dev 8. Bob withdraws 2,929 assets (1,608 shares).
          */
         vm.startPrank(bob);
-        ERC4626ExtendedDecimalsOffset0.withdraw(2929, bob, bob);
-        assertEq(underlying.balanceOf(bob), 2930);
-        assertEq(ERC4626ExtendedDecimalsOffset0.totalSupply(), 6392);
-        assertEq(ERC4626ExtendedDecimalsOffset0.totalAssets(), 11644);
-        assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(alice), 2000);
+        ERC4626ExtendedDecimalsOffset0.withdraw(2_929, bob, bob);
+        assertEq(underlying.balanceOf(bob), 2_930);
+        assertEq(ERC4626ExtendedDecimalsOffset0.totalSupply(), 6_392);
+        assertEq(ERC4626ExtendedDecimalsOffset0.totalAssets(), 11_644);
+        assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(alice), 2_000);
         assertEq(
             ERC4626ExtendedDecimalsOffset0.convertToAssets(
                 ERC4626ExtendedDecimalsOffset0.balanceOf(alice)
             ),
-            3643
+            3_643
         );
-        assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(bob), 4392);
+        assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(bob), 4_392);
         assertEq(
             ERC4626ExtendedDecimalsOffset0.convertToAssets(
                 ERC4626ExtendedDecimalsOffset0.balanceOf(bob)
             ),
-            8000
+            8_000
         );
         vm.stopPrank();
 
         /**
-         * @dev 9. Alice withdraws 3643 assets (2000 shares).
+         * @dev 9. Alice withdraws 3,643 assets (2,000 shares).
          * @notice Bob's assets have been rounded back up.
          */
         vm.startPrank(alice);
-        ERC4626ExtendedDecimalsOffset0.withdraw(3643, alice, alice);
-        assertEq(underlying.balanceOf(alice), 6070);
-        assertEq(ERC4626ExtendedDecimalsOffset0.totalSupply(), 4392);
-        assertEq(ERC4626ExtendedDecimalsOffset0.totalAssets(), 8001);
+        ERC4626ExtendedDecimalsOffset0.withdraw(3_643, alice, alice);
+        assertEq(underlying.balanceOf(alice), 6_070);
+        assertEq(ERC4626ExtendedDecimalsOffset0.totalSupply(), 4_392);
+        assertEq(ERC4626ExtendedDecimalsOffset0.totalAssets(), 8_001);
         assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(alice), 0);
         assertEq(
             ERC4626ExtendedDecimalsOffset0.convertToAssets(
@@ -1391,21 +1391,21 @@ contract ERC4626VaultTest is ERC4626Test {
             ),
             0
         );
-        assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(bob), 4392);
+        assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(bob), 4_392);
         assertEq(
             ERC4626ExtendedDecimalsOffset0.convertToAssets(
                 ERC4626ExtendedDecimalsOffset0.balanceOf(bob)
             ),
-            8000
+            8_000
         );
         vm.stopPrank();
 
         /**
-         * @dev 10. Bob redeems 4392 shares (8000 tokens).
+         * @dev 10. Bob redeems 4,392 shares (8,000 tokens).
          */
         vm.startPrank(bob);
-        ERC4626ExtendedDecimalsOffset0.redeem(4392, bob, bob);
-        assertEq(underlying.balanceOf(bob), 10930);
+        ERC4626ExtendedDecimalsOffset0.redeem(4_392, bob, bob);
+        assertEq(underlying.balanceOf(bob), 10_930);
         assertEq(ERC4626ExtendedDecimalsOffset0.totalSupply(), 0);
         assertEq(ERC4626ExtendedDecimalsOffset0.totalAssets(), 1);
         assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(alice), 0);
@@ -1543,7 +1543,7 @@ contract ERC4626VaultTest is ERC4626Test {
     function testVaultInteractionsForSomeoneElse() public {
         address alice = makeAddr("alice");
         address bob = makeAddr("bob");
-        uint256 amount = 1000;
+        uint256 amount = 1_000;
         underlying.mint(alice, amount);
         underlying.mint(bob, amount);
 
@@ -1585,7 +1585,7 @@ contract ERC4626VaultTest is ERC4626Test {
         uint256 amount = 100;
         uint256 nonce = ERC4626ExtendedDecimalsOffset0.nonces(owner);
         // solhint-disable-next-line not-rely-on-time
-        uint256 deadline = block.timestamp + 100000;
+        uint256 deadline = block.timestamp + 100_000;
         bytes32 domainSeparator = ERC4626ExtendedDecimalsOffset0
             .DOMAIN_SEPARATOR();
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(
@@ -1631,7 +1631,7 @@ contract ERC4626VaultTest is ERC4626Test {
         uint256 amount = 100;
         uint256 nonce = ERC4626ExtendedDecimalsOffset0.nonces(owner);
         // solhint-disable-next-line not-rely-on-time
-        uint256 deadline = block.timestamp + 100000;
+        uint256 deadline = block.timestamp + 100_000;
         bytes32 domainSeparator = ERC4626ExtendedDecimalsOffset0
             .DOMAIN_SEPARATOR();
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(
@@ -1682,7 +1682,7 @@ contract ERC4626VaultTest is ERC4626Test {
         uint256 amount = 100;
         uint256 nonce = ERC4626ExtendedDecimalsOffset0.nonces(owner);
         // solhint-disable-next-line not-rely-on-time
-        uint256 deadline = block.timestamp + 100000;
+        uint256 deadline = block.timestamp + 100_000;
         bytes32 domainSeparator = ERC4626ExtendedDecimalsOffset0
             .DOMAIN_SEPARATOR();
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(
@@ -1722,7 +1722,7 @@ contract ERC4626VaultTest is ERC4626Test {
         uint256 amount = 100;
         uint256 nonce = ERC4626ExtendedDecimalsOffset0.nonces(owner);
         // solhint-disable-next-line not-rely-on-time
-        uint256 deadline = block.timestamp + 100000;
+        uint256 deadline = block.timestamp + 100_000;
         bytes32 domainSeparator = keccak256(
             abi.encode(
                 _TYPE_HASH,
@@ -1769,7 +1769,7 @@ contract ERC4626VaultTest is ERC4626Test {
         uint256 amount = 100;
         uint256 nonce = 1;
         // solhint-disable-next-line not-rely-on-time
-        uint256 deadline = block.timestamp + 100000;
+        uint256 deadline = block.timestamp + 100_000;
         bytes32 domainSeparator = ERC4626ExtendedDecimalsOffset0
             .DOMAIN_SEPARATOR();
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(

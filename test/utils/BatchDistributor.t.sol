@@ -58,16 +58,16 @@ contract BatchDistributorTest is Test {
         });
         transaction[2] = IBatchDistributor.Transaction({
             recipient: carol,
-            amount: 2000 wei
+            amount: 2_000 wei
         });
         IBatchDistributor.Batch memory batch = IBatchDistributor.Batch({
             txns: transaction
         });
 
-        batchDistributor.distribute_ether{value: 2102 wei}(batch);
+        batchDistributor.distribute_ether{value: 2_102 wei}(batch);
         assertEq(alice.balance, 2 wei);
         assertEq(bob.balance, 100 wei);
-        assertEq(carol.balance, 2000 wei);
+        assertEq(carol.balance, 2_000 wei);
         assertEq(batchDistributorAddr.balance, 0);
     }
 
@@ -90,7 +90,7 @@ contract BatchDistributorTest is Test {
         });
         transaction[2] = IBatchDistributor.Transaction({
             recipient: carol,
-            amount: 2000 wei
+            amount: 2_000 wei
         });
         IBatchDistributor.Batch memory batch = IBatchDistributor.Batch({
             txns: transaction
@@ -100,7 +100,7 @@ contract BatchDistributorTest is Test {
         batchDistributor.distribute_ether{value: 1 ether}(batch);
         assertEq(alice.balance, 2 wei);
         assertEq(bob.balance, 100 wei);
-        assertEq(carol.balance, 2000 wei);
+        assertEq(carol.balance, 2_000 wei);
         assertEq(
             msgSender.balance,
             balance - alice.balance - bob.balance - carol.balance
@@ -126,7 +126,7 @@ contract BatchDistributorTest is Test {
         });
         transaction[2] = IBatchDistributor.Transaction({
             recipient: carol,
-            amount: 2000 wei
+            amount: 2_000 wei
         });
         IBatchDistributor.Batch memory batch = IBatchDistributor.Batch({
             txns: transaction
@@ -137,7 +137,7 @@ contract BatchDistributorTest is Test {
          * and must revert if funds are sent there.
          */
         vm.expectRevert();
-        batchDistributor.distribute_ether{value: 2102 wei}(batch);
+        batchDistributor.distribute_ether{value: 2_102 wei}(batch);
         assertEq(batchDistributorAddr.balance, 0);
     }
 
@@ -159,7 +159,7 @@ contract BatchDistributorTest is Test {
         });
         transaction[2] = IBatchDistributor.Transaction({
             recipient: carol,
-            amount: 2000 wei
+            amount: 2_000 wei
         });
         IBatchDistributor.Batch memory batch = IBatchDistributor.Batch({
             txns: transaction
@@ -190,7 +190,7 @@ contract BatchDistributorTest is Test {
         });
         transaction[2] = IBatchDistributor.Transaction({
             recipient: carol,
-            amount: 2000 wei
+            amount: 2_000 wei
         });
         IBatchDistributor.Batch memory batch = IBatchDistributor.Batch({
             txns: transaction

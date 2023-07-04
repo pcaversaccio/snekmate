@@ -114,10 +114,10 @@ contract MathTest is Test {
     }
 
     function testUint256Average() public {
-        assertEq(math.uint256_average(83219, 219713), 151466);
-        assertEq(math.uint256_average(73220, 419712), 246466);
-        assertEq(math.uint256_average(83219, 419712), 251465);
-        assertEq(math.uint256_average(73220, 219713), 146466);
+        assertEq(math.uint256_average(83_219, 219_713), 151_466);
+        assertEq(math.uint256_average(73_220, 419_712), 246_466);
+        assertEq(math.uint256_average(83_219, 419_712), 251_465);
+        assertEq(math.uint256_average(73_220, 219_713), 146_466);
         assertEq(
             math.uint256_average(type(uint256).max, type(uint256).max),
             type(uint256).max
@@ -125,17 +125,17 @@ contract MathTest is Test {
     }
 
     function testInt256Average() public {
-        assertEq(math.int256_average(83219, 219713), 151466);
-        assertEq(math.int256_average(-83219, -219713), -151466);
+        assertEq(math.int256_average(83_219, 219_713), 151_466);
+        assertEq(math.int256_average(-83_219, -219_713), -151_466);
 
-        assertEq(math.int256_average(-73220, 419712), 173246);
-        assertEq(math.int256_average(73220, -419712), -173246);
+        assertEq(math.int256_average(-73_220, 419_712), 173_246);
+        assertEq(math.int256_average(73_220, -419_712), -173_246);
 
-        assertEq(math.int256_average(83219, -419712), -168247);
-        assertEq(math.int256_average(-83219, 419712), 168246);
+        assertEq(math.int256_average(83_219, -419_712), -168_247);
+        assertEq(math.int256_average(-83_219, 419_712), 168_246);
 
-        assertEq(math.int256_average(73220, 219713), 146466);
-        assertEq(math.int256_average(-73220, -219713), -146467);
+        assertEq(math.int256_average(73_220, 219_713), 146_466);
+        assertEq(math.int256_average(-73_220, -219_713), -146_467);
 
         assertEq(
             math.int256_average(type(int256).min, type(int256).min),
@@ -268,8 +268,8 @@ contract MathTest is Test {
         assertEq(math.log_10(100, false), 2);
         assertEq(math.log_10(101, false), 2);
         assertEq(math.log_10(999, false), 2);
-        assertEq(math.log_10(1000, false), 3);
-        assertEq(math.log_10(1001, false), 3);
+        assertEq(math.log_10(1_000, false), 3);
+        assertEq(math.log_10(1_001, false), 3);
         assertEq(math.log_10(type(uint256).max, false), 77);
     }
 
@@ -284,8 +284,8 @@ contract MathTest is Test {
         assertEq(math.log_10(100, true), 2);
         assertEq(math.log_10(101, true), 3);
         assertEq(math.log_10(999, true), 3);
-        assertEq(math.log_10(1000, true), 3);
-        assertEq(math.log_10(1001, true), 4);
+        assertEq(math.log_10(1_000, true), 3);
+        assertEq(math.log_10(1_001, true), 4);
         assertEq(math.log_10(type(uint256).max, true), 78);
     }
 
@@ -296,9 +296,9 @@ contract MathTest is Test {
         assertEq(math.log_256(255, false), 0);
         assertEq(math.log_256(256, false), 1);
         assertEq(math.log_256(257, false), 1);
-        assertEq(math.log_256(65535, false), 1);
-        assertEq(math.log_256(65536, false), 2);
-        assertEq(math.log_256(65537, false), 2);
+        assertEq(math.log_256(65_535, false), 1);
+        assertEq(math.log_256(65_536, false), 2);
+        assertEq(math.log_256(65_537, false), 2);
         assertEq(math.log_256(type(uint256).max, false), 31);
     }
 
@@ -309,24 +309,30 @@ contract MathTest is Test {
         assertEq(math.log_256(255, true), 1);
         assertEq(math.log_256(256, true), 1);
         assertEq(math.log_256(257, true), 2);
-        assertEq(math.log_256(65535, true), 2);
-        assertEq(math.log_256(65536, true), 2);
-        assertEq(math.log_256(65537, true), 3);
+        assertEq(math.log_256(65_535, true), 2);
+        assertEq(math.log_256(65_536, true), 2);
+        assertEq(math.log_256(65_537, true), 3);
         assertEq(math.log_256(type(uint256).max, true), 32);
     }
 
     function testWadLn() public {
         assertEq(math.wad_ln(0), 0);
         assertEq(math.wad_ln(10 ** 18), 0);
-        assertEq(math.wad_ln(1), -41446531673892822313);
-        assertEq(math.wad_ln(42), -37708862055609454007);
-        assertEq(math.wad_ln(10 ** 4), -32236191301916639577);
-        assertEq(math.wad_ln(10 ** 9), -20723265836946411157);
-        assertEq(math.wad_ln(2718281828459045235), 999999999999999999);
-        assertEq(math.wad_ln(11723640096265400935), 2461607324344817918);
-        assertEq(math.wad_ln(2 ** 128), 47276307437780177293);
-        assertEq(math.wad_ln(2 ** 170), 76388489021297880288);
-        assertEq(math.wad_ln(type(int256).max), 135305999368893231589);
+        assertEq(math.wad_ln(1), -41_446_531_673_892_822_313);
+        assertEq(math.wad_ln(42), -37_708_862_055_609_454_007);
+        assertEq(math.wad_ln(10 ** 4), -32_236_191_301_916_639_577);
+        assertEq(math.wad_ln(10 ** 9), -20_723_265_836_946_411_157);
+        assertEq(
+            math.wad_ln(2_718_281_828_459_045_235),
+            999_999_999_999_999_999
+        );
+        assertEq(
+            math.wad_ln(11_723_640_096_265_400_935),
+            2_461_607_324_344_817_918
+        );
+        assertEq(math.wad_ln(2 ** 128), 47_276_307_437_780_177_293);
+        assertEq(math.wad_ln(2 ** 170), 76_388_489_021_297_880_288);
+        assertEq(math.wad_ln(type(int256).max), 135_305_999_368_893_231_589);
     }
 
     function testWadLnNegativeValues() public {
@@ -337,36 +343,36 @@ contract MathTest is Test {
     }
 
     function testWadExp() public {
-        assertEq(math.wad_exp(-42139678854452767551), 0);
-        assertEq(math.wad_exp(-3 * 10 ** 18), 49787068367863942);
-        assertEq(math.wad_exp(-2 * 10 ** 18), 135335283236612691);
-        assertEq(math.wad_exp(-1 * 10 ** 18), 367879441171442321);
-        assertEq(math.wad_exp(-0.5 * 10 ** 18), 606530659712633423);
-        assertEq(math.wad_exp(-0.3 * 10 ** 18), 740818220681717866);
+        assertEq(math.wad_exp(-42_139_678_854_452_767_551), 0);
+        assertEq(math.wad_exp(-3 * 10 ** 18), 49_787_068_367_863_942);
+        assertEq(math.wad_exp(-2 * 10 ** 18), 135_335_283_236_612_691);
+        assertEq(math.wad_exp(-1 * 10 ** 18), 367_879_441_171_442_321);
+        assertEq(math.wad_exp(-0.5 * 10 ** 18), 606_530_659_712_633_423);
+        assertEq(math.wad_exp(-0.3 * 10 ** 18), 740_818_220_681_717_866);
         assertEq(math.wad_exp(0), 10 ** 18);
-        assertEq(math.wad_exp(0.3 * 10 ** 18), 1349858807576003103);
-        assertEq(math.wad_exp(0.5 * 10 ** 18), 1648721270700128146);
-        assertEq(math.wad_exp(1 * 10 ** 18), 2718281828459045235);
-        assertEq(math.wad_exp(2 * 10 ** 18), 7389056098930650227);
-        assertEq(math.wad_exp(3 * 10 ** 18), 20085536923187667741);
-        assertEq(math.wad_exp(10 * 10 ** 18), 22026465794806716516980);
+        assertEq(math.wad_exp(0.3 * 10 ** 18), 1_349_858_807_576_003_103);
+        assertEq(math.wad_exp(0.5 * 10 ** 18), 1_648_721_270_700_128_146);
+        assertEq(math.wad_exp(1 * 10 ** 18), 2_718_281_828_459_045_235);
+        assertEq(math.wad_exp(2 * 10 ** 18), 7_389_056_098_930_650_227);
+        assertEq(math.wad_exp(3 * 10 ** 18), 20_085_536_923_187_667_741);
+        assertEq(math.wad_exp(10 * 10 ** 18), 22_026_465_794_806_716_516_980);
         assertEq(
             math.wad_exp(50 * 10 ** 18),
-            5184705528587072464148529318587763226117
+            5_184_705_528_587_072_464_148_529_318_587_763_226_117
         );
         assertEq(
             math.wad_exp(100 * 10 ** 18),
-            26881171418161354484134666106240937146178367581647816351662017
+            26_881_171_418_161_354_484_134_666_106_240_937_146_178_367_581_647_816_351_662_017
         );
         assertEq(
-            math.wad_exp(135305999368893231588),
-            57896044618658097650144101621524338577433870140581303254786265309376407432913
+            math.wad_exp(135_305_999_368_893_231_588),
+            57_896_044_618_658_097_650_144_101_621_524_338_577_433_870_140_581_303_254_786_265_309_376_407_432_913
         );
     }
 
     function testWadExpOverflow() public {
         vm.expectRevert(bytes("Math: wad_exp overflow"));
-        math.wad_exp(135305999368893231589);
+        math.wad_exp(135_305_999_368_893_231_589);
         vm.expectRevert(bytes("Math: wad_exp overflow"));
         math.wad_exp(type(int256).max);
     }
@@ -382,15 +388,15 @@ contract MathTest is Test {
         assertEq(math.cbrt(81, false), 4);
         assertEq(math.cbrt(10 ** 18, false), 10 ** 6);
         assertEq(math.cbrt(8 * 10 ** 18, false), 2 * 10 ** 6);
-        assertEq(math.cbrt(9 * 10 ** 18, false), 2080083);
+        assertEq(math.cbrt(9 * 10 ** 18, false), 2_080_083);
         assertEq(math.cbrt(type(uint8).max, false), 6);
         assertEq(math.cbrt(type(uint16).max, false), 40);
-        assertEq(math.cbrt(type(uint32).max, false), 1625);
-        assertEq(math.cbrt(type(uint64).max, false), 2642245);
-        assertEq(math.cbrt(type(uint128).max, false), 6981463658331);
+        assertEq(math.cbrt(type(uint32).max, false), 1_625);
+        assertEq(math.cbrt(type(uint64).max, false), 2_642_245);
+        assertEq(math.cbrt(type(uint128).max, false), 6_981_463_658_331);
         assertEq(
             math.cbrt(type(uint256).max, false),
-            48740834812604276470692694
+            48_740_834_812_604_276_470_692_694
         );
     }
 
@@ -405,38 +411,41 @@ contract MathTest is Test {
         assertEq(math.cbrt(81, true), 5);
         assertEq(math.cbrt(10 ** 18, true), 10 ** 6);
         assertEq(math.cbrt(8 * 10 ** 18, true), 2 * 10 ** 6);
-        assertEq(math.cbrt(9 * 10 ** 18, true), 2080084);
+        assertEq(math.cbrt(9 * 10 ** 18, true), 2_080_084);
         assertEq(math.cbrt(type(uint8).max, true), 7);
         assertEq(math.cbrt(type(uint16).max, true), 41);
-        assertEq(math.cbrt(type(uint32).max, true), 1626);
-        assertEq(math.cbrt(type(uint64).max, true), 2642246);
-        assertEq(math.cbrt(type(uint128).max, true), 6981463658332);
+        assertEq(math.cbrt(type(uint32).max, true), 1_626);
+        assertEq(math.cbrt(type(uint64).max, true), 2_642_246);
+        assertEq(math.cbrt(type(uint128).max, true), 6_981_463_658_332);
         assertEq(
             math.cbrt(type(uint256).max, true),
-            48740834812604276470692695
+            48_740_834_812_604_276_470_692_695
         );
     }
 
     function testWadCbrt() public {
         assertEq(math.wad_cbrt(0), 0);
         assertEq(math.wad_cbrt(1), 10 ** 12);
-        assertEq(math.wad_cbrt(2), 1259921049894);
-        assertEq(math.wad_cbrt(3), 1442249570307);
-        assertEq(math.wad_cbrt(9), 2080083823051);
-        assertEq(math.wad_cbrt(27), 3000000000000);
-        assertEq(math.wad_cbrt(80), 4308869380063);
-        assertEq(math.wad_cbrt(81), 4326748710922);
+        assertEq(math.wad_cbrt(2), 1_259_921_049_894);
+        assertEq(math.wad_cbrt(3), 1_442_249_570_307);
+        assertEq(math.wad_cbrt(9), 2_080_083_823_051);
+        assertEq(math.wad_cbrt(27), 3_000_000_000_000);
+        assertEq(math.wad_cbrt(80), 4_308_869_380_063);
+        assertEq(math.wad_cbrt(81), 4_326_748_710_922);
         assertEq(math.wad_cbrt(10 ** 18), 10 ** 18);
         assertEq(math.wad_cbrt(8 * 10 ** 18), 2 * 10 ** 18);
-        assertEq(math.wad_cbrt(9 * 10 ** 18), 2080083823051904114);
-        assertEq(math.wad_cbrt(type(uint8).max), 6341325705384);
-        assertEq(math.wad_cbrt(type(uint16).max), 40317268530317);
-        assertEq(math.wad_cbrt(type(uint32).max), 1625498677089280);
-        assertEq(math.wad_cbrt(type(uint64).max), 2642245949629133047);
-        assertEq(math.wad_cbrt(type(uint128).max), 6981463658331559092288464);
+        assertEq(math.wad_cbrt(9 * 10 ** 18), 2_080_083_823_051_904_114);
+        assertEq(math.wad_cbrt(type(uint8).max), 6_341_325_705_384);
+        assertEq(math.wad_cbrt(type(uint16).max), 40_317_268_530_317);
+        assertEq(math.wad_cbrt(type(uint32).max), 1_625_498_677_089_280);
+        assertEq(math.wad_cbrt(type(uint64).max), 2_642_245_949_629_133_047);
+        assertEq(
+            math.wad_cbrt(type(uint128).max),
+            6_981_463_658_331_559_092_288_464
+        );
         assertEq(
             math.wad_cbrt(type(uint256).max),
-            48740834812604276470692694000000000000
+            48_740_834_812_604_276_470_692_694_000_000_000_000
         );
     }
 
@@ -619,7 +628,7 @@ contract MathTest is Test {
      * https://github.com/transmissions11/solmate/blob/main/src/utils/SignedWadMath.sol.
      */
     function testFuzzWadExp(int256 x) public {
-        x = bound(x, type(int256).min, 135305999368893231588);
+        x = bound(x, type(int256).min, 135_305_999_368_893_231_588);
         int256 result = math.wad_exp(x);
         assertEq(result, FixedPointMathLib.expWad(x));
         assertEq(result, wadExp(x));

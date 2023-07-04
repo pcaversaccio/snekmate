@@ -1486,7 +1486,7 @@ contract ERC721Test is Test {
          */
         vm.store(
             ERC721ExtendedAddr,
-            bytes32(uint256(18446744073709551627)),
+            bytes32(uint256(18_446_744_073_709_551_627)),
             bytes32(0)
         );
         vm.expectRevert(bytes("ERC721: token already minted"));
@@ -1594,7 +1594,7 @@ contract ERC721Test is Test {
          */
         vm.store(
             ERC721ExtendedAddr,
-            bytes32(uint256(18446744073709551627)),
+            bytes32(uint256(18_446_744_073_709_551_627)),
             bytes32(type(uint256).max)
         );
         vm.prank(deployer);
@@ -1646,7 +1646,7 @@ contract ERC721Test is Test {
 
         uint256 nonce = ERC721Extended.nonces(tokenId);
         // solhint-disable-next-line not-rely-on-time
-        uint256 deadline = block.timestamp + 100000;
+        uint256 deadline = block.timestamp + 100_000;
         bytes32 domainSeparator = ERC721Extended.DOMAIN_SEPARATOR();
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(
             key,
@@ -1684,7 +1684,7 @@ contract ERC721Test is Test {
 
         uint256 nonce = ERC721Extended.nonces(tokenId);
         // solhint-disable-next-line not-rely-on-time
-        uint256 deadline = block.timestamp + 100000;
+        uint256 deadline = block.timestamp + 100_000;
         bytes32 domainSeparator = ERC721Extended.DOMAIN_SEPARATOR();
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(
             key,
@@ -1722,7 +1722,7 @@ contract ERC721Test is Test {
 
         uint256 nonce = ERC721Extended.nonces(tokenId);
         // solhint-disable-next-line not-rely-on-time
-        uint256 deadline = block.timestamp + 100000;
+        uint256 deadline = block.timestamp + 100_000;
         bytes32 domainSeparator = ERC721Extended.DOMAIN_SEPARATOR();
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(
             key + 1,
@@ -1757,7 +1757,7 @@ contract ERC721Test is Test {
 
         uint256 nonce = ERC721Extended.nonces(tokenId);
         // solhint-disable-next-line not-rely-on-time
-        uint256 deadline = block.timestamp + 100000;
+        uint256 deadline = block.timestamp + 100_000;
         bytes32 domainSeparator = keccak256(
             abi.encode(
                 _TYPE_HASH,
@@ -1800,7 +1800,7 @@ contract ERC721Test is Test {
 
         uint256 nonce = 1;
         // solhint-disable-next-line not-rely-on-time
-        uint256 deadline = block.timestamp + 100000;
+        uint256 deadline = block.timestamp + 100_000;
         bytes32 domainSeparator = ERC721Extended.DOMAIN_SEPARATOR();
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(
             key,
@@ -1964,9 +1964,9 @@ contract ERC721Test is Test {
         address operator
     ) public {
         vm.assume(
-            owner > address(4096) &&
-                approved > address(4096) &&
-                operator > address(4096)
+            owner > address(4_096) &&
+                approved > address(4_096) &&
+                operator > address(4_096)
         );
         vm.assume(
             owner != approved &&
@@ -2006,9 +2006,9 @@ contract ERC721Test is Test {
         bytes memory data
     ) public {
         vm.assume(
-            owner > address(4096) &&
-                approved > address(4096) &&
-                operator > address(4096)
+            owner > address(4_096) &&
+                approved > address(4_096) &&
+                operator > address(4_096)
         );
         vm.assume(
             owner != approved &&
@@ -2065,7 +2065,7 @@ contract ERC721Test is Test {
         vm.assume(
             owner != spender && owner != zeroAddress && owner.code.length == 0
         );
-        vm.assume(spender > address(4096));
+        vm.assume(spender > address(4_096));
         string memory uri = "my_awesome_nft_uri";
         uint256 tokenId = 0;
         vm.startPrank(deployer);
@@ -2087,7 +2087,7 @@ contract ERC721Test is Test {
         vm.assume(
             owner != spender1 && owner != zeroAddress && owner.code.length == 0
         );
-        vm.assume(spender1 > address(4096));
+        vm.assume(spender1 > address(4_096));
         address spender2 = zeroAddress;
         string memory uri = "my_awesome_nft_uri";
         uint256 tokenId = 0;
@@ -2115,7 +2115,7 @@ contract ERC721Test is Test {
         vm.assume(
             owner != spender && owner != zeroAddress && owner.code.length == 0
         );
-        vm.assume(spender > address(4096));
+        vm.assume(spender > address(4_096));
         string memory uri = "my_awesome_nft_uri";
         uint256 tokenId = 0;
         vm.startPrank(deployer);
@@ -2137,7 +2137,7 @@ contract ERC721Test is Test {
         vm.assume(
             owner != spender && owner != zeroAddress && owner.code.length == 0
         );
-        vm.assume(spender > address(4096));
+        vm.assume(spender > address(4_096));
         string memory uri = "my_awesome_nft_uri";
         uint256 tokenId = 0;
         vm.startPrank(deployer);
@@ -2183,9 +2183,9 @@ contract ERC721Test is Test {
         address spender
     ) public {
         vm.assume(
-            owner > address(4096) &&
-                operator > address(4096) &&
-                spender > address(4096)
+            owner > address(4_096) &&
+                operator > address(4_096) &&
+                spender > address(4_096)
         );
         vm.assume(
             owner != operator &&
@@ -2215,7 +2215,7 @@ contract ERC721Test is Test {
         address owner,
         address operator
     ) public {
-        vm.assume(owner > address(4096) && operator > address(4096));
+        vm.assume(owner > address(4_096) && operator > address(4_096));
         vm.assume(
             owner != operator && owner != zeroAddress && owner.code.length == 0
         );
@@ -2250,7 +2250,7 @@ contract ERC721Test is Test {
         vm.assume(
             owner != spender && owner != zeroAddress && owner.code.length == 0
         );
-        vm.assume(spender > address(4096));
+        vm.assume(spender > address(4_096));
         string memory uri = "my_awesome_nft_uri";
         vm.startPrank(deployer);
         ERC721Extended.safe_mint(owner, uri);

@@ -88,7 +88,7 @@ def supportsInterface(interfaceId: bytes4) -> bool:
 
 
 @external
-def safeTransferFrom(_from: address, _to: address, _id: uint256, _value: uint256, _data: Bytes[1024]):
+def safeTransferFrom(_from: address, _to: address, _id: uint256, _value: uint256, _data: Bytes[1_024]):
     """
     @dev Transfers `_value` tokens of token type `_id` from
          `_from` to `_to`.
@@ -113,14 +113,14 @@ def safeTransferFrom(_from: address, _to: address, _id: uint256, _value: uint256
     @param _id The 32-byte identifier of the token.
     @param _value The 32-byte token amount that is
            being transferred.
-    @param _data The maximum 1024-byte additional data
+    @param _data The maximum 1,024-byte additional data
            with no specified format.
     """
     pass
 
 
 @external
-def safeBatchTransferFrom(_from: address, _to: address, _ids: DynArray[uint256, 128], _values: DynArray[uint256, 128], _data: Bytes[1024]):
+def safeBatchTransferFrom(_from: address, _to: address, _ids: DynArray[uint256, 128], _values: DynArray[uint256, 128], _data: Bytes[1_024]):
     """
     @dev Batched version of `safeTransferFrom`.
     @notice Note that `_ids` and `_values` must have the
@@ -143,7 +143,7 @@ def safeBatchTransferFrom(_from: address, _to: address, _ids: DynArray[uint256, 
     @param _values The 32-byte array of token amounts that are being
            transferred. Note that the order and length must match
            the 32-byte `_ids` array.
-    @param _data The maximum 1024-byte additional data
+    @param _data The maximum 1,024-byte additional data
            with no specified format.
     """
     pass

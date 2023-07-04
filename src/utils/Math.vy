@@ -384,21 +384,21 @@ def wad_ln(x: int256) -> int256:
 
     # Evaluate using a "(8, 8)"-term rational approximation. Since `p` is monic,
     # we will multiply by a scaling factor later.
-    p: int256 = unsafe_add(unsafe_mul(unsafe_add(value, 3273285459638523848632254066296), value) >> 96, 24828157081833163892658089445524)
-    p = unsafe_add(unsafe_mul(p, value) >> 96, 43456485725739037958740375743393)
-    p = unsafe_sub(unsafe_mul(p, value) >> 96, 11111509109440967052023855526967)
-    p = unsafe_sub(unsafe_mul(p, value) >> 96, 45023709667254063763336534515857)
-    p = unsafe_sub(unsafe_mul(p, value) >> 96, 14706773417378608786704636184526)
-    p = unsafe_sub(unsafe_mul(p, value), 795164235651350426258249787498 << 96)
+    p: int256 = unsafe_add(unsafe_mul(unsafe_add(value, 3_273_285_459_638_523_848_632_254_066_296), value) >> 96, 24_828_157_081_833_163_892_658_089_445_524)
+    p = unsafe_add(unsafe_mul(p, value) >> 96, 43_456_485_725_739_037_958_740_375_743_393)
+    p = unsafe_sub(unsafe_mul(p, value) >> 96, 11_111_509_109_440_967_052_023_855_526_967)
+    p = unsafe_sub(unsafe_mul(p, value) >> 96, 45_023_709_667_254_063_763_336_534_515_857)
+    p = unsafe_sub(unsafe_mul(p, value) >> 96, 14_706_773_417_378_608_786_704_636_184_526)
+    p = unsafe_sub(unsafe_mul(p, value), 795_164_235_651_350_426_258_249_787_498 << 96)
 
     # We leave `p` in the "2 ** 192" base so that we do not have to scale it up
     # again for the division. Note that `q` is monic by convention.
-    q: int256 = unsafe_add(unsafe_mul(unsafe_add(value, 5573035233440673466300451813936), value) >> 96, 71694874799317883764090561454958)
-    q = unsafe_add(unsafe_mul(q, value) >> 96, 283447036172924575727196451306956)
-    q = unsafe_add(unsafe_mul(q, value) >> 96, 401686690394027663651624208769553)
-    q = unsafe_add(unsafe_mul(q, value) >> 96, 204048457590392012362485061816622)
-    q = unsafe_add(unsafe_mul(q, value) >> 96, 31853899698501571402653359427138)
-    q = unsafe_add(unsafe_mul(q, value) >> 96, 909429971244387300277376558375)
+    q: int256 = unsafe_add(unsafe_mul(unsafe_add(value, 5_573_035_233_440_673_466_300_451_813_936), value) >> 96, 71_694_874_799_317_883_764_090_561_454_958)
+    q = unsafe_add(unsafe_mul(q, value) >> 96, 283_447_036_172_924_575_727_196_451_306_956)
+    q = unsafe_add(unsafe_mul(q, value) >> 96, 401_686_690_394_027_663_651_624_208_769_553)
+    q = unsafe_add(unsafe_mul(q, value) >> 96, 204_048_457_590_392_012_362_485_061_816_622)
+    q = unsafe_add(unsafe_mul(q, value) >> 96, 31_853_899_698_501_571_402_653_359_427_138)
+    q = unsafe_add(unsafe_mul(q, value) >> 96, 909_429_971_244_387_300_277_376_558_375)
 
     # It is known that the polynomial `q` has no zeros in the domain.
     # No scaling is required, as `p` is already "2 ** 96" too large. Also,
@@ -412,9 +412,9 @@ def wad_ln(x: int256) -> int256:
     #   - multiply by "10 ** 18 / 2 ** 96 = 5 ** 18 >> 78".
     # In order to perform the most gas-efficient calculation, we carry out all
     # these steps in one expression.
-    return unsafe_add(unsafe_add(unsafe_mul(r, 1677202110996718588342820967067443963516166),\
-           unsafe_mul(k, 16597577552685614221487285958193947469193820559219878177908093499208371)),\
-           600920179829731861736702779321621459595472258049074101567377883020018308) >> 174
+    return unsafe_add(unsafe_add(unsafe_mul(r, 1_677_202_110_996_718_588_342_820_967_067_443_963_516_166),\
+           unsafe_mul(k, 16_597_577_552_685_614_221_487_285_958_193_947_469_193_820_559_219_878_177_908_093_499_208_371)),\
+           600_920_179_829_731_861_736_702_779_321_621_459_595_472_258_049_074_101_567_377_883_020_018_308) >> 174
 
 
 @external
@@ -433,12 +433,12 @@ def wad_exp(x: int256) -> int256:
 
     # If the result is `< 0.5`, we return zero. This happens when we have the following:
     # "x <= floor(log(0.5e18) * 1e18) ~ -42e18".
-    if (x <= -42139678854452767551):
+    if (x <= -42_139_678_854_452_767_551):
         return empty(int256)
 
     # When the result is "> (2 ** 255 - 1) / 1e18" we cannot represent it as a signed integer.
     # This happens when "x >= floor(log((2 ** 255 - 1) / 1e18) * 1e18) ~ 135".
-    assert x < 135305999368893231589, "Math: wad_exp overflow"
+    assert x < 135_305_999_368_893_231_589, "Math: wad_exp overflow"
 
     # `x` is now in the range "(-42, 136) * 1e18". Convert to "(-42, 136) * 2 ** 96" for higher
     # intermediate precision and a binary base. This base conversion is a multiplication with
@@ -448,22 +448,22 @@ def wad_exp(x: int256) -> int256:
     # Reduce the range of `x` to "(-½ ln 2, ½ ln 2) * 2 ** 96" by factoring out powers of two
     # so that "exp(x) = exp(x') * 2 ** k", where `k` is a signer integer. Solving this gives
     # "k = round(x / log(2))" and "x' = x - k * log(2)". Thus, `k` is in the range "[-61, 195]".
-    k: int256 = unsafe_add(unsafe_div(value << 96, 54916777467707473351141471128), 2 ** 95) >> 96
-    value = unsafe_sub(value, unsafe_mul(k, 54916777467707473351141471128))
+    k: int256 = unsafe_add(unsafe_div(value << 96, 54_916_777_467_707_473_351_141_471_128), 2 ** 95) >> 96
+    value = unsafe_sub(value, unsafe_mul(k, 54_916_777_467_707_473_351_141_471_128))
 
     # Evaluate using a "(6, 7)"-term rational approximation. Since `p` is monic,
     # we will multiply by a scaling factor later.
-    y: int256 = unsafe_add(unsafe_mul(unsafe_add(value, 1346386616545796478920950773328), value) >> 96, 57155421227552351082224309758442)
-    p: int256 = unsafe_add(unsafe_mul(unsafe_add(unsafe_mul(unsafe_sub(unsafe_add(y, value), 94201549194550492254356042504812), y) >> 96,\
-                           28719021644029726153956944680412240), value), 4385272521454847904659076985693276 << 96)
+    y: int256 = unsafe_add(unsafe_mul(unsafe_add(value, 1_346_386_616_545_796_478_920_950_773_328), value) >> 96, 57_155_421_227_552_351_082_224_309_758_442)
+    p: int256 = unsafe_add(unsafe_mul(unsafe_add(unsafe_mul(unsafe_sub(unsafe_add(y, value), 94_201_549_194_550_492_254_356_042_504_812), y) >> 96,\
+                           28_719_021_644_029_726_153_956_944_680_412_240), value), 4_385_272_521_454_847_904_659_076_985_693_276 << 96)
 
     # We leave `p` in the "2 ** 192" base so that we do not have to scale it up
     # again for the division.
-    q: int256 = unsafe_add(unsafe_mul(unsafe_sub(value, 2855989394907223263936484059900), value) >> 96, 50020603652535783019961831881945)
-    q = unsafe_sub(unsafe_mul(q, value) >> 96, 533845033583426703283633433725380)
-    q = unsafe_add(unsafe_mul(q, value) >> 96, 3604857256930695427073651918091429)
-    q = unsafe_sub(unsafe_mul(q, value) >> 96, 14423608567350463180887372962807573)
-    q = unsafe_add(unsafe_mul(q, value) >> 96, 26449188498355588339934803723976023)
+    q: int256 = unsafe_add(unsafe_mul(unsafe_sub(value, 2_855_989_394_907_223_263_936_484_059_900), value) >> 96, 50_020_603_652_535_783_019_961_831_881_945)
+    q = unsafe_sub(unsafe_mul(q, value) >> 96, 533_845_033_583_426_703_283_633_433_725_380)
+    q = unsafe_add(unsafe_mul(q, value) >> 96, 3_604_857_256_930_695_427_073_651_918_091_429)
+    q = unsafe_sub(unsafe_mul(q, value) >> 96, 14_423_608_567_350_463_180_887_372_962_807_573)
+    q = unsafe_add(unsafe_mul(q, value) >> 96, 26_449_188_498_355_588_339_934_803_723_976_023)
 
     # The polynomial `q` has no zeros in the range because all its roots are complex.
     # No scaling is required, as `p` is already "2 ** 96" too large. Also,
@@ -481,7 +481,7 @@ def wad_exp(x: int256) -> int256:
     # negative parameter value `r`, we first convert `r` to `bytes32` and
     # subsequently to `uint256`. Remember that the EVM default behaviour is
     # to use two's complement representation to handle signed integers.
-    return convert(unsafe_mul(convert(convert(r, bytes32), uint256), 3822833074963236453042738258902158003155416615667) >>\
+    return convert(unsafe_mul(convert(convert(r, bytes32), uint256), 3_822_833_074_963_236_453_042_738_258_902_158_003_155_416_615_667) >>\
            convert(unsafe_sub(195, k), uint256), int256)
 
 
@@ -617,10 +617,10 @@ def _wad_cbrt(x: uint256) -> uint256:
     #   - "pow = log2(x) // 3" (the operator `//` means integer division),
     #   - "remainder = log2(x) % 3",
     #   - "initial_guess = 2 ** pow * cbrt(2) ** remainder".
-    # Now substituting "2 = 1.26 ≈ 1260 / 1000", we get:
-    #   - "initial_guess = 2 ** pow * 1260 ** remainder // 1000 ** remainder".
+    # Now substituting "2 = 1.26 ≈ 1,260 / 1,000", we get:
+    #   - "initial_guess = 2 ** pow * 1,260 ** remainder // 1,000 ** remainder".
     remainder: uint256 = log2x % 3
-    y: uint256 = unsafe_div(unsafe_mul(pow_mod256(2, unsafe_div(log2x, 3)), pow_mod256(1260, remainder)), pow_mod256(1000, remainder))
+    y: uint256 = unsafe_div(unsafe_mul(pow_mod256(2, unsafe_div(log2x, 3)), pow_mod256(1_260, remainder)), pow_mod256(1_000, remainder))
 
     # Since we have chosen good initial values for the cube roots, 7 Newton-Raphson
     # iterations are just sufficient. 6 iterations would lead to non-convergences,

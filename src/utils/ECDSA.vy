@@ -58,13 +58,13 @@ def recover_sig(hash: bytes32, signature: Bytes[65]) -> address:
     sig_length: uint256 = len(signature)
     # 65-byte case: r,s,v standard signature.
     if (sig_length == 65):
-        r: uint256 = extract32(signature, 0, output_type=uint256)
+        r: uint256 = extract32(signature, empty(uint256), output_type=uint256)
         s: uint256 = extract32(signature, 32, output_type=uint256)
         v: uint256 = convert(slice(signature, 64, 1), uint256)
         return self._try_recover_vrs(hash, v, r, s)
     # 64-byte case: r,vs signature; see: https://eips.ethereum.org/EIPS/eip-2098.
     elif (sig_length == 64):
-        r: uint256 = extract32(signature, 0, output_type=uint256)
+        r: uint256 = extract32(signature, empty(uint256), output_type=uint256)
         vs: uint256 = extract32(signature, 32, output_type=uint256)
         return self._try_recover_r_vs(hash, r, vs)
     else:
@@ -111,15 +111,15 @@ def to_typed_data_hash(domain_separator: bytes32, struct_hash: bytes32) -> bytes
 
 @external
 @view
-def to_data_with_intended_validator_hash_self(data: Bytes[1024]) -> bytes32:
+def to_data_with_intended_validator_hash_self(data: Bytes[1_024]) -> bytes32:
     """
     @dev Returns an Ethereum signed data with this contract
-         as the intended validator and a maximum 1024-byte
+         as the intended validator and a maximum 1,024-byte
          payload `data`.
     @notice This function structures the data according to
             the version `0x00` of EIP-191:
             https://eips.ethereum.org/EIPS/eip-191#version-0x00.
-    @param data The maximum 1024-byte data to be signed.
+    @param data The maximum 1,024-byte data to be signed.
     @return bytes32 The 32-byte Ethereum signed data.
     """
     return self._to_data_with_intended_validator_hash(self, data)
@@ -127,16 +127,16 @@ def to_data_with_intended_validator_hash_self(data: Bytes[1024]) -> bytes32:
 
 @external
 @pure
-def to_data_with_intended_validator_hash(validator: address, data: Bytes[1024]) -> bytes32:
+def to_data_with_intended_validator_hash(validator: address, data: Bytes[1_024]) -> bytes32:
     """
     @dev Returns an Ethereum signed data with `validator` as
-         the intended validator and a maximum 1024-byte payload
+         the intended validator and a maximum 1,024-byte payload
          `data`.
     @notice This function structures the data according to
             the version `0x00` of EIP-191:
             https://eips.ethereum.org/EIPS/eip-191#version-0x00.
     @param validator The 20-byte intended validator address.
-    @param data The maximum 1024-byte data to be signed.
+    @param data The maximum 1,024-byte data to be signed.
     @return bytes32 The 32-byte Ethereum signed data.
     """
     return self._to_data_with_intended_validator_hash(validator, data)
@@ -205,16 +205,16 @@ def _try_recover_vrs(hash: bytes32, v: uint256, r: uint256, s: uint256) -> addre
 
 @internal
 @pure
-def _to_data_with_intended_validator_hash(validator: address, data: Bytes[1024]) -> bytes32:
+def _to_data_with_intended_validator_hash(validator: address, data: Bytes[1_024]) -> bytes32:
     """
     @dev An `internal` helper function that returns an Ethereum
          signed data with `validator` as the intended validator
-         and a maximum 1024-byte payload `data`.
+         and a maximum 1,024-byte payload `data`.
     @notice This function structures the data according to
             the version `0x00` of EIP-191:
             https://eips.ethereum.org/EIPS/eip-191#version-0x00.
     @param validator The 20-byte intended validator address.
-    @param data The maximum 1024-byte data to be signed.
+    @param data The maximum 1,024-byte data to be signed.
     @return bytes32 The 32-byte Ethereum signed data.
     """
     return keccak256(concat(b"\x19\x00", convert(validator, bytes20), data))

@@ -38,7 +38,7 @@ def supportsInterface(interfaceId: bytes4) -> bool:
 
 
 @external
-def onERC1155Received(_operator: address, _from: address, _id: uint256, _value: uint256, _data: Bytes[1024]) -> bytes4:
+def onERC1155Received(_operator: address, _from: address, _id: uint256, _value: uint256, _data: Bytes[1_024]) -> bytes4:
     """
     @dev Handles the receipt of a single ERC-1155 token type.
          This function is called at the end of a `safeTransferFrom`
@@ -54,7 +54,7 @@ def onERC1155Received(_operator: address, _from: address, _id: uint256, _value: 
     @param _id The 32-byte identifier of the token.
     @param _value The 32-byte token amount that is
            being transferred.
-    @param _data The maximum 1024-byte additional data
+    @param _data The maximum 1,024-byte additional data
            with no specified format.
     @return bytes4 The 4-byte function selector of `onERC1155Received`.
     """
@@ -62,8 +62,8 @@ def onERC1155Received(_operator: address, _from: address, _id: uint256, _value: 
 
 
 @external
-def onERC1155BatchReceived(_operator: address, _from: address, _ids: DynArray[uint256, 65535], _values: DynArray[uint256, 65535],
-                           _data: Bytes[1024]) -> bytes4:
+def onERC1155BatchReceived(_operator: address, _from: address, _ids: DynArray[uint256, 65_535], _values: DynArray[uint256, 65_535],
+                           _data: Bytes[1_024]) -> bytes4:
     """
     @dev Handles the receipt of multiple ERC-1155 token types.
          This function is called at the end of a `safeBatchTransferFrom`
@@ -82,7 +82,7 @@ def onERC1155BatchReceived(_operator: address, _from: address, _ids: DynArray[ui
     @param _values The 32-byte array of token amounts that are
            being transferred. Note that the order and length must
            match the 32-byte `_ids` array.
-    @param _data The maximum 1024-byte additional data
+    @param _data The maximum 1,024-byte additional data
            with no specified format.
     @return bytes4 The 4-byte function selector of `onERC1155BatchReceived`.
     """
