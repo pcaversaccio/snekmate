@@ -134,11 +134,11 @@ def encode(data: Bytes[_DATA_INPUT_BOUND], base64_url: bool) -> DynArray[String[
 
     # Case 1: padding of "==" added.
     if (padding == 1):
-        last_chunk: String[2] = slice(char_chunks.pop(), 0, 2)
+        last_chunk: String[2] = slice(char_chunks.pop(), empty(uint256), 2)
         char_chunks.append(concat(last_chunk, "=="))
     # Case 2: padding of "=" added.
     elif (padding == 2):
-        last_chunk: String[3] = slice(char_chunks.pop(), 0, 3)
+        last_chunk: String[3] = slice(char_chunks.pop(), empty(uint256), 3)
         char_chunks.append(concat(last_chunk, "="))
 
     return char_chunks
@@ -186,7 +186,7 @@ def decode(data: String[_DATA_OUTPUT_BOUND], base64_url: bool) -> DynArray[Bytes
         # Base64 encoding with an URL and filename-safe
         # alphabet.
         if (base64_url):
-            c1: uint256 = self._index_of(slice(chunk, 0, 1), True)
+            c1: uint256 = self._index_of(slice(chunk, empty(uint256), 1), True)
             c2: uint256 = self._index_of(slice(chunk, 1, 1), True)
             c3: uint256 = self._index_of(slice(chunk, 2, 1), True)
             c4: uint256 = self._index_of(slice(chunk, 3, 1), True)
@@ -226,7 +226,7 @@ def decode(data: String[_DATA_OUTPUT_BOUND], base64_url: bool) -> DynArray[Bytes
                 break
         # Base64 encoding using the standard characters.
         else:
-            c1: uint256 = self._index_of(slice(chunk, 0, 1), False)
+            c1: uint256 = self._index_of(slice(chunk, empty(uint256), 1), False)
             c2: uint256 = self._index_of(slice(chunk, 1, 1), False)
             c3: uint256 = self._index_of(slice(chunk, 2, 1), False)
             c4: uint256 = self._index_of(slice(chunk, 3, 1), False)
