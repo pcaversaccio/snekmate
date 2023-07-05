@@ -581,15 +581,27 @@ contract ERC721Test is Test {
         assertTrue(ERC721Extended.supportsInterface(0x49064906));
     }
 
-    function testSupportsInterfaceGasCost() public {
+    function testSupportsInterfaceSuccessGasCost() public {
         uint256 startGas = gasleft();
         ERC721Extended.supportsInterface(type(IERC165).interfaceId);
         uint256 gasUsed = startGas - gasleft();
-        assertTrue(gasUsed <= 30_000);
+        assertTrue(
+            gasUsed <= 30_000 &&
+                ERC721Extended.supportsInterface(type(IERC165).interfaceId)
+        );
     }
 
     function testSupportsInterfaceInvalidInterfaceId() public {
         assertTrue(!ERC721Extended.supportsInterface(0x0011bbff));
+    }
+
+    function testSupportsInterfaceInvalidInterfaceIdGasCost() public {
+        uint256 startGas = gasleft();
+        ERC721Extended.supportsInterface(0x0011bbff);
+        uint256 gasUsed = startGas - gasleft();
+        assertTrue(
+            gasUsed <= 30_000 && !ERC721Extended.supportsInterface(0x0011bbff)
+        );
     }
 
     function testBalanceOfCase1() public {
