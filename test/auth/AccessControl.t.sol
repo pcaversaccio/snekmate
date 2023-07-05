@@ -116,19 +116,27 @@ contract AccessControlTest is Test {
         );
     }
 
-    function testSupportsInterfaceGasCost() public {
+    function testSupportsInterfaceSuccessGasCost() public {
         uint256 startGas = gasleft();
         accessControl.supportsInterface(type(IERC165).interfaceId);
         uint256 gasUsed = startGas - gasleft();
-        assertTrue(gasUsed <= 30_000);
+        assertTrue(
+            gasUsed <= 30_000 &&
+                accessControl.supportsInterface(type(IERC165).interfaceId)
+        );
     }
 
     function testSupportsInterfaceInvalidInterfaceId() public {
+        assertTrue(!accessControl.supportsInterface(0x0011bbff));
+    }
+
+    function testSupportsInterfaceInvalidInterfaceIdGasCost() public {
         uint256 startGas = gasleft();
-        bool supported = accessControl.supportsInterface(0x0011bbff);
+        accessControl.supportsInterface(0x0011bbff);
         uint256 gasUsed = startGas - gasleft();
-        assertTrue(!supported);
-        assertTrue(gasUsed <= 30_000);
+        assertTrue(
+            gasUsed <= 30_000 && !accessControl.supportsInterface(0x0011bbff)
+        );
     }
 
     function testGrantRoleSuccess() public {
