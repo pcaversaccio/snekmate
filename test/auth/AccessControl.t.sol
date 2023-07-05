@@ -124,7 +124,11 @@ contract AccessControlTest is Test {
     }
 
     function testSupportsInterfaceInvalidInterfaceId() public {
-        assertTrue(!accessControl.supportsInterface(0x0011bbff));
+        uint256 startGas = gasleft();
+        bool supported = accessControl.supportsInterface(0x0011bbff);
+        uint256 gasUsed = startGas - gasleft();
+        assertTrue(!supported);
+        assertTrue(gasUsed <= 30_000);
     }
 
     function testGrantRoleSuccess() public {

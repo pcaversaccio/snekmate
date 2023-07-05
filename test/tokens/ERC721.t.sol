@@ -589,7 +589,11 @@ contract ERC721Test is Test {
     }
 
     function testSupportsInterfaceInvalidInterfaceId() public {
-        assertTrue(!ERC721Extended.supportsInterface(0x0011bbff));
+        uint256 startGas = gasleft();
+        bool supported = ERC721Extended.supportsInterface(0x0011bbff);
+        uint256 gasUsed = startGas - gasleft();
+        assertTrue(!supported);
+        assertTrue(gasUsed <= 30_000);
     }
 
     function testBalanceOfCase1() public {
