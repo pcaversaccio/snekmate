@@ -45,7 +45,7 @@ We offer three convenient ways to install the 🐍 snekmate contracts:
 
 You can install 🐍 snekmate via submodules using [Foundry](https://github.com/foundry-rs/foundry) with:
 
-```bash
+```console
 forge install pcaversaccio/snekmate
 ```
 
@@ -53,7 +53,7 @@ forge install pcaversaccio/snekmate
 
 You can install 🐍 snekmate from [PyPI](https://pypi.org/project/snekmate) with:
 
-```bash
+```console
 pip install snekmate
 ```
 
@@ -63,13 +63,13 @@ pip install snekmate
 
 You can install 🐍 snekmate from [npm](https://www.npmjs.com/package/snekmate) with:
 
-```bash
+```console
 npm install --save-dev snekmate
 ```
 
 Or if you are using [Yarn](https://classic.yarnpkg.com):
 
-```bash
+```console
 yarn add --dev snekmate
 ```
 
