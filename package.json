@@ -22,12 +22,12 @@
     "url": "https://github.com/pcaversaccio/snekmate/issues"
   },
   "scripts": {
-    "prettier:check": "prettier -c **/*.{md,sol,js,json,yml,yaml}",
-    "prettier:fix": "prettier -w **/*.{md,sol,js,json,yml,yaml}",
+    "prettier:check": "npx prettier -c **/*.{md,sol,js,json,yml,yaml}",
+    "prettier:fix": "npx prettier -w **/*.{md,sol,js,json,yml,yaml}",
     "solhint:check": "npx solhint '**/*.sol'",
     "solhint:fix": "npx solhint '**/*.sol' --fix",
-    "lint:check": "yarn prettier:check && yarn solhint:check && eslint --ext .js .",
-    "lint:fix": "yarn prettier:fix && yarn solhint:fix && eslint --ext .js . --fix"
+    "lint:check": "yarn prettier:check && yarn solhint:check && npx eslint --ext .js .",
+    "lint:fix": "yarn prettier:fix && yarn solhint:fix && npx eslint --ext .js . --fix"
   },
   "files": [
     "src/**/*.vy",
@@ -43,6 +43,7 @@
     "keccak256": "^1.0.6",
     "merkletreejs": "^0.3.10",
     "prettier": "^3.0.0",
-    "prettier-plugin-solidity": "^1.1.3"
+    "prettier-plugin-solidity": "^1.1.3",
+    "solhint": "^3.4.1"
   }
 }
