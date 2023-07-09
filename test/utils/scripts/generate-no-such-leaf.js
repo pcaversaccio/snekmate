@@ -9,8 +9,8 @@ const noSuchLeaf =
     // eslint-disable-next-line no-undef
     Buffer.concat(
       // eslint-disable-next-line no-undef
-      [keccak256(elements[0]), keccak256(elements[1])].sort(Buffer.compare)
-    )
+      [keccak256(elements[0]), keccak256(elements[1])].sort(Buffer.compare),
+    ),
   ).toString("hex");
 
 // eslint-disable-next-line no-undef

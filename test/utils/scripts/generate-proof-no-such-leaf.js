@@ -13,5 +13,5 @@ const proof = merkleTree.getHexProof(leaf);
 
 // eslint-disable-next-line no-undef
 process.stdout.write(
-  AbiCoder.defaultAbiCoder().encode(Array(7).fill("bytes32"), proof)
+  AbiCoder.defaultAbiCoder().encode(Array(7).fill("bytes32"), proof),
 );
