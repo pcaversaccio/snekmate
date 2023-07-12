@@ -73,6 +73,12 @@ Or if you are using [Yarn](https://classic.yarnpkg.com):
 yarn add --dev snekmate
 ```
 
+In case you are using [pnpm](https://pnpm.io), invoke:
+
+```console
+pnpm add --save-dev snekmate
+```
+
 ## 👩🏼‍⚖️ Tests
 
 This repository contains [Foundry](https://github.com/foundry-rs/foundry)-based unit tests, property-based tests (i.e. fuzzing), and invariant tests for all contracts, if applicable. All tests are run as part of the CI pipeline [`test-contracts`](./.github/workflows/test-contracts.yml).
