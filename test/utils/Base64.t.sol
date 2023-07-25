@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: WTFPL
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.21;
 
 import {PRBTest} from "prb/test/PRBTest.sol";
 import {VyperDeployer} from "utils/VyperDeployer.sol";
