@@ -861,9 +861,9 @@ ethereumjs-util@^7.1.0:
     rlp "^2.2.4"
 
 ethers@^6.6.6:
-  version "6.6.6"
-  resolved "https://registry.yarnpkg.com/ethers/-/ethers-6.6.6.tgz#3b7ea68b318760c3854ca7450cd3fb51f29835d0"
-  integrity sha512-u3WbQn9bzreuLRGHJx/ZlrRSLYiiIu5FLGcR9VChu5D4+udINfNJZl+Y1DVgKlU6o7i3y31ATxs5HYrKogyvlA==
+  version "6.6.7"
+  resolved "https://registry.yarnpkg.com/ethers/-/ethers-6.6.7.tgz#9cf773bcbc0ca56d783d4774e9b73b4d1aff9962"
+  integrity sha512-1SdT3W5/IPAcx9l5/+9qKRYR/iqVIdNQIct18yeh+XvN+I4RK44mvOsAerMwJYCAwdQfsOgf3OkfozeuMInbtQ==
   dependencies:
     "@adraffy/ens-normalize" "1.9.2"
     "@noble/hashes" "1.1.2"
