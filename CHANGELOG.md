@@ -7,6 +7,11 @@
 - **Extensions**
   - [`ERC2981`](https://github.com/pcaversaccio/snekmate/blob/v0.0.3/src/extensions/ERC2981.vy): An [`ERC-721`](https://eips.ethereum.org/EIPS/eip-721) and [`ERC-1155`](https://eips.ethereum.org/EIPS/eip-1155) compatible [`ERC-2981`](https://eips.ethereum.org/EIPS/eip-2981) reference implementation. ([#138](https://github.com/pcaversaccio/snekmate/pull/138))
 
+### ♻️ Refactoring
+
+- **Utility Functions**
+  - [`Math`](https://github.com/pcaversaccio/snekmate/blob/v0.0.3/src/utils/Math.vy): Optimise the method used to factor powers of two out of the denominator in `mul_div`. ([#153](https://github.com/pcaversaccio/snekmate/pull/153))
+
 ### 🥢 Test Coverage
 
 - **Utility Functions**

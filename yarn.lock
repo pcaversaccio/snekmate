@@ -342,9 +342,9 @@
     "@types/node" "*"
 
 "@types/node@*":
-  version "20.4.5"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-20.4.5.tgz#9dc0a5cb1ccce4f7a731660935ab70b9c00a5d69"
-  integrity sha512-rt40Nk13II9JwQBdeYqmbn2Q6IVTA5uPhvSO+JVqdXw/6/4glI6oR9ezty/A9Hg5u7JH4OmYmuQ+XvjKm0Datg==
+  version "20.4.7"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-20.4.7.tgz#74d323a93f1391a63477b27b9aec56669c98b2ab"
+  integrity sha512-bUBrPjEry2QUTsnuEjzjbS7voGWCc30W0qzgMf90GPeDGFRakvrz47ju+oqDAKCXLUCe39u57/ORMl/O/04/9g==
 
 "@types/node@18.15.13":
   version "18.15.13"
@@ -717,10 +717,10 @@ escape-string-regexp@^4.0.0:
   resolved "https://registry.yarnpkg.com/escape-string-regexp/-/escape-string-regexp-4.0.0.tgz#14ba83a5d373e3d311e5afca29cf5bfad965bf34"
   integrity sha512-TtpcNJ3XAzx3Gq8sWRzJaVajRs0uVxA2YAkdb1jm2YkPz4G6egUFAyA3n5vtEIZefPk5Wa4UXbKuS5fKkJWdgA==
 
-eslint-config-prettier@^8.9.0:
-  version "8.9.0"
-  resolved "https://registry.yarnpkg.com/eslint-config-prettier/-/eslint-config-prettier-8.9.0.tgz#094b6254b2804b0544f7cee535f802b6d29ee10b"
-  integrity sha512-+sbni7NfVXnOpnRadUA8S28AUlsZt9GjgFvABIRL9Hkn8KqNzOp+7Lw4QWtrwn20KzU3wqu1QoOj2m+7rKRqkA==
+eslint-config-prettier@^8.10.0:
+  version "8.10.0"
+  resolved "https://registry.yarnpkg.com/eslint-config-prettier/-/eslint-config-prettier-8.10.0.tgz#3a06a662130807e2502fc3ff8b4143d8a0658e11"
+  integrity sha512-SM8AMJdeQqRYT9O9zguiruQZaN7+z+E4eAP9oiLNGKMtomwaB1E9dcgUD6ZAn/eQAb52USbvezbiljfZUhbJcg==
 
 eslint-scope@^7.2.2:
   version "7.2.2"
@@ -860,10 +860,10 @@ ethereumjs-util@^7.1.0:
     ethereum-cryptography "^0.1.3"
     rlp "^2.2.4"
 
-ethers@^6.6.7:
-  version "6.6.7"
-  resolved "https://registry.yarnpkg.com/ethers/-/ethers-6.6.7.tgz#9cf773bcbc0ca56d783d4774e9b73b4d1aff9962"
-  integrity sha512-1SdT3W5/IPAcx9l5/+9qKRYR/iqVIdNQIct18yeh+XvN+I4RK44mvOsAerMwJYCAwdQfsOgf3OkfozeuMInbtQ==
+ethers@^6.7.0:
+  version "6.7.0"
+  resolved "https://registry.yarnpkg.com/ethers/-/ethers-6.7.0.tgz#0f772c31a9450de28aa518b181c8cb269bbe7fd1"
+  integrity sha512-pxt5hK82RNwcTX2gOZP81t6qVPVspnkpeivwEgQuK9XUvbNtghBnT8GNIb/gPh+WnVSfi8cXC9XlfT8sqc6D6w==
   dependencies:
     "@adraffy/ens-normalize" "1.9.2"
     "@noble/hashes" "1.1.2"
@@ -1374,10 +1374,10 @@ prettier@^2.8.3:
   resolved "https://registry.yarnpkg.com/prettier/-/prettier-2.8.8.tgz#e8c5d7e98a4305ffe3de2e1fc4aca1a71c28b1da"
   integrity sha512-tdN8qQGvNjw4CHbY+XXk0JgCXn9QiF21a55rBe5LJAU+kDyC4WQn4+awm2Xfk2lQMk5fKup9XgzTZtGkjBdP9Q==
 
-prettier@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/prettier/-/prettier-3.0.0.tgz#e7b19f691245a21d618c68bc54dc06122f6105ae"
-  integrity sha512-zBf5eHpwHOGPC47h0zrPyNn+eAEIdEzfywMoYn2XPi0P44Zp0tSq64rq0xAREh4auw2cJZHo9QUob+NqCQky4g==
+prettier@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/prettier/-/prettier-3.0.1.tgz#65271fc9320ce4913c57747a70ce635b30beaa40"
+  integrity sha512-fcOWSnnpCrovBsmFZIGIy9UqK2FaI7Hqax+DIO0A9UxeVoY4iweyaFjS5TavZN97Hfehph0nhsZnjlVKzEQSrQ==
 
 punycode@^2.1.0:
   version "2.3.0"
