@@ -423,7 +423,7 @@ def set_minter(minter: address, status: bool):
     """
     self._check_owner()
     assert minter != empty(address), "AccessControl: minter is the zero address"
-    assert minter != self.owner, "AccessControl: minter is owner address"
+    assert minter != msg.sender, "AccessControl: minter is owner address"
     self.is_minter[minter] = status
     log RoleMinterChanged(minter, status)
 
