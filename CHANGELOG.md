@@ -9,6 +9,10 @@
 
 ### ♻️ Refactoring
 
+- **Tokens**
+  - [`ERC20`](https://github.com/pcaversaccio/snekmate/blob/v0.0.3/src/tokens/ERC20.vy): Optimise the `set_minter` function to save one `SLOAD`. ([#154](https://github.com/pcaversaccio/snekmate/pull/154))
+  - [`ERC721`](https://github.com/pcaversaccio/snekmate/blob/v0.0.3/src/tokens/ERC721.vy): Optimise the `set_minter` function to save one `SLOAD`. ([#154](https://github.com/pcaversaccio/snekmate/pull/154))
+  - [`ERC1155`](https://github.com/pcaversaccio/snekmate/blob/v0.0.3/src/tokens/ERC1155.vy): Optimise the `set_minter` function to save one `SLOAD`. ([#154](https://github.com/pcaversaccio/snekmate/pull/154))
 - **Utility Functions**
   - [`Math`](https://github.com/pcaversaccio/snekmate/blob/v0.0.3/src/utils/Math.vy): Optimise the method used to factor powers of two out of the denominator in `mul_div`. ([#153](https://github.com/pcaversaccio/snekmate/pull/153))
 
