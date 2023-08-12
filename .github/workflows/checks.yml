@@ -7,7 +7,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  lint:
+  prettify-n-lint:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
