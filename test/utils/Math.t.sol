@@ -545,9 +545,11 @@ contract MathTest is Test {
 
         try math.mul_div(x, y, d, false) returns (uint256) {
             fail();
+            // solhint-disable-next-line no-empty-blocks
         } catch {}
         try math.mul_div(x, y, d, true) returns (uint256) {
             fail();
+            // solhint-disable-next-line no-empty-blocks
         } catch {}
     }
 
