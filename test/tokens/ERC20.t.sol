@@ -1378,17 +1378,6 @@ contract ERC20Handler {
         token.permit(ownerAddr, spender, value, deadline, v, r, s);
     }
 
-    function increase_allowance(address spender, uint256 addedAmount) public {
-        token.increase_allowance(spender, addedAmount);
-    }
-
-    function decrease_allowance(
-        address spender,
-        uint256 subtractedAmount
-    ) public {
-        token.decrease_allowance(spender, subtractedAmount);
-    }
-
     function burn(uint256 amount) public {
         token.burn(amount);
         totalSupply -= amount;

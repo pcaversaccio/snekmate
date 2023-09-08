@@ -2141,17 +2141,6 @@ contract ERC4626VaultHandler {
         vault.permit(owner, spender, value, deadline, v, r, s);
     }
 
-    function increase_allowance(address spender, uint256 addedAmount) public {
-        vault.increase_allowance(spender, addedAmount);
-    }
-
-    function decrease_allowance(
-        address spender,
-        uint256 subtractedAmount
-    ) public {
-        vault.decrease_allowance(spender, subtractedAmount);
-    }
-
     function deposit(uint256 assets, address receiver) public {
         uint256 shares = vault.deposit(assets, receiver);
         totalSupply += shares;

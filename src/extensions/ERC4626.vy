@@ -172,8 +172,7 @@ balanceOf: public(HashMap[address, uint256])
 # @dev Returns the remaining number of tokens that a
 # `spender` will be allowed to spend on behalf of
 # `owner` through `transferFrom`. This is zero by
-# default. This value changes when `approve`,
-# `increase_allowance`, `decrease_allowance`, or
+# default. This value changes when `approve` or
 # `transferFrom` are called.
 allowance: public(HashMap[address, HashMap[address, uint256]])
 
@@ -313,30 +312,6 @@ def transferFrom(owner: address, to: address, amount: uint256) -> bool:
     """
     self._spend_allowance(owner, msg.sender, amount)
     self._transfer(owner, to, amount)
-    return True
-
-
-@external
-def increase_allowance(spender: address, added_amount: uint256) -> bool:
-    """
-    @dev Sourced from {ERC20-increase_allowance}.
-    @notice See {ERC20-increase_allowance} for the
-            function docstring.
-    """
-    self._approve(msg.sender, spender, self.allowance[msg.sender][spender] + added_amount)
-    return True
-
-
-@external
-def decrease_allowance(spender: address, subtracted_amount: uint256) -> bool:
-    """
-    @dev Sourced from {ERC20-decrease_allowance}.
-    @notice See {ERC20-decrease_allowance} for the
-            function docstring.
-    """
-    current_allowance: uint256 = self.allowance[msg.sender][spender]
-    assert current_allowance >= subtracted_amount, "ERC20: decreased allowance below zero"
-    self._approve(msg.sender, spender, unsafe_sub(current_allowance, subtracted_amount))
     return True
 
 
