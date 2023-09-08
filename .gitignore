@@ -47,6 +47,10 @@ yarn-error.log*
 cache
 out
 
+# Python virtual environments
+env
+venv
+
 # Python build files
 dist
 *.egg-info
