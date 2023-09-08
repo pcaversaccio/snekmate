@@ -12,8 +12,6 @@
         - `name` (`external` `view` function),
         - `symbol` (`external` `view` function),
         - `decimals` (`external` `view` function),
-        - `increase_allowance` (`external` function),
-        - `decrease_allowance` (`external` function),
         - `burn` (`external` function),
         - `burn_from` (`external` function),
         - `is_minter` (`external` `view` function),
@@ -144,8 +142,7 @@ balanceOf: public(HashMap[address, uint256])
 # @dev Returns the remaining number of tokens that a
 # `spender` will be allowed to spend on behalf of
 # `owner` through `transferFrom`. This is zero by
-# default. This value changes when `approve`,
-# `increase_allowance`, `decrease_allowance`, or
+# default. This value changes when `approve` or
 # `transferFrom` are called.
 allowance: public(HashMap[address, HashMap[address, uint256]])
 
@@ -325,50 +322,6 @@ def transferFrom(owner: address, to: address, amount: uint256) -> bool:
     """
     self._spend_allowance(owner, msg.sender, amount)
     self._transfer(owner, to, amount)
-    return True
-
-
-@external
-def increase_allowance(spender: address, added_amount: uint256) -> bool:
-    """
-    @dev Atomically increases the allowance granted to
-         `spender` by the caller.
-    @notice This is an alternative to `approve` that can
-            be used as a mitigation for the problems
-            described in https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729.
-            Note that `spender` cannot be the zero address.
-    @param spender The 20-byte spender address.
-    @param added_amount The 32-byte token amount that is
-           added atomically to the allowance of the `spender`.
-    @return bool The verification whether the allowance increase
-            operation succeeded or failed. Note that the function
-            reverts instead of returning `False` on a failure.
-    """
-    self._approve(msg.sender, spender, self.allowance[msg.sender][spender] + added_amount)
-    return True
-
-
-@external
-def decrease_allowance(spender: address, subtracted_amount: uint256) -> bool:
-    """
-    @dev Atomically decreases the allowance granted to
-         `spender` by the caller.
-    @notice This is an alternative to `approve` that can
-            be used as a mitigation for the problems
-            described in https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729.
-            Note that `spender` cannot be the zero address.
-            Also, `spender` must have an allowance for
-            the caller of at least `subtracted_amount`.
-    @param spender The 20-byte spender address.
-    @param subtracted_amount The 32-byte token amount that is
-           subtracted atomically from the allowance of the `spender`.
-    @return bool The verification whether the allowance decrease
-            operation succeeded or failed. Note that the function
-            reverts instead of returning `False` on a failure.
-    """
-    current_allowance: uint256 = self.allowance[msg.sender][spender]
-    assert current_allowance >= subtracted_amount, "ERC20: decreased allowance below zero"
-    self._approve(msg.sender, spender, unsafe_sub(current_allowance, subtracted_amount))
     return True
 
 

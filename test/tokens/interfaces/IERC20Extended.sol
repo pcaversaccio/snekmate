@@ -6,16 +6,6 @@ import {IERC20Permit} from "openzeppelin/token/ERC20/extensions/IERC20Permit.sol
 import {IERC5267} from "openzeppelin/interfaces/IERC5267.sol";
 
 interface IERC20Extended is IERC20Metadata, IERC20Permit, IERC5267 {
-    function increase_allowance(
-        address spender,
-        uint256 addedAmount
-    ) external returns (bool);
-
-    function decrease_allowance(
-        address spender,
-        uint256 subtractedAmount
-    ) external returns (bool);
-
     function burn(uint256 amount) external;
 
     function burn_from(address owner, uint256 amount) external;
