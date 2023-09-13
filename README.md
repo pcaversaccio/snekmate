@@ -48,6 +48,10 @@ You can install 🐍 snekmate via submodules using [Foundry](https://github.com/
 ```console
 forge install pcaversaccio/snekmate
 ```
+Note: For VyperDeployer to work, please ensure that your Foundry project has the EVM version set to Shanghai. You can do this by adding the following to your `foundry.toml` file:
+```console
+evm_version = 'shanghai'
+```
 
 ### 2️⃣ PyPI
 
