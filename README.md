@@ -49,7 +49,7 @@ You can install 🐍 snekmate via submodules using [Foundry](https://github.com/
 forge install pcaversaccio/snekmate
 ```
 
-> If you want to leverage 🐍 snekmate's [`VyperDeployer`](./lib/utils/VyperDeployer.sol) contract for your own testing, ensure that you compile the Vyper contracts with the same EVM version as configured in your `foundry.toml` file. The [`VyperDeployer`](./lib/utils/VyperDeployer.sol) contract offers an overloaded `deployContract` function that allows the configuration of the target EVM version. Please note that since Vyper version `0.3.8` the default EVM version is set to `shanghai`.
+> If you want to leverage 🐍 snekmate's [`VyperDeployer`](./lib/utils/VyperDeployer.sol) contract for your own testing, ensure that you compile the Vyper contracts with the same EVM version as configured in your `foundry.toml` file. The [`VyperDeployer`](./lib/utils/VyperDeployer.sol) contract offers two overloaded `deployContract` functions that allow the configuration of the target EVM version. Please note that since Vyper version `0.3.8` the default EVM version is set to `shanghai`.
 
 ### 2️⃣ PyPI
 
