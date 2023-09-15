@@ -51,8 +51,8 @@ contract VyperDeployer is Create {
      * @return deployedAddress The address that the contract was deployed to.
      */
     function deployContract(
-        string memory path,
-        string memory fileName
+        string calldata path,
+        string calldata fileName
     ) public returns (address deployedAddress) {
         /**
          * @dev Create a list of strings with the commands necessary
@@ -77,11 +77,6 @@ contract VyperDeployer is Create {
          */
         if (deployedAddress == address(0))
             revert DeploymentFailed({emitter: self});
-
-        /**
-         * @dev Return the address that the contract was deployed to.
-         */
-        return deployedAddress;
     }
 
     /**
@@ -98,8 +93,8 @@ contract VyperDeployer is Create {
      * @return deployedAddress The address that the contract was deployed to.
      */
     function deployContract(
-        string memory path,
-        string memory fileName,
+        string calldata path,
+        string calldata fileName,
         bytes calldata args
     ) public returns (address deployedAddress) {
         /**
@@ -131,11 +126,6 @@ contract VyperDeployer is Create {
          */
         if (deployedAddress == address(0))
             revert DeploymentFailed({emitter: self});
-
-        /**
-         * @dev Return the address that the contract was deployed to.
-         */
-        return deployedAddress;
     }
 
     /**
@@ -153,9 +143,9 @@ contract VyperDeployer is Create {
      * @return deployedAddress The address that the contract was deployed to.
      */
     function deployContract(
-        string memory path,
-        string memory fileName,
-        string memory evmVersion,
+        string calldata path,
+        string calldata fileName,
+        string calldata evmVersion,
         bool /*overloadPlaceholder*/
     ) public returns (address deployedAddress) {
         /**
@@ -183,11 +173,6 @@ contract VyperDeployer is Create {
          */
         if (deployedAddress == address(0))
             revert DeploymentFailed({emitter: self});
-
-        /**
-         * @dev Return the address that the contract was deployed to.
-         */
-        return deployedAddress;
     }
 
     /**
@@ -208,10 +193,10 @@ contract VyperDeployer is Create {
      * @return deployedAddress The address that the contract was deployed to.
      */
     function deployContract(
-        string memory path,
-        string memory fileName,
+        string calldata path,
+        string calldata fileName,
         bytes calldata args,
-        string memory evmVersion,
+        string calldata evmVersion,
         bool /*overloadPlaceholder*/
     ) public returns (address deployedAddress) {
         /**
@@ -245,10 +230,5 @@ contract VyperDeployer is Create {
          */
         if (deployedAddress == address(0))
             revert DeploymentFailed({emitter: self});
-
-        /**
-         * @dev Return the address that the contract was deployed to.
-         */
-        return deployedAddress;
     }
 }
