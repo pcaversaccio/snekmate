@@ -1119,10 +1119,7 @@ def _mul_div(x: uint256, y: uint256, denominator: uint256, roundup: bool) -> uin
     # unless the denominator is zero (which is prevented above),
     # in which case `twos` is zero. For more details, please refer to:
     # https://cs.stackexchange.com/q/138556.
-
-    # The following line does not overflow because the denominator
-    # cannot be zero at this stage of the function.
-    twos: uint256 = denominator & (unsafe_add(~denominator, 1))
+    twos: uint256 = unsafe_sub(0, denominator) & denominator
     # Divide denominator by `twos`.
     denominator_div: uint256 = unsafe_div(denominator, twos)
     # Divide "[prod1 prod0]" by `twos`.
