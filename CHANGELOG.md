@@ -12,7 +12,7 @@
 - **Extensions**
   - [`ERC4626`](https://github.com/pcaversaccio/snekmate/blob/v0.0.3/src/extensions/ERC4626.vy):
     - Remove the non-standard `increase_allowance` and `decrease_allowance` functions. ([#160](https://github.com/pcaversaccio/snekmate/pull/160))
-    - Optimise the method used to factor powers of two out of the denominator in `mul_div`. ([#162](https://github.com/pcaversaccio/snekmate/pull/162))
+    - Optimise the method used to factor powers of two out of the denominator in `_mul_div`. ([#162](https://github.com/pcaversaccio/snekmate/pull/162))
 - **Tokens**
   - [`ERC20`](https://github.com/pcaversaccio/snekmate/blob/v0.0.3/src/tokens/ERC20.vy):
     - Optimise the `set_minter` function to save one `SLOAD`. ([#154](https://github.com/pcaversaccio/snekmate/pull/154))
