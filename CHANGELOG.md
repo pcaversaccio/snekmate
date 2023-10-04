@@ -21,6 +21,8 @@
   - [`ERC1155`](https://github.com/pcaversaccio/snekmate/blob/v0.0.3/src/tokens/ERC1155.vy): Optimise the `set_minter` function to save one `SLOAD`. ([#154](https://github.com/pcaversaccio/snekmate/pull/154))
 - **Utility Functions**
   - [`Math`](https://github.com/pcaversaccio/snekmate/blob/v0.0.3/src/utils/Math.vy): Optimise the method used to factor powers of two out of the denominator in `mul_div`. ([#153](https://github.com/pcaversaccio/snekmate/pull/153))
+- **Vyper Contract Deployer**
+  - [`VyperDeployer`](https://github.com/pcaversaccio/snekmate/blob/v0.0.3/lib/utils/VyperDeployer.sol): If you want to leverage 🐍 snekmate's [`VyperDeployer`](https://github.com/pcaversaccio/snekmate/blob/v0.0.3/lib/utils/VyperDeployer.sol) contract for your own testing, ensure that you compile the Vyper contracts with the same EVM version as configured in your `foundry.toml` file. The [`VyperDeployer`](https://github.com/pcaversaccio/snekmate/blob/v0.0.3/lib/utils/VyperDeployer.sol) contract offers two overloaded `deployContract` functions that allow the configuration of the target EVM version. Please note that since Vyper version [`0.3.8`](https://github.com/vyperlang/vyper/releases/tag/v0.3.8) the default EVM version is set to `shanghai`. ([#161](https://github.com/pcaversaccio/snekmate/pull/161))
 
 ### 🥢 Test Coverage
 
@@ -29,15 +31,13 @@
 
 ### ❗️ Breaking Change
 
-- All 🐍 snekmate contracts now target the Vyper version [`0.3.10`](https://github.com/vyperlang/vyper/releases/tag/v0.3.10). It is strongly recommended to upgrade accordingly your local Vyper version prior to using the 🐍 snekmate contracts. **Important:** The default EVM version since Vyper version `0.3.8` is set to `shanghai` (i.e. the EVM includes the [`PUSH0`](https://eips.ethereum.org/EIPS/eip-3855) instruction). If you intend to deploy on an EVM chain with no `PUSH0` support, you must compile the 🐍 snekmate contracts with the `--evm-version paris` option; e.g. `vyper --evm-version paris utils/Math.vy`, or add the `evm-version` pragma to the 🐍 snekmate contracts:
+- All 🐍 snekmate contracts now target the Vyper version [`0.3.10`](https://github.com/vyperlang/vyper/releases/tag/v0.3.10). It is strongly recommended to upgrade accordingly your local Vyper version prior to using the 🐍 snekmate contracts. **Important:** The default EVM version since Vyper version `0.3.8` is set to `shanghai` (i.e. the EVM includes the [`PUSH0`](https://eips.ethereum.org/EIPS/eip-3855) instruction). If you intend to deploy on an EVM chain with no `PUSH0` support, you must compile the 🐍 snekmate contracts with the `--evm-version paris` option; e.g. `vyper --evm-version paris utils/Math.vy`, or add the `evm-version` pragma to the 🐍 snekmate contracts ([#164](https://github.com/pcaversaccio/snekmate/pull/164)):
 
-```vy
+```vyper
 # @version ^0.3.10
 # pragma evm-version paris
-···
+...
 ```
-
-Furthermore, if you want to leverage 🐍 snekmate's [`VyperDeployer`](https://github.com/pcaversaccio/snekmate/blob/v0.0.3/lib/utils/VyperDeployer.sol) contract for your own testing, ensure that you compile the Vyper contracts with the same EVM version as configured in your `foundry.toml` file. The [`VyperDeployer`](https://github.com/pcaversaccio/snekmate/blob/v0.0.3/lib/utils/VyperDeployer.sol) contract offers two overloaded `deployContract` functions that allow the configuration of the target EVM version. ([#161](https://github.com/pcaversaccio/snekmate/pull/161), [#164](https://github.com/pcaversaccio/snekmate/pull/164))
 
 ### 👀 Full Changelog
 
