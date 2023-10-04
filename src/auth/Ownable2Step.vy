@@ -1,4 +1,4 @@
-# @version ^0.3.9
+# @version ^0.3.10
 """
 @title 2-Step Ownership Transfer Functions
 @custom:contract-name Ownable2Step

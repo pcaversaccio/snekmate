@@ -1,4 +1,4 @@
-# @version ^0.3.9
+# @version ^0.3.10
 """
 @title Standard Mathematical Utility Functions
 @custom:contract-name Math

@@ -1,4 +1,4 @@
-# @version ^0.3.9
+# @version ^0.3.10
 """
 @title EIP-721 Optional Enumeration Interface Definition
 @custom:contract-name IERC721Enumerable

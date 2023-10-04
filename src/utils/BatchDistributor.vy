@@ -1,4 +1,4 @@
-# @version ^0.3.9
+# @version ^0.3.10
 """
 @title Batch Sending Both Native and ERC-20 Tokens
 @custom:contract-name BatchDistributor

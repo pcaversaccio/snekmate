@@ -1,4 +1,4 @@
-# @version ^0.3.9
+# @version ^0.3.10
 """
 @title `CREATE` EVM Opcode Utility Functions for Address Calculations
 @custom:contract-name CreateAddress

@@ -1,4 +1,4 @@
-# @version ^0.3.9
+# @version ^0.3.10
 """
 @title AccessControl Interface Definition
 @custom:contract-name IAccessControl

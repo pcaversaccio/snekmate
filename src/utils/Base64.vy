@@ -1,4 +1,4 @@
-# @version ^0.3.9
+# @version ^0.3.10
 """
 @title Base64 Encoding and Decoding Functions
 @custom:contract-name Base64
