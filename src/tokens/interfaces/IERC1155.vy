@@ -1,4 +1,4 @@
-# @version ^0.3.10
+# pragma version ^0.3.10
 """
 @title EIP-1155 Interface Definition
 @custom:contract-name IERC1155

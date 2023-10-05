@@ -1,4 +1,4 @@
-# @version ^0.3.10
+# pragma version ^0.3.10
 """
 @title EIP-2612 Interface Definition
 @custom:contract-name IERC20Permit

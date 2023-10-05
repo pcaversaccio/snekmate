@@ -31,13 +31,26 @@
 
 ### ❗️ Breaking Change
 
-- All 🐍 snekmate contracts now target the Vyper version [`0.3.10`](https://github.com/vyperlang/vyper/releases/tag/v0.3.10). It is strongly recommended to upgrade accordingly your local Vyper version prior to using the 🐍 snekmate contracts. **Important:** The default EVM version since Vyper version `0.3.8` is set to `shanghai` (i.e. the EVM includes the [`PUSH0`](https://eips.ethereum.org/EIPS/eip-3855) instruction). If you intend to deploy on an EVM chain with no `PUSH0` support, you must compile the 🐍 snekmate contracts with the `--evm-version paris` option; e.g. `vyper --evm-version paris utils/Math.vy`, or add the `evm-version` pragma to the 🐍 snekmate contracts ([#164](https://github.com/pcaversaccio/snekmate/pull/164)):
+- All 🐍 snekmate contracts now target the Vyper version [`0.3.10`](https://github.com/vyperlang/vyper/releases/tag/v0.3.10). It is strongly recommended to upgrade accordingly your local Vyper version prior to using the 🐍 snekmate contracts. **Important:** The default EVM version since Vyper version [`0.3.8`](https://github.com/vyperlang/vyper/releases/tag/v0.3.8) is set to `shanghai` (i.e. the EVM includes the [`PUSH0`](https://eips.ethereum.org/EIPS/eip-3855) instruction). If you intend to deploy on an EVM chain with no `PUSH0` support, you must compile the 🐍 snekmate contracts with the `--evm-version paris` option; e.g. `vyper --evm-version paris utils/Math.vy`, or add the `# pragma evm-version` directive to the 🐍 snekmate contracts ([#164](https://github.com/pcaversaccio/snekmate/pull/164)):
 
 ```vyper
-# @version ^0.3.10
+# pragma version ^0.3.10
 # pragma evm-version paris
+# pragma optimize gas
+"""
+@title Modern and Gas-Efficient ERC-20 + EIP-2612 Implementation
+...
+"""
+
+
+# @dev We import and implement the `ERC20` interface,
+# which is a built-in interface of the Vyper compiler.
+from vyper.interfaces import ERC20
+implements: ERC20
 ...
 ```
+
+> The `# pragma optimize` directive has also been added in Vyper version [`0.3.10`](https://github.com/vyperlang/vyper/releases/tag/v0.3.10) (see PR [#3493](https://github.com/vyperlang/vyper/pull/3493)). Please refer to [here](https://docs.vyperlang.org/en/stable/compiling-a-contract.html#compiler-optimization-modes) to learn more about the different options `none`, `codesize`, and `gas` (default).
 
 ### 👀 Full Changelog
 
@@ -80,7 +93,7 @@
 
 ### ❗️ Breaking Change
 
-- All 🐍 snekmate contracts now target the Vyper version [`0.3.9`](https://github.com/vyperlang/vyper/releases/tag/v0.3.9). It is strongly recommended to upgrade accordingly your local Vyper version prior to using the 🐍 snekmate contracts. **Important:** The default EVM version since Vyper version `0.3.8` is set to `shanghai` (i.e. the EVM includes the [`PUSH0`](https://eips.ethereum.org/EIPS/eip-3855) instruction). If you intend to deploy on an EVM chain with no `PUSH0` support, you must compile the 🐍 snekmate contracts with the `--evm-version paris` option; e.g. `vyper --evm-version paris utils/Math.vy`. ([#122](https://github.com/pcaversaccio/snekmate/pull/122))
+- All 🐍 snekmate contracts now target the Vyper version [`0.3.9`](https://github.com/vyperlang/vyper/releases/tag/v0.3.9). It is strongly recommended to upgrade accordingly your local Vyper version prior to using the 🐍 snekmate contracts. **Important:** The default EVM version since Vyper version [`0.3.8`](https://github.com/vyperlang/vyper/releases/tag/v0.3.8) is set to `shanghai` (i.e. the EVM includes the [`PUSH0`](https://eips.ethereum.org/EIPS/eip-3855) instruction). If you intend to deploy on an EVM chain with no `PUSH0` support, you must compile the 🐍 snekmate contracts with the `--evm-version paris` option; e.g. `vyper --evm-version paris utils/Math.vy`. ([#122](https://github.com/pcaversaccio/snekmate/pull/122))
 
 ### 👀 Full Changelog
 

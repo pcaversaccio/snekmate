@@ -1,4 +1,4 @@
-# @version ^0.3.10
+# pragma version ^0.3.10
 """
 @title EIP-721 Optional Metadata Interface Definition
 @custom:contract-name IERC721Metadata
