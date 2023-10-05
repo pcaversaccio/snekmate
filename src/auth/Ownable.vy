@@ -1,4 +1,4 @@
-# @version ^0.3.9
+# pragma version ^0.3.10
 """
 @title Owner-Based Access Control Functions
 @custom:contract-name Ownable

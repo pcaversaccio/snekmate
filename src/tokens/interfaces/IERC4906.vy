@@ -1,4 +1,4 @@
-# @version ^0.3.9
+# pragma version ^0.3.10
 """
 @title EIP-4906 Interface Definition
 @custom:contract-name IERC4906

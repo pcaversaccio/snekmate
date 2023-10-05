@@ -1,4 +1,4 @@
-# @version ^0.3.9
+# pragma version ^0.3.10
 """
 @title EIP-721 Token Receiver Interface Definition
 @custom:contract-name IERC721Receiver
