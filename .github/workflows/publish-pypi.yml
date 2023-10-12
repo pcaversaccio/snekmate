@@ -7,6 +7,8 @@ on:
 jobs:
   build-n-publish:
     runs-on: ${{ matrix.os }}
+    permissions:
+      id-token: write
     strategy:
       matrix:
         os:
@@ -44,6 +46,3 @@ jobs:
 
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          user: __token__
-          password: ${{ secrets.PYPI_API_TOKEN }}
