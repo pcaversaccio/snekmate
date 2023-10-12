@@ -1,7 +1,7 @@
 {
   "name": "snekmate",
-  "version": "0.0.3",
-  "description": "State-of-the-art, highly opinionated, hyper-optimised, and secure Vyper smart contract building blocks.",
+  "version": "0.0.4-rc.1",
+  "description": "State-of-the-art, highly opinionated, hyper-optimised, and secure 🐍Vyper smart contract building blocks.",
   "author": "Pascal Marco Caversaccio <pascal.caversaccio@hotmail.ch>",
   "license": "AGPL-3.0-only",
   "keywords": [
