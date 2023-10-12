@@ -1,6 +1,6 @@
 [project]
 name = "snekmate"
-version = "0.0.3rc1"
+version = "0.0.3"
 description = "State-of-the-art, highly opinionated, hyper-optimised, and secure Vyper smart contract building blocks."
 readme = {file = "README.md", content-type = "text/markdown"}
 requires-python = ">=3.10"
