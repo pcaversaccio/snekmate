@@ -1,6 +1,6 @@
 name: 🕵️‍♂️ Test smart contracts
 
-on: [push, pull_request]
+on: [push, pull_request, workflow_dispatch]
 
 concurrency:
   group: ${{github.workflow}}-${{github.ref}}

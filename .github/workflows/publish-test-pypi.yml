@@ -5,6 +5,9 @@ on: [workflow_dispatch]
 jobs:
   build-n-publish:
     runs-on: ${{ matrix.os }}
+    environment:
+      name: test-pypi
+      url: https://test.pypi.org/project/snekmate
     permissions:
       id-token: write
     strategy:
@@ -34,13 +37,19 @@ jobs:
           --user
 
       - name: Build a binary wheel and a source tarball
-        run: >-
-          python -m
-          build
-          --sdist
-          --wheel
-          --outdir dist/
-          .
+        run: python -m build
+
+      - name: Store the distribution packages
+        uses: actions/upload-artifact@v3
+        with:
+          name: python-package-distributions
+          path: dist/
+
+      - name: Download all the dists
+        uses: actions/download-artifact@v3
+        with:
+          name: python-package-distributions
+          path: dist/
 
       - name: Publish to TestPyPI
         uses: pypa/gh-action-pypi-publish@release/v1

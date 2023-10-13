@@ -3,10 +3,14 @@ name: 📦 Publish 🐍 snekmate to npm
 on:
   release:
     types: [published]
+  workflow_dispatch:
 
 jobs:
   publish:
     runs-on: ${{ matrix.os }}
+    environment:
+      name: npm
+      url: https://www.npmjs.com/package/snekmate
     strategy:
       matrix:
         os:
