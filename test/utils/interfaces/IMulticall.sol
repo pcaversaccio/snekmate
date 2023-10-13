@@ -20,12 +20,6 @@ interface IMulticall {
         bytes callData;
     }
 
-    struct BatchValueSelf {
-        bool allowFailure;
-        uint256 value;
-        bytes callData;
-    }
-
     struct Result {
         bool success;
         bytes returnData;
@@ -42,10 +36,6 @@ interface IMulticall {
     function multicall_self(
         BatchSelf[] calldata batchSelf
     ) external returns (Result[] memory results);
-
-    function multicall_value_self(
-        BatchValueSelf[] calldata batchValueSelf
-    ) external payable returns (Result[] memory results);
 
     function multistaticcall(
         Batch[] calldata batch

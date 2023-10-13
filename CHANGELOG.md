@@ -2,6 +2,11 @@
 
 ## [`0.0.4`](https://github.com/pcaversaccio/snekmate/releases/tag/v0.0.4) (Unreleased)
 
+### 🔒 Security Fixes
+
+- **Utility Functions**
+  - [`Multicall`](https://github.com/pcaversaccio/snekmate/blob/v0.0.4/src/utils/Multicall.vy): Remove the `multicall_value_self` function as the `msg.value` should not be trusted. ([#167](https://github.com/pcaversaccio/snekmate/pull/167))
+
 ### 👀 Full Changelog
 
 - [`v0.0.3...v0.0.4`](https://github.com/pcaversaccio/snekmate/compare/v0.0.3...v0.0.4)
