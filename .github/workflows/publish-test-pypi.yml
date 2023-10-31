@@ -16,7 +16,7 @@ jobs:
           - ubuntu-latest
         architecture:
           - x64
-        python-version:
+        python_version:
           - 3.11
 
     steps:
@@ -26,7 +26,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: ${{ matrix.python_version }}
           architecture: ${{ matrix.architecture }}
 
       - name: Install pypa/build

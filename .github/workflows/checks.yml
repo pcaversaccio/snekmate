@@ -15,7 +15,7 @@ jobs:
           - ubuntu-latest
         architecture:
           - x64
-        python-version:
+        python_version:
           - 3.11
         node_version:
           - 18
@@ -51,7 +51,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: ${{ matrix.python_version }}
           architecture: ${{ matrix.architecture }}
 
       - name: Check formatting with Black
@@ -83,7 +83,7 @@ jobs:
       matrix:
         os:
           - ubuntu-latest
-        ruby-version:
+        ruby_version:
           - 3.2
 
     steps:
@@ -93,7 +93,7 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: ${{ matrix.ruby-version }}
+          ruby-version: ${{ matrix.ruby_version }}
           bundler-cache: true
 
       - name: Install awesome_bot
