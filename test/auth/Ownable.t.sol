@@ -15,11 +15,6 @@ contract OwnableTest is Test {
     address private deployer = address(vyperDeployer);
     address private zeroAddress = address(0);
 
-    event OwnershipTransferred(
-        address indexed previousOwner,
-        address indexed newOwner
-    );
-
     function setUp() public {
         ownable = IOwnable(
             vyperDeployer.deployContract("src/auth/", "Ownable")
@@ -30,7 +25,7 @@ contract OwnableTest is Test {
         assertEq(ownable.owner(), deployer);
 
         vm.expectEmit(true, true, false, false);
-        emit OwnershipTransferred(zeroAddress, deployer);
+        emit IOwnable.OwnershipTransferred(zeroAddress, deployer);
         ownableInitialEvent = IOwnable(
             vyperDeployer.deployContract("src/auth/", "Ownable")
         );
@@ -46,7 +41,7 @@ contract OwnableTest is Test {
         address newOwner = makeAddr("newOwner");
         vm.startPrank(oldOwner);
         vm.expectEmit(true, true, false, false);
-        emit OwnershipTransferred(oldOwner, newOwner);
+        emit IOwnable.OwnershipTransferred(oldOwner, newOwner);
         ownable.transfer_ownership(newOwner);
         assertEq(ownable.owner(), newOwner);
         vm.stopPrank();
@@ -68,7 +63,7 @@ contract OwnableTest is Test {
         address newOwner = zeroAddress;
         vm.startPrank(oldOwner);
         vm.expectEmit(true, true, false, false);
-        emit OwnershipTransferred(oldOwner, newOwner);
+        emit IOwnable.OwnershipTransferred(oldOwner, newOwner);
         ownable.renounce_ownership();
         assertEq(ownable.owner(), newOwner);
         vm.stopPrank();
@@ -87,14 +82,14 @@ contract OwnableTest is Test {
         address oldOwner = deployer;
         vm.startPrank(oldOwner);
         vm.expectEmit(true, true, false, false);
-        emit OwnershipTransferred(oldOwner, newOwner1);
+        emit IOwnable.OwnershipTransferred(oldOwner, newOwner1);
         ownable.transfer_ownership(newOwner1);
         assertEq(ownable.owner(), newOwner1);
         vm.stopPrank();
 
         vm.startPrank(newOwner1);
         vm.expectEmit(true, true, false, false);
-        emit OwnershipTransferred(newOwner1, newOwner2);
+        emit IOwnable.OwnershipTransferred(newOwner1, newOwner2);
         ownable.transfer_ownership(newOwner2);
         assertEq(ownable.owner(), newOwner2);
         vm.stopPrank();
@@ -116,14 +111,14 @@ contract OwnableTest is Test {
         address renounceAddress = zeroAddress;
         vm.startPrank(oldOwner);
         vm.expectEmit(true, true, false, false);
-        emit OwnershipTransferred(oldOwner, newOwner);
+        emit IOwnable.OwnershipTransferred(oldOwner, newOwner);
         ownable.transfer_ownership(newOwner);
         assertEq(ownable.owner(), newOwner);
         vm.stopPrank();
 
         vm.startPrank(newOwner);
         vm.expectEmit(true, true, false, false);
-        emit OwnershipTransferred(newOwner, renounceAddress);
+        emit IOwnable.OwnershipTransferred(newOwner, renounceAddress);
         ownable.renounce_ownership();
         assertEq(ownable.owner(), renounceAddress);
         vm.stopPrank();
