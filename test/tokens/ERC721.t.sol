@@ -10,6 +10,7 @@ import {IERC721} from "openzeppelin/token/ERC721/IERC721.sol";
 import {IERC721Receiver} from "openzeppelin/token/ERC721/IERC721Receiver.sol";
 import {IERC721Metadata} from "openzeppelin/token/ERC721/extensions/IERC721Metadata.sol";
 import {IERC721Enumerable} from "openzeppelin/token/ERC721/extensions/IERC721Enumerable.sol";
+import {IERC4906} from "openzeppelin/interfaces/IERC4906.sol";
 import {IERC4494} from "./interfaces/IERC4494.sol";
 
 import {Address} from "openzeppelin/utils/Address.sol";
@@ -49,35 +50,6 @@ contract ERC721Test is Test {
     address private zeroAddress = address(0);
     // solhint-disable-next-line var-name-mixedcase
     address private ERC721ExtendedAddr;
-
-    event Transfer(
-        address indexed from,
-        address indexed to,
-        uint256 indexed tokenId
-    );
-
-    event Received(address operator, address from, uint256 tokenId, bytes data);
-
-    event Approval(
-        address indexed owner,
-        address indexed approved,
-        uint256 indexed tokenId
-    );
-
-    event ApprovalForAll(
-        address indexed owner,
-        address indexed operator,
-        bool approved
-    );
-
-    event OwnershipTransferred(
-        address indexed previousOwner,
-        address indexed newOwner
-    );
-
-    event MetadataUpdate(uint256 tokenId);
-
-    event RoleMinterChanged(address indexed minter, bool status);
 
     /**
      * @dev An `internal` function that validates a successful transfer call.
@@ -252,7 +224,7 @@ contract ERC721Test is Test {
         uint256 snapshot = vm.snapshot();
         vm.startPrank(owner);
         vm.expectEmit(true, true, true, false);
-        emit Transfer(owner, receiver, tokenId);
+        emit IERC721.Transfer(owner, receiver, tokenId);
         if (!withData) {
             Address.functionCall(
                 ERC721ExtendedAddr,
@@ -282,7 +254,7 @@ contract ERC721Test is Test {
         snapshot = vm.snapshot();
         vm.startPrank(approved);
         vm.expectEmit(true, true, true, false);
-        emit Transfer(owner, receiver, tokenId);
+        emit IERC721.Transfer(owner, receiver, tokenId);
         if (!withData) {
             Address.functionCall(
                 ERC721ExtendedAddr,
@@ -312,7 +284,7 @@ contract ERC721Test is Test {
         snapshot = vm.snapshot();
         vm.startPrank(operator);
         vm.expectEmit(true, true, true, false);
-        emit Transfer(owner, receiver, tokenId);
+        emit IERC721.Transfer(owner, receiver, tokenId);
         if (!withData) {
             Address.functionCall(
                 ERC721ExtendedAddr,
@@ -345,7 +317,7 @@ contract ERC721Test is Test {
         vm.stopPrank();
         vm.startPrank(operator);
         vm.expectEmit(true, true, true, false);
-        emit Transfer(owner, receiver, tokenId);
+        emit IERC721.Transfer(owner, receiver, tokenId);
         if (!withData) {
             Address.functionCall(
                 ERC721ExtendedAddr,
@@ -375,7 +347,7 @@ contract ERC721Test is Test {
         snapshot = vm.snapshot();
         vm.startPrank(owner);
         vm.expectEmit(true, true, true, false);
-        emit Transfer(owner, owner, tokenId);
+        emit IERC721.Transfer(owner, owner, tokenId);
         if (!withData) {
             Address.functionCall(
                 ERC721ExtendedAddr,
@@ -465,7 +437,7 @@ contract ERC721Test is Test {
         snapshot = vm.snapshot();
         vm.startPrank(owner);
         vm.expectEmit(true, true, true, true, receiver);
-        emit Received(owner, owner, tokenId, data);
+        emit ERC721ReceiverMock.Received(owner, owner, tokenId, data);
         Address.functionCall(
             ERC721ExtendedAddr,
             abi.encodeWithSignature(
@@ -483,7 +455,7 @@ contract ERC721Test is Test {
         snapshot = vm.snapshot();
         vm.startPrank(approved);
         vm.expectEmit(true, true, true, true, receiver);
-        emit Received(approved, owner, tokenId, data);
+        emit ERC721ReceiverMock.Received(approved, owner, tokenId, data);
         Address.functionCall(
             ERC721ExtendedAddr,
             abi.encodeWithSignature(
@@ -544,9 +516,9 @@ contract ERC721Test is Test {
         assertTrue(ERC721Extended.is_minter(deployer));
 
         vm.expectEmit(true, true, false, false);
-        emit OwnershipTransferred(zeroAddress, deployer);
+        emit IERC721Extended.OwnershipTransferred(zeroAddress, deployer);
         vm.expectEmit(true, false, false, true);
-        emit RoleMinterChanged(deployer, true);
+        emit IERC721Extended.RoleMinterChanged(deployer, true);
         bytes memory args = abi.encode(
             _NAME,
             _SYMBOL,
@@ -844,7 +816,7 @@ contract ERC721Test is Test {
 
         vm.startPrank(owner);
         vm.expectEmit(true, true, true, false);
-        emit Approval(owner, spender, tokenId);
+        emit IERC721.Approval(owner, spender, tokenId);
         ERC721Extended.approve(spender, tokenId);
         assertEq(ERC721Extended.getApproved(tokenId), spender);
         vm.stopPrank();
@@ -862,12 +834,12 @@ contract ERC721Test is Test {
 
         vm.startPrank(owner);
         vm.expectEmit(true, true, true, false);
-        emit Approval(owner, spender1, tokenId);
+        emit IERC721.Approval(owner, spender1, tokenId);
         ERC721Extended.approve(spender1, tokenId);
         assertEq(ERC721Extended.getApproved(tokenId), spender1);
 
         vm.expectEmit(true, true, true, false);
-        emit Approval(owner, spender2, tokenId);
+        emit IERC721.Approval(owner, spender2, tokenId);
         ERC721Extended.approve(spender2, tokenId);
         assertEq(ERC721Extended.getApproved(tokenId), spender2);
         vm.stopPrank();
@@ -885,12 +857,12 @@ contract ERC721Test is Test {
 
         vm.startPrank(owner);
         vm.expectEmit(true, true, true, false);
-        emit Approval(owner, spender1, tokenId);
+        emit IERC721.Approval(owner, spender1, tokenId);
         ERC721Extended.approve(spender1, tokenId);
         assertEq(ERC721Extended.getApproved(tokenId), spender1);
 
         vm.expectEmit(true, true, true, false);
-        emit Approval(owner, spender2, tokenId);
+        emit IERC721.Approval(owner, spender2, tokenId);
         ERC721Extended.approve(spender2, tokenId);
         assertEq(ERC721Extended.getApproved(tokenId), spender2);
         vm.stopPrank();
@@ -907,7 +879,7 @@ contract ERC721Test is Test {
 
         vm.startPrank(owner);
         vm.expectEmit(true, true, true, false);
-        emit Approval(owner, spender, tokenId);
+        emit IERC721.Approval(owner, spender, tokenId);
         ERC721Extended.approve(spender, tokenId);
         assertEq(ERC721Extended.getApproved(tokenId), spender);
         vm.stopPrank();
@@ -924,12 +896,12 @@ contract ERC721Test is Test {
 
         vm.startPrank(owner);
         vm.expectEmit(true, true, true, false);
-        emit Approval(owner, spender, tokenId);
+        emit IERC721.Approval(owner, spender, tokenId);
         ERC721Extended.approve(spender, tokenId);
         assertEq(ERC721Extended.getApproved(tokenId), spender);
 
         vm.expectEmit(true, true, true, false);
-        emit Approval(owner, spender, tokenId);
+        emit IERC721.Approval(owner, spender, tokenId);
         ERC721Extended.approve(spender, tokenId);
         assertEq(ERC721Extended.getApproved(tokenId), spender);
         vm.stopPrank();
@@ -947,12 +919,12 @@ contract ERC721Test is Test {
 
         vm.startPrank(owner);
         vm.expectEmit(true, true, true, false);
-        emit Approval(owner, spender1, tokenId);
+        emit IERC721.Approval(owner, spender1, tokenId);
         ERC721Extended.approve(spender1, tokenId);
         assertEq(ERC721Extended.getApproved(tokenId), spender1);
 
         vm.expectEmit(true, true, true, false);
-        emit Approval(owner, spender2, tokenId);
+        emit IERC721.Approval(owner, spender2, tokenId);
         ERC721Extended.approve(spender2, tokenId);
         assertEq(ERC721Extended.getApproved(tokenId), spender2);
         vm.stopPrank();
@@ -1029,7 +1001,7 @@ contract ERC721Test is Test {
 
         vm.startPrank(operator);
         vm.expectEmit(true, true, true, false);
-        emit Approval(owner, spender, tokenId);
+        emit IERC721.Approval(owner, spender, tokenId);
         ERC721Extended.approve(spender, tokenId);
         assertEq(ERC721Extended.getApproved(tokenId), spender);
         vm.stopPrank();
@@ -1060,7 +1032,7 @@ contract ERC721Test is Test {
 
         vm.startPrank(owner);
         vm.expectEmit(true, true, false, true);
-        emit ApprovalForAll(owner, operator, approved);
+        emit IERC721.ApprovalForAll(owner, operator, approved);
         ERC721Extended.setApprovalForAll(operator, approved);
         assertTrue(ERC721Extended.isApprovedForAll(owner, operator));
         vm.stopPrank();
@@ -1077,17 +1049,17 @@ contract ERC721Test is Test {
 
         vm.startPrank(owner);
         vm.expectEmit(true, true, false, true);
-        emit ApprovalForAll(owner, operator, !approved);
+        emit IERC721.ApprovalForAll(owner, operator, !approved);
         ERC721Extended.setApprovalForAll(operator, !approved);
         assertTrue(!ERC721Extended.isApprovedForAll(owner, operator));
 
         vm.expectEmit(true, true, false, true);
-        emit ApprovalForAll(owner, operator, approved);
+        emit IERC721.ApprovalForAll(owner, operator, approved);
         ERC721Extended.setApprovalForAll(operator, approved);
         assertTrue(ERC721Extended.isApprovedForAll(owner, operator));
 
         vm.expectEmit(true, true, false, true);
-        emit ApprovalForAll(owner, operator, !approved);
+        emit IERC721.ApprovalForAll(owner, operator, !approved);
         ERC721Extended.setApprovalForAll(operator, !approved);
         assertTrue(!ERC721Extended.isApprovedForAll(owner, operator));
         vm.stopPrank();
@@ -1104,12 +1076,12 @@ contract ERC721Test is Test {
 
         vm.startPrank(owner);
         vm.expectEmit(true, true, false, true);
-        emit ApprovalForAll(owner, operator, approved);
+        emit IERC721.ApprovalForAll(owner, operator, approved);
         ERC721Extended.setApprovalForAll(operator, approved);
         assertTrue(ERC721Extended.isApprovedForAll(owner, operator));
 
         vm.expectEmit(true, true, false, true);
-        emit ApprovalForAll(owner, operator, approved);
+        emit IERC721.ApprovalForAll(owner, operator, approved);
         ERC721Extended.setApprovalForAll(operator, approved);
         assertTrue(ERC721Extended.isApprovedForAll(owner, operator));
         vm.stopPrank();
@@ -1375,7 +1347,7 @@ contract ERC721Test is Test {
 
         vm.startPrank(owner);
         vm.expectEmit(true, true, true, false);
-        emit Transfer(owner, zeroAddress, tokenId);
+        emit IERC721.Transfer(owner, zeroAddress, tokenId);
         ERC721Extended.burn(tokenId);
         vm.expectRevert(bytes("ERC721: invalid token ID"));
         ERC721Extended.burn(tokenId);
@@ -1407,13 +1379,13 @@ contract ERC721Test is Test {
 
         vm.startPrank(operator);
         vm.expectEmit(true, true, true, false);
-        emit Transfer(owner, zeroAddress, tokenId);
+        emit IERC721.Transfer(owner, zeroAddress, tokenId);
         ERC721Extended.burn(tokenId);
         vm.stopPrank();
 
         vm.startPrank(other);
         vm.expectEmit(true, true, true, false);
-        emit Transfer(owner, zeroAddress, tokenId + 1);
+        emit IERC721.Transfer(owner, zeroAddress, tokenId + 1);
         ERC721Extended.burn(tokenId + 1);
         vm.stopPrank();
 
@@ -1439,33 +1411,33 @@ contract ERC721Test is Test {
         uint256 tokenId = 0;
         vm.startPrank(deployer);
         vm.expectEmit(true, true, true, false);
-        emit Transfer(zeroAddress, owner, tokenId);
+        emit IERC721.Transfer(zeroAddress, owner, tokenId);
         vm.expectEmit(false, false, false, true);
-        emit MetadataUpdate(tokenId);
+        emit IERC4906.MetadataUpdate(tokenId);
         ERC721Extended.safe_mint(owner, uri1);
         vm.expectEmit(true, true, true, false);
-        emit Transfer(zeroAddress, owner, tokenId + 1);
+        emit IERC721.Transfer(zeroAddress, owner, tokenId + 1);
         vm.expectEmit(false, false, false, true);
-        emit MetadataUpdate(tokenId + 1);
+        emit IERC4906.MetadataUpdate(tokenId + 1);
         ERC721Extended.safe_mint(owner, uri2);
         vm.expectEmit(true, true, true, false);
-        emit Transfer(zeroAddress, owner, tokenId + 2);
+        emit IERC721.Transfer(zeroAddress, owner, tokenId + 2);
         vm.expectEmit(false, false, false, true);
-        emit MetadataUpdate(tokenId + 2);
+        emit IERC4906.MetadataUpdate(tokenId + 2);
         ERC721Extended.safe_mint(owner, uri3);
         vm.stopPrank();
 
         vm.startPrank(owner);
         vm.expectEmit(true, true, true, false);
-        emit Transfer(owner, zeroAddress, tokenId + 2);
+        emit IERC721.Transfer(owner, zeroAddress, tokenId + 2);
         ERC721Extended.burn(tokenId + 2);
         vm.stopPrank();
 
         vm.startPrank(deployer);
         vm.expectEmit(true, true, true, false);
-        emit Transfer(zeroAddress, owner, tokenId + 3);
+        emit IERC721.Transfer(zeroAddress, owner, tokenId + 3);
         vm.expectEmit(false, false, false, true);
-        emit MetadataUpdate(tokenId + 3);
+        emit IERC4906.MetadataUpdate(tokenId + 3);
         ERC721Extended.safe_mint(owner, "");
         vm.stopPrank();
         assertEq(ERC721Extended.balanceOf(owner), 3);
@@ -1482,14 +1454,14 @@ contract ERC721Test is Test {
         uint256 tokenId = 0;
         vm.startPrank(deployer);
         vm.expectEmit(true, true, true, false);
-        emit Transfer(zeroAddress, owner, tokenId);
+        emit IERC721.Transfer(zeroAddress, owner, tokenId);
         vm.expectEmit(false, false, false, true);
-        emit MetadataUpdate(tokenId);
+        emit IERC4906.MetadataUpdate(tokenId);
         ERC721Extended.safe_mint(owner, uri1);
         vm.expectEmit(true, true, true, false);
-        emit Transfer(zeroAddress, owner, tokenId + 1);
+        emit IERC721.Transfer(zeroAddress, owner, tokenId + 1);
         vm.expectEmit(false, false, false, true);
-        emit MetadataUpdate(tokenId + 1);
+        emit IERC4906.MetadataUpdate(tokenId + 1);
         ERC721Extended.safe_mint(owner, uri2);
 
         /**
@@ -1619,12 +1591,12 @@ contract ERC721Test is Test {
         address minter = makeAddr("minter");
         vm.startPrank(owner);
         vm.expectEmit(true, false, false, true);
-        emit RoleMinterChanged(minter, true);
+        emit IERC721Extended.RoleMinterChanged(minter, true);
         ERC721Extended.set_minter(minter, true);
         assertTrue(ERC721Extended.is_minter(minter));
 
         vm.expectEmit(true, false, false, true);
-        emit RoleMinterChanged(minter, false);
+        emit IERC721Extended.RoleMinterChanged(minter, false);
         ERC721Extended.set_minter(minter, false);
         assertTrue(!ERC721Extended.is_minter(minter));
         vm.stopPrank();
@@ -1679,7 +1651,7 @@ contract ERC721Test is Test {
             )
         );
         vm.expectEmit(true, true, true, false);
-        emit Approval(owner, spender, tokenId);
+        emit IERC721.Approval(owner, spender, tokenId);
         ERC721Extended.permit(spender, tokenId, deadline, v, r, s);
         assertEq(ERC721Extended.getApproved(tokenId), spender);
         assertEq(ERC721Extended.nonces(tokenId), 1);
@@ -1717,7 +1689,7 @@ contract ERC721Test is Test {
             )
         );
         vm.expectEmit(true, true, true, false);
-        emit Approval(owner, spender, tokenId);
+        emit IERC721.Approval(owner, spender, tokenId);
         ERC721Extended.permit(spender, tokenId, deadline, v, r, s);
         vm.expectRevert(bytes("ERC721Permit: invalid signature"));
         ERC721Extended.permit(spender, tokenId, deadline, v, r, s);
@@ -1928,11 +1900,11 @@ contract ERC721Test is Test {
         address newOwner = makeAddr("newOwner");
         vm.startPrank(oldOwner);
         vm.expectEmit(true, false, false, true);
-        emit RoleMinterChanged(oldOwner, false);
+        emit IERC721Extended.RoleMinterChanged(oldOwner, false);
         vm.expectEmit(true, true, false, false);
-        emit OwnershipTransferred(oldOwner, newOwner);
+        emit IERC721Extended.OwnershipTransferred(oldOwner, newOwner);
         vm.expectEmit(true, false, false, true);
-        emit RoleMinterChanged(newOwner, true);
+        emit IERC721Extended.RoleMinterChanged(newOwner, true);
         ERC721Extended.transfer_ownership(newOwner);
         assertEq(ERC721Extended.owner(), newOwner);
         assertTrue(!ERC721Extended.is_minter(oldOwner));
@@ -1956,9 +1928,9 @@ contract ERC721Test is Test {
         address newOwner = zeroAddress;
         vm.startPrank(oldOwner);
         vm.expectEmit(true, false, false, true);
-        emit RoleMinterChanged(oldOwner, false);
+        emit IERC721Extended.RoleMinterChanged(oldOwner, false);
         vm.expectEmit(true, true, false, false);
-        emit OwnershipTransferred(oldOwner, newOwner);
+        emit IERC721Extended.OwnershipTransferred(oldOwner, newOwner);
         ERC721Extended.renounce_ownership();
         assertEq(ERC721Extended.owner(), newOwner);
         assertTrue(!ERC721Extended.is_minter(oldOwner));
@@ -2086,7 +2058,7 @@ contract ERC721Test is Test {
 
         vm.startPrank(owner);
         vm.expectEmit(true, true, true, false);
-        emit Approval(owner, spender, tokenId);
+        emit IERC721.Approval(owner, spender, tokenId);
         ERC721Extended.approve(spender, tokenId);
         assertEq(ERC721Extended.getApproved(tokenId), spender);
         vm.stopPrank();
@@ -2109,12 +2081,12 @@ contract ERC721Test is Test {
 
         vm.startPrank(owner);
         vm.expectEmit(true, true, true, false);
-        emit Approval(owner, spender1, tokenId);
+        emit IERC721.Approval(owner, spender1, tokenId);
         ERC721Extended.approve(spender1, tokenId);
         assertEq(ERC721Extended.getApproved(tokenId), spender1);
 
         vm.expectEmit(true, true, true, false);
-        emit Approval(owner, spender2, tokenId);
+        emit IERC721.Approval(owner, spender2, tokenId);
         ERC721Extended.approve(spender2, tokenId);
         assertEq(ERC721Extended.getApproved(tokenId), spender2);
         vm.stopPrank();
@@ -2136,7 +2108,7 @@ contract ERC721Test is Test {
 
         vm.startPrank(owner);
         vm.expectEmit(true, true, true, false);
-        emit Approval(owner, spender, tokenId);
+        emit IERC721.Approval(owner, spender, tokenId);
         ERC721Extended.approve(spender, tokenId);
         assertEq(ERC721Extended.getApproved(tokenId), spender);
         vm.stopPrank();
@@ -2158,12 +2130,12 @@ contract ERC721Test is Test {
 
         vm.startPrank(owner);
         vm.expectEmit(true, true, true, false);
-        emit Approval(owner, spender, tokenId);
+        emit IERC721.Approval(owner, spender, tokenId);
         ERC721Extended.approve(spender, tokenId);
         assertEq(ERC721Extended.getApproved(tokenId), spender);
 
         vm.expectEmit(true, true, true, false);
-        emit Approval(owner, spender, tokenId);
+        emit IERC721.Approval(owner, spender, tokenId);
         ERC721Extended.approve(spender, tokenId);
         assertEq(ERC721Extended.getApproved(tokenId), spender);
         vm.stopPrank();
@@ -2217,7 +2189,7 @@ contract ERC721Test is Test {
 
         vm.startPrank(operator);
         vm.expectEmit(true, true, true, false);
-        emit Approval(owner, spender, tokenId);
+        emit IERC721.Approval(owner, spender, tokenId);
         ERC721Extended.approve(spender, tokenId);
         assertEq(ERC721Extended.getApproved(tokenId), spender);
         vm.stopPrank();
@@ -2239,17 +2211,17 @@ contract ERC721Test is Test {
 
         vm.startPrank(owner);
         vm.expectEmit(true, true, false, true);
-        emit ApprovalForAll(owner, operator, !approved);
+        emit IERC721.ApprovalForAll(owner, operator, !approved);
         ERC721Extended.setApprovalForAll(operator, !approved);
         assertTrue(!ERC721Extended.isApprovedForAll(owner, operator));
 
         vm.expectEmit(true, true, false, true);
-        emit ApprovalForAll(owner, operator, approved);
+        emit IERC721.ApprovalForAll(owner, operator, approved);
         ERC721Extended.setApprovalForAll(operator, approved);
         assertTrue(ERC721Extended.isApprovedForAll(owner, operator));
 
         vm.expectEmit(true, true, false, true);
-        emit ApprovalForAll(owner, operator, !approved);
+        emit IERC721.ApprovalForAll(owner, operator, !approved);
         ERC721Extended.setApprovalForAll(operator, !approved);
         assertTrue(!ERC721Extended.isApprovedForAll(owner, operator));
         vm.stopPrank();
@@ -2307,7 +2279,7 @@ contract ERC721Test is Test {
 
         vm.startPrank(owner);
         vm.expectEmit(true, true, true, false);
-        emit Transfer(owner, zeroAddress, tokenId);
+        emit IERC721.Transfer(owner, zeroAddress, tokenId);
         ERC721Extended.burn(tokenId);
         vm.expectRevert(bytes("ERC721: invalid token ID"));
         ERC721Extended.burn(tokenId);
@@ -2326,9 +2298,9 @@ contract ERC721Test is Test {
         vm.startPrank(deployer);
         for (uint256 i; i < owners.length; ++i) {
             vm.expectEmit(true, true, true, false);
-            emit Transfer(zeroAddress, owners[i], i);
+            emit IERC721.Transfer(zeroAddress, owners[i], i);
             vm.expectEmit(false, false, false, true);
-            emit MetadataUpdate(i);
+            emit IERC4906.MetadataUpdate(i);
             ERC721Extended.safe_mint(owners[i], uri);
             assertGe(ERC721Extended.balanceOf(owners[i]), 1);
         }
@@ -2347,12 +2319,12 @@ contract ERC721Test is Test {
         address minterAddr = makeAddr(minter);
         vm.startPrank(owner);
         vm.expectEmit(true, false, false, true);
-        emit RoleMinterChanged(minterAddr, true);
+        emit IERC721Extended.RoleMinterChanged(minterAddr, true);
         ERC721Extended.set_minter(minterAddr, true);
         assertTrue(ERC721Extended.is_minter(minterAddr));
 
         vm.expectEmit(true, false, false, true);
-        emit RoleMinterChanged(minterAddr, false);
+        emit IERC721Extended.RoleMinterChanged(minterAddr, false);
         ERC721Extended.set_minter(minterAddr, false);
         assertTrue(!ERC721Extended.is_minter(minterAddr));
         vm.stopPrank();
@@ -2403,7 +2375,7 @@ contract ERC721Test is Test {
             )
         );
         vm.expectEmit(true, true, true, false);
-        emit Approval(ownerAddr, spenderAddr, tokenId);
+        emit IERC721.Approval(ownerAddr, spenderAddr, tokenId);
         ERC721Extended.permit(spenderAddr, tokenId, deadline, v, r, s);
         assertEq(ERC721Extended.getApproved(tokenId), spenderAddr);
         assertEq(ERC721Extended.nonces(tokenId), 1);
@@ -2523,11 +2495,11 @@ contract ERC721Test is Test {
         address oldOwner = deployer;
         vm.startPrank(oldOwner);
         vm.expectEmit(true, false, false, true);
-        emit RoleMinterChanged(oldOwner, false);
+        emit IERC721Extended.RoleMinterChanged(oldOwner, false);
         vm.expectEmit(true, true, false, false);
-        emit OwnershipTransferred(oldOwner, newOwner1);
+        emit IERC721Extended.OwnershipTransferred(oldOwner, newOwner1);
         vm.expectEmit(true, false, false, true);
-        emit RoleMinterChanged(newOwner1, true);
+        emit IERC721Extended.RoleMinterChanged(newOwner1, true);
         ERC721Extended.transfer_ownership(newOwner1);
         assertEq(ERC721Extended.owner(), newOwner1);
         assertTrue(!ERC721Extended.is_minter(oldOwner));
@@ -2536,12 +2508,12 @@ contract ERC721Test is Test {
 
         vm.startPrank(newOwner1);
         vm.expectEmit(true, false, false, true);
-        emit RoleMinterChanged(newOwner1, false);
+        emit IERC721Extended.RoleMinterChanged(newOwner1, false);
         vm.expectEmit(true, true, false, false);
-        emit OwnershipTransferred(newOwner1, newOwner2);
+        emit IERC721Extended.OwnershipTransferred(newOwner1, newOwner2);
         vm.expectEmit(true, false, false, true);
-        emit RoleMinterChanged(newOwner2, true);
-        emit OwnershipTransferred(newOwner1, newOwner2);
+        emit IERC721Extended.RoleMinterChanged(newOwner2, true);
+        emit IERC721Extended.OwnershipTransferred(newOwner1, newOwner2);
         ERC721Extended.transfer_ownership(newOwner2);
         assertEq(ERC721Extended.owner(), newOwner2);
         assertTrue(!ERC721Extended.is_minter(newOwner1));
@@ -2565,19 +2537,19 @@ contract ERC721Test is Test {
         address renounceAddress = zeroAddress;
         vm.startPrank(oldOwner);
         vm.expectEmit(true, false, false, true);
-        emit RoleMinterChanged(oldOwner, false);
+        emit IERC721Extended.RoleMinterChanged(oldOwner, false);
         vm.expectEmit(true, true, false, false);
-        emit OwnershipTransferred(oldOwner, newOwner);
+        emit IERC721Extended.OwnershipTransferred(oldOwner, newOwner);
         vm.expectEmit(true, false, false, true);
-        emit RoleMinterChanged(newOwner, true);
+        emit IERC721Extended.RoleMinterChanged(newOwner, true);
         ERC721Extended.transfer_ownership(newOwner);
         vm.stopPrank();
 
         vm.startPrank(newOwner);
         vm.expectEmit(true, false, false, true);
-        emit RoleMinterChanged(newOwner, false);
+        emit IERC721Extended.RoleMinterChanged(newOwner, false);
         vm.expectEmit(true, true, false, false);
-        emit OwnershipTransferred(newOwner, renounceAddress);
+        emit IERC721Extended.OwnershipTransferred(newOwner, renounceAddress);
         ERC721Extended.renounce_ownership();
         assertEq(ERC721Extended.owner(), renounceAddress);
         vm.stopPrank();

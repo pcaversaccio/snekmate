@@ -28,53 +28,6 @@ contract ERC1155Test is Test {
     address private deployer = address(vyperDeployer);
     address private zeroAddress = address(0);
 
-    event TransferSingle(
-        address indexed operator,
-        address indexed from,
-        address indexed to,
-        uint256 id,
-        uint256 amount
-    );
-
-    event TransferBatch(
-        address indexed operator,
-        address indexed from,
-        address indexed to,
-        uint256[] ids,
-        uint256[] amounts
-    );
-
-    event ApprovalForAll(
-        address indexed owner,
-        address indexed operator,
-        bool approved
-    );
-
-    event URI(string value, uint256 indexed id);
-
-    event Received(
-        address indexed operator,
-        address indexed from,
-        uint256 id,
-        uint256 amount,
-        bytes data
-    );
-
-    event BatchReceived(
-        address indexed operator,
-        address indexed from,
-        uint256[] ids,
-        uint256[] amounts,
-        bytes data
-    );
-
-    event OwnershipTransferred(
-        address indexed previousOwner,
-        address indexed newOwner
-    );
-
-    event RoleMinterChanged(address indexed minter, bool status);
-
     function setUp() public {
         bytes memory args = abi.encode(_BASE_URI);
         ERC1155Extended = IERC1155Extended(
@@ -95,9 +48,9 @@ contract ERC1155Test is Test {
         );
 
         vm.expectEmit(true, true, false, false);
-        emit OwnershipTransferred(zeroAddress, deployer);
+        emit IERC1155Extended.OwnershipTransferred(zeroAddress, deployer);
         vm.expectEmit(true, false, false, true);
-        emit RoleMinterChanged(deployer, true);
+        emit IERC1155Extended.RoleMinterChanged(deployer, true);
         bytes memory args = abi.encode(_BASE_URI);
         ERC1155ExtendedInitialEvent = IERC1155Extended(
             vyperDeployer.deployContract("src/tokens/", "ERC1155", args)
@@ -322,12 +275,12 @@ contract ERC1155Test is Test {
         assertTrue(!ERC1155Extended.isApprovedForAll(owner, operator));
         vm.startPrank(owner);
         vm.expectEmit(true, true, false, true);
-        emit ApprovalForAll(owner, operator, approved);
+        emit IERC1155.ApprovalForAll(owner, operator, approved);
         ERC1155Extended.setApprovalForAll(operator, approved);
         assertTrue(ERC1155Extended.isApprovedForAll(owner, operator));
 
         vm.expectEmit(true, true, false, true);
-        emit ApprovalForAll(owner, operator, approved);
+        emit IERC1155.ApprovalForAll(owner, operator, approved);
         ERC1155Extended.setApprovalForAll(operator, approved);
         assertTrue(ERC1155Extended.isApprovedForAll(owner, operator));
         vm.stopPrank();
@@ -340,12 +293,12 @@ contract ERC1155Test is Test {
         assertTrue(!ERC1155Extended.isApprovedForAll(owner, operator));
         vm.startPrank(owner);
         vm.expectEmit(true, true, false, true);
-        emit ApprovalForAll(owner, operator, approved);
+        emit IERC1155.ApprovalForAll(owner, operator, approved);
         ERC1155Extended.setApprovalForAll(operator, approved);
         assertTrue(ERC1155Extended.isApprovedForAll(owner, operator));
 
         vm.expectEmit(true, true, false, true);
-        emit ApprovalForAll(owner, operator, !approved);
+        emit IERC1155.ApprovalForAll(owner, operator, !approved);
         ERC1155Extended.setApprovalForAll(operator, !approved);
         assertTrue(!ERC1155Extended.isApprovedForAll(owner, operator));
         vm.stopPrank();
@@ -373,7 +326,7 @@ contract ERC1155Test is Test {
 
         vm.startPrank(owner);
         vm.expectEmit(true, true, true, true);
-        emit TransferSingle(owner, owner, receiver, id1, amount1);
+        emit IERC1155.TransferSingle(owner, owner, receiver, id1, amount1);
         ERC1155Extended.safeTransferFrom(owner, receiver, id1, amount1, data);
         assertEq(ERC1155Extended.balanceOf(owner, id1), 0);
         assertEq(ERC1155Extended.balanceOf(owner, id2), amount2);
@@ -399,13 +352,13 @@ contract ERC1155Test is Test {
 
         vm.startPrank(owner);
         vm.expectEmit(true, true, false, true);
-        emit ApprovalForAll(owner, operator, approved);
+        emit IERC1155.ApprovalForAll(owner, operator, approved);
         ERC1155Extended.setApprovalForAll(operator, approved);
         vm.stopPrank();
 
         vm.startPrank(operator);
         vm.expectEmit(true, true, true, true);
-        emit TransferSingle(operator, owner, receiver, id1, amount1);
+        emit IERC1155.TransferSingle(operator, owner, receiver, id1, amount1);
         ERC1155Extended.safeTransferFrom(owner, receiver, id1, amount1, data);
         assertEq(ERC1155Extended.balanceOf(owner, id1), 0);
         assertEq(ERC1155Extended.balanceOf(owner, id2), amount2);
@@ -465,9 +418,9 @@ contract ERC1155Test is Test {
 
         vm.startPrank(owner);
         vm.expectEmit(true, true, true, true);
-        emit TransferSingle(owner, owner, receiver, id1, amount1);
+        emit IERC1155.TransferSingle(owner, owner, receiver, id1, amount1);
         vm.expectEmit(true, true, false, true, receiver);
-        emit Received(owner, owner, id1, amount1, data);
+        emit ERC1155ReceiverMock.Received(owner, owner, id1, amount1, data);
         ERC1155Extended.safeTransferFrom(owner, receiver, id1, amount1, data);
         assertEq(ERC1155Extended.balanceOf(owner, id1), 0);
         assertEq(ERC1155Extended.balanceOf(owner, id2), amount2);
@@ -479,15 +432,15 @@ contract ERC1155Test is Test {
         bool approved = true;
         vm.startPrank(owner);
         vm.expectEmit(true, true, false, true);
-        emit ApprovalForAll(owner, operator, approved);
+        emit IERC1155.ApprovalForAll(owner, operator, approved);
         ERC1155Extended.setApprovalForAll(operator, approved);
         vm.stopPrank();
 
         vm.startPrank(operator);
         vm.expectEmit(true, true, true, true);
-        emit TransferSingle(operator, owner, receiver, id2, amount2);
+        emit IERC1155.TransferSingle(operator, owner, receiver, id2, amount2);
         vm.expectEmit(true, true, false, true, receiver);
-        emit Received(operator, owner, id2, amount2, data);
+        emit ERC1155ReceiverMock.Received(operator, owner, id2, amount2, data);
         ERC1155Extended.safeTransferFrom(owner, receiver, id2, amount2, data);
         assertEq(ERC1155Extended.balanceOf(owner, id1), 0);
         assertEq(ERC1155Extended.balanceOf(owner, id2), 0);
@@ -525,9 +478,9 @@ contract ERC1155Test is Test {
 
         vm.startPrank(owner);
         vm.expectEmit(true, true, true, true);
-        emit TransferSingle(owner, owner, receiver, id1, amount1);
+        emit IERC1155.TransferSingle(owner, owner, receiver, id1, amount1);
         vm.expectEmit(true, true, false, true, receiver);
-        emit Received(owner, owner, id1, amount1, data);
+        emit ERC1155ReceiverMock.Received(owner, owner, id1, amount1, data);
         ERC1155Extended.safeTransferFrom(owner, receiver, id1, amount1, data);
         assertEq(ERC1155Extended.balanceOf(owner, id1), 0);
         assertEq(ERC1155Extended.balanceOf(owner, id2), amount2);
@@ -539,15 +492,15 @@ contract ERC1155Test is Test {
         bool approved = true;
         vm.startPrank(owner);
         vm.expectEmit(true, true, false, true);
-        emit ApprovalForAll(owner, operator, approved);
+        emit IERC1155.ApprovalForAll(owner, operator, approved);
         ERC1155Extended.setApprovalForAll(operator, approved);
         vm.stopPrank();
 
         vm.startPrank(operator);
         vm.expectEmit(true, true, true, true);
-        emit TransferSingle(operator, owner, receiver, id2, amount2);
+        emit IERC1155.TransferSingle(operator, owner, receiver, id2, amount2);
         vm.expectEmit(true, true, false, true, receiver);
-        emit Received(operator, owner, id2, amount2, data);
+        emit ERC1155ReceiverMock.Received(operator, owner, id2, amount2, data);
         ERC1155Extended.safeTransferFrom(owner, receiver, id2, amount2, data);
         assertEq(ERC1155Extended.balanceOf(owner, id1), 0);
         assertEq(ERC1155Extended.balanceOf(owner, id2), 0);
@@ -592,7 +545,7 @@ contract ERC1155Test is Test {
         bool approved = true;
         vm.startPrank(owner);
         vm.expectEmit(true, true, false, true);
-        emit ApprovalForAll(owner, operator, approved);
+        emit IERC1155.ApprovalForAll(owner, operator, approved);
         ERC1155Extended.setApprovalForAll(operator, approved);
         vm.stopPrank();
 
@@ -638,7 +591,7 @@ contract ERC1155Test is Test {
         bool approved = true;
         vm.startPrank(owner);
         vm.expectEmit(true, true, false, true);
-        emit ApprovalForAll(owner, operator, approved);
+        emit IERC1155.ApprovalForAll(owner, operator, approved);
         ERC1155Extended.setApprovalForAll(operator, approved);
         vm.stopPrank();
 
@@ -669,7 +622,7 @@ contract ERC1155Test is Test {
         bool approved = true;
         vm.startPrank(owner);
         vm.expectEmit(true, true, false, true);
-        emit ApprovalForAll(owner, operator, approved);
+        emit IERC1155.ApprovalForAll(owner, operator, approved);
         ERC1155Extended.setApprovalForAll(operator, approved);
         vm.stopPrank();
 
@@ -737,7 +690,7 @@ contract ERC1155Test is Test {
 
         vm.startPrank(owner);
         vm.expectEmit(true, true, true, true);
-        emit TransferBatch(owner, owner, receiver, ids, amounts);
+        emit IERC1155.TransferBatch(owner, owner, receiver, ids, amounts);
         ERC1155Extended.safeBatchTransferFrom(
             owner,
             receiver,
@@ -776,13 +729,13 @@ contract ERC1155Test is Test {
 
         vm.startPrank(owner);
         vm.expectEmit(true, true, false, true);
-        emit ApprovalForAll(owner, operator, approved);
+        emit IERC1155.ApprovalForAll(owner, operator, approved);
         ERC1155Extended.setApprovalForAll(operator, approved);
         vm.stopPrank();
 
         vm.startPrank(operator);
         vm.expectEmit(true, true, true, true);
-        emit TransferBatch(operator, owner, receiver, ids, amounts);
+        emit IERC1155.TransferBatch(operator, owner, receiver, ids, amounts);
         ERC1155Extended.safeBatchTransferFrom(
             owner,
             receiver,
@@ -867,9 +820,15 @@ contract ERC1155Test is Test {
 
         vm.startPrank(owner);
         vm.expectEmit(true, true, true, true);
-        emit TransferBatch(owner, owner, receiver, ids, amounts);
+        emit IERC1155.TransferBatch(owner, owner, receiver, ids, amounts);
         vm.expectEmit(true, true, false, true, receiver);
-        emit BatchReceived(owner, owner, ids, amounts, data);
+        emit ERC1155ReceiverMock.BatchReceived(
+            owner,
+            owner,
+            ids,
+            amounts,
+            data
+        );
         ERC1155Extended.safeBatchTransferFrom(
             owner,
             receiver,
@@ -918,9 +877,15 @@ contract ERC1155Test is Test {
 
         vm.startPrank(owner);
         vm.expectEmit(true, true, true, true);
-        emit TransferBatch(owner, owner, receiver, ids, amounts);
+        emit IERC1155.TransferBatch(owner, owner, receiver, ids, amounts);
         vm.expectEmit(true, true, false, true, receiver);
-        emit BatchReceived(owner, owner, ids, amounts, data);
+        emit ERC1155ReceiverMock.BatchReceived(
+            owner,
+            owner,
+            ids,
+            amounts,
+            data
+        );
         ERC1155Extended.safeBatchTransferFrom(
             owner,
             receiver,
@@ -1088,9 +1053,15 @@ contract ERC1155Test is Test {
 
         vm.startPrank(owner);
         vm.expectEmit(true, true, true, true);
-        emit TransferBatch(owner, owner, receiver, ids, amounts);
+        emit IERC1155.TransferBatch(owner, owner, receiver, ids, amounts);
         vm.expectEmit(true, true, false, true, receiver);
-        emit BatchReceived(owner, owner, ids, amounts, data);
+        emit ERC1155ReceiverMock.BatchReceived(
+            owner,
+            owner,
+            ids,
+            amounts,
+            data
+        );
         ERC1155Extended.safeBatchTransferFrom(
             owner,
             receiver,
@@ -1257,7 +1228,7 @@ contract ERC1155Test is Test {
         uint256 id = 1;
         vm.prank(deployer);
         vm.expectEmit(true, false, false, true);
-        emit URI(string.concat(_BASE_URI, uri), id);
+        emit IERC1155.URI(string.concat(_BASE_URI, uri), id);
         ERC1155Extended.set_uri(id, uri);
         assertEq(ERC1155Extended.uri(id), string.concat(_BASE_URI, uri));
     }
@@ -1267,7 +1238,10 @@ contract ERC1155Test is Test {
         uint256 id = 1;
         vm.prank(deployer);
         vm.expectEmit(true, false, false, true);
-        emit URI(string.concat(_BASE_URI, Strings.toString(uint256(id))), id);
+        emit IERC1155.URI(
+            string.concat(_BASE_URI, Strings.toString(uint256(id))),
+            id
+        );
         ERC1155Extended.set_uri(id, uri);
         assertEq(
             ERC1155Extended.uri(id),
@@ -1455,7 +1429,7 @@ contract ERC1155Test is Test {
 
         vm.startPrank(firstOwner);
         vm.expectEmit(true, true, true, true);
-        emit TransferSingle(
+        emit IERC1155.TransferSingle(
             firstOwner,
             firstOwner,
             zeroAddress,
@@ -1486,13 +1460,19 @@ contract ERC1155Test is Test {
 
         vm.startPrank(owner);
         vm.expectEmit(true, true, false, true);
-        emit ApprovalForAll(owner, operator, approved);
+        emit IERC1155.ApprovalForAll(owner, operator, approved);
         ERC1155Extended.setApprovalForAll(operator, approved);
         vm.stopPrank();
 
         vm.startPrank(operator);
         vm.expectEmit(true, true, true, true);
-        emit TransferSingle(operator, owner, zeroAddress, id1, burnAmount);
+        emit IERC1155.TransferSingle(
+            operator,
+            owner,
+            zeroAddress,
+            id1,
+            burnAmount
+        );
         ERC1155Extended.burn(owner, id1, burnAmount);
         assertEq(ERC1155Extended.total_supply(id1), amount1 - burnAmount);
         assertEq(ERC1155Extended.total_supply(id2), amount2);
@@ -1577,7 +1557,7 @@ contract ERC1155Test is Test {
         vm.startPrank(owner);
         --amounts[2];
         vm.expectEmit(true, true, true, true);
-        emit TransferBatch(owner, owner, zeroAddress, ids, amounts);
+        emit IERC1155.TransferBatch(owner, owner, zeroAddress, ids, amounts);
         ERC1155Extended.burn_batch(owner, ids, amounts);
         assertEq(ERC1155Extended.total_supply(ids[0]), 0);
         assertEq(ERC1155Extended.total_supply(ids[1]), 0);
@@ -1613,14 +1593,14 @@ contract ERC1155Test is Test {
 
         vm.startPrank(owner);
         vm.expectEmit(true, true, false, true);
-        emit ApprovalForAll(owner, operator, approved);
+        emit IERC1155.ApprovalForAll(owner, operator, approved);
         ERC1155Extended.setApprovalForAll(operator, approved);
         vm.stopPrank();
 
         vm.startPrank(operator);
         --amounts[2];
         vm.expectEmit(true, true, true, true);
-        emit TransferBatch(operator, owner, zeroAddress, ids, amounts);
+        emit IERC1155.TransferBatch(operator, owner, zeroAddress, ids, amounts);
         ERC1155Extended.burn_batch(owner, ids, amounts);
         assertEq(ERC1155Extended.total_supply(ids[0]), 0);
         assertEq(ERC1155Extended.total_supply(ids[1]), 0);
@@ -1757,11 +1737,23 @@ contract ERC1155Test is Test {
         bytes memory data = new bytes(0);
         vm.startPrank(deployer);
         vm.expectEmit(true, true, true, true);
-        emit TransferSingle(deployer, zeroAddress, receiver, id1, amount1);
+        emit IERC1155.TransferSingle(
+            deployer,
+            zeroAddress,
+            receiver,
+            id1,
+            amount1
+        );
         ERC1155Extended.safe_mint(receiver, id1, amount1, data);
 
         vm.expectEmit(true, true, true, true);
-        emit TransferSingle(deployer, zeroAddress, receiver, id2, amount2);
+        emit IERC1155.TransferSingle(
+            deployer,
+            zeroAddress,
+            receiver,
+            id2,
+            amount2
+        );
         ERC1155Extended.safe_mint(receiver, id2, amount2, data);
         assertEq(ERC1155Extended.total_supply(id1), amount1);
         assertEq(ERC1155Extended.total_supply(id2), amount2);
@@ -1791,11 +1783,23 @@ contract ERC1155Test is Test {
         bytes memory data = new bytes(0);
         vm.startPrank(deployer);
         vm.expectEmit(true, true, true, true);
-        emit TransferSingle(deployer, zeroAddress, receiver, id1, amount1);
+        emit IERC1155.TransferSingle(
+            deployer,
+            zeroAddress,
+            receiver,
+            id1,
+            amount1
+        );
         ERC1155Extended.safe_mint(receiver, id1, amount1, data);
 
         vm.expectEmit(true, true, true, true);
-        emit TransferSingle(deployer, zeroAddress, receiver, id2, amount2);
+        emit IERC1155.TransferSingle(
+            deployer,
+            zeroAddress,
+            receiver,
+            id2,
+            amount2
+        );
         ERC1155Extended.safe_mint(receiver, id2, amount2, data);
         assertEq(ERC1155Extended.total_supply(id1), amount1);
         assertEq(ERC1155Extended.total_supply(id2), amount2);
@@ -1825,11 +1829,23 @@ contract ERC1155Test is Test {
         bytes memory data = new bytes(42);
         vm.startPrank(deployer);
         vm.expectEmit(true, true, true, true);
-        emit TransferSingle(deployer, zeroAddress, receiver, id1, amount1);
+        emit IERC1155.TransferSingle(
+            deployer,
+            zeroAddress,
+            receiver,
+            id1,
+            amount1
+        );
         ERC1155Extended.safe_mint(receiver, id1, amount1, data);
 
         vm.expectEmit(true, true, true, true);
-        emit TransferSingle(deployer, zeroAddress, receiver, id2, amount2);
+        emit IERC1155.TransferSingle(
+            deployer,
+            zeroAddress,
+            receiver,
+            id2,
+            amount2
+        );
         ERC1155Extended.safe_mint(receiver, id2, amount2, data);
         assertEq(ERC1155Extended.total_supply(id1), amount1);
         assertEq(ERC1155Extended.total_supply(id2), amount2);
@@ -1950,7 +1966,13 @@ contract ERC1155Test is Test {
         bytes memory data = new bytes(0);
         vm.startPrank(deployer);
         vm.expectEmit(true, true, true, true);
-        emit TransferSingle(deployer, zeroAddress, receiver, id, amount);
+        emit IERC1155.TransferSingle(
+            deployer,
+            zeroAddress,
+            receiver,
+            id,
+            amount
+        );
         ERC1155Extended.safe_mint(receiver, id, amount, data);
 
         vm.expectRevert();
@@ -1975,7 +1997,13 @@ contract ERC1155Test is Test {
 
         vm.startPrank(deployer);
         vm.expectEmit(true, true, true, true);
-        emit TransferBatch(deployer, zeroAddress, receiver, ids, amounts);
+        emit IERC1155.TransferBatch(
+            deployer,
+            zeroAddress,
+            receiver,
+            ids,
+            amounts
+        );
         ERC1155Extended.safe_mint_batch(receiver, ids, amounts, data);
         for (uint256 i; i < ids.length; ++i) {
             assertEq(ERC1155Extended.total_supply(ids[i]), amounts[i]);
@@ -2013,7 +2041,13 @@ contract ERC1155Test is Test {
 
         vm.startPrank(deployer);
         vm.expectEmit(true, true, true, true);
-        emit TransferBatch(deployer, zeroAddress, receiver, ids, amounts);
+        emit IERC1155.TransferBatch(
+            deployer,
+            zeroAddress,
+            receiver,
+            ids,
+            amounts
+        );
         ERC1155Extended.safe_mint_batch(receiver, ids, amounts, data);
         for (uint256 i; i < ids.length; ++i) {
             assertEq(ERC1155Extended.total_supply(ids[i]), amounts[i]);
@@ -2051,7 +2085,13 @@ contract ERC1155Test is Test {
 
         vm.startPrank(deployer);
         vm.expectEmit(true, true, true, true);
-        emit TransferBatch(deployer, zeroAddress, receiver, ids, amounts);
+        emit IERC1155.TransferBatch(
+            deployer,
+            zeroAddress,
+            receiver,
+            ids,
+            amounts
+        );
         ERC1155Extended.safe_mint_batch(receiver, ids, amounts, data);
         for (uint256 i; i < ids.length; ++i) {
             assertEq(ERC1155Extended.total_supply(ids[i]), amounts[i]);
@@ -2175,7 +2215,13 @@ contract ERC1155Test is Test {
 
         vm.startPrank(deployer);
         vm.expectEmit(true, true, true, true);
-        emit TransferBatch(deployer, zeroAddress, receiver, ids, amounts);
+        emit IERC1155.TransferBatch(
+            deployer,
+            zeroAddress,
+            receiver,
+            ids,
+            amounts
+        );
         ERC1155Extended.safe_mint_batch(receiver, ids, amounts, data);
         for (uint256 i; i < ids.length; ++i) {
             assertEq(ERC1155Extended.total_supply(ids[i]), amounts[i]);
@@ -2272,7 +2318,13 @@ contract ERC1155Test is Test {
 
         vm.startPrank(deployer);
         vm.expectEmit(true, true, true, true);
-        emit TransferBatch(deployer, zeroAddress, receiver, ids, amounts);
+        emit IERC1155.TransferBatch(
+            deployer,
+            zeroAddress,
+            receiver,
+            ids,
+            amounts
+        );
         ERC1155Extended.safe_mint_batch(receiver, ids, amounts, data);
 
         vm.expectRevert();
@@ -2285,12 +2337,12 @@ contract ERC1155Test is Test {
         address minter = makeAddr("minter");
         vm.startPrank(owner);
         vm.expectEmit(true, false, false, true);
-        emit RoleMinterChanged(minter, true);
+        emit IERC1155Extended.RoleMinterChanged(minter, true);
         ERC1155Extended.set_minter(minter, true);
         assertTrue(ERC1155Extended.is_minter(minter));
 
         vm.expectEmit(true, false, false, true);
-        emit RoleMinterChanged(minter, false);
+        emit IERC1155Extended.RoleMinterChanged(minter, false);
         ERC1155Extended.set_minter(minter, false);
         assertTrue(!ERC1155Extended.is_minter(minter));
         vm.stopPrank();
@@ -2322,11 +2374,11 @@ contract ERC1155Test is Test {
         address newOwner = makeAddr("newOwner");
         vm.startPrank(oldOwner);
         vm.expectEmit(true, false, false, true);
-        emit RoleMinterChanged(oldOwner, false);
+        emit IERC1155Extended.RoleMinterChanged(oldOwner, false);
         vm.expectEmit(true, true, false, false);
-        emit OwnershipTransferred(oldOwner, newOwner);
+        emit IERC1155Extended.OwnershipTransferred(oldOwner, newOwner);
         vm.expectEmit(true, false, false, true);
-        emit RoleMinterChanged(newOwner, true);
+        emit IERC1155Extended.RoleMinterChanged(newOwner, true);
         ERC1155Extended.transfer_ownership(newOwner);
         assertEq(ERC1155Extended.owner(), newOwner);
         assertTrue(!ERC1155Extended.is_minter(oldOwner));
@@ -2350,9 +2402,9 @@ contract ERC1155Test is Test {
         address newOwner = zeroAddress;
         vm.startPrank(oldOwner);
         vm.expectEmit(true, false, false, true);
-        emit RoleMinterChanged(oldOwner, false);
+        emit IERC1155Extended.RoleMinterChanged(oldOwner, false);
         vm.expectEmit(true, true, false, false);
-        emit OwnershipTransferred(oldOwner, newOwner);
+        emit IERC1155Extended.OwnershipTransferred(oldOwner, newOwner);
         ERC1155Extended.renounce_ownership();
         assertEq(ERC1155Extended.owner(), newOwner);
         assertTrue(!ERC1155Extended.is_minter(oldOwner));
@@ -2373,12 +2425,12 @@ contract ERC1155Test is Test {
         assertTrue(!ERC1155Extended.isApprovedForAll(owner, operator));
         vm.startPrank(owner);
         vm.expectEmit(true, true, false, true);
-        emit ApprovalForAll(owner, operator, approved);
+        emit IERC1155.ApprovalForAll(owner, operator, approved);
         ERC1155Extended.setApprovalForAll(operator, approved);
         assertTrue(ERC1155Extended.isApprovedForAll(owner, operator));
 
         vm.expectEmit(true, true, false, true);
-        emit ApprovalForAll(owner, operator, approved);
+        emit IERC1155.ApprovalForAll(owner, operator, approved);
         ERC1155Extended.setApprovalForAll(operator, approved);
         assertTrue(ERC1155Extended.isApprovedForAll(owner, operator));
         vm.stopPrank();
@@ -2393,12 +2445,12 @@ contract ERC1155Test is Test {
         assertTrue(!ERC1155Extended.isApprovedForAll(owner, operator));
         vm.startPrank(owner);
         vm.expectEmit(true, true, false, true);
-        emit ApprovalForAll(owner, operator, approved);
+        emit IERC1155.ApprovalForAll(owner, operator, approved);
         ERC1155Extended.setApprovalForAll(operator, approved);
         assertTrue(ERC1155Extended.isApprovedForAll(owner, operator));
 
         vm.expectEmit(true, true, false, true);
-        emit ApprovalForAll(owner, operator, !approved);
+        emit IERC1155.ApprovalForAll(owner, operator, !approved);
         ERC1155Extended.setApprovalForAll(operator, !approved);
         assertTrue(!ERC1155Extended.isApprovedForAll(owner, operator));
         vm.stopPrank();
@@ -2428,7 +2480,7 @@ contract ERC1155Test is Test {
 
         vm.startPrank(owner);
         vm.expectEmit(true, true, true, true);
-        emit TransferSingle(owner, owner, receiver, id1, amount1);
+        emit IERC1155.TransferSingle(owner, owner, receiver, id1, amount1);
         ERC1155Extended.safeTransferFrom(owner, receiver, id1, amount1, data);
         assertEq(ERC1155Extended.balanceOf(owner, id1), 0);
         assertEq(ERC1155Extended.balanceOf(owner, id2), amount2);
@@ -2466,13 +2518,13 @@ contract ERC1155Test is Test {
 
         vm.startPrank(owner);
         vm.expectEmit(true, true, false, true);
-        emit ApprovalForAll(owner, operator, approved);
+        emit IERC1155.ApprovalForAll(owner, operator, approved);
         ERC1155Extended.setApprovalForAll(operator, approved);
         vm.stopPrank();
 
         vm.startPrank(operator);
         vm.expectEmit(true, true, true, true);
-        emit TransferSingle(operator, owner, receiver, id1, amount1);
+        emit IERC1155.TransferSingle(operator, owner, receiver, id1, amount1);
         ERC1155Extended.safeTransferFrom(owner, receiver, id1, amount1, data);
         assertEq(ERC1155Extended.balanceOf(owner, id1), 0);
         assertEq(ERC1155Extended.balanceOf(owner, id2), amount2);
@@ -2519,9 +2571,9 @@ contract ERC1155Test is Test {
 
         vm.startPrank(owner);
         vm.expectEmit(true, true, true, true);
-        emit TransferSingle(owner, owner, receiver, id1, amount1);
+        emit IERC1155.TransferSingle(owner, owner, receiver, id1, amount1);
         vm.expectEmit(true, true, false, true, receiver);
-        emit Received(owner, owner, id1, amount1, data);
+        emit ERC1155ReceiverMock.Received(owner, owner, id1, amount1, data);
         ERC1155Extended.safeTransferFrom(owner, receiver, id1, amount1, data);
         assertEq(ERC1155Extended.balanceOf(owner, id1), 0);
         assertEq(ERC1155Extended.balanceOf(owner, id2), amount2);
@@ -2534,15 +2586,15 @@ contract ERC1155Test is Test {
         bool approved = true;
         vm.startPrank(owner);
         vm.expectEmit(true, true, false, true);
-        emit ApprovalForAll(owner, operator, approved);
+        emit IERC1155.ApprovalForAll(owner, operator, approved);
         ERC1155Extended.setApprovalForAll(operator, approved);
         vm.stopPrank();
 
         vm.startPrank(operator);
         vm.expectEmit(true, true, true, true);
-        emit TransferSingle(operator, owner, receiver, id2, amount2);
+        emit IERC1155.TransferSingle(operator, owner, receiver, id2, amount2);
         vm.expectEmit(true, true, false, true, receiver);
-        emit Received(operator, owner, id2, amount2, data);
+        emit ERC1155ReceiverMock.Received(operator, owner, id2, amount2, data);
         ERC1155Extended.safeTransferFrom(owner, receiver, id2, amount2, data);
         assertEq(ERC1155Extended.balanceOf(owner, id1), 0);
         assertEq(ERC1155Extended.balanceOf(owner, id2), 0);
@@ -2589,9 +2641,9 @@ contract ERC1155Test is Test {
 
         vm.startPrank(owner);
         vm.expectEmit(true, true, true, true);
-        emit TransferSingle(owner, owner, receiver, id1, amount1);
+        emit IERC1155.TransferSingle(owner, owner, receiver, id1, amount1);
         vm.expectEmit(true, true, false, true, receiver);
-        emit Received(owner, owner, id1, amount1, data);
+        emit ERC1155ReceiverMock.Received(owner, owner, id1, amount1, data);
         ERC1155Extended.safeTransferFrom(owner, receiver, id1, amount1, data);
         assertEq(ERC1155Extended.balanceOf(owner, id1), 0);
         assertEq(ERC1155Extended.balanceOf(owner, id2), amount2);
@@ -2604,15 +2656,15 @@ contract ERC1155Test is Test {
         bool approved = true;
         vm.startPrank(owner);
         vm.expectEmit(true, true, false, true);
-        emit ApprovalForAll(owner, operator, approved);
+        emit IERC1155.ApprovalForAll(owner, operator, approved);
         ERC1155Extended.setApprovalForAll(operator, approved);
         vm.stopPrank();
 
         vm.startPrank(operator);
         vm.expectEmit(true, true, true, true);
-        emit TransferSingle(operator, owner, receiver, id2, amount2);
+        emit IERC1155.TransferSingle(operator, owner, receiver, id2, amount2);
         vm.expectEmit(true, true, false, true, receiver);
-        emit Received(operator, owner, id2, amount2, data);
+        emit ERC1155ReceiverMock.Received(operator, owner, id2, amount2, data);
         ERC1155Extended.safeTransferFrom(owner, receiver, id2, amount2, data);
         assertEq(ERC1155Extended.balanceOf(owner, id1), 0);
         assertEq(ERC1155Extended.balanceOf(owner, id2), 0);
@@ -2653,7 +2705,7 @@ contract ERC1155Test is Test {
         vm.stopPrank();
         vm.startPrank(owner);
         vm.expectEmit(true, true, true, true);
-        emit TransferBatch(owner, owner, receiver, ids, amounts);
+        emit IERC1155.TransferBatch(owner, owner, receiver, ids, amounts);
         ERC1155Extended.safeBatchTransferFrom(
             owner,
             receiver,
@@ -2704,13 +2756,13 @@ contract ERC1155Test is Test {
 
         vm.startPrank(owner);
         vm.expectEmit(true, true, false, true);
-        emit ApprovalForAll(owner, operator, approved);
+        emit IERC1155.ApprovalForAll(owner, operator, approved);
         ERC1155Extended.setApprovalForAll(operator, approved);
         vm.stopPrank();
 
         vm.startPrank(operator);
         vm.expectEmit(true, true, true, true);
-        emit TransferBatch(operator, owner, receiver, ids, amounts);
+        emit IERC1155.TransferBatch(operator, owner, receiver, ids, amounts);
         ERC1155Extended.safeBatchTransferFrom(
             owner,
             receiver,
@@ -2769,9 +2821,15 @@ contract ERC1155Test is Test {
 
         vm.startPrank(owner);
         vm.expectEmit(true, true, true, true);
-        emit TransferBatch(owner, owner, receiver, ids, amounts);
+        emit IERC1155.TransferBatch(owner, owner, receiver, ids, amounts);
         vm.expectEmit(true, true, false, true, receiver);
-        emit BatchReceived(owner, owner, ids, amounts, data);
+        emit ERC1155ReceiverMock.BatchReceived(
+            owner,
+            owner,
+            ids,
+            amounts,
+            data
+        );
         ERC1155Extended.safeBatchTransferFrom(
             owner,
             receiver,
@@ -2833,9 +2891,15 @@ contract ERC1155Test is Test {
 
         vm.startPrank(owner);
         vm.expectEmit(true, true, true, true);
-        emit TransferBatch(owner, owner, receiver, ids, amounts);
+        emit IERC1155.TransferBatch(owner, owner, receiver, ids, amounts);
         vm.expectEmit(true, true, false, true, receiver);
-        emit BatchReceived(owner, owner, ids, amounts, data);
+        emit ERC1155ReceiverMock.BatchReceived(
+            owner,
+            owner,
+            ids,
+            amounts,
+            data
+        );
         ERC1155Extended.safeBatchTransferFrom(
             owner,
             receiver,
@@ -2989,7 +3053,7 @@ contract ERC1155Test is Test {
 
         vm.startPrank(firstOwner);
         vm.expectEmit(true, true, true, true);
-        emit TransferSingle(
+        emit IERC1155.TransferSingle(
             firstOwner,
             firstOwner,
             zeroAddress,
@@ -3032,7 +3096,7 @@ contract ERC1155Test is Test {
 
         vm.startPrank(owner);
         vm.expectEmit(true, true, true, true);
-        emit TransferBatch(owner, owner, zeroAddress, ids, amounts);
+        emit IERC1155.TransferBatch(owner, owner, zeroAddress, ids, amounts);
         ERC1155Extended.burn_batch(owner, ids, amounts);
         assertEq(ERC1155Extended.total_supply(ids[0]), 0);
         assertEq(ERC1155Extended.total_supply(ids[1]), 0);
@@ -3060,11 +3124,23 @@ contract ERC1155Test is Test {
         vm.assume(id1 != id2 && amount1 > 0 && amount2 > 0);
         vm.startPrank(deployer);
         vm.expectEmit(true, true, true, true);
-        emit TransferSingle(deployer, zeroAddress, receiver, id1, amount1);
+        emit IERC1155.TransferSingle(
+            deployer,
+            zeroAddress,
+            receiver,
+            id1,
+            amount1
+        );
         ERC1155Extended.safe_mint(receiver, id1, amount1, data);
 
         vm.expectEmit(true, true, true, true);
-        emit TransferSingle(deployer, zeroAddress, receiver, id2, amount2);
+        emit IERC1155.TransferSingle(
+            deployer,
+            zeroAddress,
+            receiver,
+            id2,
+            amount2
+        );
         ERC1155Extended.safe_mint(receiver, id2, amount2, data);
         assertEq(ERC1155Extended.total_supply(id1), amount1);
         assertEq(ERC1155Extended.total_supply(id2), amount2);
@@ -3103,11 +3179,23 @@ contract ERC1155Test is Test {
         bytes memory data = new bytes(0);
         vm.startPrank(deployer);
         vm.expectEmit(true, true, true, true);
-        emit TransferSingle(deployer, zeroAddress, receiver, id1, amount1);
+        emit IERC1155.TransferSingle(
+            deployer,
+            zeroAddress,
+            receiver,
+            id1,
+            amount1
+        );
         ERC1155Extended.safe_mint(receiver, id1, amount1, data);
 
         vm.expectEmit(true, true, true, true);
-        emit TransferSingle(deployer, zeroAddress, receiver, id2, amount2);
+        emit IERC1155.TransferSingle(
+            deployer,
+            zeroAddress,
+            receiver,
+            id2,
+            amount2
+        );
         ERC1155Extended.safe_mint(receiver, id2, amount2, data);
         assertEq(ERC1155Extended.total_supply(id1), amount1);
         assertEq(ERC1155Extended.total_supply(id2), amount2);
@@ -3146,11 +3234,23 @@ contract ERC1155Test is Test {
         address receiver = address(erc1155ReceiverMock);
         vm.startPrank(deployer);
         vm.expectEmit(true, true, true, true);
-        emit TransferSingle(deployer, zeroAddress, receiver, id1, amount1);
+        emit IERC1155.TransferSingle(
+            deployer,
+            zeroAddress,
+            receiver,
+            id1,
+            amount1
+        );
 
         ERC1155Extended.safe_mint(receiver, id1, amount1, data);
         vm.expectEmit(true, true, true, true);
-        emit TransferSingle(deployer, zeroAddress, receiver, id2, amount2);
+        emit IERC1155.TransferSingle(
+            deployer,
+            zeroAddress,
+            receiver,
+            id2,
+            amount2
+        );
         ERC1155Extended.safe_mint(receiver, id2, amount2, data);
         assertEq(ERC1155Extended.total_supply(id1), amount1);
         assertEq(ERC1155Extended.total_supply(id2), amount2);
@@ -3203,7 +3303,13 @@ contract ERC1155Test is Test {
 
         vm.startPrank(deployer);
         vm.expectEmit(true, true, true, true);
-        emit TransferBatch(deployer, zeroAddress, receiver, ids, amounts);
+        emit IERC1155.TransferBatch(
+            deployer,
+            zeroAddress,
+            receiver,
+            ids,
+            amounts
+        );
         ERC1155Extended.safe_mint_batch(receiver, ids, amounts, data);
         for (uint256 i; i < ids.length; ++i) {
             assertEq(ERC1155Extended.total_supply(ids[i]), amounts[i]);
@@ -3250,7 +3356,13 @@ contract ERC1155Test is Test {
 
         vm.startPrank(deployer);
         vm.expectEmit(true, true, true, true);
-        emit TransferBatch(deployer, zeroAddress, receiver, ids, amounts);
+        emit IERC1155.TransferBatch(
+            deployer,
+            zeroAddress,
+            receiver,
+            ids,
+            amounts
+        );
         ERC1155Extended.safe_mint_batch(receiver, ids, amounts, data);
         for (uint256 i; i < ids.length; ++i) {
             assertEq(ERC1155Extended.total_supply(ids[i]), amounts[i]);
@@ -3301,7 +3413,13 @@ contract ERC1155Test is Test {
 
         vm.startPrank(deployer);
         vm.expectEmit(true, true, true, true);
-        emit TransferBatch(deployer, zeroAddress, receiver, ids, amounts);
+        emit IERC1155.TransferBatch(
+            deployer,
+            zeroAddress,
+            receiver,
+            ids,
+            amounts
+        );
         ERC1155Extended.safe_mint_batch(receiver, ids, amounts, data);
         for (uint256 i; i < ids.length; ++i) {
             assertEq(ERC1155Extended.total_supply(ids[i]), amounts[i]);
@@ -3336,12 +3454,12 @@ contract ERC1155Test is Test {
         address minterAddr = makeAddr(minter);
         vm.startPrank(owner);
         vm.expectEmit(true, false, false, true);
-        emit RoleMinterChanged(minterAddr, true);
+        emit IERC1155Extended.RoleMinterChanged(minterAddr, true);
         ERC1155Extended.set_minter(minterAddr, true);
         assertTrue(ERC1155Extended.is_minter(minterAddr));
 
         vm.expectEmit(true, false, false, true);
-        emit RoleMinterChanged(minterAddr, false);
+        emit IERC1155Extended.RoleMinterChanged(minterAddr, false);
         ERC1155Extended.set_minter(minterAddr, false);
         assertTrue(!ERC1155Extended.is_minter(minterAddr));
         vm.stopPrank();
@@ -3369,11 +3487,11 @@ contract ERC1155Test is Test {
         address oldOwner = deployer;
         vm.startPrank(oldOwner);
         vm.expectEmit(true, false, false, true);
-        emit RoleMinterChanged(oldOwner, false);
+        emit IERC1155Extended.RoleMinterChanged(oldOwner, false);
         vm.expectEmit(true, true, false, false);
-        emit OwnershipTransferred(oldOwner, newOwner1);
+        emit IERC1155Extended.OwnershipTransferred(oldOwner, newOwner1);
         vm.expectEmit(true, false, false, true);
-        emit RoleMinterChanged(newOwner1, true);
+        emit IERC1155Extended.RoleMinterChanged(newOwner1, true);
         ERC1155Extended.transfer_ownership(newOwner1);
         assertEq(ERC1155Extended.owner(), newOwner1);
         assertTrue(!ERC1155Extended.is_minter(oldOwner));
@@ -3382,12 +3500,12 @@ contract ERC1155Test is Test {
 
         vm.startPrank(newOwner1);
         vm.expectEmit(true, false, false, true);
-        emit RoleMinterChanged(newOwner1, false);
+        emit IERC1155Extended.RoleMinterChanged(newOwner1, false);
         vm.expectEmit(true, true, false, false);
-        emit OwnershipTransferred(newOwner1, newOwner2);
+        emit IERC1155Extended.OwnershipTransferred(newOwner1, newOwner2);
         vm.expectEmit(true, false, false, true);
-        emit RoleMinterChanged(newOwner2, true);
-        emit OwnershipTransferred(newOwner1, newOwner2);
+        emit IERC1155Extended.RoleMinterChanged(newOwner2, true);
+        emit IERC1155Extended.OwnershipTransferred(newOwner1, newOwner2);
         ERC1155Extended.transfer_ownership(newOwner2);
         assertEq(ERC1155Extended.owner(), newOwner2);
         assertTrue(!ERC1155Extended.is_minter(newOwner1));
@@ -3411,19 +3529,19 @@ contract ERC1155Test is Test {
         address renounceAddress = zeroAddress;
         vm.startPrank(oldOwner);
         vm.expectEmit(true, false, false, true);
-        emit RoleMinterChanged(oldOwner, false);
+        emit IERC1155Extended.RoleMinterChanged(oldOwner, false);
         vm.expectEmit(true, true, false, false);
-        emit OwnershipTransferred(oldOwner, newOwner);
+        emit IERC1155Extended.OwnershipTransferred(oldOwner, newOwner);
         vm.expectEmit(true, false, false, true);
-        emit RoleMinterChanged(newOwner, true);
+        emit IERC1155Extended.RoleMinterChanged(newOwner, true);
         ERC1155Extended.transfer_ownership(newOwner);
         vm.stopPrank();
 
         vm.startPrank(newOwner);
         vm.expectEmit(true, false, false, true);
-        emit RoleMinterChanged(newOwner, false);
+        emit IERC1155Extended.RoleMinterChanged(newOwner, false);
         vm.expectEmit(true, true, false, false);
-        emit OwnershipTransferred(newOwner, renounceAddress);
+        emit IERC1155Extended.OwnershipTransferred(newOwner, renounceAddress);
         ERC1155Extended.renounce_ownership();
         assertEq(ERC1155Extended.owner(), renounceAddress);
         vm.stopPrank();

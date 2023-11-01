@@ -4,6 +4,8 @@ pragma solidity ^0.8.22;
 import {Test} from "forge-std/Test.sol";
 import {VyperDeployer} from "utils/VyperDeployer.sol";
 
+import {IERC20} from "openzeppelin/token/ERC20/IERC20.sol";
+
 import {IERC20Extended} from "./interfaces/IERC20Extended.sol";
 
 contract ERC20Test is Test {
@@ -38,21 +40,6 @@ contract ERC20Test is Test {
     address private zeroAddress = address(0);
     // solhint-disable-next-line var-name-mixedcase
     address private ERC20ExtendedAddr;
-
-    event Transfer(address indexed from, address indexed to, uint256 value);
-
-    event Approval(
-        address indexed owner,
-        address indexed spender,
-        uint256 value
-    );
-
-    event OwnershipTransferred(
-        address indexed previousOwner,
-        address indexed newOwner
-    );
-
-    event RoleMinterChanged(address indexed minter, bool status);
 
     function setUp() public {
         bytes memory args = abi.encode(
@@ -91,11 +78,15 @@ contract ERC20Test is Test {
         assertTrue(ERC20Extended.is_minter(deployer));
 
         vm.expectEmit(true, true, false, false);
-        emit OwnershipTransferred(zeroAddress, deployer);
+        emit IERC20Extended.OwnershipTransferred(zeroAddress, deployer);
         vm.expectEmit(true, false, false, true);
-        emit RoleMinterChanged(deployer, true);
+        emit IERC20Extended.RoleMinterChanged(deployer, true);
         vm.expectEmit(true, true, false, true);
-        emit Transfer(zeroAddress, deployer, _INITIAL_SUPPLY * multiplier);
+        emit IERC20.Transfer(
+            zeroAddress,
+            deployer,
+            _INITIAL_SUPPLY * multiplier
+        );
         bytes memory args = abi.encode(
             _NAME,
             _SYMBOL,
@@ -141,7 +132,7 @@ contract ERC20Test is Test {
         uint256 amount = ERC20Extended.balanceOf(owner);
         vm.startPrank(owner);
         vm.expectEmit(true, true, false, true);
-        emit Transfer(owner, to, amount);
+        emit IERC20.Transfer(owner, to, amount);
         bool returnValue = ERC20Extended.transfer(to, amount);
         assertTrue(returnValue);
         assertEq(ERC20Extended.balanceOf(owner), 0);
@@ -162,7 +153,7 @@ contract ERC20Test is Test {
         uint256 amount = 0;
         vm.startPrank(owner);
         vm.expectEmit(true, true, false, true);
-        emit Transfer(owner, to, amount);
+        emit IERC20.Transfer(owner, to, amount);
         bool returnValue = ERC20Extended.transfer(to, amount);
         assertTrue(returnValue);
         assertEq(ERC20Extended.balanceOf(owner), balance);
@@ -194,7 +185,7 @@ contract ERC20Test is Test {
         uint256 amount = ERC20Extended.balanceOf(owner);
         vm.startPrank(owner);
         vm.expectEmit(true, true, false, true);
-        emit Approval(owner, spender, amount);
+        emit IERC20.Approval(owner, spender, amount);
         bool returnValue = ERC20Extended.approve(spender, amount);
         assertTrue(returnValue);
         assertEq(ERC20Extended.allowance(owner, spender), amount);
@@ -208,13 +199,13 @@ contract ERC20Test is Test {
         uint256 secondAmount = ERC20Extended.balanceOf(owner);
         vm.startPrank(owner);
         vm.expectEmit(true, true, false, true);
-        emit Approval(owner, spender, firstAmount);
+        emit IERC20.Approval(owner, spender, firstAmount);
         bool returnValue1 = ERC20Extended.approve(spender, firstAmount);
         assertEq(ERC20Extended.allowance(owner, spender), firstAmount);
         assertTrue(returnValue1);
 
         vm.expectEmit(true, true, false, true);
-        emit Approval(owner, spender, secondAmount);
+        emit IERC20.Approval(owner, spender, secondAmount);
         bool returnValue2 = ERC20Extended.approve(spender, secondAmount);
         assertTrue(returnValue2);
         assertEq(ERC20Extended.allowance(owner, spender), secondAmount);
@@ -227,7 +218,7 @@ contract ERC20Test is Test {
         uint256 amount = type(uint128).max;
         vm.startPrank(owner);
         vm.expectEmit(true, true, false, true);
-        emit Approval(owner, spender, amount);
+        emit IERC20.Approval(owner, spender, amount);
         bool returnValue = ERC20Extended.approve(spender, amount);
         assertTrue(returnValue);
         assertEq(ERC20Extended.allowance(owner, spender), amount);
@@ -241,13 +232,13 @@ contract ERC20Test is Test {
         uint256 secondAmount = type(uint128).max;
         vm.startPrank(owner);
         vm.expectEmit(true, true, false, true);
-        emit Approval(owner, spender, firstAmount);
+        emit IERC20.Approval(owner, spender, firstAmount);
         bool returnValue1 = ERC20Extended.approve(spender, firstAmount);
         assertEq(ERC20Extended.allowance(owner, spender), firstAmount);
         assertTrue(returnValue1);
 
         vm.expectEmit(true, true, false, true);
-        emit Approval(owner, spender, secondAmount);
+        emit IERC20.Approval(owner, spender, secondAmount);
         bool returnValue2 = ERC20Extended.approve(spender, secondAmount);
         assertTrue(returnValue2);
         assertEq(ERC20Extended.allowance(owner, spender), secondAmount);
@@ -277,13 +268,13 @@ contract ERC20Test is Test {
         ERC20Extended.approve(spender, amount);
         vm.startPrank(spender);
         vm.expectEmit(true, true, false, true);
-        emit Approval(
+        emit IERC20.Approval(
             owner,
             spender,
             ERC20Extended.allowance(owner, spender) - amount
         );
         vm.expectEmit(true, true, false, true);
-        emit Transfer(owner, to, amount);
+        emit IERC20.Transfer(owner, to, amount);
         bool returnValue = ERC20Extended.transferFrom(owner, to, amount);
         assertTrue(returnValue);
         assertEq(ERC20Extended.balanceOf(owner), 0);
@@ -334,7 +325,7 @@ contract ERC20Test is Test {
         ERC20Extended.approve(spender, type(uint256).max);
         vm.startPrank(spender);
         vm.expectEmit(true, true, false, true);
-        emit Transfer(owner, to, amount);
+        emit IERC20.Transfer(owner, to, amount);
 
         bool returnValue = ERC20Extended.transferFrom(owner, to, amount);
         assertTrue(returnValue);
@@ -368,7 +359,7 @@ contract ERC20Test is Test {
         uint256 amount = 0;
         vm.startPrank(owner);
         vm.expectEmit(true, true, false, true);
-        emit Transfer(owner, zeroAddress, amount);
+        emit IERC20.Transfer(owner, zeroAddress, amount);
         ERC20Extended.burn(amount);
         assertEq(ERC20Extended.balanceOf(owner), balance - amount);
         assertEq(ERC20Extended.totalSupply(), totalSupply - amount);
@@ -382,7 +373,7 @@ contract ERC20Test is Test {
         uint256 amount = 100;
         vm.startPrank(owner);
         vm.expectEmit(true, true, false, true);
-        emit Transfer(owner, zeroAddress, amount);
+        emit IERC20.Transfer(owner, zeroAddress, amount);
         ERC20Extended.burn(amount);
         assertEq(ERC20Extended.balanceOf(owner), balance - amount);
         assertEq(ERC20Extended.totalSupply(), totalSupply - amount);
@@ -414,14 +405,14 @@ contract ERC20Test is Test {
         ERC20Extended.approve(spender, amount);
         vm.startPrank(spender);
         vm.expectEmit(true, true, false, true);
-        emit Approval(
+        emit IERC20.Approval(
             owner,
             spender,
             ERC20Extended.allowance(owner, spender) - amount
         );
 
         vm.expectEmit(true, true, false, true);
-        emit Transfer(owner, zeroAddress, amount);
+        emit IERC20.Transfer(owner, zeroAddress, amount);
         ERC20Extended.burn_from(owner, amount);
         assertEq(ERC20Extended.balanceOf(owner), balance - amount);
         assertEq(ERC20Extended.totalSupply(), totalSupply - amount);
@@ -439,14 +430,14 @@ contract ERC20Test is Test {
         ERC20Extended.approve(spender, balance);
         vm.startPrank(spender);
         vm.expectEmit(true, true, false, true);
-        emit Approval(
+        emit IERC20.Approval(
             owner,
             spender,
             ERC20Extended.allowance(owner, spender) - amount
         );
 
         vm.expectEmit(true, true, false, true);
-        emit Transfer(owner, zeroAddress, amount);
+        emit IERC20.Transfer(owner, zeroAddress, amount);
         ERC20Extended.burn_from(owner, amount);
         assertEq(ERC20Extended.balanceOf(owner), balance - amount);
         assertEq(ERC20Extended.totalSupply(), totalSupply - amount);
@@ -498,7 +489,7 @@ contract ERC20Test is Test {
 
         vm.startPrank(spender);
         vm.expectEmit(true, true, false, true);
-        emit Transfer(owner, zeroAddress, amount);
+        emit IERC20.Transfer(owner, zeroAddress, amount);
         ERC20Extended.burn_from(owner, amount);
         assertEq(ERC20Extended.balanceOf(owner), balance - amount);
         assertEq(ERC20Extended.totalSupply(), totalSupply - amount);
@@ -519,7 +510,7 @@ contract ERC20Test is Test {
         uint256 multiplier = 10 ** uint256(ERC20Extended.decimals());
         vm.startPrank(minter);
         vm.expectEmit(true, true, false, true);
-        emit Transfer(zeroAddress, owner, amount);
+        emit IERC20.Transfer(zeroAddress, owner, amount);
         ERC20Extended.mint(owner, amount);
         assertEq(ERC20Extended.balanceOf(owner), amount);
         assertEq(
@@ -551,12 +542,12 @@ contract ERC20Test is Test {
         address minter = makeAddr("minter");
         vm.startPrank(owner);
         vm.expectEmit(true, false, false, true);
-        emit RoleMinterChanged(minter, true);
+        emit IERC20Extended.RoleMinterChanged(minter, true);
         ERC20Extended.set_minter(minter, true);
         assertTrue(ERC20Extended.is_minter(minter));
 
         vm.expectEmit(true, false, false, true);
-        emit RoleMinterChanged(minter, false);
+        emit IERC20Extended.RoleMinterChanged(minter, false);
         ERC20Extended.set_minter(minter, false);
         assertTrue(!ERC20Extended.is_minter(minter));
         vm.stopPrank();
@@ -607,7 +598,7 @@ contract ERC20Test is Test {
             )
         );
         vm.expectEmit(true, true, false, true);
-        emit Approval(owner, spender, amount);
+        emit IERC20.Approval(owner, spender, amount);
         ERC20Extended.permit(owner, spender, amount, deadline, v, r, s);
         assertEq(ERC20Extended.allowance(owner, spender), amount);
         assertEq(ERC20Extended.nonces(owner), 1);
@@ -641,7 +632,7 @@ contract ERC20Test is Test {
             )
         );
         vm.expectEmit(true, true, false, true);
-        emit Approval(owner, spender, amount);
+        emit IERC20.Approval(owner, spender, amount);
         ERC20Extended.permit(owner, spender, amount, deadline, v, r, s);
         vm.expectRevert(bytes("ERC20Permit: invalid signature"));
         ERC20Extended.permit(owner, spender, amount, deadline, v, r, s);
@@ -836,11 +827,11 @@ contract ERC20Test is Test {
         address newOwner = makeAddr("newOwner");
         vm.startPrank(oldOwner);
         vm.expectEmit(true, false, false, true);
-        emit RoleMinterChanged(oldOwner, false);
+        emit IERC20Extended.RoleMinterChanged(oldOwner, false);
         vm.expectEmit(true, true, false, false);
-        emit OwnershipTransferred(oldOwner, newOwner);
+        emit IERC20Extended.OwnershipTransferred(oldOwner, newOwner);
         vm.expectEmit(true, false, false, true);
-        emit RoleMinterChanged(newOwner, true);
+        emit IERC20Extended.RoleMinterChanged(newOwner, true);
         ERC20Extended.transfer_ownership(newOwner);
         assertEq(ERC20Extended.owner(), newOwner);
         assertTrue(!ERC20Extended.is_minter(oldOwner));
@@ -864,9 +855,9 @@ contract ERC20Test is Test {
         address newOwner = zeroAddress;
         vm.startPrank(oldOwner);
         vm.expectEmit(true, false, false, true);
-        emit RoleMinterChanged(oldOwner, false);
+        emit IERC20Extended.RoleMinterChanged(oldOwner, false);
         vm.expectEmit(true, true, false, false);
-        emit OwnershipTransferred(oldOwner, newOwner);
+        emit IERC20Extended.OwnershipTransferred(oldOwner, newOwner);
         ERC20Extended.renounce_ownership();
         assertEq(ERC20Extended.owner(), newOwner);
         assertTrue(!ERC20Extended.is_minter(oldOwner));
@@ -884,7 +875,7 @@ contract ERC20Test is Test {
         uint256 give = type(uint256).max;
         deal(ERC20ExtendedAddr, from, give);
         vm.expectEmit(true, true, false, true);
-        emit Transfer(from, to, amount);
+        emit IERC20.Transfer(from, to, amount);
         bool returnValue = ERC20Extended.transfer(to, amount);
         assertTrue(returnValue);
         assertEq(ERC20Extended.balanceOf(from), give - amount);
@@ -911,7 +902,7 @@ contract ERC20Test is Test {
         vm.assume(spender != zeroAddress);
         address owner = self;
         vm.expectEmit(true, true, false, true);
-        emit Approval(owner, spender, amount);
+        emit IERC20.Approval(owner, spender, amount);
         bool returnValue = ERC20Extended.approve(spender, amount);
         assertTrue(returnValue);
         assertEq(ERC20Extended.allowance(owner, spender), amount);
@@ -938,9 +929,9 @@ contract ERC20Test is Test {
         vm.stopPrank();
 
         vm.expectEmit(true, true, false, true);
-        emit Approval(owner, spender, 0);
+        emit IERC20.Approval(owner, spender, 0);
         vm.expectEmit(true, true, false, true);
-        emit Transfer(owner, to, amount);
+        emit IERC20.Transfer(owner, to, amount);
         bool returnValue = ERC20Extended.transferFrom(owner, to, amount);
         assertTrue(returnValue);
         assertEq(ERC20Extended.balanceOf(owner), give - amount);
@@ -975,7 +966,7 @@ contract ERC20Test is Test {
         uint256 totalSupply = ERC20Extended.totalSupply();
         vm.startPrank(owner);
         vm.expectEmit(true, true, false, true);
-        emit Transfer(owner, zeroAddress, amount);
+        emit IERC20.Transfer(owner, zeroAddress, amount);
         ERC20Extended.burn(amount);
         assertEq(ERC20Extended.balanceOf(owner), give - amount);
         assertEq(ERC20Extended.totalSupply(), totalSupply - amount);
@@ -1001,7 +992,7 @@ contract ERC20Test is Test {
         vm.stopPrank();
 
         vm.expectEmit(true, true, false, true);
-        emit Transfer(owner, zeroAddress, amount);
+        emit IERC20.Transfer(owner, zeroAddress, amount);
         ERC20Extended.burn_from(owner, amount);
         assertEq(ERC20Extended.balanceOf(owner), give - amount);
         assertEq(ERC20Extended.totalSupply(), totalSupply - amount);
@@ -1033,7 +1024,7 @@ contract ERC20Test is Test {
         uint256 multiplier = 10 ** uint256(ERC20Extended.decimals());
         vm.startPrank(minter);
         vm.expectEmit(true, true, false, true);
-        emit Transfer(zeroAddress, ownerAddr, amount);
+        emit IERC20.Transfer(zeroAddress, ownerAddr, amount);
         ERC20Extended.mint(ownerAddr, amount);
         assertEq(ERC20Extended.balanceOf(ownerAddr), amount);
         assertEq(
@@ -1056,12 +1047,12 @@ contract ERC20Test is Test {
         address minterAddr = makeAddr(minter);
         vm.startPrank(owner);
         vm.expectEmit(true, false, false, true);
-        emit RoleMinterChanged(minterAddr, true);
+        emit IERC20Extended.RoleMinterChanged(minterAddr, true);
         ERC20Extended.set_minter(minterAddr, true);
         assertTrue(ERC20Extended.is_minter(minterAddr));
 
         vm.expectEmit(true, false, false, true);
-        emit RoleMinterChanged(minterAddr, false);
+        emit IERC20Extended.RoleMinterChanged(minterAddr, false);
         ERC20Extended.set_minter(minterAddr, false);
         assertTrue(!ERC20Extended.is_minter(minterAddr));
         vm.stopPrank();
@@ -1108,7 +1099,7 @@ contract ERC20Test is Test {
             )
         );
         vm.expectEmit(true, true, false, true);
-        emit Approval(ownerAddr, spenderAddr, amount);
+        emit IERC20.Approval(ownerAddr, spenderAddr, amount);
         ERC20Extended.permit(ownerAddr, spenderAddr, amount, deadline, v, r, s);
         assertEq(ERC20Extended.allowance(ownerAddr, spenderAddr), amount);
         assertEq(ERC20Extended.nonces(ownerAddr), 1);
@@ -1224,11 +1215,11 @@ contract ERC20Test is Test {
         address oldOwner = deployer;
         vm.startPrank(oldOwner);
         vm.expectEmit(true, false, false, true);
-        emit RoleMinterChanged(oldOwner, false);
+        emit IERC20Extended.RoleMinterChanged(oldOwner, false);
         vm.expectEmit(true, true, false, false);
-        emit OwnershipTransferred(oldOwner, newOwner1);
+        emit IERC20Extended.OwnershipTransferred(oldOwner, newOwner1);
         vm.expectEmit(true, false, false, true);
-        emit RoleMinterChanged(newOwner1, true);
+        emit IERC20Extended.RoleMinterChanged(newOwner1, true);
         ERC20Extended.transfer_ownership(newOwner1);
         assertEq(ERC20Extended.owner(), newOwner1);
         assertTrue(!ERC20Extended.is_minter(oldOwner));
@@ -1237,12 +1228,12 @@ contract ERC20Test is Test {
 
         vm.startPrank(newOwner1);
         vm.expectEmit(true, false, false, true);
-        emit RoleMinterChanged(newOwner1, false);
+        emit IERC20Extended.RoleMinterChanged(newOwner1, false);
         vm.expectEmit(true, true, false, false);
-        emit OwnershipTransferred(newOwner1, newOwner2);
+        emit IERC20Extended.OwnershipTransferred(newOwner1, newOwner2);
         vm.expectEmit(true, false, false, true);
-        emit RoleMinterChanged(newOwner2, true);
-        emit OwnershipTransferred(newOwner1, newOwner2);
+        emit IERC20Extended.RoleMinterChanged(newOwner2, true);
+        emit IERC20Extended.OwnershipTransferred(newOwner1, newOwner2);
         ERC20Extended.transfer_ownership(newOwner2);
         assertEq(ERC20Extended.owner(), newOwner2);
         assertTrue(!ERC20Extended.is_minter(newOwner1));
@@ -1266,19 +1257,19 @@ contract ERC20Test is Test {
         address renounceAddress = zeroAddress;
         vm.startPrank(oldOwner);
         vm.expectEmit(true, false, false, true);
-        emit RoleMinterChanged(oldOwner, false);
+        emit IERC20Extended.RoleMinterChanged(oldOwner, false);
         vm.expectEmit(true, true, false, false);
-        emit OwnershipTransferred(oldOwner, newOwner);
+        emit IERC20Extended.OwnershipTransferred(oldOwner, newOwner);
         vm.expectEmit(true, false, false, true);
-        emit RoleMinterChanged(newOwner, true);
+        emit IERC20Extended.RoleMinterChanged(newOwner, true);
         ERC20Extended.transfer_ownership(newOwner);
         vm.stopPrank();
 
         vm.startPrank(newOwner);
         vm.expectEmit(true, false, false, true);
-        emit RoleMinterChanged(newOwner, false);
+        emit IERC20Extended.RoleMinterChanged(newOwner, false);
         vm.expectEmit(true, true, false, false);
-        emit OwnershipTransferred(newOwner, renounceAddress);
+        emit IERC20Extended.OwnershipTransferred(newOwner, renounceAddress);
         ERC20Extended.renounce_ownership();
         assertEq(ERC20Extended.owner(), renounceAddress);
         vm.stopPrank();
