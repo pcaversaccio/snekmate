@@ -1,7 +1,12 @@
 // SPDX-License-Identifier: WTFPL
-pragma solidity ^0.8.21;
+pragma solidity ^0.8.22;
 
 interface IOwnable {
+    event OwnershipTransferred(
+        address indexed previousOwner,
+        address indexed newOwner
+    );
+
     function owner() external view returns (address);
 
     function transfer_ownership(address newOwner) external;

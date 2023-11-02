@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: WTFPL
-pragma solidity ^0.8.21;
+pragma solidity ^0.8.22;
 
 import {Test} from "forge-std/Test.sol";
 import {VyperDeployer} from "utils/VyperDeployer.sol";
@@ -20,11 +20,6 @@ contract ERC2981Test is Test {
     address private deployer = address(vyperDeployer);
     address private zeroAddress = address(0);
 
-    event OwnershipTransferred(
-        address indexed previousOwner,
-        address indexed newOwner
-    );
-
     function setUp() public {
         ERC2981Extended = IERC2981Extended(
             vyperDeployer.deployContract("src/extensions/", "ERC2981")
@@ -43,7 +38,7 @@ contract ERC2981Test is Test {
         assertEq(royaltyAmount, 0);
 
         vm.expectEmit(true, true, false, false);
-        emit OwnershipTransferred(zeroAddress, deployer);
+        emit IERC2981Extended.OwnershipTransferred(zeroAddress, deployer);
         ERC2981ExtendedInitialEvent = IERC2981Extended(
             vyperDeployer.deployContract("src/extensions/", "ERC2981")
         );
@@ -369,7 +364,7 @@ contract ERC2981Test is Test {
         address newOwner = makeAddr("newOwner");
         vm.startPrank(oldOwner);
         vm.expectEmit(true, true, false, false);
-        emit OwnershipTransferred(oldOwner, newOwner);
+        emit IERC2981Extended.OwnershipTransferred(oldOwner, newOwner);
         ERC2981Extended.transfer_ownership(newOwner);
         assertEq(ERC2981Extended.owner(), newOwner);
         vm.stopPrank();
@@ -391,7 +386,7 @@ contract ERC2981Test is Test {
         address newOwner = zeroAddress;
         vm.startPrank(oldOwner);
         vm.expectEmit(true, true, false, false);
-        emit OwnershipTransferred(oldOwner, newOwner);
+        emit IERC2981Extended.OwnershipTransferred(oldOwner, newOwner);
         ERC2981Extended.renounce_ownership();
         assertEq(ERC2981Extended.owner(), newOwner);
         vm.stopPrank();
@@ -719,14 +714,14 @@ contract ERC2981Test is Test {
         address oldOwner = deployer;
         vm.startPrank(oldOwner);
         vm.expectEmit(true, true, false, false);
-        emit OwnershipTransferred(oldOwner, newOwner1);
+        emit IERC2981Extended.OwnershipTransferred(oldOwner, newOwner1);
         ERC2981Extended.transfer_ownership(newOwner1);
         assertEq(ERC2981Extended.owner(), newOwner1);
         vm.stopPrank();
 
         vm.startPrank(newOwner1);
         vm.expectEmit(true, true, false, false);
-        emit OwnershipTransferred(newOwner1, newOwner2);
+        emit IERC2981Extended.OwnershipTransferred(newOwner1, newOwner2);
         ERC2981Extended.transfer_ownership(newOwner2);
         assertEq(ERC2981Extended.owner(), newOwner2);
         vm.stopPrank();
@@ -748,14 +743,14 @@ contract ERC2981Test is Test {
         address renounceAddress = zeroAddress;
         vm.startPrank(oldOwner);
         vm.expectEmit(true, true, false, false);
-        emit OwnershipTransferred(oldOwner, newOwner);
+        emit IERC2981Extended.OwnershipTransferred(oldOwner, newOwner);
         ERC2981Extended.transfer_ownership(newOwner);
         assertEq(ERC2981Extended.owner(), newOwner);
         vm.stopPrank();
 
         vm.startPrank(newOwner);
         vm.expectEmit(true, true, false, false);
-        emit OwnershipTransferred(newOwner, renounceAddress);
+        emit IERC2981Extended.OwnershipTransferred(newOwner, renounceAddress);
         ERC2981Extended.renounce_ownership();
         assertEq(ERC2981Extended.owner(), renounceAddress);
         vm.stopPrank();

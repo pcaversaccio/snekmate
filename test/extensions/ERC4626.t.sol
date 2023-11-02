@@ -1,11 +1,13 @@
 // SPDX-License-Identifier: WTFPL
-pragma solidity ^0.8.21;
+pragma solidity ^0.8.22;
 
 import {Test} from "forge-std/Test.sol";
 import {ERC4626Test} from "erc4626-tests/ERC4626.test.sol";
 import {VyperDeployer} from "utils/VyperDeployer.sol";
 
+import {IERC20} from "openzeppelin/token/ERC20/IERC20.sol";
 import {IERC20Errors} from "openzeppelin/interfaces/draft-IERC6093.sol";
+import {IERC4626} from "openzeppelin/interfaces/IERC4626.sol";
 
 import {ERC20Mock} from "../utils/mocks/ERC20Mock.sol";
 import {ERC20ExcessDecimalsMock} from "./mocks/ERC20ExcessDecimalsMock.sol";
@@ -59,31 +61,9 @@ contract ERC4626VaultTest is ERC4626Test {
     address private ERC4626ExtendedDecimalsOffset0Addr;
     address private ERC4626ExtendedDecimalsOffset6Addr;
     address private ERC4626ExtendedDecimalsOffset12Addr;
-    address private ERC4626ExtendedDecimalsOffset18Addr;
     /* solhint-enable var-name-mixedcase */
-
-    event Transfer(address indexed from, address indexed to, uint256 value);
-
-    event Approval(
-        address indexed owner,
-        address indexed spender,
-        uint256 value
-    );
-
-    event Deposit(
-        address indexed sender,
-        address indexed owner,
-        uint256 assets,
-        uint256 shares
-    );
-
-    event Withdraw(
-        address indexed sender,
-        address indexed receiver,
-        address indexed owner,
-        uint256 assets,
-        uint256 shares
-    );
+    // solhint-disable-next-line var-name-mixedcase
+    address private ERC4626ExtendedDecimalsOffset18Addr;
 
     function setUp() public override {
         bytes memory argsDecimalsOffset0 = abi.encode(
@@ -374,7 +354,11 @@ contract ERC4626VaultTest is ERC4626Test {
         );
 
         vm.expectEmit(true, true, false, true, underlyingAddr);
-        emit Transfer(holder, ERC4626ExtendedDecimalsOffset0Addr, assets);
+        emit IERC20.Transfer(
+            holder,
+            ERC4626ExtendedDecimalsOffset0Addr,
+            assets
+        );
         vm.expectEmit(
             true,
             true,
@@ -382,7 +366,7 @@ contract ERC4626VaultTest is ERC4626Test {
             true,
             ERC4626ExtendedDecimalsOffset0Addr
         );
-        emit Transfer(zeroAddress, receiver, shares);
+        emit IERC20.Transfer(zeroAddress, receiver, shares);
         vm.expectEmit(
             true,
             true,
@@ -390,11 +374,15 @@ contract ERC4626VaultTest is ERC4626Test {
             true,
             ERC4626ExtendedDecimalsOffset0Addr
         );
-        emit Deposit(holder, receiver, assets, shares);
+        emit IERC4626.Deposit(holder, receiver, assets, shares);
         ERC4626ExtendedDecimalsOffset0.deposit(assets, receiver);
 
         vm.expectEmit(true, true, false, true, underlyingAddr);
-        emit Transfer(holder, ERC4626ExtendedDecimalsOffset6Addr, assets);
+        emit IERC20.Transfer(
+            holder,
+            ERC4626ExtendedDecimalsOffset6Addr,
+            assets
+        );
         vm.expectEmit(
             true,
             true,
@@ -402,7 +390,7 @@ contract ERC4626VaultTest is ERC4626Test {
             true,
             ERC4626ExtendedDecimalsOffset6Addr
         );
-        emit Transfer(zeroAddress, receiver, shares * 10 ** 6);
+        emit IERC20.Transfer(zeroAddress, receiver, shares * 10 ** 6);
         vm.expectEmit(
             true,
             true,
@@ -410,11 +398,15 @@ contract ERC4626VaultTest is ERC4626Test {
             true,
             ERC4626ExtendedDecimalsOffset6Addr
         );
-        emit Deposit(holder, receiver, assets, shares * 10 ** 6);
+        emit IERC4626.Deposit(holder, receiver, assets, shares * 10 ** 6);
         ERC4626ExtendedDecimalsOffset6.deposit(assets, receiver);
 
         vm.expectEmit(true, true, false, true, underlyingAddr);
-        emit Transfer(holder, ERC4626ExtendedDecimalsOffset12Addr, assets);
+        emit IERC20.Transfer(
+            holder,
+            ERC4626ExtendedDecimalsOffset12Addr,
+            assets
+        );
         vm.expectEmit(
             true,
             true,
@@ -422,7 +414,7 @@ contract ERC4626VaultTest is ERC4626Test {
             true,
             ERC4626ExtendedDecimalsOffset12Addr
         );
-        emit Transfer(zeroAddress, receiver, shares * 10 ** 12);
+        emit IERC20.Transfer(zeroAddress, receiver, shares * 10 ** 12);
         vm.expectEmit(
             true,
             true,
@@ -430,11 +422,15 @@ contract ERC4626VaultTest is ERC4626Test {
             true,
             ERC4626ExtendedDecimalsOffset12Addr
         );
-        emit Deposit(holder, receiver, assets, shares * 10 ** 12);
+        emit IERC4626.Deposit(holder, receiver, assets, shares * 10 ** 12);
         ERC4626ExtendedDecimalsOffset12.deposit(assets, receiver);
 
         vm.expectEmit(true, true, false, true, underlyingAddr);
-        emit Transfer(holder, ERC4626ExtendedDecimalsOffset18Addr, assets);
+        emit IERC20.Transfer(
+            holder,
+            ERC4626ExtendedDecimalsOffset18Addr,
+            assets
+        );
         vm.expectEmit(
             true,
             true,
@@ -442,7 +438,7 @@ contract ERC4626VaultTest is ERC4626Test {
             true,
             ERC4626ExtendedDecimalsOffset18Addr
         );
-        emit Transfer(zeroAddress, receiver, shares * 10 ** 18);
+        emit IERC20.Transfer(zeroAddress, receiver, shares * 10 ** 18);
         vm.expectEmit(
             true,
             true,
@@ -450,7 +446,7 @@ contract ERC4626VaultTest is ERC4626Test {
             true,
             ERC4626ExtendedDecimalsOffset18Addr
         );
-        emit Deposit(holder, receiver, assets, shares * 10 ** 18);
+        emit IERC4626.Deposit(holder, receiver, assets, shares * 10 ** 18);
         ERC4626ExtendedDecimalsOffset18.deposit(assets, receiver);
 
         assertEq(underlying.balanceOf(holder), type(uint16).max - 4);
@@ -556,7 +552,11 @@ contract ERC4626VaultTest is ERC4626Test {
         );
 
         vm.expectEmit(true, true, false, true, underlyingAddr);
-        emit Transfer(holder, ERC4626ExtendedDecimalsOffset0Addr, assets);
+        emit IERC20.Transfer(
+            holder,
+            ERC4626ExtendedDecimalsOffset0Addr,
+            assets
+        );
         vm.expectEmit(
             true,
             true,
@@ -564,7 +564,7 @@ contract ERC4626VaultTest is ERC4626Test {
             true,
             ERC4626ExtendedDecimalsOffset0Addr
         );
-        emit Transfer(zeroAddress, receiver, shares);
+        emit IERC20.Transfer(zeroAddress, receiver, shares);
         vm.expectEmit(
             true,
             true,
@@ -572,11 +572,15 @@ contract ERC4626VaultTest is ERC4626Test {
             true,
             ERC4626ExtendedDecimalsOffset0Addr
         );
-        emit Deposit(holder, receiver, assets, shares);
+        emit IERC4626.Deposit(holder, receiver, assets, shares);
         ERC4626ExtendedDecimalsOffset0.mint(shares, receiver);
 
         vm.expectEmit(true, true, false, true, underlyingAddr);
-        emit Transfer(holder, ERC4626ExtendedDecimalsOffset6Addr, assets);
+        emit IERC20.Transfer(
+            holder,
+            ERC4626ExtendedDecimalsOffset6Addr,
+            assets
+        );
         vm.expectEmit(
             true,
             true,
@@ -584,7 +588,7 @@ contract ERC4626VaultTest is ERC4626Test {
             true,
             ERC4626ExtendedDecimalsOffset6Addr
         );
-        emit Transfer(zeroAddress, receiver, shares * 10 ** 6);
+        emit IERC20.Transfer(zeroAddress, receiver, shares * 10 ** 6);
         vm.expectEmit(
             true,
             true,
@@ -592,11 +596,15 @@ contract ERC4626VaultTest is ERC4626Test {
             true,
             ERC4626ExtendedDecimalsOffset6Addr
         );
-        emit Deposit(holder, receiver, assets, shares * 10 ** 6);
+        emit IERC4626.Deposit(holder, receiver, assets, shares * 10 ** 6);
         ERC4626ExtendedDecimalsOffset6.mint(shares * 10 ** 6, receiver);
 
         vm.expectEmit(true, true, false, true, underlyingAddr);
-        emit Transfer(holder, ERC4626ExtendedDecimalsOffset12Addr, assets);
+        emit IERC20.Transfer(
+            holder,
+            ERC4626ExtendedDecimalsOffset12Addr,
+            assets
+        );
         vm.expectEmit(
             true,
             true,
@@ -604,7 +612,7 @@ contract ERC4626VaultTest is ERC4626Test {
             true,
             ERC4626ExtendedDecimalsOffset12Addr
         );
-        emit Transfer(zeroAddress, receiver, shares * 10 ** 12);
+        emit IERC20.Transfer(zeroAddress, receiver, shares * 10 ** 12);
         vm.expectEmit(
             true,
             true,
@@ -612,11 +620,15 @@ contract ERC4626VaultTest is ERC4626Test {
             true,
             ERC4626ExtendedDecimalsOffset12Addr
         );
-        emit Deposit(holder, receiver, assets, shares * 10 ** 12);
+        emit IERC4626.Deposit(holder, receiver, assets, shares * 10 ** 12);
         ERC4626ExtendedDecimalsOffset12.mint(shares * 10 ** 12, receiver);
 
         vm.expectEmit(true, true, false, true, underlyingAddr);
-        emit Transfer(holder, ERC4626ExtendedDecimalsOffset18Addr, assets);
+        emit IERC20.Transfer(
+            holder,
+            ERC4626ExtendedDecimalsOffset18Addr,
+            assets
+        );
         vm.expectEmit(
             true,
             true,
@@ -624,7 +636,7 @@ contract ERC4626VaultTest is ERC4626Test {
             true,
             ERC4626ExtendedDecimalsOffset18Addr
         );
-        emit Transfer(zeroAddress, receiver, shares * 10 ** 18);
+        emit IERC20.Transfer(zeroAddress, receiver, shares * 10 ** 18);
         vm.expectEmit(
             true,
             true,
@@ -632,7 +644,7 @@ contract ERC4626VaultTest is ERC4626Test {
             true,
             ERC4626ExtendedDecimalsOffset18Addr
         );
-        emit Deposit(holder, receiver, assets, shares * 10 ** 18);
+        emit IERC4626.Deposit(holder, receiver, assets, shares * 10 ** 18);
         ERC4626ExtendedDecimalsOffset18.mint(shares * 10 ** 18, receiver);
 
         assertEq(underlying.balanceOf(holder), type(uint16).max - 4);
@@ -703,9 +715,9 @@ contract ERC4626VaultTest is ERC4626Test {
             true,
             ERC4626ExtendedDecimalsOffset0Addr
         );
-        emit Transfer(holder, zeroAddress, 0);
+        emit IERC20.Transfer(holder, zeroAddress, 0);
         vm.expectEmit(true, true, false, true, underlyingAddr);
-        emit Transfer(ERC4626ExtendedDecimalsOffset0Addr, receiver, 0);
+        emit IERC20.Transfer(ERC4626ExtendedDecimalsOffset0Addr, receiver, 0);
         vm.expectEmit(
             true,
             true,
@@ -713,7 +725,7 @@ contract ERC4626VaultTest is ERC4626Test {
             true,
             ERC4626ExtendedDecimalsOffset0Addr
         );
-        emit Withdraw(holder, receiver, holder, 0, 0);
+        emit IERC4626.Withdraw(holder, receiver, holder, 0, 0);
         ERC4626ExtendedDecimalsOffset0.withdraw(0, receiver, holder);
 
         vm.expectEmit(
@@ -723,9 +735,9 @@ contract ERC4626VaultTest is ERC4626Test {
             true,
             ERC4626ExtendedDecimalsOffset6Addr
         );
-        emit Transfer(holder, zeroAddress, 0);
+        emit IERC20.Transfer(holder, zeroAddress, 0);
         vm.expectEmit(true, true, false, true, underlyingAddr);
-        emit Transfer(ERC4626ExtendedDecimalsOffset6Addr, receiver, 0);
+        emit IERC20.Transfer(ERC4626ExtendedDecimalsOffset6Addr, receiver, 0);
         vm.expectEmit(
             true,
             true,
@@ -733,7 +745,7 @@ contract ERC4626VaultTest is ERC4626Test {
             true,
             ERC4626ExtendedDecimalsOffset6Addr
         );
-        emit Withdraw(holder, receiver, holder, 0, 0);
+        emit IERC4626.Withdraw(holder, receiver, holder, 0, 0);
         ERC4626ExtendedDecimalsOffset6.withdraw(0, receiver, holder);
 
         vm.expectEmit(
@@ -743,9 +755,9 @@ contract ERC4626VaultTest is ERC4626Test {
             true,
             ERC4626ExtendedDecimalsOffset12Addr
         );
-        emit Transfer(holder, zeroAddress, 0);
+        emit IERC20.Transfer(holder, zeroAddress, 0);
         vm.expectEmit(true, true, false, true, underlyingAddr);
-        emit Transfer(ERC4626ExtendedDecimalsOffset12Addr, receiver, 0);
+        emit IERC20.Transfer(ERC4626ExtendedDecimalsOffset12Addr, receiver, 0);
         vm.expectEmit(
             true,
             true,
@@ -753,7 +765,7 @@ contract ERC4626VaultTest is ERC4626Test {
             true,
             ERC4626ExtendedDecimalsOffset12Addr
         );
-        emit Withdraw(holder, receiver, holder, 0, 0);
+        emit IERC4626.Withdraw(holder, receiver, holder, 0, 0);
         ERC4626ExtendedDecimalsOffset12.withdraw(0, receiver, holder);
 
         vm.expectEmit(
@@ -763,9 +775,9 @@ contract ERC4626VaultTest is ERC4626Test {
             true,
             ERC4626ExtendedDecimalsOffset18Addr
         );
-        emit Transfer(holder, zeroAddress, 0);
+        emit IERC20.Transfer(holder, zeroAddress, 0);
         vm.expectEmit(true, true, false, true, underlyingAddr);
-        emit Transfer(ERC4626ExtendedDecimalsOffset18Addr, receiver, 0);
+        emit IERC20.Transfer(ERC4626ExtendedDecimalsOffset18Addr, receiver, 0);
         vm.expectEmit(
             true,
             true,
@@ -773,7 +785,7 @@ contract ERC4626VaultTest is ERC4626Test {
             true,
             ERC4626ExtendedDecimalsOffset18Addr
         );
-        emit Withdraw(holder, receiver, holder, 0, 0);
+        emit IERC4626.Withdraw(holder, receiver, holder, 0, 0);
         ERC4626ExtendedDecimalsOffset18.withdraw(0, receiver, holder);
 
         assertEq(underlying.balanceOf(holder), 0);
@@ -826,9 +838,9 @@ contract ERC4626VaultTest is ERC4626Test {
             true,
             ERC4626ExtendedDecimalsOffset0Addr
         );
-        emit Transfer(holder, zeroAddress, 0);
+        emit IERC20.Transfer(holder, zeroAddress, 0);
         vm.expectEmit(true, true, false, true, underlyingAddr);
-        emit Transfer(ERC4626ExtendedDecimalsOffset0Addr, receiver, 0);
+        emit IERC20.Transfer(ERC4626ExtendedDecimalsOffset0Addr, receiver, 0);
         vm.expectEmit(
             true,
             true,
@@ -836,7 +848,7 @@ contract ERC4626VaultTest is ERC4626Test {
             true,
             ERC4626ExtendedDecimalsOffset0Addr
         );
-        emit Withdraw(holder, receiver, holder, 0, 0);
+        emit IERC4626.Withdraw(holder, receiver, holder, 0, 0);
         ERC4626ExtendedDecimalsOffset0.redeem(0, receiver, holder);
 
         vm.expectEmit(
@@ -846,9 +858,9 @@ contract ERC4626VaultTest is ERC4626Test {
             true,
             ERC4626ExtendedDecimalsOffset6Addr
         );
-        emit Transfer(holder, zeroAddress, 0);
+        emit IERC20.Transfer(holder, zeroAddress, 0);
         vm.expectEmit(true, true, false, true, underlyingAddr);
-        emit Transfer(ERC4626ExtendedDecimalsOffset6Addr, receiver, 0);
+        emit IERC20.Transfer(ERC4626ExtendedDecimalsOffset6Addr, receiver, 0);
         vm.expectEmit(
             true,
             true,
@@ -856,7 +868,7 @@ contract ERC4626VaultTest is ERC4626Test {
             true,
             ERC4626ExtendedDecimalsOffset6Addr
         );
-        emit Withdraw(holder, receiver, holder, 0, 0);
+        emit IERC4626.Withdraw(holder, receiver, holder, 0, 0);
         ERC4626ExtendedDecimalsOffset6.redeem(0, receiver, holder);
 
         vm.expectEmit(
@@ -866,9 +878,9 @@ contract ERC4626VaultTest is ERC4626Test {
             true,
             ERC4626ExtendedDecimalsOffset12Addr
         );
-        emit Transfer(holder, zeroAddress, 0);
+        emit IERC20.Transfer(holder, zeroAddress, 0);
         vm.expectEmit(true, true, false, true, underlyingAddr);
-        emit Transfer(ERC4626ExtendedDecimalsOffset12Addr, receiver, 0);
+        emit IERC20.Transfer(ERC4626ExtendedDecimalsOffset12Addr, receiver, 0);
         vm.expectEmit(
             true,
             true,
@@ -876,7 +888,7 @@ contract ERC4626VaultTest is ERC4626Test {
             true,
             ERC4626ExtendedDecimalsOffset12Addr
         );
-        emit Withdraw(holder, receiver, holder, 0, 0);
+        emit IERC4626.Withdraw(holder, receiver, holder, 0, 0);
         ERC4626ExtendedDecimalsOffset12.redeem(0, receiver, holder);
 
         vm.expectEmit(
@@ -886,9 +898,9 @@ contract ERC4626VaultTest is ERC4626Test {
             true,
             ERC4626ExtendedDecimalsOffset18Addr
         );
-        emit Transfer(holder, zeroAddress, 0);
+        emit IERC20.Transfer(holder, zeroAddress, 0);
         vm.expectEmit(true, true, false, true, underlyingAddr);
-        emit Transfer(ERC4626ExtendedDecimalsOffset18Addr, receiver, 0);
+        emit IERC20.Transfer(ERC4626ExtendedDecimalsOffset18Addr, receiver, 0);
         vm.expectEmit(
             true,
             true,
@@ -896,7 +908,7 @@ contract ERC4626VaultTest is ERC4626Test {
             true,
             ERC4626ExtendedDecimalsOffset18Addr
         );
-        emit Withdraw(holder, receiver, holder, 0, 0);
+        emit IERC4626.Withdraw(holder, receiver, holder, 0, 0);
         ERC4626ExtendedDecimalsOffset18.redeem(0, receiver, holder);
 
         assertEq(underlying.balanceOf(holder), 0);
@@ -941,7 +953,7 @@ contract ERC4626VaultTest is ERC4626Test {
         uint256 alicePreDepositBalance = underlying.balanceOf(alice);
 
         vm.expectEmit(true, true, false, true, underlyingAddr);
-        emit Transfer(alice, ERC4626ExtendedDecimalsOffset0Addr, assets);
+        emit IERC20.Transfer(alice, ERC4626ExtendedDecimalsOffset0Addr, assets);
         vm.expectEmit(
             true,
             true,
@@ -949,7 +961,7 @@ contract ERC4626VaultTest is ERC4626Test {
             true,
             ERC4626ExtendedDecimalsOffset0Addr
         );
-        emit Transfer(zeroAddress, alice, assets);
+        emit IERC20.Transfer(zeroAddress, alice, assets);
         vm.expectEmit(
             true,
             true,
@@ -957,7 +969,7 @@ contract ERC4626VaultTest is ERC4626Test {
             true,
             ERC4626ExtendedDecimalsOffset0Addr
         );
-        emit Deposit(alice, alice, assets, assets);
+        emit IERC4626.Deposit(alice, alice, assets, assets);
         uint256 aliceShareAmount = ERC4626ExtendedDecimalsOffset0.deposit(
             assets,
             alice
@@ -996,9 +1008,9 @@ contract ERC4626VaultTest is ERC4626Test {
             true,
             ERC4626ExtendedDecimalsOffset0Addr
         );
-        emit Transfer(alice, zeroAddress, assets);
+        emit IERC20.Transfer(alice, zeroAddress, assets);
         vm.expectEmit(true, true, false, true, underlyingAddr);
-        emit Transfer(ERC4626ExtendedDecimalsOffset0Addr, alice, assets);
+        emit IERC20.Transfer(ERC4626ExtendedDecimalsOffset0Addr, alice, assets);
         vm.expectEmit(
             true,
             true,
@@ -1006,7 +1018,7 @@ contract ERC4626VaultTest is ERC4626Test {
             true,
             ERC4626ExtendedDecimalsOffset0Addr
         );
-        emit Withdraw(alice, alice, alice, assets, assets);
+        emit IERC4626.Withdraw(alice, alice, alice, assets, assets);
         ERC4626ExtendedDecimalsOffset0.withdraw(assets, alice, alice);
 
         assertEq(ERC4626ExtendedDecimalsOffset0.totalAssets(), 0);
@@ -1038,7 +1050,7 @@ contract ERC4626VaultTest is ERC4626Test {
         uint256 alicePreDepositBalance = underlying.balanceOf(alice);
 
         vm.expectEmit(true, true, false, true, underlyingAddr);
-        emit Transfer(alice, ERC4626ExtendedDecimalsOffset0Addr, shares);
+        emit IERC20.Transfer(alice, ERC4626ExtendedDecimalsOffset0Addr, shares);
         vm.expectEmit(
             true,
             true,
@@ -1046,7 +1058,7 @@ contract ERC4626VaultTest is ERC4626Test {
             true,
             ERC4626ExtendedDecimalsOffset0Addr
         );
-        emit Transfer(zeroAddress, alice, shares);
+        emit IERC20.Transfer(zeroAddress, alice, shares);
         vm.expectEmit(
             true,
             true,
@@ -1054,7 +1066,7 @@ contract ERC4626VaultTest is ERC4626Test {
             true,
             ERC4626ExtendedDecimalsOffset0Addr
         );
-        emit Deposit(alice, alice, shares, shares);
+        emit IERC4626.Deposit(alice, alice, shares, shares);
         uint256 aliceAssetAmount = ERC4626ExtendedDecimalsOffset0.mint(
             shares,
             alice
@@ -1093,9 +1105,9 @@ contract ERC4626VaultTest is ERC4626Test {
             true,
             ERC4626ExtendedDecimalsOffset0Addr
         );
-        emit Transfer(alice, zeroAddress, shares);
+        emit IERC20.Transfer(alice, zeroAddress, shares);
         vm.expectEmit(true, true, false, true, underlyingAddr);
-        emit Transfer(ERC4626ExtendedDecimalsOffset0Addr, alice, shares);
+        emit IERC20.Transfer(ERC4626ExtendedDecimalsOffset0Addr, alice, shares);
         vm.expectEmit(
             true,
             true,
@@ -1103,7 +1115,7 @@ contract ERC4626VaultTest is ERC4626Test {
             true,
             ERC4626ExtendedDecimalsOffset0Addr
         );
-        emit Withdraw(alice, alice, alice, shares, shares);
+        emit IERC4626.Withdraw(alice, alice, alice, shares, shares);
         ERC4626ExtendedDecimalsOffset0.redeem(shares, alice, alice);
 
         assertEq(ERC4626ExtendedDecimalsOffset0.totalAssets(), 0);
@@ -1608,7 +1620,7 @@ contract ERC4626VaultTest is ERC4626Test {
             )
         );
         vm.expectEmit(true, true, false, true);
-        emit Approval(owner, spender, amount);
+        emit IERC20.Approval(owner, spender, amount);
         ERC4626ExtendedDecimalsOffset0.permit(
             owner,
             spender,
@@ -1654,7 +1666,7 @@ contract ERC4626VaultTest is ERC4626Test {
             )
         );
         vm.expectEmit(true, true, false, true);
-        emit Approval(owner, spender, amount);
+        emit IERC20.Approval(owner, spender, amount);
         ERC4626ExtendedDecimalsOffset0.permit(
             owner,
             spender,
@@ -1927,7 +1939,7 @@ contract ERC4626VaultTest is ERC4626Test {
             )
         );
         vm.expectEmit(true, true, false, true);
-        emit Approval(ownerAddr, spenderAddr, amount);
+        emit IERC20.Approval(ownerAddr, spenderAddr, amount);
         ERC4626ExtendedDecimalsOffset0.permit(
             ownerAddr,
             spenderAddr,

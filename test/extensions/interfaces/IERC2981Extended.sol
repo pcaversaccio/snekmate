@@ -1,9 +1,14 @@
 // SPDX-License-Identifier: WTFPL
-pragma solidity ^0.8.21;
+pragma solidity ^0.8.22;
 
 import {IERC2981} from "openzeppelin/interfaces/IERC2981.sol";
 
 interface IERC2981Extended is IERC2981 {
+    event OwnershipTransferred(
+        address indexed previousOwner,
+        address indexed newOwner
+    );
+
     function set_default_royalty(
         address receiver,
         uint96 feeNumerator

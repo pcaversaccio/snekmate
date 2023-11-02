@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.21;
+pragma solidity ^0.8.22;
 
 import {IERC721Receiver} from "openzeppelin/token/ERC721/IERC721Receiver.sol";
 
