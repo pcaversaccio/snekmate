@@ -11,12 +11,14 @@ body:
         Please check the [issues tab](https://github.com/pcaversaccio/snekmate/issues) to avoid duplicates.
         Thanks for taking the time to fill out this bug report!
     type: markdown
+
   - attributes:
       label: "Describe the issue:"
     id: what-happened
     type: textarea
     validations:
       required: true
+
   - attributes:
       label: "Code example to reproduce the issue:"
       description: "It can be a GitHub repository/gist or a simple code snippet."
@@ -25,6 +27,7 @@ body:
     type: textarea
     validations:
       required: true
+
   - attributes:
       label: "Version:"
       description: |
@@ -34,6 +37,7 @@ body:
     type: textarea
     validations:
       required: true
+
   - attributes:
       label: "Relevant log output:"
       description: |
