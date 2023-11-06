@@ -42,24 +42,24 @@ You will need the following dependencies:
 
 - [Git](https://git-scm.com)
 - [Node.js](https://nodejs.org)
-- [Yarn](https://classic.yarnpkg.com)
+- [pnpm](https://pnpm.io)
 - [🐍Vyper](https://github.com/vyperlang/vyper)
 - [Foundry](https://github.com/foundry-rs/foundry)
 
 ## ⚙️ Installation
 
-It is recommended to install [Yarn](https://classic.yarnpkg.com) through the `npm` package manager, which comes bundled with [Node.js](https://nodejs.org) when you install it on your system. It is recommended to use a Node.js version `>= 18.0.0`.
+It is recommended to install [`pnpm`](https://pnpm.io) through the `npm` package manager, which comes bundled with [Node.js](https://nodejs.org/en) when you install it on your system. It is recommended to use a Node.js version `>= 18.0.0`.
 
-Once you have `npm` installed, you can run the following both to install and upgrade Yarn:
+Once you have `npm` installed, you can run the following both to install and upgrade `pnpm`:
 
 ```console
-npm install --global yarn
+npm install -g pnpm
 ```
 
-After having installed Yarn, simply run:
+After having installed `pnpm`, simply run:
 
 ```console
-yarn install
+pnpm install
 ```
 
 This repository also includes the [Foundry](https://github.com/foundry-rs/foundry) toolkit. You can simply run `forge install` to install all the submodule dependencies that are in this repository. If you need help getting started with Foundry, we recommend reading the [📖 Foundry Book](https://book.getfoundry.sh).
