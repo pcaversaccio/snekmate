@@ -87,7 +87,7 @@ You can install 🐍 snekmate from [npm](https://www.npmjs.com/package/snekmate)
 npm install --save-dev snekmate
 ```
 
-Or if you are using [Yarn](https://classic.yarnpkg.com):
+Or if you are using [Yarn](https://yarnpkg.com):
 
 ```console
 yarn add --dev snekmate
