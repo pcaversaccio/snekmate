@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: WTFPL
-pragma solidity ^0.8.22;
+pragma solidity ^0.8.23;
 
 interface IECDSA {
     function recover_sig(
