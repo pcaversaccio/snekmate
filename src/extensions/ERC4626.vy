@@ -24,32 +24,29 @@
         https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC20/extensions/ERC4626.sol,
         as well as by fubuloubu's implementation here:
         https://github.com/fubuloubu/ERC4626/blob/main/contracts/VyperVault.vy.
-@custom:security Most of the following security analysis was sourced from OpenZeppelin's
-                 implementation: This implementation uses virtual assets and shares to
-                 mitigate the risk of inflation attacks. The `internal` `immutable` variable
-                 `_DECIMALS_OFFSET` corresponds to an offset in the decimal representation
-                 between the underlying asset's decimals and the vault decimals. This offset
-                 also determines the rate of virtual shares to virtual assets in the vault,
-                 which itself determines the initial exchange rate. While not fully
-                 preventing the attack, analysis (https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/docs/modules/ROOT/pages/erc4626.adoc#security-concern-inflation-attack)
-                 shows that a standard offset of `0` makes it non-profitable, as a result
-                 of the value being captured by the virtual shares (out of the attacker's
-                 donation) matching the attacker's expected gains. With a larger offset,
-                 the attack becomes orders of magnitude more expensive than it is profitable.
+@custom:security Most of the following security analysis was sourced from OpenZeppelin's implementation:
+                 This implementation uses virtual assets and shares to help developers mitigate the risk
+                 of inflation attacks. The `internal` `immutable` variable `_DECIMALS_OFFSET` corresponds
+                 to an offset in the decimal representation between the underlying asset's decimals and the
+                 vault decimals. This offset also determines the rate of virtual shares to virtual assets
+                 in the vault, which itself determines the initial exchange rate. While not fully preventing
+                 the attack, analysis (https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/docs/modules/ROOT/pages/erc4626.adoc#security-concern-inflation-attack)
+                 shows that a standard offset of `0` makes it non-profitable even if an attacker is able to
+                 capture value from multiple user deposits, as a result of the value being captured by the
+                 virtual shares (out of the attacker's donation) matching the attacker's expected gains. With
+                 a larger offset, the attack becomes orders of magnitude more expensive than it is profitable.
                  More details about the underlying mathematics can be found here:
                  https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/docs/modules/ROOT/pages/erc4626.adoc#security-concern-inflation-attack.
 
-                 Furthermore, another potential approach would be that vault deployers can
-                 protect against this attack by making an initial deposit of a non-trivial
-                 amount of the asset, such that price manipulation becomes infeasible. For
-                 the detailed discussion, please refer to:
+                 Furthermore, another potential approach would be that vault deployers can protect against
+                 this attack by making an initial deposit of a non-trivial amount of the asset, such that
+                 price manipulation becomes infeasible. For the detailed discussion, please refer to:
                  https://ethereum-magicians.org/t/address-eip-4626-inflation-attacks-with-virtual-shares-and-assets/12677.
 
-                 The drawback of the implemented approach is that the virtual shares do
-                 capture (a very small) part of the value being accrued to the vault. Also,
-                 if the vault experiences losses, the users try to exit the vault, the virtual
-                 shares and assets will cause the first user to exit to experience reduced losses
-                 in detriment to the last users that will experience bigger losses.
+                 The drawback of the implemented approach is that the virtual shares do capture (a very small)
+                 part of the value being accrued to the vault. Also, if the vault experiences losses, the users
+                 try to exit the vault, the virtual shares and assets will cause the first user to exit to
+                 experience reduced losses in detriment to the last users that will experience bigger losses.
 """
 
 
