@@ -15,8 +15,8 @@ devDependencies:
     specifier: ^9.0.0
     version: 9.0.0(eslint@8.54.0)
   ethers:
-    specifier: ^6.8.1
-    version: 6.8.1
+    specifier: ^6.9.0
+    version: 6.9.0
   keccak256:
     specifier: ^1.0.6
     version: 1.0.6
@@ -1225,10 +1225,10 @@ packages:
       "@scure/bip39": 1.2.1
     dev: true
 
-  /ethers@6.8.1:
+  /ethers@6.9.0:
     resolution:
       {
-        integrity: sha512-iEKm6zox5h1lDn6scuRWdIdFJUCGg3+/aQWu0F4K0GVyEZiktFkqrJbRjTn1FlYEPz7RKA707D6g5Kdk6j7Ljg==,
+        integrity: sha512-pmfNyQzc2mseLe91FnT2vmNaTt8dDzhxZ/xItAV7uGsF4dI4ek2ufMu3rAkgQETL/TIs0GS5A+U05g9QyWnv3Q==,
       }
     engines: { node: ">=14.0.0" }
     dependencies:
@@ -1685,7 +1685,7 @@ packages:
     requiresBuild: true
     dependencies:
       node-addon-api: 2.0.2
-      node-gyp-build: 4.7.0
+      node-gyp-build: 4.7.1
       readable-stream: 3.6.2
     dev: true
 
@@ -1873,10 +1873,10 @@ packages:
       }
     dev: true
 
-  /node-gyp-build@4.7.0:
+  /node-gyp-build@4.7.1:
     resolution:
       {
-        integrity: sha512-PbZERfeFdrHQOOXiAKOY0VPbykZy90ndPKk0d+CFDegTKmWp1VgOTz2xACVbr1BjCWxrQp68CXtvNsveFhqDJg==,
+        integrity: sha512-wTSrZ+8lsRRa3I3H8Xr65dLWSgCvY2l4AOnaeKdPA9TB/WYMPaTcrzf3rXvFoVvjKNVnu0CcWSx54qq9GKRUYg==,
       }
     hasBin: true
     dev: true
