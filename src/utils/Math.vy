@@ -13,7 +13,7 @@
         - `uint256_average` (`external` `pure` function),
         - `int256_average` (`external` `pure` function),
         - `ceil_div` (`external` `pure` function),
-        - `is_negative` (`external` `pure` function),
+        - `sign` (`external` `pure` function),
         - `mul_div` (`external` `pure` function),
         - `log_2` (`external` `pure` function),
         - `log_10` (`external` `pure` function),
@@ -92,14 +92,17 @@ def ceil_div(x: uint256, y: uint256) -> uint256:
 
 @external
 @pure
-def is_negative(x: int256) -> bool:
+def sign(x: int256) -> int256:
     """
-    @dev Returns `True` if a 32-byte signed integer is negative.
-    @notice Note that this function returns `False` for 0.
+    @dev Returns the indication of the sign of a 32-byte signed integer.
+    @notice The function returns `-1` if `x < 0`, `0` if `x==0`, and
+            `1` if `x > 0`. For more details on finding the sign of a signed
+            integer, please refer to:
+            https://graphics.stanford.edu/~seander/bithacks.html#CopyIntegerSign.
     @param x The 32-byte signed integer variable.
-    @return bool The verification whether `x` is negative or not.
+    @return int256 The 32-byte sign indication (`1`, `0`, or `-1`) of `x`.
     """
-    return (x ^ 1 < empty(int256))
+    return unsafe_sub(convert((x > 0), int256), convert((x < 0), int256))
 
 
 @external

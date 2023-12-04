@@ -2,6 +2,11 @@
 
 ## [`0.0.5`](https://github.com/pcaversaccio/snekmate/releases/tag/v0.0.5) (Unreleased)
 
+### ♻️ Refactoring
+
+- **Utility Functions**
+  - [`Math`](https://github.com/pcaversaccio/snekmate/blob/v0.0.5/src/utils/Math.vy): Refactor the `is_negative` function into a proper `sign` function that returns the indication of the sign of a 32-byte signed integer. ([#187](https://github.com/pcaversaccio/snekmate/pull/187))
+
 ### 👀 Full Changelog
 
 - [`v0.0.4...v0.0.5`](https://github.com/pcaversaccio/snekmate/compare/v0.0.4...v0.0.5)
