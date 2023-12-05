@@ -487,10 +487,10 @@ contract MathTest is Test {
     function testFuzzSign(int256 x) public {
         if (x > 0) {
             assertEq(math.sign(x), 1);
-        } else if (x == 0) {
-            assertEq(math.sign(x), 0);
-        } else {
+        } else if (x < 0) {
             assertEq(math.sign(x), -1);
+        } else {
+            assertEq(math.sign(x), 0);
         }
     }
 
