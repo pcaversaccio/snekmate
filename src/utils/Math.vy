@@ -13,7 +13,7 @@
         - `uint256_average` (`external` `pure` function),
         - `int256_average` (`external` `pure` function),
         - `ceil_div` (`external` `pure` function),
-        - `sign` (`external` `pure` function),
+        - `signum` (`external` `pure` function),
         - `mul_div` (`external` `pure` function),
         - `log_2` (`external` `pure` function),
         - `log_10` (`external` `pure` function),
@@ -92,7 +92,7 @@ def ceil_div(x: uint256, y: uint256) -> uint256:
 
 @external
 @pure
-def sign(x: int256) -> int256:
+def signum(x: int256) -> int256:
     """
     @dev Returns the indication of the sign of a 32-byte signed integer.
     @notice The function returns `-1` if `x < 0`, `0` if `x == 0`, and `1`

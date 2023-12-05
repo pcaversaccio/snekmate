@@ -154,16 +154,16 @@ contract MathTest is Test {
         math.ceil_div(1, 0);
     }
 
-    function testSign() public {
-        assertEq(math.sign(0), 0);
-        assertEq(math.sign(-1), -1);
-        assertEq(math.sign(-1 * -1), 1);
-        assertEq(math.sign(-1 * 100), -1);
-        assertEq(math.sign(0 * -1), 0);
-        assertEq(math.sign(int256(type(int16).min) * 2), -1);
-        assertEq(math.sign(int256(type(int16).max) * 2), 1);
-        assertEq(math.sign(type(int256).min + type(int16).max), -1);
-        assertEq(math.sign(type(int256).max - type(int16).max), 1);
+    function testSignum() public {
+        assertEq(math.signum(0), 0);
+        assertEq(math.signum(-1), -1);
+        assertEq(math.signum(-1 * -1), 1);
+        assertEq(math.signum(-1 * 100), -1);
+        assertEq(math.signum(0 * -1), 0);
+        assertEq(math.signum(int256(type(int16).min) * 2), -1);
+        assertEq(math.signum(int256(type(int16).max) * 2), 1);
+        assertEq(math.signum(type(int256).min + type(int16).max), -1);
+        assertEq(math.signum(type(int256).max - type(int16).max), 1);
     }
 
     function testMulDivDivisionByZero() public {
@@ -484,13 +484,13 @@ contract MathTest is Test {
         }
     }
 
-    function testFuzzSign(int256 x) public {
+    function testFuzzSignum(int256 x) public {
         if (x > 0) {
-            assertEq(math.sign(x), 1);
+            assertEq(math.signum(x), 1);
         } else if (x < 0) {
-            assertEq(math.sign(x), -1);
+            assertEq(math.signum(x), -1);
         } else {
-            assertEq(math.sign(x), 0);
+            assertEq(math.signum(x), 0);
         }
     }
 
