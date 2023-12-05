@@ -11,7 +11,7 @@ interface IMath {
 
     function ceil_div(uint256 x, uint256 y) external pure returns (uint256);
 
-    function sign(int256 x) external pure returns (int256);
+    function signum(int256 x) external pure returns (int256);
 
     function mul_div(
         uint256 x,
