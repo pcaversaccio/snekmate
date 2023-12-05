@@ -95,8 +95,8 @@ def ceil_div(x: uint256, y: uint256) -> uint256:
 def sign(x: int256) -> int256:
     """
     @dev Returns the indication of the sign of a 32-byte signed integer.
-    @notice The function returns `-1` if `x < 0`, `0` if `x==0`, and
-            `1` if `x > 0`. For more details on finding the sign of a signed
+    @notice The function returns `-1` if `x < 0`, `0` if `x == 0`, and `1`
+            if `x > 0`. For more details on finding the sign of a signed
             integer, please refer to:
             https://graphics.stanford.edu/~seander/bithacks.html#CopyIntegerSign.
     @param x The 32-byte signed integer variable.
