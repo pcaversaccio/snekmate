@@ -111,7 +111,7 @@ packages:
       ajv: 6.12.6
       debug: 4.3.4
       espree: 9.6.1
-      globals: 13.23.0
+      globals: 13.24.0
       ignore: 5.3.0
       import-fresh: 3.3.0
       js-yaml: 4.1.0
@@ -510,10 +510,10 @@ packages:
       config-chain: 1.1.13
     dev: true
 
-  /@scure/base@1.1.3:
+  /@scure/base@1.1.4:
     resolution:
       {
-        integrity: sha512-/+SgoRjLq7Xlf0CWuLHq2LUZeL/w65kfzAPG5NH9pcmBhs+nunQTn4gvdwgMTIXnt9b2C/1SeL2XiysZEyIC9Q==,
+        integrity: sha512-wznebWtt+ejH8el87yuD4i9xLSbYZXf1Pe4DY0o/zq/eg5I0VQVXVbFs6XIM0pNVCJ/uE3t5wI9kh90mdLUxtw==,
       }
     dev: true
 
@@ -525,7 +525,7 @@ packages:
     dependencies:
       "@noble/hashes": 1.2.0
       "@noble/secp256k1": 1.7.1
-      "@scure/base": 1.1.3
+      "@scure/base": 1.1.4
     dev: true
 
   /@scure/bip32@1.3.1:
@@ -536,7 +536,7 @@ packages:
     dependencies:
       "@noble/curves": 1.1.0
       "@noble/hashes": 1.3.1
-      "@scure/base": 1.1.3
+      "@scure/base": 1.1.4
     dev: true
 
   /@scure/bip39@1.1.1:
@@ -546,7 +546,7 @@ packages:
       }
     dependencies:
       "@noble/hashes": 1.2.0
-      "@scure/base": 1.1.3
+      "@scure/base": 1.1.4
     dev: true
 
   /@scure/bip39@1.2.1:
@@ -556,7 +556,7 @@ packages:
       }
     dependencies:
       "@noble/hashes": 1.3.1
-      "@scure/base": 1.1.3
+      "@scure/base": 1.1.4
     dev: true
 
   /@sindresorhus/is@5.6.0:
@@ -1125,7 +1125,7 @@ packages:
       file-entry-cache: 6.0.1
       find-up: 5.0.0
       glob-parent: 6.0.2
-      globals: 13.23.0
+      globals: 13.24.0
       graphemer: 1.4.0
       ignore: 5.3.0
       imurmurhash: 0.1.4
@@ -1393,10 +1393,10 @@ packages:
       once: 1.4.0
     dev: true
 
-  /globals@13.23.0:
+  /globals@13.24.0:
     resolution:
       {
-        integrity: sha512-XAmF0RjlrjY23MA51q3HltdlGxUpXPvg0GioKiD9X6HD28iMjo2dKC8Vqwm7lne4GNr78+RHTfliktR6ZH09wA==,
+        integrity: sha512-AhO5QUcj8llrbG09iWhPU2B204J1xnPeL8kQmVorSsy+Sjj1sk8gIyh6cUocGmH4L0UuhAJy+hJMRA4mgA4mFQ==,
       }
     engines: { node: ">=8" }
     dependencies:
