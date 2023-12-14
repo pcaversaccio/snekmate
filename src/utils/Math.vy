@@ -433,7 +433,7 @@ def wad_exp(x: int256) -> int256:
 
     # If the result is `< 0.5`, we return zero. This happens when we have the following:
     # "x <= floor(log(0.5e18) * 1e18) ~ -42e18".
-    if (x <= -42_139_678_854_452_767_551):
+    if (x <= -41_446_531_673_892_822_313):
         return empty(int256)
 
     # When the result is "> (2 ** 255 - 1) / 1e18" we cannot represent it as a signed integer.
