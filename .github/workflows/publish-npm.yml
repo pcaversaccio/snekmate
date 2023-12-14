@@ -16,7 +16,7 @@ jobs:
         os:
           - ubuntu-latest
         node_version:
-          - 18
+          - 20
 
     steps:
       - name: Checkout
