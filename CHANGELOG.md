@@ -7,7 +7,7 @@
 - **Utility Functions**
   - [`Math`](https://github.com/pcaversaccio/snekmate/blob/v0.0.5/src/utils/Math.vy): Refactor the `is_negative` function into a proper `sign` function that returns the indication of the sign of a 32-byte signed integer. ([#187](https://github.com/pcaversaccio/snekmate/pull/187))
   - [`Math`](https://github.com/pcaversaccio/snekmate/blob/v0.0.5/src/utils/Math.vy): Rename the recently added `sign` function to `signum` to avoid any ambiguity with cryptographic signing utility functions. ([#188](https://github.com/pcaversaccio/snekmate/pull/188))
-  - [`Math`](https://github.com/pcaversaccio/snekmate/blob/v0.0.5/src/utils/Math.vy): Optimise zero point threshold in `wad_exp`. ([#189](https://github.com/pcaversaccio/snekmate/pull/189))
+  - [`Math`](https://github.com/pcaversaccio/snekmate/blob/v0.0.5/src/utils/Math.vy): Optimise the zero point threshold in `wad_exp`. ([#189](https://github.com/pcaversaccio/snekmate/pull/189))
 
 ### 👀 Full Changelog
 
