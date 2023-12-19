@@ -111,4 +111,4 @@ jobs:
           test/**/*.sol test/**/interfaces/*.sol test/**/mocks/*.sol \
           test/**/scripts/*.js scripts/*.py --allow-dupe --allow-redirect \
           --request-delay 0.4 \
-          --white-list https://www.wagmi.xyz,https://twitter.com/0xDACA/status/1669846430528286722,https://github.com/pcaversaccio/snekmate/releases/tag/v0.0.5,https://github.com/pcaversaccio/snekmate/blob/v0.0.5,https://github.com/pcaversaccio/snekmate/compare/v0.0.4...v0.0.5
+          --white-list https://www.wagmi.xyz,https://twitter.com,https://github.com/pcaversaccio/snekmate/releases/tag/v0.0.5,https://github.com/pcaversaccio/snekmate/blob/v0.0.5,https://github.com/pcaversaccio/snekmate/compare/v0.0.4...v0.0.5

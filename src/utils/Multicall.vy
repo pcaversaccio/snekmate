@@ -12,9 +12,15 @@
         https://github.com/pcaversaccio/snekmate/discussions/82.
         The implementation is inspired by Matt Solomon's implementation here:
         https://github.com/mds1/multicall/blob/main/src/Multicall3.sol.
-@custom:security Make sure you understand how `msg.sender` works in `CALL` vs
-                 `DELEGATECALL` to the multicall contract, as well as the risks
-                 of using `msg.value` in a multicall. To learn more about the latter, see:
+@custom:security You must ensure that any contract that integrates the `CALL`-based
+                 `multicall` and `multicall_value` functions never holds funds after
+                 the end of a transaction. Otherwise, any ETH, tokens, or other funds
+                 held by this contract can be stolen. Also, never approve a contract
+                 that integrates the `CALL`-based functions `multicall` and `multicall_value`
+                 to spend your tokens. If you do, anyone can steal your tokens! Eventually,
+                 please make sure you understand how `msg.sender` works in `CALL` vs
+                 `DELEGATECALL` to the multicall contract, as well as the risks of
+                 using `msg.value` in a multicall. To learn more about the latter, see:
                  - https://github.com/runtimeverification/verified-smart-contracts/wiki/List-of-Security-Vulnerabilities#payable-multicall,
                  - https://samczsun.com/two-rights-might-make-a-wrong.
 """
@@ -108,6 +114,11 @@ def multicall_value(data: DynArray[BatchValue, max_value(uint8)]) -> DynArray[Re
     success: bool = empty(bool)
     for batch in data:
         msg_value: uint256 = batch.value
+        # WARNING: If you expect to hold any funds in a contract that integrates
+        # this function, you must ensure that the next line uses checked arithmetic!
+        # Please read the contract-level security notice carefully. For further
+        # insights also, see the following Twitter thread:
+        # https://twitter.com/Guhu95/status/1736983530343981307.
         value_accumulator = unsafe_add(value_accumulator, msg_value)
         if (batch.allow_failure == False):
             return_data = raw_call(batch.target, batch.call_data, max_outsize=255, value=msg_value)
