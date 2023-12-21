@@ -15,8 +15,8 @@ devDependencies:
     specifier: ^9.1.0
     version: 9.1.0(eslint@8.56.0)
   ethers:
-    specifier: ^6.9.0
-    version: 6.9.0
+    specifier: ^6.9.1
+    version: 6.9.1
   keccak256:
     specifier: ^1.0.6
     version: 1.0.6
@@ -1225,10 +1225,10 @@ packages:
       "@scure/bip39": 1.2.1
     dev: true
 
-  /ethers@6.9.0:
+  /ethers@6.9.1:
     resolution:
       {
-        integrity: sha512-pmfNyQzc2mseLe91FnT2vmNaTt8dDzhxZ/xItAV7uGsF4dI4ek2ufMu3rAkgQETL/TIs0GS5A+U05g9QyWnv3Q==,
+        integrity: sha512-kuV8fGd4/8Gj7wkurbsuUsm1DCG6N5gKGYdw3fnWG/7QGknhy1xtHD7kbkCWQAcbAYmzLCLqCPedS3FYncFkKQ==,
       }
     engines: { node: ">=14.0.0" }
     dependencies:
