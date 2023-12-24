@@ -27,8 +27,8 @@ devDependencies:
     specifier: ^3.1.1
     version: 3.1.1
   prettier-plugin-solidity:
-    specifier: ^1.2.0
-    version: 1.2.0(prettier@3.1.1)
+    specifier: ^1.3.1
+    version: 1.3.1(prettier@3.1.1)
   solhint:
     specifier: ^4.0.0
     version: 4.0.0
@@ -574,6 +574,13 @@ packages:
       }
     dependencies:
       antlr4ts: 0.5.0-alpha.4
+    dev: true
+
+  /@solidity-parser/parser@0.17.0:
+    resolution:
+      {
+        integrity: sha512-Nko8R0/kUo391jsEHHxrGM07QFdnPGvlmox4rmH0kNiNAashItAilhy4Mv4pK5gQmW5f4sXAF58fwJbmlkGcVw==,
+      }
     dev: true
 
   /@szmarczak/http-timer@5.0.1:
@@ -2036,19 +2043,19 @@ packages:
     engines: { node: ">= 0.8.0" }
     dev: true
 
-  /prettier-plugin-solidity@1.2.0(prettier@3.1.1):
+  /prettier-plugin-solidity@1.3.1(prettier@3.1.1):
     resolution:
       {
-        integrity: sha512-fgxcUZpVAP+LlRfy5JI5oaAkXGkmsje2VJ5krv/YMm+rcTZbIUwFguSw5f+WFuttMjpDm6wB4UL7WVkArEfiVA==,
+        integrity: sha512-MN4OP5I2gHAzHZG1wcuJl0FsLS3c4Cc5494bbg+6oQWBPuEamjwDvmGfFMZ6NFzsh3Efd9UUxeT7ImgjNH4ozA==,
       }
     engines: { node: ">=16" }
     peerDependencies:
       prettier: ">=2.3.0"
     dependencies:
-      "@solidity-parser/parser": 0.16.2
+      "@solidity-parser/parser": 0.17.0
       prettier: 3.1.1
       semver: 7.5.4
-      solidity-comments-extractor: 0.0.7
+      solidity-comments-extractor: 0.0.8
     dev: true
 
   /prettier@2.8.8:
@@ -2294,10 +2301,10 @@ packages:
       - typescript
     dev: true
 
-  /solidity-comments-extractor@0.0.7:
+  /solidity-comments-extractor@0.0.8:
     resolution:
       {
-        integrity: sha512-wciNMLg/Irp8OKGrh3S2tfvZiZ0NEyILfcRCXCD4mp7SgK/i9gzLfhY2hY7VMCQJ3kH9UB9BzNdibIVMchzyYw==,
+        integrity: sha512-htM7Vn6LhHreR+EglVMd2s+sZhcXAirB1Zlyrv5zBuTxieCvjfnRpd7iZk75m/u6NOlEyQ94C6TWbBn2cY7w8g==,
       }
     dev: true
 
