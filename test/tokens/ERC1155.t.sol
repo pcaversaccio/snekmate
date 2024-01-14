@@ -30,65 +30,38 @@ contract ERC1155Test is Test {
 
     function setUp() public {
         bytes memory args = abi.encode(_BASE_URI);
-        ERC1155Extended = IERC1155Extended(
-            vyperDeployer.deployContract("src/tokens/", "ERC1155", args)
-        );
+        ERC1155Extended = IERC1155Extended(vyperDeployer.deployContract("src/tokens/", "ERC1155", args));
     }
 
     function testInitialSetup() public {
         assertEq(ERC1155Extended.owner(), deployer);
         assertTrue(ERC1155Extended.is_minter(deployer));
-        assertEq(
-            ERC1155Extended.uri(0),
-            string.concat(_BASE_URI, Strings.toString(uint256(0)))
-        );
-        assertEq(
-            ERC1155Extended.uri(1),
-            string.concat(_BASE_URI, Strings.toString(uint256(1)))
-        );
+        assertEq(ERC1155Extended.uri(0), string.concat(_BASE_URI, Strings.toString(uint256(0))));
+        assertEq(ERC1155Extended.uri(1), string.concat(_BASE_URI, Strings.toString(uint256(1))));
 
         vm.expectEmit(true, true, false, false);
         emit IERC1155Extended.OwnershipTransferred(zeroAddress, deployer);
         vm.expectEmit(true, false, false, true);
         emit IERC1155Extended.RoleMinterChanged(deployer, true);
         bytes memory args = abi.encode(_BASE_URI);
-        ERC1155ExtendedInitialEvent = IERC1155Extended(
-            vyperDeployer.deployContract("src/tokens/", "ERC1155", args)
-        );
+        ERC1155ExtendedInitialEvent = IERC1155Extended(vyperDeployer.deployContract("src/tokens/", "ERC1155", args));
         assertEq(ERC1155ExtendedInitialEvent.owner(), deployer);
         assertTrue(ERC1155ExtendedInitialEvent.is_minter(deployer));
-        assertEq(
-            ERC1155ExtendedInitialEvent.uri(0),
-            string.concat(_BASE_URI, Strings.toString(uint256(0)))
-        );
-        assertEq(
-            ERC1155ExtendedInitialEvent.uri(1),
-            string.concat(_BASE_URI, Strings.toString(uint256(1)))
-        );
+        assertEq(ERC1155ExtendedInitialEvent.uri(0), string.concat(_BASE_URI, Strings.toString(uint256(0))));
+        assertEq(ERC1155ExtendedInitialEvent.uri(1), string.concat(_BASE_URI, Strings.toString(uint256(1))));
     }
 
     function testSupportsInterfaceSuccess() public {
-        assertTrue(
-            ERC1155Extended.supportsInterface(type(IERC165).interfaceId)
-        );
-        assertTrue(
-            ERC1155Extended.supportsInterface(type(IERC1155).interfaceId)
-        );
-        assertTrue(
-            ERC1155Extended.supportsInterface(
-                type(IERC1155MetadataURI).interfaceId
-            )
-        );
+        assertTrue(ERC1155Extended.supportsInterface(type(IERC165).interfaceId));
+        assertTrue(ERC1155Extended.supportsInterface(type(IERC1155).interfaceId));
+        assertTrue(ERC1155Extended.supportsInterface(type(IERC1155MetadataURI).interfaceId));
     }
 
     function testSupportsInterfaceSuccessGasCost() public {
         uint256 startGas = gasleft();
         ERC1155Extended.supportsInterface(type(IERC165).interfaceId);
         uint256 gasUsed = startGas - gasleft();
-        assertTrue(
-            gasUsed <= 30_000 &&
-                ERC1155Extended.supportsInterface(type(IERC165).interfaceId)
-        );
+        assertTrue(gasUsed <= 30_000 && ERC1155Extended.supportsInterface(type(IERC165).interfaceId));
     }
 
     function testSupportsInterfaceInvalidInterfaceId() public {
@@ -99,9 +72,7 @@ contract ERC1155Test is Test {
         uint256 startGas = gasleft();
         ERC1155Extended.supportsInterface(0x0011bbff);
         uint256 gasUsed = startGas - gasleft();
-        assertTrue(
-            gasUsed <= 30_000 && !ERC1155Extended.supportsInterface(0x0011bbff)
-        );
+        assertTrue(gasUsed <= 30_000 && !ERC1155Extended.supportsInterface(0x0011bbff));
     }
 
     function testBalanceOfCase1() public {
@@ -116,10 +87,7 @@ contract ERC1155Test is Test {
         ERC1155Extended.safe_mint(firstOwner, id1, amountFirstOwner, data);
         ERC1155Extended.safe_mint(secondOwner, id2, amountSecondOwner, data);
         assertEq(ERC1155Extended.balanceOf(firstOwner, id1), amountFirstOwner);
-        assertEq(
-            ERC1155Extended.balanceOf(secondOwner, id2),
-            amountSecondOwner
-        );
+        assertEq(ERC1155Extended.balanceOf(secondOwner, id2), amountSecondOwner);
         assertEq(ERC1155Extended.balanceOf(firstOwner, 2), 0);
         vm.stopPrank();
     }
@@ -384,27 +352,17 @@ contract ERC1155Test is Test {
         vm.stopPrank();
 
         vm.startPrank(operator);
-        vm.expectRevert(
-            bytes("ERC1155: caller is not token owner or approved")
-        );
+        vm.expectRevert(bytes("ERC1155: caller is not token owner or approved"));
         ERC1155Extended.safeTransferFrom(owner, receiver, id1, amount1, data);
         vm.stopPrank();
     }
 
     function testSafeTransferFromNoData() public {
         address owner = makeAddr("owner");
-        bytes4 receiverSingleMagicValue = IERC1155Receiver
-            .onERC1155Received
-            .selector;
-        bytes4 receiverBatchMagicValue = IERC1155Receiver
-            .onERC1155BatchReceived
-            .selector;
-        ERC1155ReceiverMock erc1155ReceiverMock = new ERC1155ReceiverMock(
-            receiverSingleMagicValue,
-            false,
-            receiverBatchMagicValue,
-            false
-        );
+        bytes4 receiverSingleMagicValue = IERC1155Receiver.onERC1155Received.selector;
+        bytes4 receiverBatchMagicValue = IERC1155Receiver.onERC1155BatchReceived.selector;
+        ERC1155ReceiverMock erc1155ReceiverMock =
+            new ERC1155ReceiverMock(receiverSingleMagicValue, false, receiverBatchMagicValue, false);
         address receiver = address(erc1155ReceiverMock);
         uint256 id1 = 1;
         uint256 amount1 = 1;
@@ -453,18 +411,10 @@ contract ERC1155Test is Test {
 
     function testSafeTransferFromWithData() public {
         address owner = makeAddr("owner");
-        bytes4 receiverSingleMagicValue = IERC1155Receiver
-            .onERC1155Received
-            .selector;
-        bytes4 receiverBatchMagicValue = IERC1155Receiver
-            .onERC1155BatchReceived
-            .selector;
-        ERC1155ReceiverMock erc1155ReceiverMock = new ERC1155ReceiverMock(
-            receiverSingleMagicValue,
-            false,
-            receiverBatchMagicValue,
-            false
-        );
+        bytes4 receiverSingleMagicValue = IERC1155Receiver.onERC1155Received.selector;
+        bytes4 receiverBatchMagicValue = IERC1155Receiver.onERC1155BatchReceived.selector;
+        ERC1155ReceiverMock erc1155ReceiverMock =
+            new ERC1155ReceiverMock(receiverSingleMagicValue, false, receiverBatchMagicValue, false);
         address receiver = address(erc1155ReceiverMock);
         uint256 id1 = 1;
         uint256 amount1 = 1;
@@ -514,15 +464,9 @@ contract ERC1155Test is Test {
     function testSafeTransferFromReceiverInvalidReturnIdentifier() public {
         address owner = makeAddr("owner");
         bytes4 receiverSingleMagicValue = 0x00bb8833;
-        bytes4 receiverBatchMagicValue = IERC1155Receiver
-            .onERC1155BatchReceived
-            .selector;
-        ERC1155ReceiverMock erc1155ReceiverMock = new ERC1155ReceiverMock(
-            receiverSingleMagicValue,
-            false,
-            receiverBatchMagicValue,
-            false
-        );
+        bytes4 receiverBatchMagicValue = IERC1155Receiver.onERC1155BatchReceived.selector;
+        ERC1155ReceiverMock erc1155ReceiverMock =
+            new ERC1155ReceiverMock(receiverSingleMagicValue, false, receiverBatchMagicValue, false);
         address receiver = address(erc1155ReceiverMock);
         uint256 id1 = 1;
         uint256 amount1 = 1;
@@ -535,9 +479,7 @@ contract ERC1155Test is Test {
         vm.stopPrank();
 
         vm.startPrank(owner);
-        vm.expectRevert(
-            bytes("ERC1155: transfer to non-ERC1155Receiver implementer")
-        );
+        vm.expectRevert(bytes("ERC1155: transfer to non-ERC1155Receiver implementer"));
         ERC1155Extended.safeTransferFrom(owner, receiver, id1, amount1, data);
         vm.stopPrank();
 
@@ -550,27 +492,17 @@ contract ERC1155Test is Test {
         vm.stopPrank();
 
         vm.startPrank(operator);
-        vm.expectRevert(
-            bytes("ERC1155: transfer to non-ERC1155Receiver implementer")
-        );
+        vm.expectRevert(bytes("ERC1155: transfer to non-ERC1155Receiver implementer"));
         ERC1155Extended.safeTransferFrom(owner, receiver, id2, amount2, data);
         vm.stopPrank();
     }
 
     function testSafeTransferFromReceiverReverts() public {
         address owner = makeAddr("owner");
-        bytes4 receiverSingleMagicValue = IERC1155Receiver
-            .onERC1155Received
-            .selector;
-        bytes4 receiverBatchMagicValue = IERC1155Receiver
-            .onERC1155BatchReceived
-            .selector;
-        ERC1155ReceiverMock erc1155ReceiverMock = new ERC1155ReceiverMock(
-            receiverSingleMagicValue,
-            true,
-            receiverBatchMagicValue,
-            false
-        );
+        bytes4 receiverSingleMagicValue = IERC1155Receiver.onERC1155Received.selector;
+        bytes4 receiverBatchMagicValue = IERC1155Receiver.onERC1155BatchReceived.selector;
+        ERC1155ReceiverMock erc1155ReceiverMock =
+            new ERC1155ReceiverMock(receiverSingleMagicValue, true, receiverBatchMagicValue, false);
         address receiver = address(erc1155ReceiverMock);
         uint256 id1 = 1;
         uint256 amount1 = 1;
@@ -643,13 +575,7 @@ contract ERC1155Test is Test {
 
         vm.startPrank(owner);
         vm.expectRevert(bytes("ERC1155: insufficient balance for transfer"));
-        ERC1155Extended.safeTransferFrom(
-            owner,
-            makeAddr("to"),
-            id,
-            ++amount,
-            data
-        );
+        ERC1155Extended.safeTransferFrom(owner, makeAddr("to"), id, ++amount, data);
         vm.stopPrank();
     }
 
@@ -691,13 +617,7 @@ contract ERC1155Test is Test {
         vm.startPrank(owner);
         vm.expectEmit(true, true, true, true);
         emit IERC1155.TransferBatch(owner, owner, receiver, ids, amounts);
-        ERC1155Extended.safeBatchTransferFrom(
-            owner,
-            receiver,
-            ids,
-            amounts,
-            data
-        );
+        ERC1155Extended.safeBatchTransferFrom(owner, receiver, ids, amounts, data);
         for (uint256 i; i < ids.length; ++i) {
             assertEq(ERC1155Extended.balanceOf(owner, ids[i]), 0);
             assertEq(ERC1155Extended.balanceOf(receiver, ids[i]), amounts[i]);
@@ -736,13 +656,7 @@ contract ERC1155Test is Test {
         vm.startPrank(operator);
         vm.expectEmit(true, true, true, true);
         emit IERC1155.TransferBatch(operator, owner, receiver, ids, amounts);
-        ERC1155Extended.safeBatchTransferFrom(
-            owner,
-            receiver,
-            ids,
-            amounts,
-            data
-        );
+        ERC1155Extended.safeBatchTransferFrom(owner, receiver, ids, amounts, data);
         for (uint256 i; i < ids.length; ++i) {
             assertEq(ERC1155Extended.balanceOf(owner, ids[i]), 0);
             assertEq(ERC1155Extended.balanceOf(receiver, ids[i]), amounts[i]);
@@ -773,33 +687,17 @@ contract ERC1155Test is Test {
         vm.stopPrank();
 
         vm.startPrank(operator);
-        vm.expectRevert(
-            bytes("ERC1155: caller is not token owner or approved")
-        );
-        ERC1155Extended.safeBatchTransferFrom(
-            owner,
-            receiver,
-            ids,
-            amounts,
-            data
-        );
+        vm.expectRevert(bytes("ERC1155: caller is not token owner or approved"));
+        ERC1155Extended.safeBatchTransferFrom(owner, receiver, ids, amounts, data);
         vm.stopPrank();
     }
 
     function testSafeBatchTransferFromNoData() public {
         address owner = makeAddr("owner");
-        bytes4 receiverSingleMagicValue = IERC1155Receiver
-            .onERC1155Received
-            .selector;
-        bytes4 receiverBatchMagicValue = IERC1155Receiver
-            .onERC1155BatchReceived
-            .selector;
-        ERC1155ReceiverMock erc1155ReceiverMock = new ERC1155ReceiverMock(
-            receiverSingleMagicValue,
-            false,
-            receiverBatchMagicValue,
-            false
-        );
+        bytes4 receiverSingleMagicValue = IERC1155Receiver.onERC1155Received.selector;
+        bytes4 receiverBatchMagicValue = IERC1155Receiver.onERC1155BatchReceived.selector;
+        ERC1155ReceiverMock erc1155ReceiverMock =
+            new ERC1155ReceiverMock(receiverSingleMagicValue, false, receiverBatchMagicValue, false);
         address receiver = address(erc1155ReceiverMock);
         uint256[] memory ids = new uint256[](4);
         uint256[] memory amounts = new uint256[](4);
@@ -822,20 +720,8 @@ contract ERC1155Test is Test {
         vm.expectEmit(true, true, true, true);
         emit IERC1155.TransferBatch(owner, owner, receiver, ids, amounts);
         vm.expectEmit(true, true, false, true, receiver);
-        emit ERC1155ReceiverMock.BatchReceived(
-            owner,
-            owner,
-            ids,
-            amounts,
-            data
-        );
-        ERC1155Extended.safeBatchTransferFrom(
-            owner,
-            receiver,
-            ids,
-            amounts,
-            data
-        );
+        emit ERC1155ReceiverMock.BatchReceived(owner, owner, ids, amounts, data);
+        ERC1155Extended.safeBatchTransferFrom(owner, receiver, ids, amounts, data);
         for (uint256 i; i < ids.length; ++i) {
             assertEq(ERC1155Extended.balanceOf(owner, ids[i]), 0);
             assertEq(ERC1155Extended.balanceOf(receiver, ids[i]), amounts[i]);
@@ -845,18 +731,10 @@ contract ERC1155Test is Test {
 
     function testSafeBatchTransferFromWithData() public {
         address owner = makeAddr("owner");
-        bytes4 receiverSingleMagicValue = IERC1155Receiver
-            .onERC1155Received
-            .selector;
-        bytes4 receiverBatchMagicValue = IERC1155Receiver
-            .onERC1155BatchReceived
-            .selector;
-        ERC1155ReceiverMock erc1155ReceiverMock = new ERC1155ReceiverMock(
-            receiverSingleMagicValue,
-            false,
-            receiverBatchMagicValue,
-            false
-        );
+        bytes4 receiverSingleMagicValue = IERC1155Receiver.onERC1155Received.selector;
+        bytes4 receiverBatchMagicValue = IERC1155Receiver.onERC1155BatchReceived.selector;
+        ERC1155ReceiverMock erc1155ReceiverMock =
+            new ERC1155ReceiverMock(receiverSingleMagicValue, false, receiverBatchMagicValue, false);
         address receiver = address(erc1155ReceiverMock);
         uint256[] memory ids = new uint256[](4);
         uint256[] memory amounts = new uint256[](4);
@@ -879,20 +757,8 @@ contract ERC1155Test is Test {
         vm.expectEmit(true, true, true, true);
         emit IERC1155.TransferBatch(owner, owner, receiver, ids, amounts);
         vm.expectEmit(true, true, false, true, receiver);
-        emit ERC1155ReceiverMock.BatchReceived(
-            owner,
-            owner,
-            ids,
-            amounts,
-            data
-        );
-        ERC1155Extended.safeBatchTransferFrom(
-            owner,
-            receiver,
-            ids,
-            amounts,
-            data
-        );
+        emit ERC1155ReceiverMock.BatchReceived(owner, owner, ids, amounts, data);
+        ERC1155Extended.safeBatchTransferFrom(owner, receiver, ids, amounts, data);
         for (uint256 i; i < ids.length; ++i) {
             assertEq(ERC1155Extended.balanceOf(owner, ids[i]), 0);
             assertEq(ERC1155Extended.balanceOf(receiver, ids[i]), amounts[i]);
@@ -902,16 +768,10 @@ contract ERC1155Test is Test {
 
     function testSafeBatchTransferFromReceiverInvalidReturnIdentifier() public {
         address owner = makeAddr("owner");
-        bytes4 receiverSingleMagicValue = IERC1155Receiver
-            .onERC1155Received
-            .selector;
+        bytes4 receiverSingleMagicValue = IERC1155Receiver.onERC1155Received.selector;
         bytes4 receiverBatchMagicValue = 0x00bb8833;
-        ERC1155ReceiverMock erc1155ReceiverMock = new ERC1155ReceiverMock(
-            receiverSingleMagicValue,
-            false,
-            receiverBatchMagicValue,
-            false
-        );
+        ERC1155ReceiverMock erc1155ReceiverMock =
+            new ERC1155ReceiverMock(receiverSingleMagicValue, false, receiverBatchMagicValue, false);
         address receiver = address(erc1155ReceiverMock);
         uint256[] memory ids = new uint256[](4);
         uint256[] memory amounts = new uint256[](4);
@@ -931,31 +791,17 @@ contract ERC1155Test is Test {
         vm.stopPrank();
 
         vm.startPrank(owner);
-        vm.expectRevert(
-            bytes("ERC1155: transfer to non-ERC1155Receiver implementer")
-        );
-        ERC1155Extended.safeBatchTransferFrom(
-            owner,
-            receiver,
-            ids,
-            amounts,
-            data
-        );
+        vm.expectRevert(bytes("ERC1155: transfer to non-ERC1155Receiver implementer"));
+        ERC1155Extended.safeBatchTransferFrom(owner, receiver, ids, amounts, data);
         vm.stopPrank();
     }
 
     function testSafeBatchTransferFromReceiverReverts() public {
         address owner = makeAddr("owner");
-        bytes4 receiverSingleMagicValue = IERC1155Receiver
-            .onERC1155Received
-            .selector;
+        bytes4 receiverSingleMagicValue = IERC1155Receiver.onERC1155Received.selector;
         bytes4 receiverBatchMagicValue = 0x00bb8833;
-        ERC1155ReceiverMock erc1155ReceiverMock = new ERC1155ReceiverMock(
-            receiverSingleMagicValue,
-            false,
-            receiverBatchMagicValue,
-            true
-        );
+        ERC1155ReceiverMock erc1155ReceiverMock =
+            new ERC1155ReceiverMock(receiverSingleMagicValue, false, receiverBatchMagicValue, true);
         address receiver = address(erc1155ReceiverMock);
         uint256[] memory ids = new uint256[](4);
         uint256[] memory amounts = new uint256[](4);
@@ -975,16 +821,8 @@ contract ERC1155Test is Test {
         vm.stopPrank();
 
         vm.startPrank(owner);
-        vm.expectRevert(
-            bytes("ERC1155ReceiverMock: reverting on batch receive")
-        );
-        ERC1155Extended.safeBatchTransferFrom(
-            owner,
-            receiver,
-            ids,
-            amounts,
-            data
-        );
+        vm.expectRevert(bytes("ERC1155ReceiverMock: reverting on batch receive"));
+        ERC1155Extended.safeBatchTransferFrom(owner, receiver, ids, amounts, data);
         vm.stopPrank();
     }
 
@@ -1009,30 +847,16 @@ contract ERC1155Test is Test {
 
         vm.startPrank(owner);
         vm.expectRevert();
-        ERC1155Extended.safeBatchTransferFrom(
-            owner,
-            deployer,
-            ids,
-            amounts,
-            data
-        );
+        ERC1155Extended.safeBatchTransferFrom(owner, deployer, ids, amounts, data);
         vm.stopPrank();
     }
 
     function testSafeBatchTransferFromReceiverRevertsOnlySingle() public {
         address owner = makeAddr("owner");
-        bytes4 receiverSingleMagicValue = IERC1155Receiver
-            .onERC1155Received
-            .selector;
-        bytes4 receiverBatchMagicValue = IERC1155Receiver
-            .onERC1155BatchReceived
-            .selector;
-        ERC1155ReceiverMock erc1155ReceiverMock = new ERC1155ReceiverMock(
-            receiverSingleMagicValue,
-            true,
-            receiverBatchMagicValue,
-            false
-        );
+        bytes4 receiverSingleMagicValue = IERC1155Receiver.onERC1155Received.selector;
+        bytes4 receiverBatchMagicValue = IERC1155Receiver.onERC1155BatchReceived.selector;
+        ERC1155ReceiverMock erc1155ReceiverMock =
+            new ERC1155ReceiverMock(receiverSingleMagicValue, true, receiverBatchMagicValue, false);
         address receiver = address(erc1155ReceiverMock);
         uint256[] memory ids = new uint256[](4);
         uint256[] memory amounts = new uint256[](4);
@@ -1055,20 +879,8 @@ contract ERC1155Test is Test {
         vm.expectEmit(true, true, true, true);
         emit IERC1155.TransferBatch(owner, owner, receiver, ids, amounts);
         vm.expectEmit(true, true, false, true, receiver);
-        emit ERC1155ReceiverMock.BatchReceived(
-            owner,
-            owner,
-            ids,
-            amounts,
-            data
-        );
-        ERC1155Extended.safeBatchTransferFrom(
-            owner,
-            receiver,
-            ids,
-            amounts,
-            data
-        );
+        emit ERC1155ReceiverMock.BatchReceived(owner, owner, ids, amounts, data);
+        ERC1155Extended.safeBatchTransferFrom(owner, receiver, ids, amounts, data);
         for (uint256 i; i < ids.length; ++i) {
             assertEq(ERC1155Extended.balanceOf(owner, ids[i]), 0);
             assertEq(ERC1155Extended.balanceOf(receiver, ids[i]), amounts[i]);
@@ -1098,13 +910,7 @@ contract ERC1155Test is Test {
         vm.startPrank(owner);
         ++amounts[3];
         vm.expectRevert(bytes("ERC1155: insufficient balance for transfer"));
-        ERC1155Extended.safeBatchTransferFrom(
-            owner,
-            makeAddr("to"),
-            ids,
-            amounts,
-            data
-        );
+        ERC1155Extended.safeBatchTransferFrom(owner, makeAddr("to"), ids, amounts, data);
         vm.stopPrank();
     }
 
@@ -1134,21 +940,9 @@ contract ERC1155Test is Test {
 
         vm.startPrank(owner);
         vm.expectRevert(bytes("ERC1155: ids and amounts length mismatch"));
-        ERC1155Extended.safeBatchTransferFrom(
-            owner,
-            receiver,
-            ids1,
-            amounts1,
-            data
-        );
+        ERC1155Extended.safeBatchTransferFrom(owner, receiver, ids1, amounts1, data);
         vm.expectRevert(bytes("ERC1155: ids and amounts length mismatch"));
-        ERC1155Extended.safeBatchTransferFrom(
-            owner,
-            receiver,
-            ids2,
-            amounts2,
-            data
-        );
+        ERC1155Extended.safeBatchTransferFrom(owner, receiver, ids2, amounts2, data);
         vm.stopPrank();
     }
 
@@ -1173,32 +967,18 @@ contract ERC1155Test is Test {
 
         vm.startPrank(owner);
         vm.expectRevert(bytes("ERC1155: transfer to the zero address"));
-        ERC1155Extended.safeBatchTransferFrom(
-            owner,
-            zeroAddress,
-            ids,
-            amounts,
-            data
-        );
+        ERC1155Extended.safeBatchTransferFrom(owner, zeroAddress, ids, amounts, data);
         vm.stopPrank();
     }
 
     function testUriNoTokenUri() public {
-        assertEq(
-            ERC1155Extended.uri(0),
-            string.concat(_BASE_URI, Strings.toString(uint256(0)))
-        );
-        assertEq(
-            ERC1155Extended.uri(1),
-            string.concat(_BASE_URI, Strings.toString(uint256(1)))
-        );
+        assertEq(ERC1155Extended.uri(0), string.concat(_BASE_URI, Strings.toString(uint256(0))));
+        assertEq(ERC1155Extended.uri(1), string.concat(_BASE_URI, Strings.toString(uint256(1))));
     }
 
     function testUriNoBaseURI() public {
         bytes memory args = abi.encode("");
-        ERC1155ExtendedNoBaseURI = IERC1155Extended(
-            vyperDeployer.deployContract("src/tokens/", "ERC1155", args)
-        );
+        ERC1155ExtendedNoBaseURI = IERC1155Extended(vyperDeployer.deployContract("src/tokens/", "ERC1155", args));
         string memory uri = "my_awesome_uri";
         uint256 id = 1;
         vm.prank(deployer);
@@ -1216,9 +996,7 @@ contract ERC1155Test is Test {
 
     function testUriBaseAndTokenUriNotSet() public {
         bytes memory args = abi.encode("");
-        ERC1155ExtendedNoBaseURI = IERC1155Extended(
-            vyperDeployer.deployContract("src/tokens/", "ERC1155", args)
-        );
+        ERC1155ExtendedNoBaseURI = IERC1155Extended(vyperDeployer.deployContract("src/tokens/", "ERC1155", args));
         uint256 id = 1;
         assertEq(ERC1155ExtendedNoBaseURI.uri(id), "");
     }
@@ -1238,15 +1016,9 @@ contract ERC1155Test is Test {
         uint256 id = 1;
         vm.prank(deployer);
         vm.expectEmit(true, false, false, true);
-        emit IERC1155.URI(
-            string.concat(_BASE_URI, Strings.toString(uint256(id))),
-            id
-        );
+        emit IERC1155.URI(string.concat(_BASE_URI, Strings.toString(uint256(id))), id);
         ERC1155Extended.set_uri(id, uri);
-        assertEq(
-            ERC1155Extended.uri(id),
-            string.concat(_BASE_URI, Strings.toString(uint256(id)))
-        );
+        assertEq(ERC1155Extended.uri(id), string.concat(_BASE_URI, Strings.toString(uint256(id))));
     }
 
     function testSetUriNonMinter() public {
@@ -1283,12 +1055,7 @@ contract ERC1155Test is Test {
         amounts[3] = 20;
 
         vm.startPrank(deployer);
-        ERC1155Extended.safe_mint_batch(
-            makeAddr("owner"),
-            ids,
-            amounts,
-            new bytes(0)
-        );
+        ERC1155Extended.safe_mint_batch(makeAddr("owner"), ids, amounts, new bytes(0));
         assertEq(ERC1155Extended.total_supply(0), 11);
         assertEq(ERC1155Extended.total_supply(1), 22);
         vm.stopPrank();
@@ -1363,12 +1130,7 @@ contract ERC1155Test is Test {
         amounts[3] = 20;
 
         vm.startPrank(deployer);
-        ERC1155Extended.safe_mint_batch(
-            makeAddr("owner"),
-            ids,
-            amounts,
-            new bytes(0)
-        );
+        ERC1155Extended.safe_mint_batch(makeAddr("owner"), ids, amounts, new bytes(0));
         assertTrue(ERC1155Extended.exists(0));
         assertTrue(ERC1155Extended.exists(1));
         vm.stopPrank();
@@ -1429,13 +1191,7 @@ contract ERC1155Test is Test {
 
         vm.startPrank(firstOwner);
         vm.expectEmit(true, true, true, true);
-        emit IERC1155.TransferSingle(
-            firstOwner,
-            firstOwner,
-            zeroAddress,
-            id,
-            burnAmount
-        );
+        emit IERC1155.TransferSingle(firstOwner, firstOwner, zeroAddress, id, burnAmount);
         ERC1155Extended.burn(firstOwner, id, 10);
         assertEq(ERC1155Extended.total_supply(0), 25);
         assertEq(ERC1155Extended.balanceOf(firstOwner, id), 5);
@@ -1466,13 +1222,7 @@ contract ERC1155Test is Test {
 
         vm.startPrank(operator);
         vm.expectEmit(true, true, true, true);
-        emit IERC1155.TransferSingle(
-            operator,
-            owner,
-            zeroAddress,
-            id1,
-            burnAmount
-        );
+        emit IERC1155.TransferSingle(operator, owner, zeroAddress, id1, burnAmount);
         ERC1155Extended.burn(owner, id1, burnAmount);
         assertEq(ERC1155Extended.total_supply(id1), amount1 - burnAmount);
         assertEq(ERC1155Extended.total_supply(id2), amount2);
@@ -1498,9 +1248,7 @@ contract ERC1155Test is Test {
         vm.stopPrank();
 
         vm.startPrank(operator);
-        vm.expectRevert(
-            bytes("ERC1155: caller is not token owner or approved")
-        );
+        vm.expectRevert(bytes("ERC1155: caller is not token owner or approved"));
         ERC1155Extended.burn(owner, id1, burnAmount);
         vm.stopPrank();
     }
@@ -1628,9 +1376,7 @@ contract ERC1155Test is Test {
         amounts[3] = 20;
 
         vm.startPrank(operator);
-        vm.expectRevert(
-            bytes("ERC1155: caller is not token owner or approved")
-        );
+        vm.expectRevert(bytes("ERC1155: caller is not token owner or approved"));
         ERC1155Extended.burn_batch(owner, ids, amounts);
         vm.stopPrank();
     }
@@ -1737,23 +1483,11 @@ contract ERC1155Test is Test {
         bytes memory data = new bytes(0);
         vm.startPrank(deployer);
         vm.expectEmit(true, true, true, true);
-        emit IERC1155.TransferSingle(
-            deployer,
-            zeroAddress,
-            receiver,
-            id1,
-            amount1
-        );
+        emit IERC1155.TransferSingle(deployer, zeroAddress, receiver, id1, amount1);
         ERC1155Extended.safe_mint(receiver, id1, amount1, data);
 
         vm.expectEmit(true, true, true, true);
-        emit IERC1155.TransferSingle(
-            deployer,
-            zeroAddress,
-            receiver,
-            id2,
-            amount2
-        );
+        emit IERC1155.TransferSingle(deployer, zeroAddress, receiver, id2, amount2);
         ERC1155Extended.safe_mint(receiver, id2, amount2, data);
         assertEq(ERC1155Extended.total_supply(id1), amount1);
         assertEq(ERC1155Extended.total_supply(id2), amount2);
@@ -1763,18 +1497,10 @@ contract ERC1155Test is Test {
     }
 
     function testSafeMintNoData() public {
-        bytes4 receiverSingleMagicValue = IERC1155Receiver
-            .onERC1155Received
-            .selector;
-        bytes4 receiverBatchMagicValue = IERC1155Receiver
-            .onERC1155BatchReceived
-            .selector;
-        ERC1155ReceiverMock erc1155ReceiverMock = new ERC1155ReceiverMock(
-            receiverSingleMagicValue,
-            false,
-            receiverBatchMagicValue,
-            false
-        );
+        bytes4 receiverSingleMagicValue = IERC1155Receiver.onERC1155Received.selector;
+        bytes4 receiverBatchMagicValue = IERC1155Receiver.onERC1155BatchReceived.selector;
+        ERC1155ReceiverMock erc1155ReceiverMock =
+            new ERC1155ReceiverMock(receiverSingleMagicValue, false, receiverBatchMagicValue, false);
         address receiver = address(erc1155ReceiverMock);
         uint256 id1 = 1;
         uint256 amount1 = 1;
@@ -1783,23 +1509,11 @@ contract ERC1155Test is Test {
         bytes memory data = new bytes(0);
         vm.startPrank(deployer);
         vm.expectEmit(true, true, true, true);
-        emit IERC1155.TransferSingle(
-            deployer,
-            zeroAddress,
-            receiver,
-            id1,
-            amount1
-        );
+        emit IERC1155.TransferSingle(deployer, zeroAddress, receiver, id1, amount1);
         ERC1155Extended.safe_mint(receiver, id1, amount1, data);
 
         vm.expectEmit(true, true, true, true);
-        emit IERC1155.TransferSingle(
-            deployer,
-            zeroAddress,
-            receiver,
-            id2,
-            amount2
-        );
+        emit IERC1155.TransferSingle(deployer, zeroAddress, receiver, id2, amount2);
         ERC1155Extended.safe_mint(receiver, id2, amount2, data);
         assertEq(ERC1155Extended.total_supply(id1), amount1);
         assertEq(ERC1155Extended.total_supply(id2), amount2);
@@ -1809,18 +1523,10 @@ contract ERC1155Test is Test {
     }
 
     function testSafeMintWithData() public {
-        bytes4 receiverSingleMagicValue = IERC1155Receiver
-            .onERC1155Received
-            .selector;
-        bytes4 receiverBatchMagicValue = IERC1155Receiver
-            .onERC1155BatchReceived
-            .selector;
-        ERC1155ReceiverMock erc1155ReceiverMock = new ERC1155ReceiverMock(
-            receiverSingleMagicValue,
-            false,
-            receiverBatchMagicValue,
-            false
-        );
+        bytes4 receiverSingleMagicValue = IERC1155Receiver.onERC1155Received.selector;
+        bytes4 receiverBatchMagicValue = IERC1155Receiver.onERC1155BatchReceived.selector;
+        ERC1155ReceiverMock erc1155ReceiverMock =
+            new ERC1155ReceiverMock(receiverSingleMagicValue, false, receiverBatchMagicValue, false);
         address receiver = address(erc1155ReceiverMock);
         uint256 id1 = 1;
         uint256 amount1 = 1;
@@ -1829,23 +1535,11 @@ contract ERC1155Test is Test {
         bytes memory data = new bytes(42);
         vm.startPrank(deployer);
         vm.expectEmit(true, true, true, true);
-        emit IERC1155.TransferSingle(
-            deployer,
-            zeroAddress,
-            receiver,
-            id1,
-            amount1
-        );
+        emit IERC1155.TransferSingle(deployer, zeroAddress, receiver, id1, amount1);
         ERC1155Extended.safe_mint(receiver, id1, amount1, data);
 
         vm.expectEmit(true, true, true, true);
-        emit IERC1155.TransferSingle(
-            deployer,
-            zeroAddress,
-            receiver,
-            id2,
-            amount2
-        );
+        emit IERC1155.TransferSingle(deployer, zeroAddress, receiver, id2, amount2);
         ERC1155Extended.safe_mint(receiver, id2, amount2, data);
         assertEq(ERC1155Extended.total_supply(id1), amount1);
         assertEq(ERC1155Extended.total_supply(id2), amount2);
@@ -1856,15 +1550,9 @@ contract ERC1155Test is Test {
 
     function testSafeMintReceiverInvalidReturnIdentifier() public {
         bytes4 receiverSingleMagicValue = 0x00bb8833;
-        bytes4 receiverBatchMagicValue = IERC1155Receiver
-            .onERC1155BatchReceived
-            .selector;
-        ERC1155ReceiverMock erc1155ReceiverMock = new ERC1155ReceiverMock(
-            receiverSingleMagicValue,
-            false,
-            receiverBatchMagicValue,
-            false
-        );
+        bytes4 receiverBatchMagicValue = IERC1155Receiver.onERC1155BatchReceived.selector;
+        ERC1155ReceiverMock erc1155ReceiverMock =
+            new ERC1155ReceiverMock(receiverSingleMagicValue, false, receiverBatchMagicValue, false);
         address receiver = address(erc1155ReceiverMock);
         uint256 id1 = 1;
         uint256 amount1 = 1;
@@ -1872,31 +1560,19 @@ contract ERC1155Test is Test {
         uint256 amount2 = 15;
         bytes memory data = new bytes(0);
         vm.startPrank(deployer);
-        vm.expectRevert(
-            bytes("ERC1155: transfer to non-ERC1155Receiver implementer")
-        );
+        vm.expectRevert(bytes("ERC1155: transfer to non-ERC1155Receiver implementer"));
         ERC1155Extended.safe_mint(receiver, id1, amount1, data);
 
-        vm.expectRevert(
-            bytes("ERC1155: transfer to non-ERC1155Receiver implementer")
-        );
+        vm.expectRevert(bytes("ERC1155: transfer to non-ERC1155Receiver implementer"));
         ERC1155Extended.safe_mint(receiver, id2, amount2, data);
         vm.stopPrank();
     }
 
     function testSafeMintReceiverReverts() public {
-        bytes4 receiverSingleMagicValue = IERC1155Receiver
-            .onERC1155Received
-            .selector;
-        bytes4 receiverBatchMagicValue = IERC1155Receiver
-            .onERC1155BatchReceived
-            .selector;
-        ERC1155ReceiverMock erc1155ReceiverMock = new ERC1155ReceiverMock(
-            receiverSingleMagicValue,
-            true,
-            receiverBatchMagicValue,
-            false
-        );
+        bytes4 receiverSingleMagicValue = IERC1155Receiver.onERC1155Received.selector;
+        bytes4 receiverBatchMagicValue = IERC1155Receiver.onERC1155BatchReceived.selector;
+        ERC1155ReceiverMock erc1155ReceiverMock =
+            new ERC1155ReceiverMock(receiverSingleMagicValue, true, receiverBatchMagicValue, false);
         address receiver = address(erc1155ReceiverMock);
         uint256 id1 = 1;
         uint256 amount1 = 1;
@@ -1966,13 +1642,7 @@ contract ERC1155Test is Test {
         bytes memory data = new bytes(0);
         vm.startPrank(deployer);
         vm.expectEmit(true, true, true, true);
-        emit IERC1155.TransferSingle(
-            deployer,
-            zeroAddress,
-            receiver,
-            id,
-            amount
-        );
+        emit IERC1155.TransferSingle(deployer, zeroAddress, receiver, id, amount);
         ERC1155Extended.safe_mint(receiver, id, amount, data);
 
         vm.expectRevert();
@@ -1997,13 +1667,7 @@ contract ERC1155Test is Test {
 
         vm.startPrank(deployer);
         vm.expectEmit(true, true, true, true);
-        emit IERC1155.TransferBatch(
-            deployer,
-            zeroAddress,
-            receiver,
-            ids,
-            amounts
-        );
+        emit IERC1155.TransferBatch(deployer, zeroAddress, receiver, ids, amounts);
         ERC1155Extended.safe_mint_batch(receiver, ids, amounts, data);
         for (uint256 i; i < ids.length; ++i) {
             assertEq(ERC1155Extended.total_supply(ids[i]), amounts[i]);
@@ -2013,18 +1677,10 @@ contract ERC1155Test is Test {
     }
 
     function testSafeMintBatchNoData() public {
-        bytes4 receiverSingleMagicValue = IERC1155Receiver
-            .onERC1155Received
-            .selector;
-        bytes4 receiverBatchMagicValue = IERC1155Receiver
-            .onERC1155BatchReceived
-            .selector;
-        ERC1155ReceiverMock erc1155ReceiverMock = new ERC1155ReceiverMock(
-            receiverSingleMagicValue,
-            false,
-            receiverBatchMagicValue,
-            false
-        );
+        bytes4 receiverSingleMagicValue = IERC1155Receiver.onERC1155Received.selector;
+        bytes4 receiverBatchMagicValue = IERC1155Receiver.onERC1155BatchReceived.selector;
+        ERC1155ReceiverMock erc1155ReceiverMock =
+            new ERC1155ReceiverMock(receiverSingleMagicValue, false, receiverBatchMagicValue, false);
         address receiver = address(erc1155ReceiverMock);
         uint256[] memory ids = new uint256[](4);
         uint256[] memory amounts = new uint256[](4);
@@ -2041,13 +1697,7 @@ contract ERC1155Test is Test {
 
         vm.startPrank(deployer);
         vm.expectEmit(true, true, true, true);
-        emit IERC1155.TransferBatch(
-            deployer,
-            zeroAddress,
-            receiver,
-            ids,
-            amounts
-        );
+        emit IERC1155.TransferBatch(deployer, zeroAddress, receiver, ids, amounts);
         ERC1155Extended.safe_mint_batch(receiver, ids, amounts, data);
         for (uint256 i; i < ids.length; ++i) {
             assertEq(ERC1155Extended.total_supply(ids[i]), amounts[i]);
@@ -2057,18 +1707,10 @@ contract ERC1155Test is Test {
     }
 
     function testSafeMintBatchWithData() public {
-        bytes4 receiverSingleMagicValue = IERC1155Receiver
-            .onERC1155Received
-            .selector;
-        bytes4 receiverBatchMagicValue = IERC1155Receiver
-            .onERC1155BatchReceived
-            .selector;
-        ERC1155ReceiverMock erc1155ReceiverMock = new ERC1155ReceiverMock(
-            receiverSingleMagicValue,
-            false,
-            receiverBatchMagicValue,
-            false
-        );
+        bytes4 receiverSingleMagicValue = IERC1155Receiver.onERC1155Received.selector;
+        bytes4 receiverBatchMagicValue = IERC1155Receiver.onERC1155BatchReceived.selector;
+        ERC1155ReceiverMock erc1155ReceiverMock =
+            new ERC1155ReceiverMock(receiverSingleMagicValue, false, receiverBatchMagicValue, false);
         address receiver = address(erc1155ReceiverMock);
         uint256[] memory ids = new uint256[](4);
         uint256[] memory amounts = new uint256[](4);
@@ -2085,13 +1727,7 @@ contract ERC1155Test is Test {
 
         vm.startPrank(deployer);
         vm.expectEmit(true, true, true, true);
-        emit IERC1155.TransferBatch(
-            deployer,
-            zeroAddress,
-            receiver,
-            ids,
-            amounts
-        );
+        emit IERC1155.TransferBatch(deployer, zeroAddress, receiver, ids, amounts);
         ERC1155Extended.safe_mint_batch(receiver, ids, amounts, data);
         for (uint256 i; i < ids.length; ++i) {
             assertEq(ERC1155Extended.total_supply(ids[i]), amounts[i]);
@@ -2101,16 +1737,10 @@ contract ERC1155Test is Test {
     }
 
     function testSafeMintBatchReceiverInvalidReturnIdentifier() public {
-        bytes4 receiverSingleMagicValue = IERC1155Receiver
-            .onERC1155Received
-            .selector;
+        bytes4 receiverSingleMagicValue = IERC1155Receiver.onERC1155Received.selector;
         bytes4 receiverBatchMagicValue = 0x00bb8833;
-        ERC1155ReceiverMock erc1155ReceiverMock = new ERC1155ReceiverMock(
-            receiverSingleMagicValue,
-            false,
-            receiverBatchMagicValue,
-            false
-        );
+        ERC1155ReceiverMock erc1155ReceiverMock =
+            new ERC1155ReceiverMock(receiverSingleMagicValue, false, receiverBatchMagicValue, false);
         address receiver = address(erc1155ReceiverMock);
         uint256[] memory ids = new uint256[](4);
         uint256[] memory amounts = new uint256[](4);
@@ -2126,24 +1756,16 @@ contract ERC1155Test is Test {
         amounts[3] = 20;
 
         vm.startPrank(deployer);
-        vm.expectRevert(
-            bytes("ERC1155: transfer to non-ERC1155Receiver implementer")
-        );
+        vm.expectRevert(bytes("ERC1155: transfer to non-ERC1155Receiver implementer"));
         ERC1155Extended.safe_mint_batch(receiver, ids, amounts, data);
         vm.stopPrank();
     }
 
     function testSafeMintBatchReceiverReverts() public {
-        bytes4 receiverSingleMagicValue = IERC1155Receiver
-            .onERC1155Received
-            .selector;
+        bytes4 receiverSingleMagicValue = IERC1155Receiver.onERC1155Received.selector;
         bytes4 receiverBatchMagicValue = 0x00bb8833;
-        ERC1155ReceiverMock erc1155ReceiverMock = new ERC1155ReceiverMock(
-            receiverSingleMagicValue,
-            false,
-            receiverBatchMagicValue,
-            true
-        );
+        ERC1155ReceiverMock erc1155ReceiverMock =
+            new ERC1155ReceiverMock(receiverSingleMagicValue, false, receiverBatchMagicValue, true);
         address receiver = address(erc1155ReceiverMock);
         uint256[] memory ids = new uint256[](4);
         uint256[] memory amounts = new uint256[](4);
@@ -2159,9 +1781,7 @@ contract ERC1155Test is Test {
         amounts[3] = 20;
 
         vm.startPrank(deployer);
-        vm.expectRevert(
-            bytes("ERC1155ReceiverMock: reverting on batch receive")
-        );
+        vm.expectRevert(bytes("ERC1155ReceiverMock: reverting on batch receive"));
         ERC1155Extended.safe_mint_batch(receiver, ids, amounts, data);
         vm.stopPrank();
     }
@@ -2187,18 +1807,10 @@ contract ERC1155Test is Test {
     }
 
     function testSafeMintBatchReceiverRevertsOnlySingle() public {
-        bytes4 receiverSingleMagicValue = IERC1155Receiver
-            .onERC1155Received
-            .selector;
-        bytes4 receiverBatchMagicValue = IERC1155Receiver
-            .onERC1155BatchReceived
-            .selector;
-        ERC1155ReceiverMock erc1155ReceiverMock = new ERC1155ReceiverMock(
-            receiverSingleMagicValue,
-            true,
-            receiverBatchMagicValue,
-            false
-        );
+        bytes4 receiverSingleMagicValue = IERC1155Receiver.onERC1155Received.selector;
+        bytes4 receiverBatchMagicValue = IERC1155Receiver.onERC1155BatchReceived.selector;
+        ERC1155ReceiverMock erc1155ReceiverMock =
+            new ERC1155ReceiverMock(receiverSingleMagicValue, true, receiverBatchMagicValue, false);
         address receiver = address(erc1155ReceiverMock);
         uint256[] memory ids = new uint256[](4);
         uint256[] memory amounts = new uint256[](4);
@@ -2215,13 +1827,7 @@ contract ERC1155Test is Test {
 
         vm.startPrank(deployer);
         vm.expectEmit(true, true, true, true);
-        emit IERC1155.TransferBatch(
-            deployer,
-            zeroAddress,
-            receiver,
-            ids,
-            amounts
-        );
+        emit IERC1155.TransferBatch(deployer, zeroAddress, receiver, ids, amounts);
         ERC1155Extended.safe_mint_batch(receiver, ids, amounts, data);
         for (uint256 i; i < ids.length; ++i) {
             assertEq(ERC1155Extended.total_supply(ids[i]), amounts[i]);
@@ -2318,13 +1924,7 @@ contract ERC1155Test is Test {
 
         vm.startPrank(deployer);
         vm.expectEmit(true, true, true, true);
-        emit IERC1155.TransferBatch(
-            deployer,
-            zeroAddress,
-            receiver,
-            ids,
-            amounts
-        );
+        emit IERC1155.TransferBatch(deployer, zeroAddress, receiver, ids, amounts);
         ERC1155Extended.safe_mint_batch(receiver, ids, amounts, data);
 
         vm.expectRevert();
@@ -2416,10 +2016,7 @@ contract ERC1155Test is Test {
         ERC1155Extended.renounce_ownership();
     }
 
-    function testFuzzSetApprovalForAllSuccess(
-        address owner,
-        address operator
-    ) public {
+    function testFuzzSetApprovalForAllSuccess(address owner, address operator) public {
         vm.assume(owner != operator);
         bool approved = true;
         assertTrue(!ERC1155Extended.isApprovedForAll(owner, operator));
@@ -2436,10 +2033,7 @@ contract ERC1155Test is Test {
         vm.stopPrank();
     }
 
-    function testFuzzSetApprovalForAllRevoke(
-        address owner,
-        address operator
-    ) public {
+    function testFuzzSetApprovalForAllRevoke(address owner, address operator) public {
         vm.assume(owner != operator);
         bool approved = true;
         assertTrue(!ERC1155Extended.isApprovedForAll(owner, operator));
@@ -2466,11 +2060,8 @@ contract ERC1155Test is Test {
         bytes calldata data
     ) public {
         vm.assume(
-            owner != zeroAddress &&
-                owner != receiver &&
-                owner.code.length == 0 &&
-                receiver != zeroAddress &&
-                receiver.code.length == 0
+            owner != zeroAddress && owner != receiver && owner.code.length == 0 && receiver != zeroAddress
+                && receiver.code.length == 0
         );
         vm.assume(id1 != id2 && amount1 > 0 && amount2 > 0);
         vm.startPrank(deployer);
@@ -2500,14 +2091,8 @@ contract ERC1155Test is Test {
         bytes calldata data
     ) public {
         vm.assume(
-            owner != zeroAddress &&
-                owner != receiver &&
-                owner != operator &&
-                owner.code.length == 0 &&
-                receiver != operator &&
-                receiver != zeroAddress &&
-                operator != zeroAddress &&
-                receiver.code.length == 0
+            owner != zeroAddress && owner != receiver && owner != operator && owner.code.length == 0
+                && receiver != operator && receiver != zeroAddress && operator != zeroAddress && receiver.code.length == 0
         );
         vm.assume(id1 != id2 && amount1 > 0 && amount2 > 0);
         bool approved = true;
@@ -2535,32 +2120,14 @@ contract ERC1155Test is Test {
         vm.stopPrank();
     }
 
-    function testFuzzSafeTransferFromNoData(
-        address owner,
-        uint256 id1,
-        uint256 amount1,
-        uint256 id2,
-        uint256 amount2
-    ) public {
-        vm.assume(
-            owner != zeroAddress &&
-                owner.code.length == 0 &&
-                id1 != id2 &&
-                amount1 > 0 &&
-                amount2 > 0
-        );
-        bytes4 receiverSingleMagicValue = IERC1155Receiver
-            .onERC1155Received
-            .selector;
-        bytes4 receiverBatchMagicValue = IERC1155Receiver
-            .onERC1155BatchReceived
-            .selector;
-        ERC1155ReceiverMock erc1155ReceiverMock = new ERC1155ReceiverMock(
-            receiverSingleMagicValue,
-            false,
-            receiverBatchMagicValue,
-            false
-        );
+    function testFuzzSafeTransferFromNoData(address owner, uint256 id1, uint256 amount1, uint256 id2, uint256 amount2)
+        public
+    {
+        vm.assume(owner != zeroAddress && owner.code.length == 0 && id1 != id2 && amount1 > 0 && amount2 > 0);
+        bytes4 receiverSingleMagicValue = IERC1155Receiver.onERC1155Received.selector;
+        bytes4 receiverBatchMagicValue = IERC1155Receiver.onERC1155BatchReceived.selector;
+        ERC1155ReceiverMock erc1155ReceiverMock =
+            new ERC1155ReceiverMock(receiverSingleMagicValue, false, receiverBatchMagicValue, false);
         address receiver = address(erc1155ReceiverMock);
         vm.assume(owner != receiver);
         bytes memory data = new bytes(0);
@@ -2613,25 +2180,11 @@ contract ERC1155Test is Test {
         uint256 amount2,
         bytes calldata data
     ) public {
-        vm.assume(
-            owner != zeroAddress &&
-                owner.code.length == 0 &&
-                id1 != id2 &&
-                amount1 > 0 &&
-                amount2 > 0
-        );
-        bytes4 receiverSingleMagicValue = IERC1155Receiver
-            .onERC1155Received
-            .selector;
-        bytes4 receiverBatchMagicValue = IERC1155Receiver
-            .onERC1155BatchReceived
-            .selector;
-        ERC1155ReceiverMock erc1155ReceiverMock = new ERC1155ReceiverMock(
-            receiverSingleMagicValue,
-            false,
-            receiverBatchMagicValue,
-            false
-        );
+        vm.assume(owner != zeroAddress && owner.code.length == 0 && id1 != id2 && amount1 > 0 && amount2 > 0);
+        bytes4 receiverSingleMagicValue = IERC1155Receiver.onERC1155Received.selector;
+        bytes4 receiverBatchMagicValue = IERC1155Receiver.onERC1155BatchReceived.selector;
+        ERC1155ReceiverMock erc1155ReceiverMock =
+            new ERC1155ReceiverMock(receiverSingleMagicValue, false, receiverBatchMagicValue, false);
         address receiver = address(erc1155ReceiverMock);
         vm.assume(owner != receiver);
         vm.startPrank(deployer);
@@ -2685,11 +2238,8 @@ contract ERC1155Test is Test {
         bytes calldata data
     ) public {
         vm.assume(
-            owner != zeroAddress &&
-                owner != receiver &&
-                owner.code.length == 0 &&
-                receiver != zeroAddress &&
-                receiver.code.length == 0
+            owner != zeroAddress && owner != receiver && owner.code.length == 0 && receiver != zeroAddress
+                && receiver.code.length == 0
         );
         vm.assume(id1 != id2 && amount1 > 0 && amount2 > 0);
         uint256[] memory ids = new uint256[](2);
@@ -2706,13 +2256,7 @@ contract ERC1155Test is Test {
         vm.startPrank(owner);
         vm.expectEmit(true, true, true, true);
         emit IERC1155.TransferBatch(owner, owner, receiver, ids, amounts);
-        ERC1155Extended.safeBatchTransferFrom(
-            owner,
-            receiver,
-            ids,
-            amounts,
-            data
-        );
+        ERC1155Extended.safeBatchTransferFrom(owner, receiver, ids, amounts, data);
         for (uint256 i; i < ids.length; ++i) {
             assertEq(ERC1155Extended.balanceOf(owner, ids[i]), 0);
             assertEq(ERC1155Extended.balanceOf(receiver, ids[i]), amounts[i]);
@@ -2731,14 +2275,8 @@ contract ERC1155Test is Test {
         bytes calldata data
     ) public {
         vm.assume(
-            owner != zeroAddress &&
-                owner != receiver &&
-                owner != operator &&
-                owner.code.length == 0 &&
-                receiver != operator &&
-                receiver != zeroAddress &&
-                operator != zeroAddress &&
-                receiver.code.length == 0
+            owner != zeroAddress && owner != receiver && owner != operator && owner.code.length == 0
+                && receiver != operator && receiver != zeroAddress && operator != zeroAddress && receiver.code.length == 0
         );
         vm.assume(id1 != id2 && amount1 > 0 && amount2 > 0);
         bool approved = true;
@@ -2763,13 +2301,7 @@ contract ERC1155Test is Test {
         vm.startPrank(operator);
         vm.expectEmit(true, true, true, true);
         emit IERC1155.TransferBatch(operator, owner, receiver, ids, amounts);
-        ERC1155Extended.safeBatchTransferFrom(
-            owner,
-            receiver,
-            ids,
-            amounts,
-            data
-        );
+        ERC1155Extended.safeBatchTransferFrom(owner, receiver, ids, amounts, data);
         for (uint256 i; i < ids.length; ++i) {
             assertEq(ERC1155Extended.balanceOf(owner, ids[i]), 0);
             assertEq(ERC1155Extended.balanceOf(receiver, ids[i]), amounts[i]);
@@ -2785,25 +2317,11 @@ contract ERC1155Test is Test {
         uint256 id2,
         uint256 amount2
     ) public {
-        vm.assume(
-            owner != zeroAddress &&
-                owner.code.length == 0 &&
-                id1 != id2 &&
-                amount1 > 0 &&
-                amount2 > 0
-        );
-        bytes4 receiverSingleMagicValue = IERC1155Receiver
-            .onERC1155Received
-            .selector;
-        bytes4 receiverBatchMagicValue = IERC1155Receiver
-            .onERC1155BatchReceived
-            .selector;
-        ERC1155ReceiverMock erc1155ReceiverMock = new ERC1155ReceiverMock(
-            receiverSingleMagicValue,
-            false,
-            receiverBatchMagicValue,
-            false
-        );
+        vm.assume(owner != zeroAddress && owner.code.length == 0 && id1 != id2 && amount1 > 0 && amount2 > 0);
+        bytes4 receiverSingleMagicValue = IERC1155Receiver.onERC1155Received.selector;
+        bytes4 receiverBatchMagicValue = IERC1155Receiver.onERC1155BatchReceived.selector;
+        ERC1155ReceiverMock erc1155ReceiverMock =
+            new ERC1155ReceiverMock(receiverSingleMagicValue, false, receiverBatchMagicValue, false);
         address receiver = address(erc1155ReceiverMock);
         vm.assume(owner != receiver);
         uint256[] memory ids = new uint256[](2);
@@ -2823,20 +2341,8 @@ contract ERC1155Test is Test {
         vm.expectEmit(true, true, true, true);
         emit IERC1155.TransferBatch(owner, owner, receiver, ids, amounts);
         vm.expectEmit(true, true, false, true, receiver);
-        emit ERC1155ReceiverMock.BatchReceived(
-            owner,
-            owner,
-            ids,
-            amounts,
-            data
-        );
-        ERC1155Extended.safeBatchTransferFrom(
-            owner,
-            receiver,
-            ids,
-            amounts,
-            data
-        );
+        emit ERC1155ReceiverMock.BatchReceived(owner, owner, ids, amounts, data);
+        ERC1155Extended.safeBatchTransferFrom(owner, receiver, ids, amounts, data);
         for (uint256 i; i < ids.length; ++i) {
             assertEq(ERC1155Extended.balanceOf(owner, ids[i]), 0);
             assertEq(ERC1155Extended.balanceOf(receiver, ids[i]), amounts[i]);
@@ -2851,25 +2357,11 @@ contract ERC1155Test is Test {
         uint256 id2,
         uint256 amount2
     ) public {
-        vm.assume(
-            owner != zeroAddress &&
-                owner.code.length == 0 &&
-                id1 != id2 &&
-                amount1 > 0 &&
-                amount2 > 0
-        );
-        bytes4 receiverSingleMagicValue = IERC1155Receiver
-            .onERC1155Received
-            .selector;
-        bytes4 receiverBatchMagicValue = IERC1155Receiver
-            .onERC1155BatchReceived
-            .selector;
-        ERC1155ReceiverMock erc1155ReceiverMock = new ERC1155ReceiverMock(
-            receiverSingleMagicValue,
-            false,
-            receiverBatchMagicValue,
-            false
-        );
+        vm.assume(owner != zeroAddress && owner.code.length == 0 && id1 != id2 && amount1 > 0 && amount2 > 0);
+        bytes4 receiverSingleMagicValue = IERC1155Receiver.onERC1155Received.selector;
+        bytes4 receiverBatchMagicValue = IERC1155Receiver.onERC1155BatchReceived.selector;
+        ERC1155ReceiverMock erc1155ReceiverMock =
+            new ERC1155ReceiverMock(receiverSingleMagicValue, false, receiverBatchMagicValue, false);
         address receiver = address(erc1155ReceiverMock);
         vm.assume(owner != receiver);
         /**
@@ -2893,20 +2385,8 @@ contract ERC1155Test is Test {
         vm.expectEmit(true, true, true, true);
         emit IERC1155.TransferBatch(owner, owner, receiver, ids, amounts);
         vm.expectEmit(true, true, false, true, receiver);
-        emit ERC1155ReceiverMock.BatchReceived(
-            owner,
-            owner,
-            ids,
-            amounts,
-            data
-        );
-        ERC1155Extended.safeBatchTransferFrom(
-            owner,
-            receiver,
-            ids,
-            amounts,
-            data
-        );
+        emit ERC1155ReceiverMock.BatchReceived(owner, owner, ids, amounts, data);
+        ERC1155Extended.safeBatchTransferFrom(owner, receiver, ids, amounts, data);
         for (uint256 i; i < ids.length; ++i) {
             assertEq(ERC1155Extended.balanceOf(owner, ids[i]), 0);
             assertEq(ERC1155Extended.balanceOf(receiver, ids[i]), amounts[i]);
@@ -2921,19 +2401,10 @@ contract ERC1155Test is Test {
         ERC1155Extended.set_uri(1, "my_awesome_uri");
     }
 
-    function testFuzzTotalSupplyAfterSingleMint(
-        uint256 id,
-        uint256 amount,
-        bytes calldata data
-    ) public {
+    function testFuzzTotalSupplyAfterSingleMint(uint256 id, uint256 amount, bytes calldata data) public {
         vm.startPrank(deployer);
         ERC1155Extended.safe_mint(makeAddr("firstOwner"), id, amount % 2, data);
-        ERC1155Extended.safe_mint(
-            makeAddr("secondOwner"),
-            id,
-            amount % 2,
-            data
-        );
+        ERC1155Extended.safe_mint(makeAddr("secondOwner"), id, amount % 2, data);
         assertEq(ERC1155Extended.total_supply(id), 2 * (amount % 2));
         vm.stopPrank();
     }
@@ -2945,13 +2416,7 @@ contract ERC1155Test is Test {
         uint256 id2,
         uint256 amount2
     ) public {
-        vm.assume(
-            owner != zeroAddress &&
-                owner.code.length == 0 &&
-                id1 != id2 &&
-                amount1 > 0 &&
-                amount2 > 0
-        );
+        vm.assume(owner != zeroAddress && owner.code.length == 0 && id1 != id2 && amount1 > 0 && amount2 > 0);
         uint256[] memory ids = new uint256[](2);
         uint256[] memory amounts = new uint256[](2);
 
@@ -2961,28 +2426,14 @@ contract ERC1155Test is Test {
         amounts[1] = amount2;
 
         vm.startPrank(deployer);
-        ERC1155Extended.safe_mint_batch(
-            owner,
-            ids,
-            amounts,
-            new bytes(id2 % 2)
-        );
+        ERC1155Extended.safe_mint_batch(owner, ids, amounts, new bytes(id2 % 2));
         assertEq(ERC1155Extended.total_supply(ids[0]), amounts[0]);
         assertEq(ERC1155Extended.total_supply(ids[1]), amounts[1]);
         vm.stopPrank();
     }
 
-    function testFuzzTotalSupplyAfterSingleBurn(
-        address owner,
-        uint256 id,
-        bytes calldata data
-    ) public {
-        vm.assume(
-            owner != zeroAddress &&
-                owner != makeAddr("secondOwner") &&
-                owner.code.length == 0 &&
-                id > 0
-        );
+    function testFuzzTotalSupplyAfterSingleBurn(address owner, uint256 id, bytes calldata data) public {
+        vm.assume(owner != zeroAddress && owner != makeAddr("secondOwner") && owner.code.length == 0 && id > 0);
         vm.startPrank(deployer);
         ERC1155Extended.safe_mint(owner, id, 15, data);
         ERC1155Extended.safe_mint(makeAddr("secondOwner"), id, 20, data);
@@ -3001,13 +2452,7 @@ contract ERC1155Test is Test {
         uint256 id2,
         uint256 amount2
     ) public {
-        vm.assume(
-            owner != zeroAddress &&
-                owner.code.length == 0 &&
-                id1 != id2 &&
-                amount1 > 0 &&
-                amount2 > 0
-        );
+        vm.assume(owner != zeroAddress && owner.code.length == 0 && id1 != id2 && amount1 > 0 && amount2 > 0);
         uint256[] memory ids = new uint256[](2);
         uint256[] memory amounts = new uint256[](2);
 
@@ -3017,12 +2462,7 @@ contract ERC1155Test is Test {
         amounts[1] = amount2;
 
         vm.startPrank(deployer);
-        ERC1155Extended.safe_mint_batch(
-            owner,
-            ids,
-            amounts,
-            new bytes(id2 % 2)
-        );
+        ERC1155Extended.safe_mint_batch(owner, ids, amounts, new bytes(id2 % 2));
         vm.stopPrank();
 
         vm.startPrank(owner);
@@ -3032,17 +2472,10 @@ contract ERC1155Test is Test {
         vm.stopPrank();
     }
 
-    function testFuzzBurnSuccess(
-        address firstOwner,
-        address secondOwner,
-        uint256 id
-    ) public {
+    function testFuzzBurnSuccess(address firstOwner, address secondOwner, uint256 id) public {
         vm.assume(
-            firstOwner != zeroAddress &&
-                firstOwner.code.length == 0 &&
-                firstOwner != secondOwner &&
-                secondOwner != zeroAddress &&
-                secondOwner.code.length == 0
+            firstOwner != zeroAddress && firstOwner.code.length == 0 && firstOwner != secondOwner
+                && secondOwner != zeroAddress && secondOwner.code.length == 0
         );
         uint256 burnAmount = 10;
         bytes memory data = new bytes(0);
@@ -3053,13 +2486,7 @@ contract ERC1155Test is Test {
 
         vm.startPrank(firstOwner);
         vm.expectEmit(true, true, true, true);
-        emit IERC1155.TransferSingle(
-            firstOwner,
-            firstOwner,
-            zeroAddress,
-            id,
-            burnAmount
-        );
+        emit IERC1155.TransferSingle(firstOwner, firstOwner, zeroAddress, id, burnAmount);
         ERC1155Extended.burn(firstOwner, id, 10);
         assertEq(ERC1155Extended.total_supply(id), 25);
         assertEq(ERC1155Extended.balanceOf(firstOwner, id), 5);
@@ -3067,20 +2494,10 @@ contract ERC1155Test is Test {
         vm.stopPrank();
     }
 
-    function testFuzzBurnBatchSuccess(
-        address owner,
-        uint256 id1,
-        uint256 amount1,
-        uint256 id2,
-        uint256 amount2
-    ) public {
-        vm.assume(
-            owner != zeroAddress &&
-                owner.code.length == 0 &&
-                id1 != id2 &&
-                amount1 > 0 &&
-                amount2 > 0
-        );
+    function testFuzzBurnBatchSuccess(address owner, uint256 id1, uint256 amount1, uint256 id2, uint256 amount2)
+        public
+    {
+        vm.assume(owner != zeroAddress && owner.code.length == 0 && id1 != id2 && amount1 > 0 && amount2 > 0);
         uint256[] memory ids = new uint256[](2);
         uint256[] memory amounts = new uint256[](2);
         bytes memory data = new bytes(id2 % 2);
@@ -3115,32 +2532,17 @@ contract ERC1155Test is Test {
         bytes calldata data
     ) public {
         vm.assume(
-            owner != zeroAddress &&
-                owner != receiver &&
-                owner.code.length == 0 &&
-                receiver != zeroAddress &&
-                receiver.code.length == 0
+            owner != zeroAddress && owner != receiver && owner.code.length == 0 && receiver != zeroAddress
+                && receiver.code.length == 0
         );
         vm.assume(id1 != id2 && amount1 > 0 && amount2 > 0);
         vm.startPrank(deployer);
         vm.expectEmit(true, true, true, true);
-        emit IERC1155.TransferSingle(
-            deployer,
-            zeroAddress,
-            receiver,
-            id1,
-            amount1
-        );
+        emit IERC1155.TransferSingle(deployer, zeroAddress, receiver, id1, amount1);
         ERC1155Extended.safe_mint(receiver, id1, amount1, data);
 
         vm.expectEmit(true, true, true, true);
-        emit IERC1155.TransferSingle(
-            deployer,
-            zeroAddress,
-            receiver,
-            id2,
-            amount2
-        );
+        emit IERC1155.TransferSingle(deployer, zeroAddress, receiver, id2, amount2);
         ERC1155Extended.safe_mint(receiver, id2, amount2, data);
         assertEq(ERC1155Extended.total_supply(id1), amount1);
         assertEq(ERC1155Extended.total_supply(id2), amount2);
@@ -3149,53 +2551,21 @@ contract ERC1155Test is Test {
         vm.stopPrank();
     }
 
-    function testFuzzSafeMintNoData(
-        address owner,
-        uint256 id1,
-        uint256 amount1,
-        uint256 id2,
-        uint256 amount2
-    ) public {
-        vm.assume(
-            owner != zeroAddress &&
-                owner.code.length == 0 &&
-                id1 != id2 &&
-                amount1 > 0 &&
-                amount2 > 0
-        );
-        bytes4 receiverSingleMagicValue = IERC1155Receiver
-            .onERC1155Received
-            .selector;
-        bytes4 receiverBatchMagicValue = IERC1155Receiver
-            .onERC1155BatchReceived
-            .selector;
-        ERC1155ReceiverMock erc1155ReceiverMock = new ERC1155ReceiverMock(
-            receiverSingleMagicValue,
-            false,
-            receiverBatchMagicValue,
-            false
-        );
+    function testFuzzSafeMintNoData(address owner, uint256 id1, uint256 amount1, uint256 id2, uint256 amount2) public {
+        vm.assume(owner != zeroAddress && owner.code.length == 0 && id1 != id2 && amount1 > 0 && amount2 > 0);
+        bytes4 receiverSingleMagicValue = IERC1155Receiver.onERC1155Received.selector;
+        bytes4 receiverBatchMagicValue = IERC1155Receiver.onERC1155BatchReceived.selector;
+        ERC1155ReceiverMock erc1155ReceiverMock =
+            new ERC1155ReceiverMock(receiverSingleMagicValue, false, receiverBatchMagicValue, false);
         address receiver = address(erc1155ReceiverMock);
         bytes memory data = new bytes(0);
         vm.startPrank(deployer);
         vm.expectEmit(true, true, true, true);
-        emit IERC1155.TransferSingle(
-            deployer,
-            zeroAddress,
-            receiver,
-            id1,
-            amount1
-        );
+        emit IERC1155.TransferSingle(deployer, zeroAddress, receiver, id1, amount1);
         ERC1155Extended.safe_mint(receiver, id1, amount1, data);
 
         vm.expectEmit(true, true, true, true);
-        emit IERC1155.TransferSingle(
-            deployer,
-            zeroAddress,
-            receiver,
-            id2,
-            amount2
-        );
+        emit IERC1155.TransferSingle(deployer, zeroAddress, receiver, id2, amount2);
         ERC1155Extended.safe_mint(receiver, id2, amount2, data);
         assertEq(ERC1155Extended.total_supply(id1), amount1);
         assertEq(ERC1155Extended.total_supply(id2), amount2);
@@ -3212,45 +2582,19 @@ contract ERC1155Test is Test {
         uint256 amount2,
         bytes calldata data
     ) public {
-        vm.assume(
-            owner != zeroAddress &&
-                owner.code.length == 0 &&
-                id1 != id2 &&
-                amount1 > 0 &&
-                amount2 > 0
-        );
-        bytes4 receiverSingleMagicValue = IERC1155Receiver
-            .onERC1155Received
-            .selector;
-        bytes4 receiverBatchMagicValue = IERC1155Receiver
-            .onERC1155BatchReceived
-            .selector;
-        ERC1155ReceiverMock erc1155ReceiverMock = new ERC1155ReceiverMock(
-            receiverSingleMagicValue,
-            false,
-            receiverBatchMagicValue,
-            false
-        );
+        vm.assume(owner != zeroAddress && owner.code.length == 0 && id1 != id2 && amount1 > 0 && amount2 > 0);
+        bytes4 receiverSingleMagicValue = IERC1155Receiver.onERC1155Received.selector;
+        bytes4 receiverBatchMagicValue = IERC1155Receiver.onERC1155BatchReceived.selector;
+        ERC1155ReceiverMock erc1155ReceiverMock =
+            new ERC1155ReceiverMock(receiverSingleMagicValue, false, receiverBatchMagicValue, false);
         address receiver = address(erc1155ReceiverMock);
         vm.startPrank(deployer);
         vm.expectEmit(true, true, true, true);
-        emit IERC1155.TransferSingle(
-            deployer,
-            zeroAddress,
-            receiver,
-            id1,
-            amount1
-        );
+        emit IERC1155.TransferSingle(deployer, zeroAddress, receiver, id1, amount1);
 
         ERC1155Extended.safe_mint(receiver, id1, amount1, data);
         vm.expectEmit(true, true, true, true);
-        emit IERC1155.TransferSingle(
-            deployer,
-            zeroAddress,
-            receiver,
-            id2,
-            amount2
-        );
+        emit IERC1155.TransferSingle(deployer, zeroAddress, receiver, id2, amount2);
         ERC1155Extended.safe_mint(receiver, id2, amount2, data);
         assertEq(ERC1155Extended.total_supply(id1), amount1);
         assertEq(ERC1155Extended.total_supply(id2), amount2);
@@ -3286,11 +2630,8 @@ contract ERC1155Test is Test {
         bytes calldata data
     ) public {
         vm.assume(
-            owner != zeroAddress &&
-                owner != receiver &&
-                owner.code.length == 0 &&
-                receiver != zeroAddress &&
-                receiver.code.length == 0
+            owner != zeroAddress && owner != receiver && owner.code.length == 0 && receiver != zeroAddress
+                && receiver.code.length == 0
         );
         vm.assume(id1 != id2 && amount1 > 0 && amount2 > 0);
         uint256[] memory ids = new uint256[](2);
@@ -3303,13 +2644,7 @@ contract ERC1155Test is Test {
 
         vm.startPrank(deployer);
         vm.expectEmit(true, true, true, true);
-        emit IERC1155.TransferBatch(
-            deployer,
-            zeroAddress,
-            receiver,
-            ids,
-            amounts
-        );
+        emit IERC1155.TransferBatch(deployer, zeroAddress, receiver, ids, amounts);
         ERC1155Extended.safe_mint_batch(receiver, ids, amounts, data);
         for (uint256 i; i < ids.length; ++i) {
             assertEq(ERC1155Extended.total_supply(ids[i]), amounts[i]);
@@ -3318,32 +2653,14 @@ contract ERC1155Test is Test {
         vm.stopPrank();
     }
 
-    function testFuzzSafeMintBatchNoData(
-        address owner,
-        uint256 id1,
-        uint256 amount1,
-        uint256 id2,
-        uint256 amount2
-    ) public {
-        vm.assume(
-            owner != zeroAddress &&
-                owner.code.length == 0 &&
-                id1 != id2 &&
-                amount1 > 0 &&
-                amount2 > 0
-        );
-        bytes4 receiverSingleMagicValue = IERC1155Receiver
-            .onERC1155Received
-            .selector;
-        bytes4 receiverBatchMagicValue = IERC1155Receiver
-            .onERC1155BatchReceived
-            .selector;
-        ERC1155ReceiverMock erc1155ReceiverMock = new ERC1155ReceiverMock(
-            receiverSingleMagicValue,
-            false,
-            receiverBatchMagicValue,
-            false
-        );
+    function testFuzzSafeMintBatchNoData(address owner, uint256 id1, uint256 amount1, uint256 id2, uint256 amount2)
+        public
+    {
+        vm.assume(owner != zeroAddress && owner.code.length == 0 && id1 != id2 && amount1 > 0 && amount2 > 0);
+        bytes4 receiverSingleMagicValue = IERC1155Receiver.onERC1155Received.selector;
+        bytes4 receiverBatchMagicValue = IERC1155Receiver.onERC1155BatchReceived.selector;
+        ERC1155ReceiverMock erc1155ReceiverMock =
+            new ERC1155ReceiverMock(receiverSingleMagicValue, false, receiverBatchMagicValue, false);
         address receiver = address(erc1155ReceiverMock);
         uint256[] memory ids = new uint256[](2);
         uint256[] memory amounts = new uint256[](2);
@@ -3356,13 +2673,7 @@ contract ERC1155Test is Test {
 
         vm.startPrank(deployer);
         vm.expectEmit(true, true, true, true);
-        emit IERC1155.TransferBatch(
-            deployer,
-            zeroAddress,
-            receiver,
-            ids,
-            amounts
-        );
+        emit IERC1155.TransferBatch(deployer, zeroAddress, receiver, ids, amounts);
         ERC1155Extended.safe_mint_batch(receiver, ids, amounts, data);
         for (uint256 i; i < ids.length; ++i) {
             assertEq(ERC1155Extended.total_supply(ids[i]), amounts[i]);
@@ -3371,32 +2682,14 @@ contract ERC1155Test is Test {
         vm.stopPrank();
     }
 
-    function testFuzzSafeMintBatchWithData(
-        address owner,
-        uint256 id1,
-        uint256 amount1,
-        uint256 id2,
-        uint256 amount2
-    ) public {
-        vm.assume(
-            owner != zeroAddress &&
-                owner.code.length == 0 &&
-                id1 != id2 &&
-                amount1 > 0 &&
-                amount2 > 0
-        );
-        bytes4 receiverSingleMagicValue = IERC1155Receiver
-            .onERC1155Received
-            .selector;
-        bytes4 receiverBatchMagicValue = IERC1155Receiver
-            .onERC1155BatchReceived
-            .selector;
-        ERC1155ReceiverMock erc1155ReceiverMock = new ERC1155ReceiverMock(
-            receiverSingleMagicValue,
-            false,
-            receiverBatchMagicValue,
-            false
-        );
+    function testFuzzSafeMintBatchWithData(address owner, uint256 id1, uint256 amount1, uint256 id2, uint256 amount2)
+        public
+    {
+        vm.assume(owner != zeroAddress && owner.code.length == 0 && id1 != id2 && amount1 > 0 && amount2 > 0);
+        bytes4 receiverSingleMagicValue = IERC1155Receiver.onERC1155Received.selector;
+        bytes4 receiverBatchMagicValue = IERC1155Receiver.onERC1155BatchReceived.selector;
+        ERC1155ReceiverMock erc1155ReceiverMock =
+            new ERC1155ReceiverMock(receiverSingleMagicValue, false, receiverBatchMagicValue, false);
         address receiver = address(erc1155ReceiverMock);
         uint256[] memory ids = new uint256[](2);
         uint256[] memory amounts = new uint256[](2);
@@ -3413,13 +2706,7 @@ contract ERC1155Test is Test {
 
         vm.startPrank(deployer);
         vm.expectEmit(true, true, true, true);
-        emit IERC1155.TransferBatch(
-            deployer,
-            zeroAddress,
-            receiver,
-            ids,
-            amounts
-        );
+        emit IERC1155.TransferBatch(deployer, zeroAddress, receiver, ids, amounts);
         ERC1155Extended.safe_mint_batch(receiver, ids, amounts, data);
         for (uint256 i; i < ids.length; ++i) {
             assertEq(ERC1155Extended.total_supply(ids[i]), amounts[i]);
@@ -3465,24 +2752,15 @@ contract ERC1155Test is Test {
         vm.stopPrank();
     }
 
-    function testFuzzSetMinterNonOwner(
-        address msgSender,
-        string calldata minter
-    ) public {
+    function testFuzzSetMinterNonOwner(address msgSender, string calldata minter) public {
         vm.assume(msgSender != deployer);
         vm.expectRevert(bytes("Ownable: caller is not the owner"));
         ERC1155Extended.set_minter(makeAddr(minter), true);
     }
 
-    function testFuzzTransferOwnershipSuccess(
-        address newOwner1,
-        address newOwner2
-    ) public {
+    function testFuzzTransferOwnershipSuccess(address newOwner1, address newOwner2) public {
         vm.assume(
-            newOwner1 != zeroAddress &&
-                newOwner1 != deployer &&
-                newOwner1 != newOwner2 &&
-                newOwner2 != zeroAddress
+            newOwner1 != zeroAddress && newOwner1 != deployer && newOwner1 != newOwner2 && newOwner2 != zeroAddress
         );
         address oldOwner = deployer;
         vm.startPrank(oldOwner);
@@ -3513,10 +2791,7 @@ contract ERC1155Test is Test {
         vm.stopPrank();
     }
 
-    function testFuzzTransferOwnershipNonOwner(
-        address nonOwner,
-        address newOwner
-    ) public {
+    function testFuzzTransferOwnershipNonOwner(address nonOwner, address newOwner) public {
         vm.assume(nonOwner != deployer);
         vm.prank(nonOwner);
         vm.expectRevert(bytes("Ownable: caller is not the owner"));
@@ -3568,9 +2843,7 @@ contract ERC1155Invariants is Test {
 
     function setUp() public {
         bytes memory args = abi.encode(_BASE_URI);
-        ERC1155Extended = IERC1155Extended(
-            vyperDeployer.deployContract("src/tokens/", "ERC1155", args)
-        );
+        ERC1155Extended = IERC1155Extended(vyperDeployer.deployContract("src/tokens/", "ERC1155", args));
         erc1155Handler = new ERC1155Handler(ERC1155Extended, deployer);
         targetContract(address(erc1155Handler));
         targetSender(deployer);
@@ -3597,13 +2870,7 @@ contract ERC1155Handler {
         token.setApprovalForAll(operator, approved);
     }
 
-    function safeTransferFrom(
-        address from,
-        address to,
-        uint256 id,
-        uint256 amount,
-        bytes calldata data
-    ) public {
+    function safeTransferFrom(address from, address to, uint256 id, uint256 amount, bytes calldata data) public {
         token.safeTransferFrom(from, to, id, amount, data);
     }
 
@@ -3621,29 +2888,17 @@ contract ERC1155Handler {
         token.burn(ownerAddr, id, amount);
     }
 
-    function burn_batch(
-        address ownerAddr,
-        uint256[] calldata ids,
-        uint256[] calldata amounts
-    ) public {
+    function burn_batch(address ownerAddr, uint256[] calldata ids, uint256[] calldata amounts) public {
         token.burn_batch(ownerAddr, ids, amounts);
     }
 
-    function safe_mint(
-        address ownerAddr,
-        uint256 id,
-        uint256 amount,
-        bytes calldata data
-    ) public {
+    function safe_mint(address ownerAddr, uint256 id, uint256 amount, bytes calldata data) public {
         token.safe_mint(ownerAddr, id, amount, data);
     }
 
-    function safe_mint_batch(
-        address ownerAddr,
-        uint256[] calldata ids,
-        uint256[] calldata amounts,
-        bytes calldata data
-    ) public {
+    function safe_mint_batch(address ownerAddr, uint256[] calldata ids, uint256[] calldata amounts, bytes calldata data)
+        public
+    {
         token.safe_mint_batch(ownerAddr, ids, amounts, data);
     }
 

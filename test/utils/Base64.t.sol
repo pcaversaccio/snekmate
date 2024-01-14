@@ -137,14 +137,8 @@ contract Base64Test is PRBTest {
          * @dev We remove the one trailing zero byte that stems from
          * the padding to ensure byte-level equality.
          */
-        assertEq(
-            string(returnDataStd.slice(0, returnDataStd.length - 1)),
-            text
-        );
-        assertEq(
-            string(returnDataUrl.slice(0, returnDataUrl.length - 1)),
-            text
-        );
+        assertEq(string(returnDataStd.slice(0, returnDataStd.length - 1)), text);
+        assertEq(string(returnDataUrl.slice(0, returnDataUrl.length - 1)), text);
     }
 
     function testDecodeWithDoublePadding() public {
@@ -158,14 +152,8 @@ contract Base64Test is PRBTest {
          * @dev We remove the two trailing zero bytes that stem from
          * the padding to ensure byte-level equality.
          */
-        assertEq(
-            string(returnDataStd.slice(0, returnDataStd.length - 2)),
-            text
-        );
-        assertEq(
-            string(returnDataUrl.slice(0, returnDataUrl.length - 2)),
-            text
-        );
+        assertEq(string(returnDataStd.slice(0, returnDataStd.length - 2)), text);
+        assertEq(string(returnDataUrl.slice(0, returnDataUrl.length - 2)), text);
     }
 
     function testDecodeSingleCharacter() public {
@@ -212,14 +200,8 @@ contract Base64Test is PRBTest {
          * @dev We remove the two trailing zero bytes that stem from
          * the padding to ensure byte-level equality.
          */
-        assertEq(
-            string(returnDataStd.slice(0, returnDataStd.length - 2)),
-            text
-        );
-        assertEq(
-            string(returnDataUrl.slice(0, returnDataUrl.length - 2)),
-            text
-        );
+        assertEq(string(returnDataStd.slice(0, returnDataStd.length - 2)), text);
+        assertEq(string(returnDataUrl.slice(0, returnDataUrl.length - 2)), text);
     }
 
     function testDecodeSafeUrl() public {
@@ -228,11 +210,7 @@ contract Base64Test is PRBTest {
         vm.expectRevert(bytes("Base64: invalid string"));
         base64.decode(data, false);
         bytes[] memory outputUrl = base64.decode(data, true);
-        bytes memory returnDataUrl = bytes.concat(
-            outputUrl[0],
-            outputUrl[1],
-            outputUrl[2]
-        );
+        bytes memory returnDataUrl = bytes.concat(outputUrl[0], outputUrl[1], outputUrl[2]);
         assertEq(string(returnDataUrl), text);
     }
 

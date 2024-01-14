@@ -15,16 +15,10 @@ contract ERC1271MaliciousMock is IERC1271 {
      * @dev Returns a malicious 4-byte magic value.
      * @return bytes4 The malicious 4-byte magic value.
      */
-    function isValidSignature(
-        bytes32,
-        bytes memory
-    ) public pure override returns (bytes4) {
+    function isValidSignature(bytes32, bytes memory) public pure override returns (bytes4) {
         // solhint-disable-next-line no-inline-assembly
         assembly {
-            mstore(
-                0,
-                0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
-            )
+            mstore(0, 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff)
             return(0, 32)
         }
     }

@@ -27,17 +27,8 @@ contract MerkleProofVerificationTest is Test {
         cmdsProof[0] = "node";
         cmdsProof[1] = "test/utils/scripts/generate-proof.js";
         bytes memory proof = vm.ffi(cmdsProof);
-        (
-            bytes32 arg1,
-            bytes32 arg2,
-            bytes32 arg3,
-            bytes32 arg4,
-            bytes32 arg5,
-            bytes32 arg6
-        ) = abi.decode(
-                proof,
-                (bytes32, bytes32, bytes32, bytes32, bytes32, bytes32)
-            );
+        (bytes32 arg1, bytes32 arg2, bytes32 arg3, bytes32 arg4, bytes32 arg5, bytes32 arg6) =
+            abi.decode(proof, (bytes32, bytes32, bytes32, bytes32, bytes32, bytes32));
         proofDecoded[0] = arg1;
         proofDecoded[1] = arg2;
         proofDecoded[2] = arg3;
@@ -54,37 +45,14 @@ contract MerkleProofVerificationTest is Test {
      * @return bytes32[] The 32-byte array containing sibling hashes
      * on the branches from `leaves` to the `root` of the Merkle tree.
      */
-    function decodeCorrectMultiProofPayload()
-        internal
-        returns (bytes32[] memory)
-    {
+    function decodeCorrectMultiProofPayload() internal returns (bytes32[] memory) {
         bytes32[] memory multiProofDecoded = new bytes32[](8);
         string[] memory cmdsMultiProof = new string[](2);
         cmdsMultiProof[0] = "node";
         cmdsMultiProof[1] = "test/utils/scripts/generate-multiproof.js";
         bytes memory multiProof = vm.ffi(cmdsMultiProof);
-        (
-            bytes32 arg1,
-            bytes32 arg2,
-            bytes32 arg3,
-            bytes32 arg4,
-            bytes32 arg5,
-            bytes32 arg6,
-            bytes32 arg7,
-            bytes32 arg8
-        ) = abi.decode(
-                multiProof,
-                (
-                    bytes32,
-                    bytes32,
-                    bytes32,
-                    bytes32,
-                    bytes32,
-                    bytes32,
-                    bytes32,
-                    bytes32
-                )
-            );
+        (bytes32 arg1, bytes32 arg2, bytes32 arg3, bytes32 arg4, bytes32 arg5, bytes32 arg6, bytes32 arg7, bytes32 arg8)
+        = abi.decode(multiProof, (bytes32, bytes32, bytes32, bytes32, bytes32, bytes32, bytes32, bytes32));
         multiProofDecoded[0] = arg1;
         multiProofDecoded[1] = arg2;
         multiProofDecoded[2] = arg3;
@@ -104,32 +72,14 @@ contract MerkleProofVerificationTest is Test {
      * value from the "main queue" (merging branches) or an element from the
      * `proof` array is used to calculate the next hash.
      */
-    function decodeCorrectMultiProofProofFlags()
-        internal
-        returns (bool[] memory)
-    {
+    function decodeCorrectMultiProofProofFlags() internal returns (bool[] memory) {
         bool[] memory multiProofProofFlagsDecoded = new bool[](10);
         string[] memory cmdsMultiProofProofFlags = new string[](2);
         cmdsMultiProofProofFlags[0] = "node";
-        cmdsMultiProofProofFlags[
-            1
-        ] = "test/utils/scripts/generate-multiproof-proof-flags.js";
+        cmdsMultiProofProofFlags[1] = "test/utils/scripts/generate-multiproof-proof-flags.js";
         bytes memory multiProofProofFlags = vm.ffi(cmdsMultiProofProofFlags);
-        (
-            bool arg1,
-            bool arg2,
-            bool arg3,
-            bool arg4,
-            bool arg5,
-            bool arg6,
-            bool arg7,
-            bool arg8,
-            bool arg9,
-            bool arg10
-        ) = abi.decode(
-                multiProofProofFlags,
-                (bool, bool, bool, bool, bool, bool, bool, bool, bool, bool)
-            );
+        (bool arg1, bool arg2, bool arg3, bool arg4, bool arg5, bool arg6, bool arg7, bool arg8, bool arg9, bool arg10)
+        = abi.decode(multiProofProofFlags, (bool, bool, bool, bool, bool, bool, bool, bool, bool, bool));
         multiProofProofFlagsDecoded[0] = arg1;
         multiProofProofFlagsDecoded[1] = arg2;
         multiProofProofFlagsDecoded[2] = arg3;
@@ -153,27 +103,14 @@ contract MerkleProofVerificationTest is Test {
      * @return bytes32[] The 32-byte array containing sibling hashes
      * on the branch from the `leaf` to the `root` of the Merkle tree.
      */
-    function decodeNoSuchLeafProofPayload()
-        internal
-        returns (bytes32[] memory)
-    {
+    function decodeNoSuchLeafProofPayload() internal returns (bytes32[] memory) {
         bytes32[] memory proofDecodedSliced = new bytes32[](6);
         string[] memory cmdsProof = new string[](2);
         cmdsProof[0] = "node";
         cmdsProof[1] = "test/utils/scripts/generate-proof-no-such-leaf.js";
         bytes memory proof = vm.ffi(cmdsProof);
-        (
-            ,
-            bytes32 arg2,
-            bytes32 arg3,
-            bytes32 arg4,
-            bytes32 arg5,
-            bytes32 arg6,
-            bytes32 arg7
-        ) = abi.decode(
-                proof,
-                (bytes32, bytes32, bytes32, bytes32, bytes32, bytes32, bytes32)
-            );
+        (, bytes32 arg2, bytes32 arg3, bytes32 arg4, bytes32 arg5, bytes32 arg6, bytes32 arg7) =
+            abi.decode(proof, (bytes32, bytes32, bytes32, bytes32, bytes32, bytes32, bytes32));
         proofDecodedSliced[0] = arg2;
         proofDecodedSliced[1] = arg3;
         proofDecodedSliced[2] = arg4;
@@ -216,16 +153,8 @@ contract MerkleProofVerificationTest is Test {
         cmdsMultiProof[0] = "node";
         cmdsMultiProof[1] = "test/utils/scripts/generate-bad-multiproof.js";
         bytes memory multiProof = vm.ffi(cmdsMultiProof);
-        (
-            bytes32 arg1,
-            bytes32 arg2,
-            bytes32 arg3,
-            bytes32 arg4,
-            bytes32 arg5
-        ) = abi.decode(
-                multiProof,
-                (bytes32, bytes32, bytes32, bytes32, bytes32)
-            );
+        (bytes32 arg1, bytes32 arg2, bytes32 arg3, bytes32 arg4, bytes32 arg5) =
+            abi.decode(multiProof, (bytes32, bytes32, bytes32, bytes32, bytes32));
         multiProofDecoded[0] = arg1;
         multiProofDecoded[1] = arg2;
         multiProofDecoded[2] = arg3;
@@ -248,22 +177,10 @@ contract MerkleProofVerificationTest is Test {
         bool[] memory multiProofProofFlagsDecoded = new bool[](7);
         string[] memory cmdsMultiProofProofFlags = new string[](2);
         cmdsMultiProofProofFlags[0] = "node";
-        cmdsMultiProofProofFlags[
-            1
-        ] = "test/utils/scripts/generate-bad-multiproof-proof-flags.js";
+        cmdsMultiProofProofFlags[1] = "test/utils/scripts/generate-bad-multiproof-proof-flags.js";
         bytes memory multiProofProofFlags = vm.ffi(cmdsMultiProofProofFlags);
-        (
-            bool arg1,
-            bool arg2,
-            bool arg3,
-            bool arg4,
-            bool arg5,
-            bool arg6,
-            bool arg7
-        ) = abi.decode(
-                multiProofProofFlags,
-                (bool, bool, bool, bool, bool, bool, bool)
-            );
+        (bool arg1, bool arg2, bool arg3, bool arg4, bool arg5, bool arg6, bool arg7) =
+            abi.decode(multiProofProofFlags, (bool, bool, bool, bool, bool, bool, bool));
         multiProofProofFlagsDecoded[0] = arg1;
         multiProofProofFlagsDecoded[1] = arg2;
         multiProofProofFlagsDecoded[2] = arg3;
@@ -275,12 +192,8 @@ contract MerkleProofVerificationTest is Test {
     }
 
     function setUp() public {
-        merkleProofVerification = IMerkleProofVerification(
-            vyperDeployer.deployContract(
-                "src/utils/",
-                "MerkleProofVerification"
-            )
-        );
+        merkleProofVerification =
+            IMerkleProofVerification(vyperDeployer.deployContract("src/utils/", "MerkleProofVerification"));
     }
 
     function testVerify() public {
@@ -296,19 +209,11 @@ contract MerkleProofVerificationTest is Test {
 
         bytes32[] memory proofDecoded = decodeCorrectProofPayload();
 
-        assertTrue(
-            merkleProofVerification.verify(
-                proofDecoded,
-                bytes32(root),
-                bytes32(leaf)
-            )
-        );
+        assertTrue(merkleProofVerification.verify(proofDecoded, bytes32(root), bytes32(leaf)));
 
         string[] memory cmdsRootNoSuchLeaf = new string[](2);
         cmdsRootNoSuchLeaf[0] = "node";
-        cmdsRootNoSuchLeaf[
-            1
-        ] = "test/utils/scripts/generate-root-no-such-leaf.js";
+        cmdsRootNoSuchLeaf[1] = "test/utils/scripts/generate-root-no-such-leaf.js";
         bytes memory rootNoSuchLeaf = vm.ffi(cmdsRootNoSuchLeaf);
 
         string[] memory cmdsNoSuchLeaf = new string[](2);
@@ -318,13 +223,7 @@ contract MerkleProofVerificationTest is Test {
 
         bytes32[] memory proofDecodedSliced = decodeNoSuchLeafProofPayload();
 
-        assertTrue(
-            merkleProofVerification.verify(
-                proofDecodedSliced,
-                bytes32(rootNoSuchLeaf),
-                bytes32(noSuchLeaf)
-            )
-        );
+        assertTrue(merkleProofVerification.verify(proofDecodedSliced, bytes32(rootNoSuchLeaf), bytes32(noSuchLeaf)));
     }
 
     function testInvalidMerkleProof() public {
@@ -340,13 +239,7 @@ contract MerkleProofVerificationTest is Test {
 
         bytes32[] memory badProofDecoded = decodeBadProofPayload();
 
-        assertTrue(
-            !merkleProofVerification.verify(
-                badProofDecoded,
-                bytes32(correctRoot),
-                bytes32(leaf)
-            )
-        );
+        assertTrue(!merkleProofVerification.verify(badProofDecoded, bytes32(correctRoot), bytes32(leaf)));
     }
 
     function testInvalidMerkleProofLength() public {
@@ -367,13 +260,7 @@ contract MerkleProofVerificationTest is Test {
         proofInvalidLengthDecoded[1] = proofDecoded[1];
         proofInvalidLengthDecoded[2] = proofDecoded[2];
 
-        assertTrue(
-            !merkleProofVerification.verify(
-                proofInvalidLengthDecoded,
-                bytes32(root),
-                bytes32(leaf)
-            )
-        );
+        assertTrue(!merkleProofVerification.verify(proofInvalidLengthDecoded, bytes32(root), bytes32(leaf)));
     }
 
     function testMultiProofVerify() public {
@@ -387,10 +274,7 @@ contract MerkleProofVerificationTest is Test {
         cmdsLeaves[1] = "test/utils/scripts/generate-multiproof-leaves.js";
         bytes memory leaves = vm.ffi(cmdsLeaves);
         bytes32[] memory leavesDecoded = new bytes32[](3);
-        (bytes32 arg1, bytes32 arg2, bytes32 arg3) = abi.decode(
-            leaves,
-            (bytes32, bytes32, bytes32)
-        );
+        (bytes32 arg1, bytes32 arg2, bytes32 arg3) = abi.decode(leaves, (bytes32, bytes32, bytes32));
         leavesDecoded[0] = arg1;
         leavesDecoded[1] = arg2;
         leavesDecoded[2] = arg3;
@@ -399,12 +283,7 @@ contract MerkleProofVerificationTest is Test {
         bytes32[] memory multiProofDecoded = decodeCorrectMultiProofPayload();
 
         assertTrue(
-            merkleProofVerification.multi_proof_verify(
-                multiProofDecoded,
-                proofFlags,
-                bytes32(root),
-                leavesDecoded
-            )
+            merkleProofVerification.multi_proof_verify(multiProofDecoded, proofFlags, bytes32(root), leavesDecoded)
         );
     }
 
@@ -416,15 +295,10 @@ contract MerkleProofVerificationTest is Test {
 
         string[] memory cmdsBadLeaves = new string[](2);
         cmdsBadLeaves[0] = "node";
-        cmdsBadLeaves[
-            1
-        ] = "test/utils/scripts/generate-bad-multiproof-leaves.js";
+        cmdsBadLeaves[1] = "test/utils/scripts/generate-bad-multiproof-leaves.js";
         bytes memory badLeaves = vm.ffi(cmdsBadLeaves);
         bytes32[] memory badLeavesDecoded = new bytes32[](3);
-        (bytes32 arg1, bytes32 arg2, bytes32 arg3) = abi.decode(
-            badLeaves,
-            (bytes32, bytes32, bytes32)
-        );
+        (bytes32 arg1, bytes32 arg2, bytes32 arg3) = abi.decode(badLeaves, (bytes32, bytes32, bytes32));
         badLeavesDecoded[0] = arg1;
         badLeavesDecoded[1] = arg2;
         badLeavesDecoded[2] = arg3;
@@ -434,10 +308,7 @@ contract MerkleProofVerificationTest is Test {
 
         assertTrue(
             !merkleProofVerification.multi_proof_verify(
-                badMultiProofDecoded,
-                badProofFlags,
-                bytes32(correctRoot),
-                badLeavesDecoded
+                badMultiProofDecoded, badProofFlags, bytes32(correctRoot), badLeavesDecoded
             )
         );
     }
@@ -476,12 +347,7 @@ contract MerkleProofVerificationTest is Test {
         maliciousProofFlags[2] = false;
 
         vm.expectRevert();
-        merkleProofVerification.multi_proof_verify(
-            maliciousProof,
-            maliciousProofFlags,
-            root,
-            maliciousLeaves
-        );
+        merkleProofVerification.multi_proof_verify(maliciousProof, maliciousProofFlags, root, maliciousLeaves);
     }
 
     function testInvalidMultiProof() public {
@@ -492,15 +358,10 @@ contract MerkleProofVerificationTest is Test {
 
         string[] memory cmdsBadLeaves = new string[](2);
         cmdsBadLeaves[0] = "node";
-        cmdsBadLeaves[
-            1
-        ] = "test/utils/scripts/generate-bad-multiproof-leaves.js";
+        cmdsBadLeaves[1] = "test/utils/scripts/generate-bad-multiproof-leaves.js";
         bytes memory badLeaves = vm.ffi(cmdsBadLeaves);
         bytes32[] memory badLeavesDecoded = new bytes32[](3);
-        (bytes32 arg1, bytes32 arg2, bytes32 arg3) = abi.decode(
-            badLeaves,
-            (bytes32, bytes32, bytes32)
-        );
+        (bytes32 arg1, bytes32 arg2, bytes32 arg3) = abi.decode(badLeaves, (bytes32, bytes32, bytes32));
         badLeavesDecoded[0] = arg1;
         badLeavesDecoded[1] = arg2;
         badLeavesDecoded[2] = arg3;
@@ -524,26 +385,17 @@ contract MerkleProofVerificationTest is Test {
 
         vm.expectRevert(bytes("MerkleProof: invalid multiproof"));
         merkleProofVerification.multi_proof_verify(
-            badMultiProofDecodedSliced,
-            badProofFlags,
-            bytes32(correctRoot),
-            badLeavesDecoded
+            badMultiProofDecodedSliced, badProofFlags, bytes32(correctRoot), badLeavesDecoded
         );
 
         vm.expectRevert(bytes("MerkleProof: invalid multiproof"));
         merkleProofVerification.multi_proof_verify(
-            badMultiProofDecoded,
-            badProofFlagsSliced,
-            bytes32(correctRoot),
-            badLeavesDecoded
+            badMultiProofDecoded, badProofFlagsSliced, bytes32(correctRoot), badLeavesDecoded
         );
 
         vm.expectRevert(bytes("MerkleProof: invalid multiproof"));
         merkleProofVerification.multi_proof_verify(
-            badMultiProofDecoded,
-            badProofFlags,
-            bytes32(correctRoot),
-            badLeavesDecodedSliced
+            badMultiProofDecoded, badProofFlags, bytes32(correctRoot), badLeavesDecodedSliced
         );
     }
 
@@ -557,14 +409,7 @@ contract MerkleProofVerificationTest is Test {
         /**
          * @dev Works for a Merkle tree containing a single leaf.
          */
-        assertTrue(
-            merkleProofVerification.multi_proof_verify(
-                multiProof,
-                proofFlags,
-                leaves[0],
-                leaves
-            )
-        );
+        assertTrue(merkleProofVerification.multi_proof_verify(multiProof, proofFlags, leaves[0], leaves));
     }
 
     function testMultiProofEdgeCase2() public {
@@ -572,65 +417,38 @@ contract MerkleProofVerificationTest is Test {
         bytes32[] memory multiProof = new bytes32[](1);
         bool[] memory proofFlags = new bool[](0);
 
-        bytes32 root = keccak256(
-            bytes.concat(keccak256(abi.encode("a", "b", "c")))
-        );
+        bytes32 root = keccak256(bytes.concat(keccak256(abi.encode("a", "b", "c"))));
         multiProof[0] = root;
 
         /**
          * @dev Can prove empty leaves.
          */
-        assertTrue(
-            merkleProofVerification.multi_proof_verify(
-                multiProof,
-                proofFlags,
-                root,
-                leaves
-            )
-        );
+        assertTrue(merkleProofVerification.multi_proof_verify(multiProof, proofFlags, root, leaves));
     }
 
     /**
      * @notice Forked and adjusted accordingly from here:
      * https://github.com/Vectorized/solady/blob/main/test/MerkleProofLib.t.sol.
      */
-    function testFuzzVerify(
-        bytes32[] calldata data,
-        uint256 randomness
-    ) public {
+    function testFuzzVerify(bytes32[] calldata data, uint256 randomness) public {
         vm.assume(data.length > 1);
         uint256 nodeIndex = randomness % data.length;
         bytes32 root = merkleGenerator.getRoot(data);
         bytes32[] memory proof = merkleGenerator.getProof(data, nodeIndex);
         bytes32 leaf = data[nodeIndex];
         assertTrue(merkleProofVerification.verify(proof, root, leaf));
-        assertTrue(
-            !merkleProofVerification.verify(
-                proof,
-                bytes32(uint256(root) ^ 1),
-                leaf
-            )
-        );
+        assertTrue(!merkleProofVerification.verify(proof, bytes32(uint256(root) ^ 1), leaf));
 
         proof[0] = bytes32(uint256(proof[0]) ^ 1);
         assertTrue(!merkleProofVerification.verify(proof, root, leaf));
-        assertTrue(
-            !merkleProofVerification.verify(
-                proof,
-                bytes32(uint256(root) ^ 1),
-                leaf
-            )
-        );
+        assertTrue(!merkleProofVerification.verify(proof, bytes32(uint256(root) ^ 1), leaf));
     }
 
     /**
      * @notice Forked and adjusted accordingly from here:
      * https://github.com/Vectorized/solady/blob/main/test/MerkleProofLib.t.sol.
      */
-    function testFuzzMultiProofVerifySingleLeaf(
-        bytes32[] calldata data,
-        uint256 randomness
-    ) public {
+    function testFuzzMultiProofVerifySingleLeaf(bytes32[] calldata data, uint256 randomness) public {
         vm.assume(data.length > 1);
         uint256 nodeIndex = randomness % data.length;
         bytes32 root = merkleGenerator.getRoot(data);
@@ -638,51 +456,19 @@ contract MerkleProofVerificationTest is Test {
         bytes32[] memory leaves = new bytes32[](1);
         leaves[0] = data[nodeIndex];
         bool[] memory proofFlags = new bool[](proof.length);
-        assertTrue(
-            merkleProofVerification.multi_proof_verify(
-                proof,
-                proofFlags,
-                root,
-                leaves
-            )
-        );
-        assertTrue(
-            !merkleProofVerification.multi_proof_verify(
-                proof,
-                proofFlags,
-                bytes32(uint256(root) ^ 1),
-                leaves
-            )
-        );
+        assertTrue(merkleProofVerification.multi_proof_verify(proof, proofFlags, root, leaves));
+        assertTrue(!merkleProofVerification.multi_proof_verify(proof, proofFlags, bytes32(uint256(root) ^ 1), leaves));
 
         proof[0] = bytes32(uint256(proof[0]) ^ 1);
-        assertTrue(
-            !merkleProofVerification.multi_proof_verify(
-                proof,
-                proofFlags,
-                root,
-                leaves
-            )
-        );
-        assertTrue(
-            !merkleProofVerification.multi_proof_verify(
-                proof,
-                proofFlags,
-                bytes32(uint256(root) ^ 1),
-                leaves
-            )
-        );
+        assertTrue(!merkleProofVerification.multi_proof_verify(proof, proofFlags, root, leaves));
+        assertTrue(!merkleProofVerification.multi_proof_verify(proof, proofFlags, bytes32(uint256(root) ^ 1), leaves));
     }
 
     /**
      * @notice Forked and adjusted accordingly from here:
      * https://github.com/Vectorized/solady/blob/main/test/MerkleProofLib.t.sol.
      */
-    function testFuzzVerifyMultiProofMultipleLeaves(
-        bool damageProof,
-        bool damageRoot,
-        bool damageLeaves
-    ) public {
+    function testFuzzVerifyMultiProofMultipleLeaves(bool damageProof, bool damageRoot, bool damageLeaves) public {
         bool noDamage = true;
 
         bytes32 root = merkleGenerator.hashLeafPairs(
@@ -723,14 +509,6 @@ contract MerkleProofVerificationTest is Test {
             proof[0] = bytes32(uint256(proof[0]) ^ 1);
         }
 
-        assertEq(
-            merkleProofVerification.multi_proof_verify(
-                proof,
-                flags,
-                root,
-                leaves
-            ),
-            noDamage
-        );
+        assertEq(merkleProofVerification.multi_proof_verify(proof, flags, root, leaves), noDamage);
     }
 }

@@ -39,9 +39,7 @@ contract ECDSATest is Test {
      * @param signature The secp256k1 64/65-bytes signature.
      * @return short The 64-bytes EIP-2098 compliant signature.
      */
-    function to2098Format(
-        bytes memory signature
-    ) internal view returns (bytes memory) {
+    function to2098Format(bytes memory signature) internal view returns (bytes memory) {
         if (signature.length != 65) revert InvalidSignatureLength(self);
         if (uint8(signature[32]) >> 7 == 1) revert InvalidSignatureSValue(self);
         bytes memory short = signature.slice(0, 64);
@@ -83,9 +81,7 @@ contract ECDSATest is Test {
         /**
          * @dev EIP-2098 signature check.
          */
-        vm.expectRevert(
-            abi.encodeWithSelector(InvalidSignatureLength.selector, self)
-        );
+        vm.expectRevert(abi.encodeWithSelector(InvalidSignatureLength.selector, self));
         to2098Format(signature);
     }
 
@@ -103,9 +99,7 @@ contract ECDSATest is Test {
         /**
          * @dev EIP-2098 signature check.
          */
-        vm.expectRevert(
-            abi.encodeWithSelector(InvalidSignatureLength.selector, self)
-        );
+        vm.expectRevert(abi.encodeWithSelector(InvalidSignatureLength.selector, self));
         to2098Format(signature);
     }
 
@@ -167,10 +161,7 @@ contract ECDSATest is Test {
         bytes memory signatureWithoutVersion = abi.encodePacked(r, s);
         bytes1 version = 0x00;
         vm.expectRevert(bytes("ECDSA: invalid signature"));
-        ECDSA.recover_sig(
-            hash,
-            abi.encodePacked(signatureWithoutVersion, version)
-        );
+        ECDSA.recover_sig(hash, abi.encodePacked(signatureWithoutVersion, version));
     }
 
     function testRecoverWithWrongVersion() public {
@@ -183,10 +174,7 @@ contract ECDSATest is Test {
         bytes memory signatureWithoutVersion = abi.encodePacked(r, s);
         bytes1 version = 0x02;
         vm.expectRevert(bytes("ECDSA: invalid signature"));
-        ECDSA.recover_sig(
-            hash,
-            abi.encodePacked(signatureWithoutVersion, version)
-        );
+        ECDSA.recover_sig(hash, abi.encodePacked(signatureWithoutVersion, version));
     }
 
     function testRecoverWithCorrectVersion() public {
@@ -197,20 +185,12 @@ contract ECDSATest is Test {
         bytes32 hash = keccak256("WAGMI");
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(key, hash);
         bytes memory signatureWithoutVersion = abi.encodePacked(r, s);
-        assertEq(
-            alice,
-            ECDSA.recover_sig(
-                hash,
-                abi.encodePacked(signatureWithoutVersion, v)
-            )
-        );
+        assertEq(alice, ECDSA.recover_sig(hash, abi.encodePacked(signatureWithoutVersion, v)));
 
         /**
          * @dev EIP-2098 signature check.
          */
-        bytes memory signature2098 = to2098Format(
-            abi.encodePacked(signatureWithoutVersion, v)
-        );
+        bytes memory signature2098 = to2098Format(abi.encodePacked(signatureWithoutVersion, v));
         assertEq(alice, ECDSA.recover_sig(hash, signature2098));
     }
 
@@ -221,8 +201,7 @@ contract ECDSATest is Test {
         (, uint256 key) = makeAddrAndKey("alice");
         bytes32 hash = keccak256("WAGMI");
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(key, hash);
-        uint256 sTooHigh = uint256(s) +
-            0x7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF5D576E7357A4501DDFE92F46681B20A0;
+        uint256 sTooHigh = uint256(s) + 0x7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF5D576E7357A4501DDFE92F46681B20A0;
         bytes memory signature = abi.encodePacked(r, bytes32(sTooHigh), v);
         vm.expectRevert(bytes("ECDSA: invalid signature `s` value"));
         ECDSA.recover_sig(hash, signature);
@@ -230,18 +209,14 @@ contract ECDSATest is Test {
         /**
          * @dev EIP-2098 signature check.
          */
-        vm.expectRevert(
-            abi.encodeWithSelector(InvalidSignatureSValue.selector, self)
-        );
+        vm.expectRevert(abi.encodeWithSelector(InvalidSignatureSValue.selector, self));
         to2098Format(signature);
     }
 
     function testEthSignedMessageHash() public {
         bytes32 hash = keccak256("WAGMI");
         bytes32 digest1 = ECDSA.to_eth_signed_message_hash(hash);
-        bytes32 digest2 = keccak256(
-            abi.encodePacked("\x19Ethereum Signed Message:\n32", hash)
-        );
+        bytes32 digest2 = keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", hash));
         assertEq(digest1, digest2);
     }
 
@@ -249,38 +224,26 @@ contract ECDSATest is Test {
         bytes32 domainSeparator = keccak256("WAGMI");
         bytes32 structHash = keccak256("GM");
         bytes32 digest1 = ECDSA.to_typed_data_hash(domainSeparator, structHash);
-        bytes32 digest2 = keccak256(
-            abi.encodePacked("\x19\x01", domainSeparator, structHash)
-        );
+        bytes32 digest2 = keccak256(abi.encodePacked("\x19\x01", domainSeparator, structHash));
         assertEq(digest1, digest2);
     }
 
     function testToDataWithIntendedValidatorHash() public {
         address validator = makeAddr("intendedValidator");
         bytes memory data = new bytes(42);
-        bytes32 digest1 = ECDSA.to_data_with_intended_validator_hash(
-            validator,
-            data
-        );
-        bytes32 digest2 = keccak256(
-            abi.encodePacked("\x19\x00", validator, data)
-        );
+        bytes32 digest1 = ECDSA.to_data_with_intended_validator_hash(validator, data);
+        bytes32 digest2 = keccak256(abi.encodePacked("\x19\x00", validator, data));
         assertEq(digest1, digest2);
     }
 
     function testToDataWithIntendedValidatorHashSelf() public {
         bytes memory data = new bytes(42);
         bytes32 digest1 = ECDSA.to_data_with_intended_validator_hash_self(data);
-        bytes32 digest2 = keccak256(
-            abi.encodePacked("\x19\x00", ECDSAAddr, data)
-        );
+        bytes32 digest2 = keccak256(abi.encodePacked("\x19\x00", ECDSAAddr, data));
         assertEq(digest1, digest2);
     }
 
-    function testFuzzRecoverWithValidSignature(
-        string calldata signer,
-        string calldata message
-    ) public {
+    function testFuzzRecoverWithValidSignature(string calldata signer, string calldata message) public {
         /**
          * @dev Standard signature check.
          */
@@ -297,11 +260,7 @@ contract ECDSATest is Test {
         assertEq(alice, ECDSA.recover_sig(hash, signature2098));
     }
 
-    function testFuzzRecoverWithWrongMessage(
-        string calldata signer,
-        string calldata message,
-        bytes32 digest
-    ) public {
+    function testFuzzRecoverWithWrongMessage(string calldata signer, string calldata message, bytes32 digest) public {
         /**
          * @dev Standard signature check.
          */
@@ -319,10 +278,7 @@ contract ECDSATest is Test {
         assertTrue(alice != ECDSA.recover_sig(digest, signature2098));
     }
 
-    function testFuzzRecoverWithInvalidSignature(
-        bytes calldata signature,
-        string calldata message
-    ) public {
+    function testFuzzRecoverWithInvalidSignature(bytes calldata signature, string calldata message) public {
         vm.assume(signature.length < 64);
         /**
          * @dev Standard signature check.
@@ -334,16 +290,11 @@ contract ECDSATest is Test {
         /**
          * @dev EIP-2098 signature check.
          */
-        vm.expectRevert(
-            abi.encodeWithSelector(InvalidSignatureLength.selector, self)
-        );
+        vm.expectRevert(abi.encodeWithSelector(InvalidSignatureLength.selector, self));
         to2098Format(signature);
     }
 
-    function testFuzzRecoverWithTooLongSignature(
-        bytes calldata signature,
-        string calldata message
-    ) public {
+    function testFuzzRecoverWithTooLongSignature(bytes calldata signature, string calldata message) public {
         vm.assume(signature.length > 65);
         /**
          * @dev Standard signature check.
@@ -355,55 +306,34 @@ contract ECDSATest is Test {
         /**
          * @dev EIP-2098 signature check.
          */
-        vm.expectRevert(
-            abi.encodeWithSelector(InvalidSignatureLength.selector, self)
-        );
+        vm.expectRevert(abi.encodeWithSelector(InvalidSignatureLength.selector, self));
         to2098Format(signature);
     }
 
     function testFuzzEthSignedMessageHash(string calldata message) public {
         bytes32 hash = keccak256(abi.encode(message));
         bytes32 digest1 = ECDSA.to_eth_signed_message_hash(hash);
-        bytes32 digest2 = keccak256(
-            abi.encodePacked("\x19Ethereum Signed Message:\n32", hash)
-        );
+        bytes32 digest2 = keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", hash));
         assertEq(digest1, digest2);
     }
 
-    function testFuzzToTypedDataHash(
-        string calldata domainSeparatorPlain,
-        string calldata structPlain
-    ) public {
+    function testFuzzToTypedDataHash(string calldata domainSeparatorPlain, string calldata structPlain) public {
         bytes32 domainSeparator = keccak256(abi.encode(domainSeparatorPlain));
         bytes32 structHash = keccak256(abi.encode(structPlain));
         bytes32 digest1 = ECDSA.to_typed_data_hash(domainSeparator, structHash);
-        bytes32 digest2 = keccak256(
-            abi.encodePacked("\x19\x01", domainSeparator, structHash)
-        );
+        bytes32 digest2 = keccak256(abi.encodePacked("\x19\x01", domainSeparator, structHash));
         assertEq(digest1, digest2);
     }
 
-    function testFuzzToDataWithIntendedValidatorHash(
-        address validator,
-        bytes calldata data
-    ) public {
-        bytes32 digest1 = ECDSA.to_data_with_intended_validator_hash(
-            validator,
-            data
-        );
-        bytes32 digest2 = keccak256(
-            abi.encodePacked("\x19\x00", validator, data)
-        );
+    function testFuzzToDataWithIntendedValidatorHash(address validator, bytes calldata data) public {
+        bytes32 digest1 = ECDSA.to_data_with_intended_validator_hash(validator, data);
+        bytes32 digest2 = keccak256(abi.encodePacked("\x19\x00", validator, data));
         assertEq(digest1, digest2);
     }
 
-    function testFuzzToDataWithIntendedValidatorHashSelf(
-        bytes calldata data
-    ) public {
+    function testFuzzToDataWithIntendedValidatorHashSelf(bytes calldata data) public {
         bytes32 digest1 = ECDSA.to_data_with_intended_validator_hash_self(data);
-        bytes32 digest2 = keccak256(
-            abi.encodePacked("\x19\x00", ECDSAAddr, data)
-        );
+        bytes32 digest2 = keccak256(abi.encodePacked("\x19\x00", ECDSAAddr, data));
         assertEq(digest1, digest2);
     }
 }

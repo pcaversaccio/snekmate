@@ -15,17 +15,9 @@ contract ERC20Test is Test {
     string private constant _VERSION_EIP712 = "1";
     uint256 private constant _INITIAL_SUPPLY = type(uint8).max;
     bytes32 private constant _TYPE_HASH =
-        keccak256(
-            bytes(
-                "EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)"
-            )
-        );
+        keccak256(bytes("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)"));
     bytes32 private constant _PERMIT_TYPE_HASH =
-        keccak256(
-            bytes(
-                "Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)"
-            )
-        );
+        keccak256(bytes("Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)"));
 
     VyperDeployer private vyperDeployer = new VyperDeployer();
 
@@ -42,16 +34,8 @@ contract ERC20Test is Test {
     address private ERC20ExtendedAddr;
 
     function setUp() public {
-        bytes memory args = abi.encode(
-            _NAME,
-            _SYMBOL,
-            _INITIAL_SUPPLY,
-            _NAME_EIP712,
-            _VERSION_EIP712
-        );
-        ERC20Extended = IERC20Extended(
-            vyperDeployer.deployContract("src/tokens/", "ERC20", args)
-        );
+        bytes memory args = abi.encode(_NAME, _SYMBOL, _INITIAL_SUPPLY, _NAME_EIP712, _VERSION_EIP712);
+        ERC20Extended = IERC20Extended(vyperDeployer.deployContract("src/tokens/", "ERC20", args));
         ERC20ExtendedAddr = address(ERC20Extended);
         _CACHED_DOMAIN_SEPARATOR = keccak256(
             abi.encode(
@@ -70,10 +54,7 @@ contract ERC20Test is Test {
         assertEq(ERC20Extended.name(), _NAME);
         assertEq(ERC20Extended.symbol(), _SYMBOL);
         assertEq(ERC20Extended.totalSupply(), _INITIAL_SUPPLY * multiplier);
-        assertEq(
-            ERC20Extended.balanceOf(deployer),
-            _INITIAL_SUPPLY * multiplier
-        );
+        assertEq(ERC20Extended.balanceOf(deployer), _INITIAL_SUPPLY * multiplier);
         assertEq(ERC20Extended.owner(), deployer);
         assertTrue(ERC20Extended.is_minter(deployer));
 
@@ -82,32 +63,14 @@ contract ERC20Test is Test {
         vm.expectEmit(true, false, false, true);
         emit IERC20Extended.RoleMinterChanged(deployer, true);
         vm.expectEmit(true, true, false, true);
-        emit IERC20.Transfer(
-            zeroAddress,
-            deployer,
-            _INITIAL_SUPPLY * multiplier
-        );
-        bytes memory args = abi.encode(
-            _NAME,
-            _SYMBOL,
-            _INITIAL_SUPPLY,
-            _NAME_EIP712,
-            _VERSION_EIP712
-        );
-        ERC20ExtendedInitialEvent = IERC20Extended(
-            vyperDeployer.deployContract("src/tokens/", "ERC20", args)
-        );
+        emit IERC20.Transfer(zeroAddress, deployer, _INITIAL_SUPPLY * multiplier);
+        bytes memory args = abi.encode(_NAME, _SYMBOL, _INITIAL_SUPPLY, _NAME_EIP712, _VERSION_EIP712);
+        ERC20ExtendedInitialEvent = IERC20Extended(vyperDeployer.deployContract("src/tokens/", "ERC20", args));
         assertEq(ERC20ExtendedInitialEvent.decimals(), 18);
         assertEq(ERC20ExtendedInitialEvent.name(), _NAME);
         assertEq(ERC20ExtendedInitialEvent.symbol(), _SYMBOL);
-        assertEq(
-            ERC20ExtendedInitialEvent.totalSupply(),
-            _INITIAL_SUPPLY * multiplier
-        );
-        assertEq(
-            ERC20ExtendedInitialEvent.balanceOf(deployer),
-            _INITIAL_SUPPLY * multiplier
-        );
+        assertEq(ERC20ExtendedInitialEvent.totalSupply(), _INITIAL_SUPPLY * multiplier);
+        assertEq(ERC20ExtendedInitialEvent.balanceOf(deployer), _INITIAL_SUPPLY * multiplier);
         assertEq(ERC20ExtendedInitialEvent.owner(), deployer);
         assertTrue(ERC20ExtendedInitialEvent.is_minter(deployer));
     }
@@ -119,10 +82,7 @@ contract ERC20Test is Test {
 
     function testBalanceOf() public {
         uint256 multiplier = 10 ** uint256(ERC20Extended.decimals());
-        assertEq(
-            ERC20Extended.balanceOf(deployer),
-            _INITIAL_SUPPLY * multiplier
-        );
+        assertEq(ERC20Extended.balanceOf(deployer), _INITIAL_SUPPLY * multiplier);
         assertEq(ERC20Extended.balanceOf(makeAddr("account")), 0);
     }
 
@@ -268,11 +228,7 @@ contract ERC20Test is Test {
         ERC20Extended.approve(spender, amount);
         vm.startPrank(spender);
         vm.expectEmit(true, true, false, true);
-        emit IERC20.Approval(
-            owner,
-            spender,
-            ERC20Extended.allowance(owner, spender) - amount
-        );
+        emit IERC20.Approval(owner, spender, ERC20Extended.allowance(owner, spender) - amount);
         vm.expectEmit(true, true, false, true);
         emit IERC20.Transfer(owner, to, amount);
         bool returnValue = ERC20Extended.transferFrom(owner, to, amount);
@@ -405,11 +361,7 @@ contract ERC20Test is Test {
         ERC20Extended.approve(spender, amount);
         vm.startPrank(spender);
         vm.expectEmit(true, true, false, true);
-        emit IERC20.Approval(
-            owner,
-            spender,
-            ERC20Extended.allowance(owner, spender) - amount
-        );
+        emit IERC20.Approval(owner, spender, ERC20Extended.allowance(owner, spender) - amount);
 
         vm.expectEmit(true, true, false, true);
         emit IERC20.Transfer(owner, zeroAddress, amount);
@@ -430,11 +382,7 @@ contract ERC20Test is Test {
         ERC20Extended.approve(spender, balance);
         vm.startPrank(spender);
         vm.expectEmit(true, true, false, true);
-        emit IERC20.Approval(
-            owner,
-            spender,
-            ERC20Extended.allowance(owner, spender) - amount
-        );
+        emit IERC20.Approval(owner, spender, ERC20Extended.allowance(owner, spender) - amount);
 
         vm.expectEmit(true, true, false, true);
         emit IERC20.Transfer(owner, zeroAddress, amount);
@@ -513,10 +461,7 @@ contract ERC20Test is Test {
         emit IERC20.Transfer(zeroAddress, owner, amount);
         ERC20Extended.mint(owner, amount);
         assertEq(ERC20Extended.balanceOf(owner), amount);
-        assertEq(
-            ERC20Extended.totalSupply(),
-            (amount + _INITIAL_SUPPLY * multiplier)
-        );
+        assertEq(ERC20Extended.totalSupply(), (amount + _INITIAL_SUPPLY * multiplier));
         vm.stopPrank();
     }
 
@@ -584,16 +529,7 @@ contract ERC20Test is Test {
                 abi.encodePacked(
                     "\x19\x01",
                     domainSeparator,
-                    keccak256(
-                        abi.encode(
-                            _PERMIT_TYPE_HASH,
-                            owner,
-                            spender,
-                            amount,
-                            nonce,
-                            deadline
-                        )
-                    )
+                    keccak256(abi.encode(_PERMIT_TYPE_HASH, owner, spender, amount, nonce, deadline))
                 )
             )
         );
@@ -618,16 +554,7 @@ contract ERC20Test is Test {
                 abi.encodePacked(
                     "\x19\x01",
                     domainSeparator,
-                    keccak256(
-                        abi.encode(
-                            _PERMIT_TYPE_HASH,
-                            owner,
-                            spender,
-                            amount,
-                            nonce,
-                            deadline
-                        )
-                    )
+                    keccak256(abi.encode(_PERMIT_TYPE_HASH, owner, spender, amount, nonce, deadline))
                 )
             )
         );
@@ -652,16 +579,7 @@ contract ERC20Test is Test {
                 abi.encodePacked(
                     "\x19\x01",
                     domainSeparator,
-                    keccak256(
-                        abi.encode(
-                            _PERMIT_TYPE_HASH,
-                            owner,
-                            spender,
-                            amount,
-                            nonce,
-                            deadline
-                        )
-                    )
+                    keccak256(abi.encode(_PERMIT_TYPE_HASH, owner, spender, amount, nonce, deadline))
                 )
             )
         );
@@ -691,16 +609,7 @@ contract ERC20Test is Test {
                 abi.encodePacked(
                     "\x19\x01",
                     domainSeparator,
-                    keccak256(
-                        abi.encode(
-                            _PERMIT_TYPE_HASH,
-                            owner,
-                            spender,
-                            amount,
-                            nonce,
-                            deadline
-                        )
-                    )
+                    keccak256(abi.encode(_PERMIT_TYPE_HASH, owner, spender, amount, nonce, deadline))
                 )
             )
         );
@@ -722,16 +631,7 @@ contract ERC20Test is Test {
                 abi.encodePacked(
                     "\x19\x01",
                     domainSeparator,
-                    keccak256(
-                        abi.encode(
-                            _PERMIT_TYPE_HASH,
-                            owner,
-                            spender,
-                            amount,
-                            nonce,
-                            deadline
-                        )
-                    )
+                    keccak256(abi.encode(_PERMIT_TYPE_HASH, owner, spender, amount, nonce, deadline))
                 )
             )
         );
@@ -753,16 +653,7 @@ contract ERC20Test is Test {
                 abi.encodePacked(
                     "\x19\x01",
                     domainSeparator,
-                    keccak256(
-                        abi.encode(
-                            _PERMIT_TYPE_HASH,
-                            owner,
-                            spender,
-                            amount,
-                            nonce,
-                            deadline
-                        )
-                    )
+                    keccak256(abi.encode(_PERMIT_TYPE_HASH, owner, spender, amount, nonce, deadline))
                 )
             )
         );
@@ -807,13 +698,7 @@ contract ERC20Test is Test {
         assertEq(extensions, new uint256[](0));
 
         bytes32 digest = keccak256(
-            abi.encode(
-                _TYPE_HASH,
-                keccak256(bytes(name)),
-                keccak256(bytes(version)),
-                chainId,
-                verifyingContract
-            )
+            abi.encode(_TYPE_HASH, keccak256(bytes(name)), keccak256(bytes(version)), chainId, verifyingContract)
         );
         assertEq(ERC20Extended.DOMAIN_SEPARATOR(), digest);
     }
@@ -882,17 +767,8 @@ contract ERC20Test is Test {
         assertEq(ERC20Extended.balanceOf(to), amount);
     }
 
-    function testFuzzTransferInvalidAmount(
-        address owner,
-        address to,
-        uint256 amount
-    ) public {
-        vm.assume(
-            owner != deployer &&
-                owner != zeroAddress &&
-                to != zeroAddress &&
-                amount != 0
-        );
+    function testFuzzTransferInvalidAmount(address owner, address to, uint256 amount) public {
+        vm.assume(owner != deployer && owner != zeroAddress && to != zeroAddress && amount != 0);
         vm.prank(owner);
         vm.expectRevert(bytes("ERC20: transfer amount exceeds balance"));
         ERC20Extended.transfer(to, amount);
@@ -908,19 +784,9 @@ contract ERC20Test is Test {
         assertEq(ERC20Extended.allowance(owner, spender), amount);
     }
 
-    function testFuzzTransferFromSuccess(
-        address owner,
-        address to,
-        uint256 amount
-    ) public {
+    function testFuzzTransferFromSuccess(address owner, address to, uint256 amount) public {
         address spender = self;
-        vm.assume(
-            to != zeroAddress &&
-                owner != zeroAddress &&
-                owner != to &&
-                to != spender &&
-                to != deployer
-        );
+        vm.assume(to != zeroAddress && owner != zeroAddress && owner != to && to != spender && to != deployer);
         amount = bound(amount, 0, type(uint64).max);
         uint256 give = type(uint256).max;
         deal(ERC20ExtendedAddr, owner, give);
@@ -939,12 +805,9 @@ contract ERC20Test is Test {
         assertEq(ERC20Extended.allowance(owner, spender), 0);
     }
 
-    function testFuzzTransferFromInsufficientAllowance(
-        address owner,
-        address to,
-        uint256 amount,
-        uint8 increment
-    ) public {
+    function testFuzzTransferFromInsufficientAllowance(address owner, address to, uint256 amount, uint8 increment)
+        public
+    {
         address spender = self;
         vm.assume(to != zeroAddress && owner != zeroAddress && increment != 0);
         amount = bound(amount, 0, type(uint64).max);
@@ -999,11 +862,7 @@ contract ERC20Test is Test {
         assertEq(ERC20Extended.allowance(owner, spender), 0);
     }
 
-    function testFuzzBurnFromInsufficientAllowance(
-        address owner,
-        uint256 amount,
-        uint8 increment
-    ) public {
+    function testFuzzBurnFromInsufficientAllowance(address owner, uint256 amount, uint8 increment) public {
         vm.assume(owner != zeroAddress && owner != deployer && increment != 0);
         address spender = self;
         amount = bound(amount, 0, type(uint64).max);
@@ -1027,17 +886,11 @@ contract ERC20Test is Test {
         emit IERC20.Transfer(zeroAddress, ownerAddr, amount);
         ERC20Extended.mint(ownerAddr, amount);
         assertEq(ERC20Extended.balanceOf(ownerAddr), amount);
-        assertEq(
-            ERC20Extended.totalSupply(),
-            (amount + _INITIAL_SUPPLY * multiplier)
-        );
+        assertEq(ERC20Extended.totalSupply(), (amount + _INITIAL_SUPPLY * multiplier));
         vm.stopPrank();
     }
 
-    function testFuzzMintNonMinter(
-        string calldata owner,
-        uint256 amount
-    ) public {
+    function testFuzzMintNonMinter(string calldata owner, uint256 amount) public {
         vm.expectRevert(bytes("AccessControl: access is denied"));
         ERC20Extended.mint(makeAddr(owner), amount);
     }
@@ -1058,20 +911,13 @@ contract ERC20Test is Test {
         vm.stopPrank();
     }
 
-    function testFuzzSetMinterNonOwner(
-        address msgSender,
-        string calldata minter
-    ) public {
+    function testFuzzSetMinterNonOwner(address msgSender, string calldata minter) public {
         vm.assume(msgSender != deployer);
         vm.expectRevert(bytes("Ownable: caller is not the owner"));
         ERC20Extended.set_minter(makeAddr(minter), true);
     }
 
-    function testFuzzPermitSuccess(
-        string calldata owner,
-        string calldata spender,
-        uint16 increment
-    ) public {
+    function testFuzzPermitSuccess(string calldata owner, string calldata spender, uint16 increment) public {
         (address ownerAddr, uint256 key) = makeAddrAndKey(owner);
         address spenderAddr = makeAddr(spender);
         uint256 amount = block.number;
@@ -1085,16 +931,7 @@ contract ERC20Test is Test {
                 abi.encodePacked(
                     "\x19\x01",
                     domainSeparator,
-                    keccak256(
-                        abi.encode(
-                            _PERMIT_TYPE_HASH,
-                            ownerAddr,
-                            spenderAddr,
-                            amount,
-                            nonce,
-                            deadline
-                        )
-                    )
+                    keccak256(abi.encode(_PERMIT_TYPE_HASH, ownerAddr, spenderAddr, amount, nonce, deadline))
                 )
             )
         );
@@ -1105,15 +942,9 @@ contract ERC20Test is Test {
         assertEq(ERC20Extended.nonces(ownerAddr), 1);
     }
 
-    function testFuzzPermitInvalid(
-        string calldata owner,
-        string calldata spender,
-        uint16 increment
-    ) public {
-        vm.assume(
-            keccak256(abi.encode(owner)) != keccak256(abi.encode("ownerWrong"))
-        );
-        (address ownerAddr, ) = makeAddrAndKey(owner);
+    function testFuzzPermitInvalid(string calldata owner, string calldata spender, uint16 increment) public {
+        vm.assume(keccak256(abi.encode(owner)) != keccak256(abi.encode("ownerWrong")));
+        (address ownerAddr,) = makeAddrAndKey(owner);
         (, uint256 keyWrong) = makeAddrAndKey("ownerWrong");
         address spenderAddr = makeAddr(spender);
         uint256 amount = block.number;
@@ -1127,16 +958,7 @@ contract ERC20Test is Test {
                 abi.encodePacked(
                     "\x19\x01",
                     domainSeparator,
-                    keccak256(
-                        abi.encode(
-                            _PERMIT_TYPE_HASH,
-                            ownerAddr,
-                            spenderAddr,
-                            amount,
-                            nonce,
-                            deadline
-                        )
-                    )
+                    keccak256(abi.encode(_PERMIT_TYPE_HASH, ownerAddr, spenderAddr, amount, nonce, deadline))
                 )
             )
         );
@@ -1164,11 +986,7 @@ contract ERC20Test is Test {
         bytes32 randomSalt,
         uint256[] calldata randomExtensions
     ) public {
-        vm.assume(
-            randomHex != hex"0f" &&
-                randomSalt != bytes32(0) &&
-                randomExtensions.length != 0
-        );
+        vm.assume(randomHex != hex"0f" && randomSalt != bytes32(0) && randomExtensions.length != 0);
         vm.chainId(block.chainid + increment);
         (
             bytes1 fields,
@@ -1185,32 +1003,17 @@ contract ERC20Test is Test {
         assertEq(chainId, block.chainid);
         assertEq(verifyingContract, ERC20ExtendedAddr);
         assertTrue(salt != randomSalt);
-        assertTrue(
-            keccak256(abi.encode(extensions)) !=
-                keccak256(abi.encode(randomExtensions))
-        );
+        assertTrue(keccak256(abi.encode(extensions)) != keccak256(abi.encode(randomExtensions)));
 
         bytes32 digest = keccak256(
-            abi.encode(
-                _TYPE_HASH,
-                keccak256(bytes(name)),
-                keccak256(bytes(version)),
-                chainId,
-                verifyingContract
-            )
+            abi.encode(_TYPE_HASH, keccak256(bytes(name)), keccak256(bytes(version)), chainId, verifyingContract)
         );
         assertEq(ERC20Extended.DOMAIN_SEPARATOR(), digest);
     }
 
-    function testFuzzTransferOwnershipSuccess(
-        address newOwner1,
-        address newOwner2
-    ) public {
+    function testFuzzTransferOwnershipSuccess(address newOwner1, address newOwner2) public {
         vm.assume(
-            newOwner1 != zeroAddress &&
-                newOwner1 != deployer &&
-                newOwner1 != newOwner2 &&
-                newOwner2 != zeroAddress
+            newOwner1 != zeroAddress && newOwner1 != deployer && newOwner1 != newOwner2 && newOwner2 != zeroAddress
         );
         address oldOwner = deployer;
         vm.startPrank(oldOwner);
@@ -1241,10 +1044,7 @@ contract ERC20Test is Test {
         vm.stopPrank();
     }
 
-    function testFuzzTransferOwnershipNonOwner(
-        address nonOwner,
-        address newOwner
-    ) public {
+    function testFuzzTransferOwnershipNonOwner(address nonOwner, address newOwner) public {
         vm.assume(nonOwner != deployer);
         vm.prank(nonOwner);
         vm.expectRevert(bytes("Ownable: caller is not the owner"));
@@ -1299,21 +1099,9 @@ contract ERC20Invariants is Test {
     address private deployer = address(vyperDeployer);
 
     function setUp() public {
-        bytes memory args = abi.encode(
-            _NAME,
-            _SYMBOL,
-            _INITIAL_SUPPLY,
-            _NAME_EIP712,
-            _VERSION_EIP712
-        );
-        ERC20Extended = IERC20Extended(
-            vyperDeployer.deployContract("src/tokens/", "ERC20", args)
-        );
-        erc20Handler = new ERC20Handler(
-            ERC20Extended,
-            _INITIAL_SUPPLY,
-            deployer
-        );
+        bytes memory args = abi.encode(_NAME, _SYMBOL, _INITIAL_SUPPLY, _NAME_EIP712, _VERSION_EIP712);
+        ERC20Extended = IERC20Extended(vyperDeployer.deployContract("src/tokens/", "ERC20", args));
+        erc20Handler = new ERC20Handler(ERC20Extended, _INITIAL_SUPPLY, deployer);
         targetContract(address(erc20Handler));
         targetSender(deployer);
     }
@@ -1349,23 +1137,13 @@ contract ERC20Handler {
         token.approve(spender, amount);
     }
 
-    function transferFrom(
-        address ownerAddr,
-        address to,
-        uint256 amount
-    ) public {
+    function transferFrom(address ownerAddr, address to, uint256 amount) public {
         token.transferFrom(ownerAddr, to, amount);
     }
 
-    function permit(
-        address ownerAddr,
-        address spender,
-        uint256 value,
-        uint256 deadline,
-        uint8 v,
-        bytes32 r,
-        bytes32 s
-    ) public {
+    function permit(address ownerAddr, address spender, uint256 value, uint256 deadline, uint8 v, bytes32 r, bytes32 s)
+        public
+    {
         token.permit(ownerAddr, spender, value, deadline, v, r, s);
     }
 

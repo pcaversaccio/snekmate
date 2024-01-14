@@ -2,11 +2,7 @@
 pragma solidity ^0.8.23;
 
 interface IMerkleProofVerification {
-    function verify(
-        bytes32[] calldata proof,
-        bytes32 root,
-        bytes32 leaf
-    ) external pure returns (bool);
+    function verify(bytes32[] calldata proof, bytes32 root, bytes32 leaf) external pure returns (bool);
 
     function multi_proof_verify(
         bytes32[] calldata proof,

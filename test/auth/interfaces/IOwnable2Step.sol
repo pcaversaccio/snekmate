@@ -2,15 +2,9 @@
 pragma solidity ^0.8.23;
 
 interface IOwnable2Step {
-    event OwnershipTransferStarted(
-        address indexed previousOwner,
-        address indexed newOwner
-    );
+    event OwnershipTransferStarted(address indexed previousOwner, address indexed newOwner);
 
-    event OwnershipTransferred(
-        address indexed previousOwner,
-        address indexed newOwner
-    );
+    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
 
     function owner() external view returns (address);
 

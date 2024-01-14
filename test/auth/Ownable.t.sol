@@ -16,9 +16,7 @@ contract OwnableTest is Test {
     address private zeroAddress = address(0);
 
     function setUp() public {
-        ownable = IOwnable(
-            vyperDeployer.deployContract("src/auth/", "Ownable")
-        );
+        ownable = IOwnable(vyperDeployer.deployContract("src/auth/", "Ownable"));
     }
 
     function testInitialSetup() public {
@@ -26,9 +24,7 @@ contract OwnableTest is Test {
 
         vm.expectEmit(true, true, false, false);
         emit IOwnable.OwnershipTransferred(zeroAddress, deployer);
-        ownableInitialEvent = IOwnable(
-            vyperDeployer.deployContract("src/auth/", "Ownable")
-        );
+        ownableInitialEvent = IOwnable(vyperDeployer.deployContract("src/auth/", "Ownable"));
         assertEq(ownableInitialEvent.owner(), deployer);
     }
 
@@ -74,10 +70,7 @@ contract OwnableTest is Test {
         ownable.renounce_ownership();
     }
 
-    function testFuzzTransferOwnershipSuccess(
-        address newOwner1,
-        address newOwner2
-    ) public {
+    function testFuzzTransferOwnershipSuccess(address newOwner1, address newOwner2) public {
         vm.assume(newOwner1 != zeroAddress && newOwner2 != zeroAddress);
         address oldOwner = deployer;
         vm.startPrank(oldOwner);
@@ -95,10 +88,7 @@ contract OwnableTest is Test {
         vm.stopPrank();
     }
 
-    function testFuzzTransferOwnershipNonOwner(
-        address nonOwner,
-        address newOwner
-    ) public {
+    function testFuzzTransferOwnershipNonOwner(address nonOwner, address newOwner) public {
         vm.assume(nonOwner != deployer);
         vm.prank(nonOwner);
         vm.expectRevert(bytes("Ownable: caller is not the owner"));
@@ -141,9 +131,7 @@ contract OwnableInvariants is Test {
     address private deployer = address(vyperDeployer);
 
     function setUp() public {
-        ownable = IOwnable(
-            vyperDeployer.deployContract("src/auth/", "Ownable")
-        );
+        ownable = IOwnable(vyperDeployer.deployContract("src/auth/", "Ownable"));
         ownerHandler = new OwnerHandler(ownable, deployer);
         targetContract(address(ownerHandler));
     }

@@ -23,11 +23,7 @@ contract MathTest is Test {
      * @param denominator The 32-byte divisor.
      * @return result The 32-byte result of the `mulmod` operation.
      */
-    function mulMod(
-        uint256 x,
-        uint256 y,
-        uint256 denominator
-    ) internal pure returns (uint256 result) {
+    function mulMod(uint256 x, uint256 y, uint256 denominator) internal pure returns (uint256 result) {
         // solhint-disable-next-line no-inline-assembly
         assembly {
             result := mulmod(x, y, denominator)
@@ -42,10 +38,7 @@ contract MathTest is Test {
      * @return high The most significant 32 bytes of the product.
      * @return low The least significant 32 bytes of the product.
      */
-    function mulHighLow(
-        uint256 x,
-        uint256 y
-    ) internal pure returns (uint256 high, uint256 low) {
+    function mulHighLow(uint256 x, uint256 y) internal pure returns (uint256 high, uint256 low) {
         (uint256 x0, uint256 x1) = (x & type(uint128).max, x >> 128);
         (uint256 y0, uint256 y1) = (y & type(uint128).max, y >> 128);
 
@@ -57,9 +50,7 @@ contract MathTest is Test {
         uint256 z1b = x0 * y1;
         uint256 z0 = x0 * y0;
 
-        uint256 carry = ((z1a & type(uint128).max) +
-            (z1b & type(uint128).max) +
-            (z0 >> 128)) >> 128;
+        uint256 carry = ((z1a & type(uint128).max) + (z1b & type(uint128).max) + (z0 >> 128)) >> 128;
 
         high = z2 + (z1a >> 128) + (z1b >> 128) + carry;
 
@@ -76,10 +67,7 @@ contract MathTest is Test {
      * @return remainder The 32-byte remainder.
      * @return carry The 32-byte carry.
      */
-    function addCarry(
-        uint256 x,
-        uint256 y
-    ) internal pure returns (uint256 remainder, uint256 carry) {
+    function addCarry(uint256 x, uint256 y) internal pure returns (uint256 remainder, uint256 carry) {
         unchecked {
             remainder = x + y;
         }
@@ -118,10 +106,7 @@ contract MathTest is Test {
         assertEq(math.uint256_average(73_220, 419_712), 246_466);
         assertEq(math.uint256_average(83_219, 419_712), 251_465);
         assertEq(math.uint256_average(73_220, 219_713), 146_466);
-        assertEq(
-            math.uint256_average(type(uint256).max, type(uint256).max),
-            type(uint256).max
-        );
+        assertEq(math.uint256_average(type(uint256).max, type(uint256).max), type(uint256).max);
     }
 
     function testInt256Average() public {
@@ -137,10 +122,7 @@ contract MathTest is Test {
         assertEq(math.int256_average(73_220, 219_713), 146_466);
         assertEq(math.int256_average(-73_220, -219_713), -146_467);
 
-        assertEq(
-            math.int256_average(type(int256).min, type(int256).min),
-            type(int256).min
-        );
+        assertEq(math.int256_average(type(int256).min, type(int256).min), type(int256).min);
         assertEq(math.int256_average(type(int256).min, type(int256).max), -1);
     }
 
@@ -192,18 +174,9 @@ contract MathTest is Test {
         uint256 maxUint256Sub2 = maxUint256 - 2;
         assertEq(math.mul_div(42, maxUint256Sub1, maxUint256, false), 41);
         assertEq(math.mul_div(23, maxUint256, maxUint256, false), 23);
-        assertEq(
-            math.mul_div(maxUint256Sub1, maxUint256Sub1, maxUint256, false),
-            maxUint256Sub2
-        );
-        assertEq(
-            math.mul_div(maxUint256, maxUint256Sub1, maxUint256, false),
-            maxUint256Sub1
-        );
-        assertEq(
-            math.mul_div(maxUint256, maxUint256, maxUint256, false),
-            maxUint256
-        );
+        assertEq(math.mul_div(maxUint256Sub1, maxUint256Sub1, maxUint256, false), maxUint256Sub2);
+        assertEq(math.mul_div(maxUint256, maxUint256Sub1, maxUint256, false), maxUint256Sub1);
+        assertEq(math.mul_div(maxUint256, maxUint256, maxUint256, false), maxUint256);
     }
 
     function testMulDivRoundUpSmallValues() public {
@@ -217,18 +190,9 @@ contract MathTest is Test {
         uint256 maxUint256Sub1 = maxUint256 - 1;
         assertEq(math.mul_div(42, maxUint256Sub1, maxUint256, true), 42);
         assertEq(math.mul_div(23, maxUint256, maxUint256, true), 23);
-        assertEq(
-            math.mul_div(maxUint256Sub1, maxUint256Sub1, maxUint256, true),
-            maxUint256Sub1
-        );
-        assertEq(
-            math.mul_div(maxUint256, maxUint256Sub1, maxUint256, true),
-            maxUint256Sub1
-        );
-        assertEq(
-            math.mul_div(maxUint256, maxUint256, maxUint256, true),
-            maxUint256
-        );
+        assertEq(math.mul_div(maxUint256Sub1, maxUint256Sub1, maxUint256, true), maxUint256Sub1);
+        assertEq(math.mul_div(maxUint256, maxUint256Sub1, maxUint256, true), maxUint256Sub1);
+        assertEq(math.mul_div(maxUint256, maxUint256, maxUint256, true), maxUint256);
     }
 
     function testLog2RoundDown() public {
@@ -324,14 +288,8 @@ contract MathTest is Test {
         assertEq(math.wad_ln(42), -37_708_862_055_609_454_007);
         assertEq(math.wad_ln(10 ** 4), -32_236_191_301_916_639_577);
         assertEq(math.wad_ln(10 ** 9), -20_723_265_836_946_411_157);
-        assertEq(
-            math.wad_ln(2_718_281_828_459_045_235),
-            999_999_999_999_999_999
-        );
-        assertEq(
-            math.wad_ln(11_723_640_096_265_400_935),
-            2_461_607_324_344_817_918
-        );
+        assertEq(math.wad_ln(2_718_281_828_459_045_235), 999_999_999_999_999_999);
+        assertEq(math.wad_ln(11_723_640_096_265_400_935), 2_461_607_324_344_817_918);
         assertEq(math.wad_ln(2 ** 128), 47_276_307_437_780_177_293);
         assertEq(math.wad_ln(2 ** 170), 76_388_489_021_297_880_288);
         assertEq(math.wad_ln(type(int256).max), 135_305_999_368_893_231_589);
@@ -359,10 +317,7 @@ contract MathTest is Test {
         assertEq(math.wad_exp(2 * 10 ** 18), 7_389_056_098_930_650_227);
         assertEq(math.wad_exp(3 * 10 ** 18), 20_085_536_923_187_667_741);
         assertEq(math.wad_exp(10 * 10 ** 18), 22_026_465_794_806_716_516_980);
-        assertEq(
-            math.wad_exp(50 * 10 ** 18),
-            5_184_705_528_587_072_464_148_529_318_587_763_226_117
-        );
+        assertEq(math.wad_exp(50 * 10 ** 18), 5_184_705_528_587_072_464_148_529_318_587_763_226_117);
         assertEq(
             math.wad_exp(100 * 10 ** 18),
             26_881_171_418_161_354_484_134_666_106_240_937_146_178_367_581_647_816_351_662_017
@@ -397,10 +352,7 @@ contract MathTest is Test {
         assertEq(math.cbrt(type(uint32).max, false), 1_625);
         assertEq(math.cbrt(type(uint64).max, false), 2_642_245);
         assertEq(math.cbrt(type(uint128).max, false), 6_981_463_658_331);
-        assertEq(
-            math.cbrt(type(uint256).max, false),
-            48_740_834_812_604_276_470_692_694
-        );
+        assertEq(math.cbrt(type(uint256).max, false), 48_740_834_812_604_276_470_692_694);
     }
 
     function testCbrtRoundUp() public {
@@ -420,10 +372,7 @@ contract MathTest is Test {
         assertEq(math.cbrt(type(uint32).max, true), 1_626);
         assertEq(math.cbrt(type(uint64).max, true), 2_642_246);
         assertEq(math.cbrt(type(uint128).max, true), 6_981_463_658_332);
-        assertEq(
-            math.cbrt(type(uint256).max, true),
-            48_740_834_812_604_276_470_692_695
-        );
+        assertEq(math.cbrt(type(uint256).max, true), 48_740_834_812_604_276_470_692_695);
     }
 
     function testWadCbrt() public {
@@ -442,14 +391,8 @@ contract MathTest is Test {
         assertEq(math.wad_cbrt(type(uint16).max), 40_317_268_530_317);
         assertEq(math.wad_cbrt(type(uint32).max), 1_625_498_677_089_280);
         assertEq(math.wad_cbrt(type(uint64).max), 2_642_245_949_629_133_047);
-        assertEq(
-            math.wad_cbrt(type(uint128).max),
-            6_981_463_658_331_559_092_288_464
-        );
-        assertEq(
-            math.wad_cbrt(type(uint256).max),
-            48_740_834_812_604_276_470_692_694_000_000_000_000
-        );
+        assertEq(math.wad_cbrt(type(uint128).max), 6_981_463_658_331_559_092_288_464);
+        assertEq(math.wad_cbrt(type(uint256).max), 48_740_834_812_604_276_470_692_694_000_000_000_000);
     }
 
     /**
@@ -541,7 +484,7 @@ contract MathTest is Test {
      * https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/test/utils/math/Math.t.sol.
      */
     function testFuzzMulDivDomain(uint256 x, uint256 y, uint256 d) public {
-        (uint256 xyHi, ) = mulHighLow(x, y);
+        (uint256 xyHi,) = mulHighLow(x, y);
 
         /**
          * @dev Violate `testFuzzMulDiv` assumption, i.e. `d` is 0 and result overflows.
@@ -655,9 +598,7 @@ contract MathTest is Test {
     function testFuzzWadCbrt(uint256 x) public {
         uint256 result = math.wad_cbrt(x);
         uint256 floor = floorCbrt(x);
-        assertTrue(
-            result >= floor * 10 ** 12 && result <= (floor + 1) * 10 ** 12
-        );
+        assertTrue(result >= floor * 10 ** 12 && result <= (floor + 1) * 10 ** 12);
         assertEq(result / 10 ** 12, floor);
     }
 }

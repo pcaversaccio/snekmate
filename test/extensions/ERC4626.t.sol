@@ -24,26 +24,13 @@ contract ERC4626VaultTest is ERC4626Test {
     uint8 private constant _DECIMALS_OFFSET = 0;
     uint256 private constant _INITIAL_SUPPLY_UNDERLYING = type(uint8).max;
     bytes32 private constant _TYPE_HASH =
-        keccak256(
-            bytes(
-                "EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)"
-            )
-        );
+        keccak256(bytes("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)"));
     bytes32 private constant _PERMIT_TYPE_HASH =
-        keccak256(
-            bytes(
-                "Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)"
-            )
-        );
+        keccak256(bytes("Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)"));
 
     VyperDeployer private vyperDeployer = new VyperDeployer();
     ERC20Mock private underlying =
-        new ERC20Mock(
-            _NAME_UNDERLYING,
-            _SYMBOL_UNDERLYING,
-            makeAddr("initialAccount"),
-            _INITIAL_SUPPLY_UNDERLYING
-        );
+        new ERC20Mock(_NAME_UNDERLYING, _SYMBOL_UNDERLYING, makeAddr("initialAccount"), _INITIAL_SUPPLY_UNDERLYING);
 
     /* solhint-disable var-name-mixedcase */
     IERC4626Extended private ERC4626ExtendedDecimalsOffset0;
@@ -66,24 +53,11 @@ contract ERC4626VaultTest is ERC4626Test {
     address private ERC4626ExtendedDecimalsOffset18Addr;
 
     function setUp() public override {
-        bytes memory argsDecimalsOffset0 = abi.encode(
-            _NAME,
-            _SYMBOL,
-            underlying,
-            _DECIMALS_OFFSET,
-            _NAME_EIP712,
-            _VERSION_EIP712
-        );
-        ERC4626ExtendedDecimalsOffset0 = IERC4626Extended(
-            vyperDeployer.deployContract(
-                "src/extensions/",
-                "ERC4626",
-                argsDecimalsOffset0
-            )
-        );
-        ERC4626ExtendedDecimalsOffset0Addr = address(
-            ERC4626ExtendedDecimalsOffset0
-        );
+        bytes memory argsDecimalsOffset0 =
+            abi.encode(_NAME, _SYMBOL, underlying, _DECIMALS_OFFSET, _NAME_EIP712, _VERSION_EIP712);
+        ERC4626ExtendedDecimalsOffset0 =
+            IERC4626Extended(vyperDeployer.deployContract("src/extensions/", "ERC4626", argsDecimalsOffset0));
+        ERC4626ExtendedDecimalsOffset0Addr = address(ERC4626ExtendedDecimalsOffset0);
         _CACHED_DOMAIN_SEPARATOR = keccak256(
             abi.encode(
                 _TYPE_HASH,
@@ -94,62 +68,23 @@ contract ERC4626VaultTest is ERC4626Test {
             )
         );
 
-        bytes memory argsDecimalsOffset6 = abi.encode(
-            _NAME,
-            _SYMBOL,
-            underlying,
-            _DECIMALS_OFFSET + 6,
-            _NAME_EIP712,
-            _VERSION_EIP712
-        );
-        ERC4626ExtendedDecimalsOffset6 = IERC4626Extended(
-            vyperDeployer.deployContract(
-                "src/extensions/",
-                "ERC4626",
-                argsDecimalsOffset6
-            )
-        );
-        ERC4626ExtendedDecimalsOffset6Addr = address(
-            ERC4626ExtendedDecimalsOffset6
-        );
+        bytes memory argsDecimalsOffset6 =
+            abi.encode(_NAME, _SYMBOL, underlying, _DECIMALS_OFFSET + 6, _NAME_EIP712, _VERSION_EIP712);
+        ERC4626ExtendedDecimalsOffset6 =
+            IERC4626Extended(vyperDeployer.deployContract("src/extensions/", "ERC4626", argsDecimalsOffset6));
+        ERC4626ExtendedDecimalsOffset6Addr = address(ERC4626ExtendedDecimalsOffset6);
 
-        bytes memory argsDecimalsOffset12 = abi.encode(
-            _NAME,
-            _SYMBOL,
-            underlying,
-            _DECIMALS_OFFSET + 12,
-            _NAME_EIP712,
-            _VERSION_EIP712
-        );
-        ERC4626ExtendedDecimalsOffset12 = IERC4626Extended(
-            vyperDeployer.deployContract(
-                "src/extensions/",
-                "ERC4626",
-                argsDecimalsOffset12
-            )
-        );
-        ERC4626ExtendedDecimalsOffset12Addr = address(
-            ERC4626ExtendedDecimalsOffset12
-        );
+        bytes memory argsDecimalsOffset12 =
+            abi.encode(_NAME, _SYMBOL, underlying, _DECIMALS_OFFSET + 12, _NAME_EIP712, _VERSION_EIP712);
+        ERC4626ExtendedDecimalsOffset12 =
+            IERC4626Extended(vyperDeployer.deployContract("src/extensions/", "ERC4626", argsDecimalsOffset12));
+        ERC4626ExtendedDecimalsOffset12Addr = address(ERC4626ExtendedDecimalsOffset12);
 
-        bytes memory argsDecimalsOffset18 = abi.encode(
-            _NAME,
-            _SYMBOL,
-            underlying,
-            _DECIMALS_OFFSET + 18,
-            _NAME_EIP712,
-            _VERSION_EIP712
-        );
-        ERC4626ExtendedDecimalsOffset18 = IERC4626Extended(
-            vyperDeployer.deployContract(
-                "src/extensions/",
-                "ERC4626",
-                argsDecimalsOffset18
-            )
-        );
-        ERC4626ExtendedDecimalsOffset18Addr = address(
-            ERC4626ExtendedDecimalsOffset18
-        );
+        bytes memory argsDecimalsOffset18 =
+            abi.encode(_NAME, _SYMBOL, underlying, _DECIMALS_OFFSET + 18, _NAME_EIP712, _VERSION_EIP712);
+        ERC4626ExtendedDecimalsOffset18 =
+            IERC4626Extended(vyperDeployer.deployContract("src/extensions/", "ERC4626", argsDecimalsOffset18));
+        ERC4626ExtendedDecimalsOffset18Addr = address(ERC4626ExtendedDecimalsOffset18);
 
         /**
          * @dev ERC-4626 property tests (https://github.com/a16z/erc4626-tests) setup.
@@ -185,49 +120,24 @@ contract ERC4626VaultTest is ERC4626Test {
         /**
          * @dev Check the case where the asset has not yet been created.
          */
-        bytes memory argsDecimalsOffsetEOA = abi.encode(
-            _NAME,
-            _SYMBOL,
-            makeAddr("someAccount"),
-            _DECIMALS_OFFSET + 3,
-            _NAME_EIP712,
-            _VERSION_EIP712
-        );
+        bytes memory argsDecimalsOffsetEOA =
+            abi.encode(_NAME, _SYMBOL, makeAddr("someAccount"), _DECIMALS_OFFSET + 3, _NAME_EIP712, _VERSION_EIP712);
         // solhint-disable-next-line var-name-mixedcase
-        IERC4626Extended ERC4626ExtendedDecimalsOffsetEOA = IERC4626Extended(
-            vyperDeployer.deployContract(
-                "src/extensions/",
-                "ERC4626",
-                argsDecimalsOffsetEOA
-            )
-        );
+        IERC4626Extended ERC4626ExtendedDecimalsOffsetEOA =
+            IERC4626Extended(vyperDeployer.deployContract("src/extensions/", "ERC4626", argsDecimalsOffsetEOA));
         assertEq(ERC4626ExtendedDecimalsOffsetEOA.name(), _NAME);
         assertEq(ERC4626ExtendedDecimalsOffsetEOA.symbol(), _SYMBOL);
         assertEq(ERC4626ExtendedDecimalsOffsetEOA.decimals(), 18 + 3);
-        assertEq(
-            ERC4626ExtendedDecimalsOffsetEOA.asset(),
-            makeAddr("someAccount")
-        );
+        assertEq(ERC4626ExtendedDecimalsOffsetEOA.asset(), makeAddr("someAccount"));
 
         /**
          * @dev Check the case where success is `False`.
          */
-        bytes memory argsDecimalsOffsetNoDecimals = abi.encode(
-            _NAME,
-            _SYMBOL,
-            deployer,
-            _DECIMALS_OFFSET + 6,
-            _NAME_EIP712,
-            _VERSION_EIP712
-        );
+        bytes memory argsDecimalsOffsetNoDecimals =
+            abi.encode(_NAME, _SYMBOL, deployer, _DECIMALS_OFFSET + 6, _NAME_EIP712, _VERSION_EIP712);
         // solhint-disable-next-line var-name-mixedcase
-        IERC4626Extended ERC4626ExtendedDecimalsOffsetNoDecimals = IERC4626Extended(
-                vyperDeployer.deployContract(
-                    "src/extensions/",
-                    "ERC4626",
-                    argsDecimalsOffsetNoDecimals
-                )
-            );
+        IERC4626Extended ERC4626ExtendedDecimalsOffsetNoDecimals =
+            IERC4626Extended(vyperDeployer.deployContract("src/extensions/", "ERC4626", argsDecimalsOffsetNoDecimals));
         assertEq(ERC4626ExtendedDecimalsOffsetNoDecimals.name(), _NAME);
         assertEq(ERC4626ExtendedDecimalsOffsetNoDecimals.symbol(), _SYMBOL);
         assertEq(ERC4626ExtendedDecimalsOffsetNoDecimals.decimals(), 18 + 6);
@@ -237,59 +147,26 @@ contract ERC4626VaultTest is ERC4626Test {
          * @dev Check the case where the return value is above the
          * maximum value of the type `uint8`.
          */
-        address erc20ExcessDecimalsMock = address(
-            new ERC20ExcessDecimalsMock()
-        );
-        bytes memory argsDecimalsOffsetTooHighDecimals = abi.encode(
-            _NAME,
-            _SYMBOL,
-            erc20ExcessDecimalsMock,
-            _DECIMALS_OFFSET + 9,
-            _NAME_EIP712,
-            _VERSION_EIP712
-        );
+        address erc20ExcessDecimalsMock = address(new ERC20ExcessDecimalsMock());
+        bytes memory argsDecimalsOffsetTooHighDecimals =
+            abi.encode(_NAME, _SYMBOL, erc20ExcessDecimalsMock, _DECIMALS_OFFSET + 9, _NAME_EIP712, _VERSION_EIP712);
         // solhint-disable-next-line var-name-mixedcase
         IERC4626Extended ERC4626ExtendedDecimalsOffsetTooHighDecimals = IERC4626Extended(
-                vyperDeployer.deployContract(
-                    "src/extensions/",
-                    "ERC4626",
-                    argsDecimalsOffsetTooHighDecimals
-                )
-            );
+            vyperDeployer.deployContract("src/extensions/", "ERC4626", argsDecimalsOffsetTooHighDecimals)
+        );
         assertEq(ERC4626ExtendedDecimalsOffsetTooHighDecimals.name(), _NAME);
-        assertEq(
-            ERC4626ExtendedDecimalsOffsetTooHighDecimals.symbol(),
-            _SYMBOL
-        );
-        assertEq(
-            ERC4626ExtendedDecimalsOffsetTooHighDecimals.decimals(),
-            18 + 9
-        );
-        assertEq(
-            ERC4626ExtendedDecimalsOffsetTooHighDecimals.asset(),
-            erc20ExcessDecimalsMock
-        );
+        assertEq(ERC4626ExtendedDecimalsOffsetTooHighDecimals.symbol(), _SYMBOL);
+        assertEq(ERC4626ExtendedDecimalsOffsetTooHighDecimals.decimals(), 18 + 9);
+        assertEq(ERC4626ExtendedDecimalsOffsetTooHighDecimals.asset(), erc20ExcessDecimalsMock);
 
         /**
          * @dev Check the case where calculated `decimals` value overflows
          * the `uint8` type.
          */
-        bytes memory argsDecimalsOffsetOverflow = abi.encode(
-            _NAME,
-            _SYMBOL,
-            underlying,
-            type(uint8).max,
-            _NAME_EIP712,
-            _VERSION_EIP712
-        );
+        bytes memory argsDecimalsOffsetOverflow =
+            abi.encode(_NAME, _SYMBOL, underlying, type(uint8).max, _NAME_EIP712, _VERSION_EIP712);
         vm.expectRevert();
-        IERC4626Extended(
-            vyperDeployer.deployContract(
-                "src/extensions/",
-                "ERC4626",
-                argsDecimalsOffsetOverflow
-            )
-        );
+        IERC4626Extended(vyperDeployer.deployContract("src/extensions/", "ERC4626", argsDecimalsOffsetOverflow));
     }
 
     function testEmptyVaultDeposit() public {
@@ -299,153 +176,56 @@ contract ERC4626VaultTest is ERC4626Test {
         uint256 shares = 1;
         vm.startPrank(holder);
         underlying.mint(holder, type(uint16).max);
-        underlying.approve(
-            ERC4626ExtendedDecimalsOffset0Addr,
-            type(uint256).max
-        );
-        underlying.approve(
-            ERC4626ExtendedDecimalsOffset6Addr,
-            type(uint256).max
-        );
-        underlying.approve(
-            ERC4626ExtendedDecimalsOffset12Addr,
-            type(uint256).max
-        );
-        underlying.approve(
-            ERC4626ExtendedDecimalsOffset18Addr,
-            type(uint256).max
-        );
+        underlying.approve(ERC4626ExtendedDecimalsOffset0Addr, type(uint256).max);
+        underlying.approve(ERC4626ExtendedDecimalsOffset6Addr, type(uint256).max);
+        underlying.approve(ERC4626ExtendedDecimalsOffset12Addr, type(uint256).max);
+        underlying.approve(ERC4626ExtendedDecimalsOffset18Addr, type(uint256).max);
 
         assertEq(ERC4626ExtendedDecimalsOffset0.totalAssets(), 0);
-        assertEq(
-            ERC4626ExtendedDecimalsOffset0.maxDeposit(holder),
-            type(uint256).max
-        );
+        assertEq(ERC4626ExtendedDecimalsOffset0.maxDeposit(holder), type(uint256).max);
         assertEq(ERC4626ExtendedDecimalsOffset0.previewDeposit(assets), shares);
 
         assertEq(ERC4626ExtendedDecimalsOffset6.totalAssets(), 0);
-        assertEq(
-            ERC4626ExtendedDecimalsOffset6.maxDeposit(holder),
-            type(uint256).max
-        );
-        assertEq(
-            ERC4626ExtendedDecimalsOffset6.previewDeposit(assets),
-            shares * 10 ** 6
-        );
+        assertEq(ERC4626ExtendedDecimalsOffset6.maxDeposit(holder), type(uint256).max);
+        assertEq(ERC4626ExtendedDecimalsOffset6.previewDeposit(assets), shares * 10 ** 6);
 
         assertEq(ERC4626ExtendedDecimalsOffset12.totalAssets(), 0);
-        assertEq(
-            ERC4626ExtendedDecimalsOffset12.maxDeposit(holder),
-            type(uint256).max
-        );
-        assertEq(
-            ERC4626ExtendedDecimalsOffset12.previewDeposit(assets),
-            shares * 10 ** 12
-        );
+        assertEq(ERC4626ExtendedDecimalsOffset12.maxDeposit(holder), type(uint256).max);
+        assertEq(ERC4626ExtendedDecimalsOffset12.previewDeposit(assets), shares * 10 ** 12);
 
         assertEq(ERC4626ExtendedDecimalsOffset18.totalAssets(), 0);
-        assertEq(
-            ERC4626ExtendedDecimalsOffset18.maxDeposit(holder),
-            type(uint256).max
-        );
-        assertEq(
-            ERC4626ExtendedDecimalsOffset18.previewDeposit(assets),
-            shares * 10 ** 18
-        );
+        assertEq(ERC4626ExtendedDecimalsOffset18.maxDeposit(holder), type(uint256).max);
+        assertEq(ERC4626ExtendedDecimalsOffset18.previewDeposit(assets), shares * 10 ** 18);
 
         vm.expectEmit(true, true, false, true, underlyingAddr);
-        emit IERC20.Transfer(
-            holder,
-            ERC4626ExtendedDecimalsOffset0Addr,
-            assets
-        );
-        vm.expectEmit(
-            true,
-            true,
-            false,
-            true,
-            ERC4626ExtendedDecimalsOffset0Addr
-        );
+        emit IERC20.Transfer(holder, ERC4626ExtendedDecimalsOffset0Addr, assets);
+        vm.expectEmit(true, true, false, true, ERC4626ExtendedDecimalsOffset0Addr);
         emit IERC20.Transfer(zeroAddress, receiver, shares);
-        vm.expectEmit(
-            true,
-            true,
-            false,
-            true,
-            ERC4626ExtendedDecimalsOffset0Addr
-        );
+        vm.expectEmit(true, true, false, true, ERC4626ExtendedDecimalsOffset0Addr);
         emit IERC4626.Deposit(holder, receiver, assets, shares);
         ERC4626ExtendedDecimalsOffset0.deposit(assets, receiver);
 
         vm.expectEmit(true, true, false, true, underlyingAddr);
-        emit IERC20.Transfer(
-            holder,
-            ERC4626ExtendedDecimalsOffset6Addr,
-            assets
-        );
-        vm.expectEmit(
-            true,
-            true,
-            false,
-            true,
-            ERC4626ExtendedDecimalsOffset6Addr
-        );
+        emit IERC20.Transfer(holder, ERC4626ExtendedDecimalsOffset6Addr, assets);
+        vm.expectEmit(true, true, false, true, ERC4626ExtendedDecimalsOffset6Addr);
         emit IERC20.Transfer(zeroAddress, receiver, shares * 10 ** 6);
-        vm.expectEmit(
-            true,
-            true,
-            false,
-            true,
-            ERC4626ExtendedDecimalsOffset6Addr
-        );
+        vm.expectEmit(true, true, false, true, ERC4626ExtendedDecimalsOffset6Addr);
         emit IERC4626.Deposit(holder, receiver, assets, shares * 10 ** 6);
         ERC4626ExtendedDecimalsOffset6.deposit(assets, receiver);
 
         vm.expectEmit(true, true, false, true, underlyingAddr);
-        emit IERC20.Transfer(
-            holder,
-            ERC4626ExtendedDecimalsOffset12Addr,
-            assets
-        );
-        vm.expectEmit(
-            true,
-            true,
-            false,
-            true,
-            ERC4626ExtendedDecimalsOffset12Addr
-        );
+        emit IERC20.Transfer(holder, ERC4626ExtendedDecimalsOffset12Addr, assets);
+        vm.expectEmit(true, true, false, true, ERC4626ExtendedDecimalsOffset12Addr);
         emit IERC20.Transfer(zeroAddress, receiver, shares * 10 ** 12);
-        vm.expectEmit(
-            true,
-            true,
-            false,
-            true,
-            ERC4626ExtendedDecimalsOffset12Addr
-        );
+        vm.expectEmit(true, true, false, true, ERC4626ExtendedDecimalsOffset12Addr);
         emit IERC4626.Deposit(holder, receiver, assets, shares * 10 ** 12);
         ERC4626ExtendedDecimalsOffset12.deposit(assets, receiver);
 
         vm.expectEmit(true, true, false, true, underlyingAddr);
-        emit IERC20.Transfer(
-            holder,
-            ERC4626ExtendedDecimalsOffset18Addr,
-            assets
-        );
-        vm.expectEmit(
-            true,
-            true,
-            false,
-            true,
-            ERC4626ExtendedDecimalsOffset18Addr
-        );
+        emit IERC20.Transfer(holder, ERC4626ExtendedDecimalsOffset18Addr, assets);
+        vm.expectEmit(true, true, false, true, ERC4626ExtendedDecimalsOffset18Addr);
         emit IERC20.Transfer(zeroAddress, receiver, shares * 10 ** 18);
-        vm.expectEmit(
-            true,
-            true,
-            false,
-            true,
-            ERC4626ExtendedDecimalsOffset18Addr
-        );
+        vm.expectEmit(true, true, false, true, ERC4626ExtendedDecimalsOffset18Addr);
         emit IERC4626.Deposit(holder, receiver, assets, shares * 10 ** 18);
         ERC4626ExtendedDecimalsOffset18.deposit(assets, receiver);
 
@@ -457,36 +237,18 @@ contract ERC4626VaultTest is ERC4626Test {
 
         assertEq(ERC4626ExtendedDecimalsOffset6.totalAssets(), assets);
         assertEq(ERC4626ExtendedDecimalsOffset6.balanceOf(holder), 0);
-        assertEq(
-            ERC4626ExtendedDecimalsOffset6.balanceOf(receiver),
-            shares * 10 ** 6
-        );
-        assertEq(
-            ERC4626ExtendedDecimalsOffset6.totalSupply(),
-            shares * 10 ** 6
-        );
+        assertEq(ERC4626ExtendedDecimalsOffset6.balanceOf(receiver), shares * 10 ** 6);
+        assertEq(ERC4626ExtendedDecimalsOffset6.totalSupply(), shares * 10 ** 6);
 
         assertEq(ERC4626ExtendedDecimalsOffset12.totalAssets(), assets);
         assertEq(ERC4626ExtendedDecimalsOffset12.balanceOf(holder), 0);
-        assertEq(
-            ERC4626ExtendedDecimalsOffset12.balanceOf(receiver),
-            shares * 10 ** 12
-        );
-        assertEq(
-            ERC4626ExtendedDecimalsOffset12.totalSupply(),
-            shares * 10 ** 12
-        );
+        assertEq(ERC4626ExtendedDecimalsOffset12.balanceOf(receiver), shares * 10 ** 12);
+        assertEq(ERC4626ExtendedDecimalsOffset12.totalSupply(), shares * 10 ** 12);
 
         assertEq(ERC4626ExtendedDecimalsOffset18.totalAssets(), assets);
         assertEq(ERC4626ExtendedDecimalsOffset18.balanceOf(holder), 0);
-        assertEq(
-            ERC4626ExtendedDecimalsOffset18.balanceOf(receiver),
-            shares * 10 ** 18
-        );
-        assertEq(
-            ERC4626ExtendedDecimalsOffset18.totalSupply(),
-            shares * 10 ** 18
-        );
+        assertEq(ERC4626ExtendedDecimalsOffset18.balanceOf(receiver), shares * 10 ** 18);
+        assertEq(ERC4626ExtendedDecimalsOffset18.totalSupply(), shares * 10 ** 18);
         vm.stopPrank();
     }
 
@@ -497,153 +259,56 @@ contract ERC4626VaultTest is ERC4626Test {
         uint256 shares = 1;
         vm.startPrank(holder);
         underlying.mint(holder, type(uint16).max);
-        underlying.approve(
-            ERC4626ExtendedDecimalsOffset0Addr,
-            type(uint256).max
-        );
-        underlying.approve(
-            ERC4626ExtendedDecimalsOffset6Addr,
-            type(uint256).max
-        );
-        underlying.approve(
-            ERC4626ExtendedDecimalsOffset12Addr,
-            type(uint256).max
-        );
-        underlying.approve(
-            ERC4626ExtendedDecimalsOffset18Addr,
-            type(uint256).max
-        );
+        underlying.approve(ERC4626ExtendedDecimalsOffset0Addr, type(uint256).max);
+        underlying.approve(ERC4626ExtendedDecimalsOffset6Addr, type(uint256).max);
+        underlying.approve(ERC4626ExtendedDecimalsOffset12Addr, type(uint256).max);
+        underlying.approve(ERC4626ExtendedDecimalsOffset18Addr, type(uint256).max);
 
         assertEq(ERC4626ExtendedDecimalsOffset0.totalAssets(), 0);
-        assertEq(
-            ERC4626ExtendedDecimalsOffset0.maxMint(receiver),
-            type(uint256).max
-        );
+        assertEq(ERC4626ExtendedDecimalsOffset0.maxMint(receiver), type(uint256).max);
         assertEq(ERC4626ExtendedDecimalsOffset0.previewMint(shares), assets);
 
         assertEq(ERC4626ExtendedDecimalsOffset6.totalAssets(), 0);
-        assertEq(
-            ERC4626ExtendedDecimalsOffset6.maxMint(receiver),
-            type(uint256).max
-        );
-        assertEq(
-            ERC4626ExtendedDecimalsOffset6.previewMint(shares * 10 ** 6),
-            assets
-        );
+        assertEq(ERC4626ExtendedDecimalsOffset6.maxMint(receiver), type(uint256).max);
+        assertEq(ERC4626ExtendedDecimalsOffset6.previewMint(shares * 10 ** 6), assets);
 
         assertEq(ERC4626ExtendedDecimalsOffset12.totalAssets(), 0);
-        assertEq(
-            ERC4626ExtendedDecimalsOffset12.maxMint(receiver),
-            type(uint256).max
-        );
-        assertEq(
-            ERC4626ExtendedDecimalsOffset12.previewMint(shares * 10 ** 12),
-            assets
-        );
+        assertEq(ERC4626ExtendedDecimalsOffset12.maxMint(receiver), type(uint256).max);
+        assertEq(ERC4626ExtendedDecimalsOffset12.previewMint(shares * 10 ** 12), assets);
 
         assertEq(ERC4626ExtendedDecimalsOffset18.totalAssets(), 0);
-        assertEq(
-            ERC4626ExtendedDecimalsOffset18.maxMint(receiver),
-            type(uint256).max
-        );
-        assertEq(
-            ERC4626ExtendedDecimalsOffset18.previewMint(shares * 10 ** 18),
-            assets
-        );
+        assertEq(ERC4626ExtendedDecimalsOffset18.maxMint(receiver), type(uint256).max);
+        assertEq(ERC4626ExtendedDecimalsOffset18.previewMint(shares * 10 ** 18), assets);
 
         vm.expectEmit(true, true, false, true, underlyingAddr);
-        emit IERC20.Transfer(
-            holder,
-            ERC4626ExtendedDecimalsOffset0Addr,
-            assets
-        );
-        vm.expectEmit(
-            true,
-            true,
-            false,
-            true,
-            ERC4626ExtendedDecimalsOffset0Addr
-        );
+        emit IERC20.Transfer(holder, ERC4626ExtendedDecimalsOffset0Addr, assets);
+        vm.expectEmit(true, true, false, true, ERC4626ExtendedDecimalsOffset0Addr);
         emit IERC20.Transfer(zeroAddress, receiver, shares);
-        vm.expectEmit(
-            true,
-            true,
-            false,
-            true,
-            ERC4626ExtendedDecimalsOffset0Addr
-        );
+        vm.expectEmit(true, true, false, true, ERC4626ExtendedDecimalsOffset0Addr);
         emit IERC4626.Deposit(holder, receiver, assets, shares);
         ERC4626ExtendedDecimalsOffset0.mint(shares, receiver);
 
         vm.expectEmit(true, true, false, true, underlyingAddr);
-        emit IERC20.Transfer(
-            holder,
-            ERC4626ExtendedDecimalsOffset6Addr,
-            assets
-        );
-        vm.expectEmit(
-            true,
-            true,
-            false,
-            true,
-            ERC4626ExtendedDecimalsOffset6Addr
-        );
+        emit IERC20.Transfer(holder, ERC4626ExtendedDecimalsOffset6Addr, assets);
+        vm.expectEmit(true, true, false, true, ERC4626ExtendedDecimalsOffset6Addr);
         emit IERC20.Transfer(zeroAddress, receiver, shares * 10 ** 6);
-        vm.expectEmit(
-            true,
-            true,
-            false,
-            true,
-            ERC4626ExtendedDecimalsOffset6Addr
-        );
+        vm.expectEmit(true, true, false, true, ERC4626ExtendedDecimalsOffset6Addr);
         emit IERC4626.Deposit(holder, receiver, assets, shares * 10 ** 6);
         ERC4626ExtendedDecimalsOffset6.mint(shares * 10 ** 6, receiver);
 
         vm.expectEmit(true, true, false, true, underlyingAddr);
-        emit IERC20.Transfer(
-            holder,
-            ERC4626ExtendedDecimalsOffset12Addr,
-            assets
-        );
-        vm.expectEmit(
-            true,
-            true,
-            false,
-            true,
-            ERC4626ExtendedDecimalsOffset12Addr
-        );
+        emit IERC20.Transfer(holder, ERC4626ExtendedDecimalsOffset12Addr, assets);
+        vm.expectEmit(true, true, false, true, ERC4626ExtendedDecimalsOffset12Addr);
         emit IERC20.Transfer(zeroAddress, receiver, shares * 10 ** 12);
-        vm.expectEmit(
-            true,
-            true,
-            false,
-            true,
-            ERC4626ExtendedDecimalsOffset12Addr
-        );
+        vm.expectEmit(true, true, false, true, ERC4626ExtendedDecimalsOffset12Addr);
         emit IERC4626.Deposit(holder, receiver, assets, shares * 10 ** 12);
         ERC4626ExtendedDecimalsOffset12.mint(shares * 10 ** 12, receiver);
 
         vm.expectEmit(true, true, false, true, underlyingAddr);
-        emit IERC20.Transfer(
-            holder,
-            ERC4626ExtendedDecimalsOffset18Addr,
-            assets
-        );
-        vm.expectEmit(
-            true,
-            true,
-            false,
-            true,
-            ERC4626ExtendedDecimalsOffset18Addr
-        );
+        emit IERC20.Transfer(holder, ERC4626ExtendedDecimalsOffset18Addr, assets);
+        vm.expectEmit(true, true, false, true, ERC4626ExtendedDecimalsOffset18Addr);
         emit IERC20.Transfer(zeroAddress, receiver, shares * 10 ** 18);
-        vm.expectEmit(
-            true,
-            true,
-            false,
-            true,
-            ERC4626ExtendedDecimalsOffset18Addr
-        );
+        vm.expectEmit(true, true, false, true, ERC4626ExtendedDecimalsOffset18Addr);
         emit IERC4626.Deposit(holder, receiver, assets, shares * 10 ** 18);
         ERC4626ExtendedDecimalsOffset18.mint(shares * 10 ** 18, receiver);
 
@@ -655,36 +320,18 @@ contract ERC4626VaultTest is ERC4626Test {
 
         assertEq(ERC4626ExtendedDecimalsOffset6.totalAssets(), assets);
         assertEq(ERC4626ExtendedDecimalsOffset6.balanceOf(holder), 0);
-        assertEq(
-            ERC4626ExtendedDecimalsOffset6.balanceOf(receiver),
-            shares * 10 ** 6
-        );
-        assertEq(
-            ERC4626ExtendedDecimalsOffset6.totalSupply(),
-            shares * 10 ** 6
-        );
+        assertEq(ERC4626ExtendedDecimalsOffset6.balanceOf(receiver), shares * 10 ** 6);
+        assertEq(ERC4626ExtendedDecimalsOffset6.totalSupply(), shares * 10 ** 6);
 
         assertEq(ERC4626ExtendedDecimalsOffset12.totalAssets(), assets);
         assertEq(ERC4626ExtendedDecimalsOffset12.balanceOf(holder), 0);
-        assertEq(
-            ERC4626ExtendedDecimalsOffset12.balanceOf(receiver),
-            shares * 10 ** 12
-        );
-        assertEq(
-            ERC4626ExtendedDecimalsOffset12.totalSupply(),
-            shares * 10 ** 12
-        );
+        assertEq(ERC4626ExtendedDecimalsOffset12.balanceOf(receiver), shares * 10 ** 12);
+        assertEq(ERC4626ExtendedDecimalsOffset12.totalSupply(), shares * 10 ** 12);
 
         assertEq(ERC4626ExtendedDecimalsOffset18.totalAssets(), assets);
         assertEq(ERC4626ExtendedDecimalsOffset18.balanceOf(holder), 0);
-        assertEq(
-            ERC4626ExtendedDecimalsOffset18.balanceOf(receiver),
-            shares * 10 ** 18
-        );
-        assertEq(
-            ERC4626ExtendedDecimalsOffset18.totalSupply(),
-            shares * 10 ** 18
-        );
+        assertEq(ERC4626ExtendedDecimalsOffset18.balanceOf(receiver), shares * 10 ** 18);
+        assertEq(ERC4626ExtendedDecimalsOffset18.totalSupply(), shares * 10 ** 18);
         vm.stopPrank();
     }
 
@@ -708,83 +355,35 @@ contract ERC4626VaultTest is ERC4626Test {
         assertEq(ERC4626ExtendedDecimalsOffset18.maxWithdraw(holder), 0);
         assertEq(ERC4626ExtendedDecimalsOffset18.previewWithdraw(0), 0);
 
-        vm.expectEmit(
-            true,
-            true,
-            false,
-            true,
-            ERC4626ExtendedDecimalsOffset0Addr
-        );
+        vm.expectEmit(true, true, false, true, ERC4626ExtendedDecimalsOffset0Addr);
         emit IERC20.Transfer(holder, zeroAddress, 0);
         vm.expectEmit(true, true, false, true, underlyingAddr);
         emit IERC20.Transfer(ERC4626ExtendedDecimalsOffset0Addr, receiver, 0);
-        vm.expectEmit(
-            true,
-            true,
-            true,
-            true,
-            ERC4626ExtendedDecimalsOffset0Addr
-        );
+        vm.expectEmit(true, true, true, true, ERC4626ExtendedDecimalsOffset0Addr);
         emit IERC4626.Withdraw(holder, receiver, holder, 0, 0);
         ERC4626ExtendedDecimalsOffset0.withdraw(0, receiver, holder);
 
-        vm.expectEmit(
-            true,
-            true,
-            false,
-            true,
-            ERC4626ExtendedDecimalsOffset6Addr
-        );
+        vm.expectEmit(true, true, false, true, ERC4626ExtendedDecimalsOffset6Addr);
         emit IERC20.Transfer(holder, zeroAddress, 0);
         vm.expectEmit(true, true, false, true, underlyingAddr);
         emit IERC20.Transfer(ERC4626ExtendedDecimalsOffset6Addr, receiver, 0);
-        vm.expectEmit(
-            true,
-            true,
-            true,
-            true,
-            ERC4626ExtendedDecimalsOffset6Addr
-        );
+        vm.expectEmit(true, true, true, true, ERC4626ExtendedDecimalsOffset6Addr);
         emit IERC4626.Withdraw(holder, receiver, holder, 0, 0);
         ERC4626ExtendedDecimalsOffset6.withdraw(0, receiver, holder);
 
-        vm.expectEmit(
-            true,
-            true,
-            false,
-            true,
-            ERC4626ExtendedDecimalsOffset12Addr
-        );
+        vm.expectEmit(true, true, false, true, ERC4626ExtendedDecimalsOffset12Addr);
         emit IERC20.Transfer(holder, zeroAddress, 0);
         vm.expectEmit(true, true, false, true, underlyingAddr);
         emit IERC20.Transfer(ERC4626ExtendedDecimalsOffset12Addr, receiver, 0);
-        vm.expectEmit(
-            true,
-            true,
-            true,
-            true,
-            ERC4626ExtendedDecimalsOffset12Addr
-        );
+        vm.expectEmit(true, true, true, true, ERC4626ExtendedDecimalsOffset12Addr);
         emit IERC4626.Withdraw(holder, receiver, holder, 0, 0);
         ERC4626ExtendedDecimalsOffset12.withdraw(0, receiver, holder);
 
-        vm.expectEmit(
-            true,
-            true,
-            false,
-            true,
-            ERC4626ExtendedDecimalsOffset18Addr
-        );
+        vm.expectEmit(true, true, false, true, ERC4626ExtendedDecimalsOffset18Addr);
         emit IERC20.Transfer(holder, zeroAddress, 0);
         vm.expectEmit(true, true, false, true, underlyingAddr);
         emit IERC20.Transfer(ERC4626ExtendedDecimalsOffset18Addr, receiver, 0);
-        vm.expectEmit(
-            true,
-            true,
-            true,
-            true,
-            ERC4626ExtendedDecimalsOffset18Addr
-        );
+        vm.expectEmit(true, true, true, true, ERC4626ExtendedDecimalsOffset18Addr);
         emit IERC4626.Withdraw(holder, receiver, holder, 0, 0);
         ERC4626ExtendedDecimalsOffset18.withdraw(0, receiver, holder);
 
@@ -831,83 +430,35 @@ contract ERC4626VaultTest is ERC4626Test {
         assertEq(ERC4626ExtendedDecimalsOffset18.maxRedeem(holder), 0);
         assertEq(ERC4626ExtendedDecimalsOffset18.previewRedeem(0), 0);
 
-        vm.expectEmit(
-            true,
-            true,
-            false,
-            true,
-            ERC4626ExtendedDecimalsOffset0Addr
-        );
+        vm.expectEmit(true, true, false, true, ERC4626ExtendedDecimalsOffset0Addr);
         emit IERC20.Transfer(holder, zeroAddress, 0);
         vm.expectEmit(true, true, false, true, underlyingAddr);
         emit IERC20.Transfer(ERC4626ExtendedDecimalsOffset0Addr, receiver, 0);
-        vm.expectEmit(
-            true,
-            true,
-            true,
-            true,
-            ERC4626ExtendedDecimalsOffset0Addr
-        );
+        vm.expectEmit(true, true, true, true, ERC4626ExtendedDecimalsOffset0Addr);
         emit IERC4626.Withdraw(holder, receiver, holder, 0, 0);
         ERC4626ExtendedDecimalsOffset0.redeem(0, receiver, holder);
 
-        vm.expectEmit(
-            true,
-            true,
-            false,
-            true,
-            ERC4626ExtendedDecimalsOffset6Addr
-        );
+        vm.expectEmit(true, true, false, true, ERC4626ExtendedDecimalsOffset6Addr);
         emit IERC20.Transfer(holder, zeroAddress, 0);
         vm.expectEmit(true, true, false, true, underlyingAddr);
         emit IERC20.Transfer(ERC4626ExtendedDecimalsOffset6Addr, receiver, 0);
-        vm.expectEmit(
-            true,
-            true,
-            true,
-            true,
-            ERC4626ExtendedDecimalsOffset6Addr
-        );
+        vm.expectEmit(true, true, true, true, ERC4626ExtendedDecimalsOffset6Addr);
         emit IERC4626.Withdraw(holder, receiver, holder, 0, 0);
         ERC4626ExtendedDecimalsOffset6.redeem(0, receiver, holder);
 
-        vm.expectEmit(
-            true,
-            true,
-            false,
-            true,
-            ERC4626ExtendedDecimalsOffset12Addr
-        );
+        vm.expectEmit(true, true, false, true, ERC4626ExtendedDecimalsOffset12Addr);
         emit IERC20.Transfer(holder, zeroAddress, 0);
         vm.expectEmit(true, true, false, true, underlyingAddr);
         emit IERC20.Transfer(ERC4626ExtendedDecimalsOffset12Addr, receiver, 0);
-        vm.expectEmit(
-            true,
-            true,
-            true,
-            true,
-            ERC4626ExtendedDecimalsOffset12Addr
-        );
+        vm.expectEmit(true, true, true, true, ERC4626ExtendedDecimalsOffset12Addr);
         emit IERC4626.Withdraw(holder, receiver, holder, 0, 0);
         ERC4626ExtendedDecimalsOffset12.redeem(0, receiver, holder);
 
-        vm.expectEmit(
-            true,
-            true,
-            false,
-            true,
-            ERC4626ExtendedDecimalsOffset18Addr
-        );
+        vm.expectEmit(true, true, false, true, ERC4626ExtendedDecimalsOffset18Addr);
         emit IERC20.Transfer(holder, zeroAddress, 0);
         vm.expectEmit(true, true, false, true, underlyingAddr);
         emit IERC20.Transfer(ERC4626ExtendedDecimalsOffset18Addr, receiver, 0);
-        vm.expectEmit(
-            true,
-            true,
-            true,
-            true,
-            ERC4626ExtendedDecimalsOffset18Addr
-        );
+        vm.expectEmit(true, true, true, true, ERC4626ExtendedDecimalsOffset18Addr);
         emit IERC4626.Withdraw(holder, receiver, holder, 0, 0);
         ERC4626ExtendedDecimalsOffset18.redeem(0, receiver, holder);
 
@@ -946,89 +497,39 @@ contract ERC4626VaultTest is ERC4626Test {
         vm.startPrank(alice);
         underlying.mint(alice, assets);
         underlying.approve(ERC4626ExtendedDecimalsOffset0Addr, assets);
-        assertEq(
-            underlying.allowance(alice, ERC4626ExtendedDecimalsOffset0Addr),
-            assets
-        );
+        assertEq(underlying.allowance(alice, ERC4626ExtendedDecimalsOffset0Addr), assets);
         uint256 alicePreDepositBalance = underlying.balanceOf(alice);
 
         vm.expectEmit(true, true, false, true, underlyingAddr);
         emit IERC20.Transfer(alice, ERC4626ExtendedDecimalsOffset0Addr, assets);
-        vm.expectEmit(
-            true,
-            true,
-            false,
-            true,
-            ERC4626ExtendedDecimalsOffset0Addr
-        );
+        vm.expectEmit(true, true, false, true, ERC4626ExtendedDecimalsOffset0Addr);
         emit IERC20.Transfer(zeroAddress, alice, assets);
-        vm.expectEmit(
-            true,
-            true,
-            false,
-            true,
-            ERC4626ExtendedDecimalsOffset0Addr
-        );
+        vm.expectEmit(true, true, false, true, ERC4626ExtendedDecimalsOffset0Addr);
         emit IERC4626.Deposit(alice, alice, assets, assets);
-        uint256 aliceShareAmount = ERC4626ExtendedDecimalsOffset0.deposit(
-            assets,
-            alice
-        );
+        uint256 aliceShareAmount = ERC4626ExtendedDecimalsOffset0.deposit(assets, alice);
 
         assertEq(assets, aliceShareAmount);
-        assertEq(
-            ERC4626ExtendedDecimalsOffset0.previewWithdraw(aliceShareAmount),
-            assets
-        );
-        assertEq(
-            ERC4626ExtendedDecimalsOffset0.previewDeposit(assets),
-            aliceShareAmount
-        );
-        assertEq(
-            ERC4626ExtendedDecimalsOffset0.totalSupply(),
-            aliceShareAmount
-        );
+        assertEq(ERC4626ExtendedDecimalsOffset0.previewWithdraw(aliceShareAmount), assets);
+        assertEq(ERC4626ExtendedDecimalsOffset0.previewDeposit(assets), aliceShareAmount);
+        assertEq(ERC4626ExtendedDecimalsOffset0.totalSupply(), aliceShareAmount);
         assertEq(ERC4626ExtendedDecimalsOffset0.totalAssets(), assets);
+        assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(alice), aliceShareAmount);
         assertEq(
-            ERC4626ExtendedDecimalsOffset0.balanceOf(alice),
-            aliceShareAmount
-        );
-        assertEq(
-            ERC4626ExtendedDecimalsOffset0.convertToAssets(
-                ERC4626ExtendedDecimalsOffset0.balanceOf(alice)
-            ),
-            assets
+            ERC4626ExtendedDecimalsOffset0.convertToAssets(ERC4626ExtendedDecimalsOffset0.balanceOf(alice)), assets
         );
         assertEq(underlying.balanceOf(alice), alicePreDepositBalance - assets);
 
-        vm.expectEmit(
-            true,
-            true,
-            false,
-            true,
-            ERC4626ExtendedDecimalsOffset0Addr
-        );
+        vm.expectEmit(true, true, false, true, ERC4626ExtendedDecimalsOffset0Addr);
         emit IERC20.Transfer(alice, zeroAddress, assets);
         vm.expectEmit(true, true, false, true, underlyingAddr);
         emit IERC20.Transfer(ERC4626ExtendedDecimalsOffset0Addr, alice, assets);
-        vm.expectEmit(
-            true,
-            true,
-            true,
-            true,
-            ERC4626ExtendedDecimalsOffset0Addr
-        );
+        vm.expectEmit(true, true, true, true, ERC4626ExtendedDecimalsOffset0Addr);
         emit IERC4626.Withdraw(alice, alice, alice, assets, assets);
         ERC4626ExtendedDecimalsOffset0.withdraw(assets, alice, alice);
 
         assertEq(ERC4626ExtendedDecimalsOffset0.totalAssets(), 0);
         assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(alice), 0);
-        assertEq(
-            ERC4626ExtendedDecimalsOffset0.convertToAssets(
-                ERC4626ExtendedDecimalsOffset0.balanceOf(alice)
-            ),
-            0
-        );
+        assertEq(ERC4626ExtendedDecimalsOffset0.convertToAssets(ERC4626ExtendedDecimalsOffset0.balanceOf(alice)), 0);
         assertEq(underlying.balanceOf(alice), alicePreDepositBalance);
         vm.stopPrank();
     }
@@ -1043,89 +544,39 @@ contract ERC4626VaultTest is ERC4626Test {
         vm.startPrank(alice);
         underlying.mint(alice, shares);
         underlying.approve(ERC4626ExtendedDecimalsOffset0Addr, shares);
-        assertEq(
-            underlying.allowance(alice, ERC4626ExtendedDecimalsOffset0Addr),
-            shares
-        );
+        assertEq(underlying.allowance(alice, ERC4626ExtendedDecimalsOffset0Addr), shares);
         uint256 alicePreDepositBalance = underlying.balanceOf(alice);
 
         vm.expectEmit(true, true, false, true, underlyingAddr);
         emit IERC20.Transfer(alice, ERC4626ExtendedDecimalsOffset0Addr, shares);
-        vm.expectEmit(
-            true,
-            true,
-            false,
-            true,
-            ERC4626ExtendedDecimalsOffset0Addr
-        );
+        vm.expectEmit(true, true, false, true, ERC4626ExtendedDecimalsOffset0Addr);
         emit IERC20.Transfer(zeroAddress, alice, shares);
-        vm.expectEmit(
-            true,
-            true,
-            false,
-            true,
-            ERC4626ExtendedDecimalsOffset0Addr
-        );
+        vm.expectEmit(true, true, false, true, ERC4626ExtendedDecimalsOffset0Addr);
         emit IERC4626.Deposit(alice, alice, shares, shares);
-        uint256 aliceAssetAmount = ERC4626ExtendedDecimalsOffset0.mint(
-            shares,
-            alice
-        );
+        uint256 aliceAssetAmount = ERC4626ExtendedDecimalsOffset0.mint(shares, alice);
 
         assertEq(aliceAssetAmount, shares);
-        assertEq(
-            ERC4626ExtendedDecimalsOffset0.previewWithdraw(aliceAssetAmount),
-            shares
-        );
-        assertEq(
-            ERC4626ExtendedDecimalsOffset0.previewDeposit(shares),
-            aliceAssetAmount
-        );
-        assertEq(
-            ERC4626ExtendedDecimalsOffset0.totalSupply(),
-            aliceAssetAmount
-        );
+        assertEq(ERC4626ExtendedDecimalsOffset0.previewWithdraw(aliceAssetAmount), shares);
+        assertEq(ERC4626ExtendedDecimalsOffset0.previewDeposit(shares), aliceAssetAmount);
+        assertEq(ERC4626ExtendedDecimalsOffset0.totalSupply(), aliceAssetAmount);
         assertEq(ERC4626ExtendedDecimalsOffset0.totalAssets(), shares);
+        assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(alice), aliceAssetAmount);
         assertEq(
-            ERC4626ExtendedDecimalsOffset0.balanceOf(alice),
-            aliceAssetAmount
-        );
-        assertEq(
-            ERC4626ExtendedDecimalsOffset0.convertToAssets(
-                ERC4626ExtendedDecimalsOffset0.balanceOf(alice)
-            ),
-            shares
+            ERC4626ExtendedDecimalsOffset0.convertToAssets(ERC4626ExtendedDecimalsOffset0.balanceOf(alice)), shares
         );
         assertEq(underlying.balanceOf(alice), alicePreDepositBalance - shares);
 
-        vm.expectEmit(
-            true,
-            true,
-            false,
-            true,
-            ERC4626ExtendedDecimalsOffset0Addr
-        );
+        vm.expectEmit(true, true, false, true, ERC4626ExtendedDecimalsOffset0Addr);
         emit IERC20.Transfer(alice, zeroAddress, shares);
         vm.expectEmit(true, true, false, true, underlyingAddr);
         emit IERC20.Transfer(ERC4626ExtendedDecimalsOffset0Addr, alice, shares);
-        vm.expectEmit(
-            true,
-            true,
-            true,
-            true,
-            ERC4626ExtendedDecimalsOffset0Addr
-        );
+        vm.expectEmit(true, true, true, true, ERC4626ExtendedDecimalsOffset0Addr);
         emit IERC4626.Withdraw(alice, alice, alice, shares, shares);
         ERC4626ExtendedDecimalsOffset0.redeem(shares, alice, alice);
 
         assertEq(ERC4626ExtendedDecimalsOffset0.totalAssets(), 0);
         assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(alice), 0);
-        assertEq(
-            ERC4626ExtendedDecimalsOffset0.convertToAssets(
-                ERC4626ExtendedDecimalsOffset0.balanceOf(alice)
-            ),
-            0
-        );
+        assertEq(ERC4626ExtendedDecimalsOffset0.convertToAssets(ERC4626ExtendedDecimalsOffset0.balanceOf(alice)), 0);
         assertEq(underlying.balanceOf(alice), alicePreDepositBalance);
         vm.stopPrank();
     }
@@ -1142,82 +593,47 @@ contract ERC4626VaultTest is ERC4626Test {
         uint256 mutationUnderlyingAmount = 3_000;
         vm.startPrank(alice);
         underlying.mint(alice, initialAmountAlice);
-        underlying.approve(
-            ERC4626ExtendedDecimalsOffset0Addr,
-            initialAmountAlice
-        );
-        assertEq(
-            underlying.allowance(alice, ERC4626ExtendedDecimalsOffset0Addr),
-            initialAmountAlice
-        );
+        underlying.approve(ERC4626ExtendedDecimalsOffset0Addr, initialAmountAlice);
+        assertEq(underlying.allowance(alice, ERC4626ExtendedDecimalsOffset0Addr), initialAmountAlice);
         vm.stopPrank();
 
         vm.startPrank(bob);
         underlying.mint(bob, initialAmountBob);
-        underlying.approve(
-            ERC4626ExtendedDecimalsOffset0Addr,
-            initialAmountBob
-        );
-        assertEq(
-            underlying.allowance(bob, ERC4626ExtendedDecimalsOffset0Addr),
-            initialAmountBob
-        );
+        underlying.approve(ERC4626ExtendedDecimalsOffset0Addr, initialAmountBob);
+        assertEq(underlying.allowance(bob, ERC4626ExtendedDecimalsOffset0Addr), initialAmountBob);
         vm.stopPrank();
 
         /**
          * @dev 1. Alice mints 2,000 shares (costs 2,000 tokens).
          */
         vm.startPrank(alice);
-        uint256 aliceUnderlyingAmount = ERC4626ExtendedDecimalsOffset0.mint(
-            2_000,
-            alice
-        );
-        uint256 aliceShareAmount = ERC4626ExtendedDecimalsOffset0
-            .previewDeposit(aliceUnderlyingAmount);
+        uint256 aliceUnderlyingAmount = ERC4626ExtendedDecimalsOffset0.mint(2_000, alice);
+        uint256 aliceShareAmount = ERC4626ExtendedDecimalsOffset0.previewDeposit(aliceUnderlyingAmount);
         assertEq(aliceShareAmount, 2_000);
+        assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(alice), aliceShareAmount);
         assertEq(
-            ERC4626ExtendedDecimalsOffset0.balanceOf(alice),
-            aliceShareAmount
-        );
-        assertEq(
-            ERC4626ExtendedDecimalsOffset0.convertToAssets(
-                ERC4626ExtendedDecimalsOffset0.balanceOf(alice)
-            ),
+            ERC4626ExtendedDecimalsOffset0.convertToAssets(ERC4626ExtendedDecimalsOffset0.balanceOf(alice)),
             aliceUnderlyingAmount
         );
         assertEq(
-            ERC4626ExtendedDecimalsOffset0.convertToShares(
-                aliceUnderlyingAmount
-            ),
+            ERC4626ExtendedDecimalsOffset0.convertToShares(aliceUnderlyingAmount),
             ERC4626ExtendedDecimalsOffset0.balanceOf(alice)
         );
         assertEq(aliceUnderlyingAmount, 2_000);
-        assertEq(
-            ERC4626ExtendedDecimalsOffset0.totalSupply(),
-            aliceShareAmount
-        );
-        assertEq(
-            ERC4626ExtendedDecimalsOffset0.totalAssets(),
-            aliceUnderlyingAmount
-        );
+        assertEq(ERC4626ExtendedDecimalsOffset0.totalSupply(), aliceShareAmount);
+        assertEq(ERC4626ExtendedDecimalsOffset0.totalAssets(), aliceUnderlyingAmount);
         vm.stopPrank();
 
         /**
          * @dev 2. Bob deposits 4,000 tokens (mints 4,000 shares).
          */
         vm.startPrank(bob);
-        uint256 bobShareAmount = ERC4626ExtendedDecimalsOffset0.deposit(
-            4_000,
-            bob
-        );
-        uint256 bobUnderlyingAmount = ERC4626ExtendedDecimalsOffset0
-            .previewWithdraw(bobShareAmount);
+        uint256 bobShareAmount = ERC4626ExtendedDecimalsOffset0.deposit(4_000, bob);
+        uint256 bobUnderlyingAmount = ERC4626ExtendedDecimalsOffset0.previewWithdraw(bobShareAmount);
         assertEq(bobUnderlyingAmount, 4_000);
         assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(bob), bobShareAmount);
         assertEq(
-            ERC4626ExtendedDecimalsOffset0.convertToAssets(
-                ERC4626ExtendedDecimalsOffset0.balanceOf(bob)
-            ),
+            ERC4626ExtendedDecimalsOffset0.convertToAssets(ERC4626ExtendedDecimalsOffset0.balanceOf(bob)),
             bobUnderlyingAmount
         );
         assertEq(
@@ -1227,10 +643,7 @@ contract ERC4626VaultTest is ERC4626Test {
         assertEq(bobShareAmount, bobUnderlyingAmount);
         uint256 preMutationShareBal = aliceShareAmount + bobShareAmount;
         uint256 preMutationBal = aliceUnderlyingAmount + bobUnderlyingAmount;
-        assertEq(
-            ERC4626ExtendedDecimalsOffset0.totalSupply(),
-            preMutationShareBal
-        );
+        assertEq(ERC4626ExtendedDecimalsOffset0.totalSupply(), preMutationShareBal);
         assertEq(ERC4626ExtendedDecimalsOffset0.totalAssets(), preMutationBal);
         assertEq(ERC4626ExtendedDecimalsOffset0.totalSupply(), 6_000);
         assertEq(ERC4626ExtendedDecimalsOffset0.totalAssets(), 6_000);
@@ -1239,33 +652,17 @@ contract ERC4626VaultTest is ERC4626Test {
         /**
          * @dev 3. Vault mutates by +3,000 tokens (simulated yield returned from strategy).
          */
-        underlying.mint(
-            ERC4626ExtendedDecimalsOffset0Addr,
-            mutationUnderlyingAmount
-        );
+        underlying.mint(ERC4626ExtendedDecimalsOffset0Addr, mutationUnderlyingAmount);
+        assertEq(ERC4626ExtendedDecimalsOffset0.totalSupply(), preMutationShareBal);
+        assertEq(ERC4626ExtendedDecimalsOffset0.totalAssets(), preMutationBal + mutationUnderlyingAmount);
+        assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(alice), aliceShareAmount);
         assertEq(
-            ERC4626ExtendedDecimalsOffset0.totalSupply(),
-            preMutationShareBal
-        );
-        assertEq(
-            ERC4626ExtendedDecimalsOffset0.totalAssets(),
-            preMutationBal + mutationUnderlyingAmount
-        );
-        assertEq(
-            ERC4626ExtendedDecimalsOffset0.balanceOf(alice),
-            aliceShareAmount
-        );
-        assertEq(
-            ERC4626ExtendedDecimalsOffset0.convertToAssets(
-                ERC4626ExtendedDecimalsOffset0.balanceOf(alice)
-            ),
+            ERC4626ExtendedDecimalsOffset0.convertToAssets(ERC4626ExtendedDecimalsOffset0.balanceOf(alice)),
             aliceUnderlyingAmount + (mutationUnderlyingAmount / 3) * 1 - 1
         );
         assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(bob), bobShareAmount);
         assertEq(
-            ERC4626ExtendedDecimalsOffset0.convertToAssets(
-                ERC4626ExtendedDecimalsOffset0.balanceOf(bob)
-            ),
+            ERC4626ExtendedDecimalsOffset0.convertToAssets(ERC4626ExtendedDecimalsOffset0.balanceOf(bob)),
             bobUnderlyingAmount + (mutationUnderlyingAmount / 3) * 2 - 1
         );
 
@@ -1276,19 +673,9 @@ contract ERC4626VaultTest is ERC4626Test {
         ERC4626ExtendedDecimalsOffset0.deposit(2_000, alice);
         assertEq(ERC4626ExtendedDecimalsOffset0.totalSupply(), 7_333);
         assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(alice), 3_333);
-        assertEq(
-            ERC4626ExtendedDecimalsOffset0.convertToAssets(
-                ERC4626ExtendedDecimalsOffset0.balanceOf(alice)
-            ),
-            4_999
-        );
+        assertEq(ERC4626ExtendedDecimalsOffset0.convertToAssets(ERC4626ExtendedDecimalsOffset0.balanceOf(alice)), 4_999);
         assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(bob), 4_000);
-        assertEq(
-            ERC4626ExtendedDecimalsOffset0.convertToAssets(
-                ERC4626ExtendedDecimalsOffset0.balanceOf(bob)
-            ),
-            6_000
-        );
+        assertEq(ERC4626ExtendedDecimalsOffset0.convertToAssets(ERC4626ExtendedDecimalsOffset0.balanceOf(bob)), 6_000);
         vm.stopPrank();
 
         /**
@@ -1300,19 +687,9 @@ contract ERC4626VaultTest is ERC4626Test {
         ERC4626ExtendedDecimalsOffset0.mint(2_000, bob);
         assertEq(ERC4626ExtendedDecimalsOffset0.totalSupply(), 9_333);
         assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(alice), 3_333);
-        assertEq(
-            ERC4626ExtendedDecimalsOffset0.convertToAssets(
-                ERC4626ExtendedDecimalsOffset0.balanceOf(alice)
-            ),
-            4_999
-        );
+        assertEq(ERC4626ExtendedDecimalsOffset0.convertToAssets(ERC4626ExtendedDecimalsOffset0.balanceOf(alice)), 4_999);
         assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(bob), 6_000);
-        assertEq(
-            ERC4626ExtendedDecimalsOffset0.convertToAssets(
-                ERC4626ExtendedDecimalsOffset0.balanceOf(bob)
-            ),
-            9_000
-        );
+        assertEq(ERC4626ExtendedDecimalsOffset0.convertToAssets(ERC4626ExtendedDecimalsOffset0.balanceOf(bob)), 9_000);
         assertEq(underlying.balanceOf(alice), 0);
         assertEq(underlying.balanceOf(bob), 1);
         assertEq(ERC4626ExtendedDecimalsOffset0.totalAssets(), 14_000);
@@ -1321,23 +698,10 @@ contract ERC4626VaultTest is ERC4626Test {
         /**
          * @dev 6. Vault mutates by +3,000 tokens.
          */
-        underlying.mint(
-            ERC4626ExtendedDecimalsOffset0Addr,
-            mutationUnderlyingAmount
-        );
+        underlying.mint(ERC4626ExtendedDecimalsOffset0Addr, mutationUnderlyingAmount);
         assertEq(ERC4626ExtendedDecimalsOffset0.totalAssets(), 17_000);
-        assertEq(
-            ERC4626ExtendedDecimalsOffset0.convertToAssets(
-                ERC4626ExtendedDecimalsOffset0.balanceOf(alice)
-            ),
-            6_070
-        );
-        assertEq(
-            ERC4626ExtendedDecimalsOffset0.convertToAssets(
-                ERC4626ExtendedDecimalsOffset0.balanceOf(bob)
-            ),
-            10_928
-        );
+        assertEq(ERC4626ExtendedDecimalsOffset0.convertToAssets(ERC4626ExtendedDecimalsOffset0.balanceOf(alice)), 6_070);
+        assertEq(ERC4626ExtendedDecimalsOffset0.convertToAssets(ERC4626ExtendedDecimalsOffset0.balanceOf(bob)), 10_928);
 
         /**
          * @dev 7. Alice redeems 1,333 shares (2,427 assets).
@@ -1348,19 +712,9 @@ contract ERC4626VaultTest is ERC4626Test {
         assertEq(ERC4626ExtendedDecimalsOffset0.totalSupply(), 8_000);
         assertEq(ERC4626ExtendedDecimalsOffset0.totalAssets(), 14_573);
         assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(alice), 2_000);
-        assertEq(
-            ERC4626ExtendedDecimalsOffset0.convertToAssets(
-                ERC4626ExtendedDecimalsOffset0.balanceOf(alice)
-            ),
-            3_643
-        );
+        assertEq(ERC4626ExtendedDecimalsOffset0.convertToAssets(ERC4626ExtendedDecimalsOffset0.balanceOf(alice)), 3_643);
         assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(bob), 6_000);
-        assertEq(
-            ERC4626ExtendedDecimalsOffset0.convertToAssets(
-                ERC4626ExtendedDecimalsOffset0.balanceOf(bob)
-            ),
-            10_929
-        );
+        assertEq(ERC4626ExtendedDecimalsOffset0.convertToAssets(ERC4626ExtendedDecimalsOffset0.balanceOf(bob)), 10_929);
         vm.stopPrank();
 
         /**
@@ -1372,19 +726,9 @@ contract ERC4626VaultTest is ERC4626Test {
         assertEq(ERC4626ExtendedDecimalsOffset0.totalSupply(), 6_392);
         assertEq(ERC4626ExtendedDecimalsOffset0.totalAssets(), 11_644);
         assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(alice), 2_000);
-        assertEq(
-            ERC4626ExtendedDecimalsOffset0.convertToAssets(
-                ERC4626ExtendedDecimalsOffset0.balanceOf(alice)
-            ),
-            3_643
-        );
+        assertEq(ERC4626ExtendedDecimalsOffset0.convertToAssets(ERC4626ExtendedDecimalsOffset0.balanceOf(alice)), 3_643);
         assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(bob), 4_392);
-        assertEq(
-            ERC4626ExtendedDecimalsOffset0.convertToAssets(
-                ERC4626ExtendedDecimalsOffset0.balanceOf(bob)
-            ),
-            8_000
-        );
+        assertEq(ERC4626ExtendedDecimalsOffset0.convertToAssets(ERC4626ExtendedDecimalsOffset0.balanceOf(bob)), 8_000);
         vm.stopPrank();
 
         /**
@@ -1397,19 +741,9 @@ contract ERC4626VaultTest is ERC4626Test {
         assertEq(ERC4626ExtendedDecimalsOffset0.totalSupply(), 4_392);
         assertEq(ERC4626ExtendedDecimalsOffset0.totalAssets(), 8_001);
         assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(alice), 0);
-        assertEq(
-            ERC4626ExtendedDecimalsOffset0.convertToAssets(
-                ERC4626ExtendedDecimalsOffset0.balanceOf(alice)
-            ),
-            0
-        );
+        assertEq(ERC4626ExtendedDecimalsOffset0.convertToAssets(ERC4626ExtendedDecimalsOffset0.balanceOf(alice)), 0);
         assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(bob), 4_392);
-        assertEq(
-            ERC4626ExtendedDecimalsOffset0.convertToAssets(
-                ERC4626ExtendedDecimalsOffset0.balanceOf(bob)
-            ),
-            8_000
-        );
+        assertEq(ERC4626ExtendedDecimalsOffset0.convertToAssets(ERC4626ExtendedDecimalsOffset0.balanceOf(bob)), 8_000);
         vm.stopPrank();
 
         /**
@@ -1421,33 +755,17 @@ contract ERC4626VaultTest is ERC4626Test {
         assertEq(ERC4626ExtendedDecimalsOffset0.totalSupply(), 0);
         assertEq(ERC4626ExtendedDecimalsOffset0.totalAssets(), 1);
         assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(alice), 0);
-        assertEq(
-            ERC4626ExtendedDecimalsOffset0.convertToAssets(
-                ERC4626ExtendedDecimalsOffset0.balanceOf(alice)
-            ),
-            0
-        );
+        assertEq(ERC4626ExtendedDecimalsOffset0.convertToAssets(ERC4626ExtendedDecimalsOffset0.balanceOf(alice)), 0);
         assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(bob), 0);
-        assertEq(
-            ERC4626ExtendedDecimalsOffset0.convertToAssets(
-                ERC4626ExtendedDecimalsOffset0.balanceOf(bob)
-            ),
-            0
-        );
+        assertEq(ERC4626ExtendedDecimalsOffset0.convertToAssets(ERC4626ExtendedDecimalsOffset0.balanceOf(bob)), 0);
         assertEq(underlying.balanceOf(ERC4626ExtendedDecimalsOffset0Addr), 1);
         vm.stopPrank();
     }
 
     function testDepositInsufficientAllowance() public {
         underlying.mint(self, type(uint8).max);
-        underlying.approve(
-            ERC4626ExtendedDecimalsOffset0Addr,
-            type(uint8).max - 1
-        );
-        assertEq(
-            underlying.allowance(self, ERC4626ExtendedDecimalsOffset0Addr),
-            type(uint8).max - 1
-        );
+        underlying.approve(ERC4626ExtendedDecimalsOffset0Addr, type(uint8).max - 1);
+        assertEq(underlying.allowance(self, ERC4626ExtendedDecimalsOffset0Addr), type(uint8).max - 1);
         vm.expectRevert(
             abi.encodeWithSelector(
                 IERC20Errors.ERC20InsufficientAllowance.selector,
@@ -1464,11 +782,7 @@ contract ERC4626VaultTest is ERC4626Test {
         underlying.approve(ERC4626ExtendedDecimalsOffset0Addr, type(uint8).max);
         ERC4626ExtendedDecimalsOffset0.deposit(type(uint8).max, self);
         vm.expectRevert(bytes("ERC4626: withdraw more than maximum"));
-        ERC4626ExtendedDecimalsOffset0.withdraw(
-            uint256(type(uint8).max) + 1,
-            self,
-            self
-        );
+        ERC4626ExtendedDecimalsOffset0.withdraw(uint256(type(uint8).max) + 1, self, self);
     }
 
     function testWithdrawInsufficientAllowance() public {
@@ -1485,11 +799,7 @@ contract ERC4626VaultTest is ERC4626Test {
         underlying.approve(ERC4626ExtendedDecimalsOffset0Addr, type(uint8).max);
         ERC4626ExtendedDecimalsOffset0.deposit(type(uint8).max, self);
         vm.expectRevert(bytes("ERC4626: redeem more than maximum"));
-        ERC4626ExtendedDecimalsOffset0.redeem(
-            uint256(type(uint8).max) + 1,
-            self,
-            self
-        );
+        ERC4626ExtendedDecimalsOffset0.redeem(uint256(type(uint8).max) + 1, self, self);
     }
 
     function testWithdrawWithNoAssets() public {
@@ -1505,10 +815,7 @@ contract ERC4626VaultTest is ERC4626Test {
     function testDepositWithNoApproval() public {
         vm.expectRevert(
             abi.encodeWithSelector(
-                IERC20Errors.ERC20InsufficientAllowance.selector,
-                ERC4626ExtendedDecimalsOffset0Addr,
-                0,
-                type(uint8).max
+                IERC20Errors.ERC20InsufficientAllowance.selector, ERC4626ExtendedDecimalsOffset0Addr, 0, type(uint8).max
             )
         );
         ERC4626ExtendedDecimalsOffset0.deposit(type(uint8).max, self);
@@ -1517,10 +824,7 @@ contract ERC4626VaultTest is ERC4626Test {
     function testMintWithNoApproval() public {
         vm.expectRevert(
             abi.encodeWithSelector(
-                IERC20Errors.ERC20InsufficientAllowance.selector,
-                ERC4626ExtendedDecimalsOffset0Addr,
-                0,
-                type(uint8).max
+                IERC20Errors.ERC20InsufficientAllowance.selector, ERC4626ExtendedDecimalsOffset0Addr, 0, type(uint8).max
             )
         );
         ERC4626ExtendedDecimalsOffset0.mint(type(uint8).max, self);
@@ -1529,12 +833,7 @@ contract ERC4626VaultTest is ERC4626Test {
     function testDepositZero() public {
         ERC4626ExtendedDecimalsOffset0.deposit(0, self);
         assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(self), 0);
-        assertEq(
-            ERC4626ExtendedDecimalsOffset0.convertToAssets(
-                ERC4626ExtendedDecimalsOffset0.balanceOf(self)
-            ),
-            0
-        );
+        assertEq(ERC4626ExtendedDecimalsOffset0.convertToAssets(ERC4626ExtendedDecimalsOffset0.balanceOf(self)), 0);
         assertEq(ERC4626ExtendedDecimalsOffset0.totalSupply(), 0);
         assertEq(ERC4626ExtendedDecimalsOffset0.totalAssets(), 0);
     }
@@ -1542,12 +841,7 @@ contract ERC4626VaultTest is ERC4626Test {
     function testMintZero() public {
         ERC4626ExtendedDecimalsOffset0.mint(0, self);
         assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(self), 0);
-        assertEq(
-            ERC4626ExtendedDecimalsOffset0.convertToAssets(
-                ERC4626ExtendedDecimalsOffset0.balanceOf(self)
-            ),
-            0
-        );
+        assertEq(ERC4626ExtendedDecimalsOffset0.convertToAssets(ERC4626ExtendedDecimalsOffset0.balanceOf(self)), 0);
         assertEq(ERC4626ExtendedDecimalsOffset0.totalSupply(), 0);
         assertEq(ERC4626ExtendedDecimalsOffset0.totalAssets(), 0);
     }
@@ -1598,42 +892,21 @@ contract ERC4626VaultTest is ERC4626Test {
         uint256 nonce = ERC4626ExtendedDecimalsOffset0.nonces(owner);
         // solhint-disable-next-line not-rely-on-time
         uint256 deadline = block.timestamp + 100_000;
-        bytes32 domainSeparator = ERC4626ExtendedDecimalsOffset0
-            .DOMAIN_SEPARATOR();
+        bytes32 domainSeparator = ERC4626ExtendedDecimalsOffset0.DOMAIN_SEPARATOR();
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(
             key,
             keccak256(
                 abi.encodePacked(
                     "\x19\x01",
                     domainSeparator,
-                    keccak256(
-                        abi.encode(
-                            _PERMIT_TYPE_HASH,
-                            owner,
-                            spender,
-                            amount,
-                            nonce,
-                            deadline
-                        )
-                    )
+                    keccak256(abi.encode(_PERMIT_TYPE_HASH, owner, spender, amount, nonce, deadline))
                 )
             )
         );
         vm.expectEmit(true, true, false, true);
         emit IERC20.Approval(owner, spender, amount);
-        ERC4626ExtendedDecimalsOffset0.permit(
-            owner,
-            spender,
-            amount,
-            deadline,
-            v,
-            r,
-            s
-        );
-        assertEq(
-            ERC4626ExtendedDecimalsOffset0.allowance(owner, spender),
-            amount
-        );
+        ERC4626ExtendedDecimalsOffset0.permit(owner, spender, amount, deadline, v, r, s);
+        assertEq(ERC4626ExtendedDecimalsOffset0.allowance(owner, spender), amount);
         assertEq(ERC4626ExtendedDecimalsOffset0.nonces(owner), 1);
     }
 
@@ -1644,48 +917,22 @@ contract ERC4626VaultTest is ERC4626Test {
         uint256 nonce = ERC4626ExtendedDecimalsOffset0.nonces(owner);
         // solhint-disable-next-line not-rely-on-time
         uint256 deadline = block.timestamp + 100_000;
-        bytes32 domainSeparator = ERC4626ExtendedDecimalsOffset0
-            .DOMAIN_SEPARATOR();
+        bytes32 domainSeparator = ERC4626ExtendedDecimalsOffset0.DOMAIN_SEPARATOR();
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(
             key,
             keccak256(
                 abi.encodePacked(
                     "\x19\x01",
                     domainSeparator,
-                    keccak256(
-                        abi.encode(
-                            _PERMIT_TYPE_HASH,
-                            owner,
-                            spender,
-                            amount,
-                            nonce,
-                            deadline
-                        )
-                    )
+                    keccak256(abi.encode(_PERMIT_TYPE_HASH, owner, spender, amount, nonce, deadline))
                 )
             )
         );
         vm.expectEmit(true, true, false, true);
         emit IERC20.Approval(owner, spender, amount);
-        ERC4626ExtendedDecimalsOffset0.permit(
-            owner,
-            spender,
-            amount,
-            deadline,
-            v,
-            r,
-            s
-        );
+        ERC4626ExtendedDecimalsOffset0.permit(owner, spender, amount, deadline, v, r, s);
         vm.expectRevert(bytes("ERC20Permit: invalid signature"));
-        ERC4626ExtendedDecimalsOffset0.permit(
-            owner,
-            spender,
-            amount,
-            deadline,
-            v,
-            r,
-            s
-        );
+        ERC4626ExtendedDecimalsOffset0.permit(owner, spender, amount, deadline, v, r, s);
     }
 
     function testPermitOtherSignature() public {
@@ -1695,37 +942,19 @@ contract ERC4626VaultTest is ERC4626Test {
         uint256 nonce = ERC4626ExtendedDecimalsOffset0.nonces(owner);
         // solhint-disable-next-line not-rely-on-time
         uint256 deadline = block.timestamp + 100_000;
-        bytes32 domainSeparator = ERC4626ExtendedDecimalsOffset0
-            .DOMAIN_SEPARATOR();
+        bytes32 domainSeparator = ERC4626ExtendedDecimalsOffset0.DOMAIN_SEPARATOR();
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(
             key + 1,
             keccak256(
                 abi.encodePacked(
                     "\x19\x01",
                     domainSeparator,
-                    keccak256(
-                        abi.encode(
-                            _PERMIT_TYPE_HASH,
-                            owner,
-                            spender,
-                            amount,
-                            nonce,
-                            deadline
-                        )
-                    )
+                    keccak256(abi.encode(_PERMIT_TYPE_HASH, owner, spender, amount, nonce, deadline))
                 )
             )
         );
         vm.expectRevert(bytes("ERC20Permit: invalid signature"));
-        ERC4626ExtendedDecimalsOffset0.permit(
-            owner,
-            spender,
-            amount,
-            deadline,
-            v,
-            r,
-            s
-        );
+        ERC4626ExtendedDecimalsOffset0.permit(owner, spender, amount, deadline, v, r, s);
     }
 
     function testPermitBadChainId() public {
@@ -1750,29 +979,12 @@ contract ERC4626VaultTest is ERC4626Test {
                 abi.encodePacked(
                     "\x19\x01",
                     domainSeparator,
-                    keccak256(
-                        abi.encode(
-                            _PERMIT_TYPE_HASH,
-                            owner,
-                            spender,
-                            amount,
-                            nonce,
-                            deadline
-                        )
-                    )
+                    keccak256(abi.encode(_PERMIT_TYPE_HASH, owner, spender, amount, nonce, deadline))
                 )
             )
         );
         vm.expectRevert(bytes("ERC20Permit: invalid signature"));
-        ERC4626ExtendedDecimalsOffset0.permit(
-            owner,
-            spender,
-            amount,
-            deadline,
-            v,
-            r,
-            s
-        );
+        ERC4626ExtendedDecimalsOffset0.permit(owner, spender, amount, deadline, v, r, s);
     }
 
     function testPermitBadNonce() public {
@@ -1782,37 +994,19 @@ contract ERC4626VaultTest is ERC4626Test {
         uint256 nonce = 1;
         // solhint-disable-next-line not-rely-on-time
         uint256 deadline = block.timestamp + 100_000;
-        bytes32 domainSeparator = ERC4626ExtendedDecimalsOffset0
-            .DOMAIN_SEPARATOR();
+        bytes32 domainSeparator = ERC4626ExtendedDecimalsOffset0.DOMAIN_SEPARATOR();
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(
             key,
             keccak256(
                 abi.encodePacked(
                     "\x19\x01",
                     domainSeparator,
-                    keccak256(
-                        abi.encode(
-                            _PERMIT_TYPE_HASH,
-                            owner,
-                            spender,
-                            amount,
-                            nonce,
-                            deadline
-                        )
-                    )
+                    keccak256(abi.encode(_PERMIT_TYPE_HASH, owner, spender, amount, nonce, deadline))
                 )
             )
         );
         vm.expectRevert(bytes("ERC20Permit: invalid signature"));
-        ERC4626ExtendedDecimalsOffset0.permit(
-            owner,
-            spender,
-            amount,
-            deadline,
-            v,
-            r,
-            s
-        );
+        ERC4626ExtendedDecimalsOffset0.permit(owner, spender, amount, deadline, v, r, s);
     }
 
     function testPermitExpiredDeadline() public {
@@ -1822,44 +1016,23 @@ contract ERC4626VaultTest is ERC4626Test {
         uint256 nonce = ERC4626ExtendedDecimalsOffset0.nonces(owner);
         // solhint-disable-next-line not-rely-on-time
         uint256 deadline = block.timestamp - 1;
-        bytes32 domainSeparator = ERC4626ExtendedDecimalsOffset0
-            .DOMAIN_SEPARATOR();
+        bytes32 domainSeparator = ERC4626ExtendedDecimalsOffset0.DOMAIN_SEPARATOR();
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(
             key,
             keccak256(
                 abi.encodePacked(
                     "\x19\x01",
                     domainSeparator,
-                    keccak256(
-                        abi.encode(
-                            _PERMIT_TYPE_HASH,
-                            owner,
-                            spender,
-                            amount,
-                            nonce,
-                            deadline
-                        )
-                    )
+                    keccak256(abi.encode(_PERMIT_TYPE_HASH, owner, spender, amount, nonce, deadline))
                 )
             )
         );
         vm.expectRevert(bytes("ERC20Permit: expired deadline"));
-        ERC4626ExtendedDecimalsOffset0.permit(
-            owner,
-            spender,
-            amount,
-            deadline,
-            v,
-            r,
-            s
-        );
+        ERC4626ExtendedDecimalsOffset0.permit(owner, spender, amount, deadline, v, r, s);
     }
 
     function testCachedDomainSeparator() public {
-        assertEq(
-            ERC4626ExtendedDecimalsOffset0.DOMAIN_SEPARATOR(),
-            _CACHED_DOMAIN_SEPARATOR
-        );
+        assertEq(ERC4626ExtendedDecimalsOffset0.DOMAIN_SEPARATOR(), _CACHED_DOMAIN_SEPARATOR);
     }
 
     function testDomainSeparator() public {
@@ -1895,113 +1068,58 @@ contract ERC4626VaultTest is ERC4626Test {
         assertEq(extensions, new uint256[](0));
 
         bytes32 digest = keccak256(
-            abi.encode(
-                _TYPE_HASH,
-                keccak256(bytes(name)),
-                keccak256(bytes(version)),
-                chainId,
-                verifyingContract
-            )
+            abi.encode(_TYPE_HASH, keccak256(bytes(name)), keccak256(bytes(version)), chainId, verifyingContract)
         );
         assertEq(ERC4626ExtendedDecimalsOffset0.DOMAIN_SEPARATOR(), digest);
     }
 
-    function testFuzzPermitSuccess(
-        string calldata owner,
-        string calldata spender,
-        uint16 increment
-    ) public {
+    function testFuzzPermitSuccess(string calldata owner, string calldata spender, uint16 increment) public {
         (address ownerAddr, uint256 key) = makeAddrAndKey(owner);
         address spenderAddr = makeAddr(spender);
         uint256 amount = block.number;
         uint256 nonce = ERC4626ExtendedDecimalsOffset0.nonces(ownerAddr);
         // solhint-disable-next-line not-rely-on-time
         uint256 deadline = block.timestamp + increment;
-        bytes32 domainSeparator = ERC4626ExtendedDecimalsOffset0
-            .DOMAIN_SEPARATOR();
+        bytes32 domainSeparator = ERC4626ExtendedDecimalsOffset0.DOMAIN_SEPARATOR();
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(
             key,
             keccak256(
                 abi.encodePacked(
                     "\x19\x01",
                     domainSeparator,
-                    keccak256(
-                        abi.encode(
-                            _PERMIT_TYPE_HASH,
-                            ownerAddr,
-                            spenderAddr,
-                            amount,
-                            nonce,
-                            deadline
-                        )
-                    )
+                    keccak256(abi.encode(_PERMIT_TYPE_HASH, ownerAddr, spenderAddr, amount, nonce, deadline))
                 )
             )
         );
         vm.expectEmit(true, true, false, true);
         emit IERC20.Approval(ownerAddr, spenderAddr, amount);
-        ERC4626ExtendedDecimalsOffset0.permit(
-            ownerAddr,
-            spenderAddr,
-            amount,
-            deadline,
-            v,
-            r,
-            s
-        );
-        assertEq(
-            ERC4626ExtendedDecimalsOffset0.allowance(ownerAddr, spenderAddr),
-            amount
-        );
+        ERC4626ExtendedDecimalsOffset0.permit(ownerAddr, spenderAddr, amount, deadline, v, r, s);
+        assertEq(ERC4626ExtendedDecimalsOffset0.allowance(ownerAddr, spenderAddr), amount);
         assertEq(ERC4626ExtendedDecimalsOffset0.nonces(ownerAddr), 1);
     }
 
-    function testFuzzPermitInvalid(
-        string calldata owner,
-        string calldata spender,
-        uint16 increment
-    ) public {
-        vm.assume(
-            keccak256(abi.encode(owner)) != keccak256(abi.encode("ownerWrong"))
-        );
-        (address ownerAddr, ) = makeAddrAndKey(owner);
+    function testFuzzPermitInvalid(string calldata owner, string calldata spender, uint16 increment) public {
+        vm.assume(keccak256(abi.encode(owner)) != keccak256(abi.encode("ownerWrong")));
+        (address ownerAddr,) = makeAddrAndKey(owner);
         (, uint256 keyWrong) = makeAddrAndKey("ownerWrong");
         address spenderAddr = makeAddr(spender);
         uint256 amount = block.number;
         uint256 nonce = ERC4626ExtendedDecimalsOffset0.nonces(ownerAddr);
         // solhint-disable-next-line not-rely-on-time
         uint256 deadline = block.timestamp + increment;
-        bytes32 domainSeparator = ERC4626ExtendedDecimalsOffset0
-            .DOMAIN_SEPARATOR();
+        bytes32 domainSeparator = ERC4626ExtendedDecimalsOffset0.DOMAIN_SEPARATOR();
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(
             keyWrong,
             keccak256(
                 abi.encodePacked(
                     "\x19\x01",
                     domainSeparator,
-                    keccak256(
-                        abi.encode(
-                            _PERMIT_TYPE_HASH,
-                            ownerAddr,
-                            spenderAddr,
-                            amount,
-                            nonce,
-                            deadline
-                        )
-                    )
+                    keccak256(abi.encode(_PERMIT_TYPE_HASH, ownerAddr, spenderAddr, amount, nonce, deadline))
                 )
             )
         );
         vm.expectRevert(bytes("ERC20Permit: invalid signature"));
-        ERC4626ExtendedDecimalsOffset0.permit(
-            ownerAddr,
-            spenderAddr,
-            amount,
-            deadline,
-            v,
-            r,
-            s
-        );
+        ERC4626ExtendedDecimalsOffset0.permit(ownerAddr, spenderAddr, amount, deadline, v, r, s);
     }
 
     function testFuzzDomainSeparator(uint8 increment) public {
@@ -2024,11 +1142,7 @@ contract ERC4626VaultTest is ERC4626Test {
         bytes32 randomSalt,
         uint256[] calldata randomExtensions
     ) public {
-        vm.assume(
-            randomHex != hex"0f" &&
-                randomSalt != bytes32(0) &&
-                randomExtensions.length != 0
-        );
+        vm.assume(randomHex != hex"0f" && randomSalt != bytes32(0) && randomExtensions.length != 0);
         vm.chainId(block.chainid + increment);
         (
             bytes1 fields,
@@ -2045,19 +1159,10 @@ contract ERC4626VaultTest is ERC4626Test {
         assertEq(chainId, block.chainid);
         assertEq(verifyingContract, ERC4626ExtendedDecimalsOffset0Addr);
         assertTrue(salt != randomSalt);
-        assertTrue(
-            keccak256(abi.encode(extensions)) !=
-                keccak256(abi.encode(randomExtensions))
-        );
+        assertTrue(keccak256(abi.encode(extensions)) != keccak256(abi.encode(randomExtensions)));
 
         bytes32 digest = keccak256(
-            abi.encode(
-                _TYPE_HASH,
-                keccak256(bytes(name)),
-                keccak256(bytes(version)),
-                chainId,
-                verifyingContract
-            )
+            abi.encode(_TYPE_HASH, keccak256(bytes(name)), keccak256(bytes(version)), chainId, verifyingContract)
         );
         assertEq(ERC4626ExtendedDecimalsOffset0.DOMAIN_SEPARATOR(), digest);
     }
@@ -2076,46 +1181,26 @@ contract ERC4626VaultInvariants is Test {
     VyperDeployer private vyperDeployer = new VyperDeployer();
     address private deployer = address(vyperDeployer);
     ERC20Mock private underlying =
-        new ERC20Mock(
-            _NAME_UNDERLYING,
-            _SYMBOL_UNDERLYING,
-            deployer,
-            _INITIAL_SUPPLY_UNDERLYING
-        );
+        new ERC20Mock(_NAME_UNDERLYING, _SYMBOL_UNDERLYING, deployer, _INITIAL_SUPPLY_UNDERLYING);
 
     // solhint-disable-next-line var-name-mixedcase
     IERC4626Extended private ERC4626Extended;
     ERC4626VaultHandler private erc4626VaultHandler;
 
     function setUp() public {
-        bytes memory args = abi.encode(
-            _NAME,
-            _SYMBOL,
-            underlying,
-            _DECIMALS_OFFSET,
-            _NAME_EIP712,
-            _VERSION_EIP712
-        );
-        ERC4626Extended = IERC4626Extended(
-            vyperDeployer.deployContract("src/extensions/", "ERC4626", args)
-        );
+        bytes memory args = abi.encode(_NAME, _SYMBOL, underlying, _DECIMALS_OFFSET, _NAME_EIP712, _VERSION_EIP712);
+        ERC4626Extended = IERC4626Extended(vyperDeployer.deployContract("src/extensions/", "ERC4626", args));
         erc4626VaultHandler = new ERC4626VaultHandler(ERC4626Extended);
         targetContract(address(erc4626VaultHandler));
         targetSender(deployer);
     }
 
     function invariantTotalSupply() public {
-        assertEq(
-            ERC4626Extended.totalSupply(),
-            erc4626VaultHandler.totalSupply()
-        );
+        assertEq(ERC4626Extended.totalSupply(), erc4626VaultHandler.totalSupply());
     }
 
     function invariantTotalAssets() public {
-        assertEq(
-            ERC4626Extended.totalAssets(),
-            erc4626VaultHandler.totalAssets()
-        );
+        assertEq(ERC4626Extended.totalAssets(), erc4626VaultHandler.totalAssets());
     }
 }
 
@@ -2141,15 +1226,9 @@ contract ERC4626VaultHandler {
         vault.transferFrom(owner, to, amount);
     }
 
-    function permit(
-        address owner,
-        address spender,
-        uint256 value,
-        uint256 deadline,
-        uint8 v,
-        bytes32 r,
-        bytes32 s
-    ) public {
+    function permit(address owner, address spender, uint256 value, uint256 deadline, uint8 v, bytes32 r, bytes32 s)
+        public
+    {
         vault.permit(owner, spender, value, deadline, v, r, s);
     }
 

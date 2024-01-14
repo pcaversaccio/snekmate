@@ -18,9 +18,7 @@ contract Create2AddressTest is Test {
     address private create2AddressAddr;
 
     function setUp() public {
-        create2Address = ICreate2Address(
-            vyperDeployer.deployContract("src/utils/", "Create2Address")
-        );
+        create2Address = ICreate2Address(vyperDeployer.deployContract("src/utils/", "Create2Address"));
         create2AddressAddr = address(create2Address);
     }
 
@@ -31,27 +29,12 @@ contract Create2AddressTest is Test {
         address arg3 = makeAddr("initialAccount");
         uint256 arg4 = 100;
         bytes memory args = abi.encode(arg1, arg2, arg3, arg4);
-        bytes memory bytecode = abi.encodePacked(
-            vm.getCode("ERC20Mock.sol:ERC20Mock"),
-            args
-        );
+        bytes memory bytecode = abi.encodePacked(vm.getCode("ERC20Mock.sol:ERC20Mock"), args);
         bytes32 bytecodeHash = keccak256(bytecode);
-        address create2AddressComputed = create2Address.compute_address(
-            salt,
-            bytecodeHash,
-            address(this)
-        );
+        address create2AddressComputed = create2Address.compute_address(salt, bytecodeHash, address(this));
 
-        ERC20Mock create2AddressComputedOnChain = new ERC20Mock{salt: salt}(
-            arg1,
-            arg2,
-            arg3,
-            arg4
-        );
-        assertEq(
-            create2AddressComputed,
-            address(create2AddressComputedOnChain)
-        );
+        ERC20Mock create2AddressComputedOnChain = new ERC20Mock{salt: salt}(arg1, arg2, arg3, arg4);
+        assertEq(create2AddressComputed, address(create2AddressComputedOnChain));
     }
 
     function testComputeAddressSelf() public {
@@ -61,30 +44,16 @@ contract Create2AddressTest is Test {
         address arg3 = makeAddr("initialAccount");
         uint256 arg4 = 100;
         bytes memory args = abi.encode(arg1, arg2, arg3, arg4);
-        bytes memory bytecode = abi.encodePacked(
-            vm.getCode("ERC20Mock.sol:ERC20Mock"),
-            args
-        );
+        bytes memory bytecode = abi.encodePacked(vm.getCode("ERC20Mock.sol:ERC20Mock"), args);
         bytes32 bytecodeHash = keccak256(bytecode);
-        address create2AddressComputed = create2Address.compute_address_self(
-            salt,
-            bytecodeHash
-        );
-        address create2AddressOZComputed = create2Impl
-            .computeAddressWithDeployer(salt, bytecodeHash, create2AddressAddr);
+        address create2AddressComputed = create2Address.compute_address_self(salt, bytecodeHash);
+        address create2AddressOZComputed =
+            create2Impl.computeAddressWithDeployer(salt, bytecodeHash, create2AddressAddr);
 
         vm.prank(create2AddressAddr);
-        ERC20Mock create2AddressComputedOnChain = new ERC20Mock{salt: salt}(
-            arg1,
-            arg2,
-            arg3,
-            arg4
-        );
+        ERC20Mock create2AddressComputedOnChain = new ERC20Mock{salt: salt}(arg1, arg2, arg3, arg4);
         assertEq(create2AddressComputed, create2AddressOZComputed);
-        assertEq(
-            create2AddressComputed,
-            address(create2AddressComputedOnChain)
-        );
+        assertEq(create2AddressComputed, address(create2AddressComputedOnChain));
     }
 
     function testFuzzComputeAddress(bytes32 salt, address deployer) public {
@@ -93,28 +62,13 @@ contract Create2AddressTest is Test {
         address arg3 = makeAddr("initialAccount");
         uint256 arg4 = 100;
         bytes memory args = abi.encode(arg1, arg2, arg3, arg4);
-        bytes memory bytecode = abi.encodePacked(
-            vm.getCode("ERC20Mock.sol:ERC20Mock"),
-            args
-        );
+        bytes memory bytecode = abi.encodePacked(vm.getCode("ERC20Mock.sol:ERC20Mock"), args);
         bytes32 bytecodeHash = keccak256(bytecode);
-        address create2AddressComputed = create2Address.compute_address(
-            salt,
-            bytecodeHash,
-            deployer
-        );
+        address create2AddressComputed = create2Address.compute_address(salt, bytecodeHash, deployer);
 
         vm.prank(deployer);
-        ERC20Mock create2AddressComputedOnChain = new ERC20Mock{salt: salt}(
-            arg1,
-            arg2,
-            arg3,
-            arg4
-        );
-        assertEq(
-            create2AddressComputed,
-            address(create2AddressComputedOnChain)
-        );
+        ERC20Mock create2AddressComputedOnChain = new ERC20Mock{salt: salt}(arg1, arg2, arg3, arg4);
+        assertEq(create2AddressComputed, address(create2AddressComputedOnChain));
     }
 
     function testFuzzComputeAddressSelf(bytes32 salt) public {
@@ -123,29 +77,15 @@ contract Create2AddressTest is Test {
         address arg3 = makeAddr("initialAccount");
         uint256 arg4 = 100;
         bytes memory args = abi.encode(arg1, arg2, arg3, arg4);
-        bytes memory bytecode = abi.encodePacked(
-            vm.getCode("ERC20Mock.sol:ERC20Mock"),
-            args
-        );
+        bytes memory bytecode = abi.encodePacked(vm.getCode("ERC20Mock.sol:ERC20Mock"), args);
         bytes32 bytecodeHash = keccak256(bytecode);
-        address create2AddressComputed = create2Address.compute_address_self(
-            salt,
-            bytecodeHash
-        );
-        address create2AddressOZComputed = create2Impl
-            .computeAddressWithDeployer(salt, bytecodeHash, create2AddressAddr);
+        address create2AddressComputed = create2Address.compute_address_self(salt, bytecodeHash);
+        address create2AddressOZComputed =
+            create2Impl.computeAddressWithDeployer(salt, bytecodeHash, create2AddressAddr);
 
         vm.prank(create2AddressAddr);
-        ERC20Mock create2AddressComputedOnChain = new ERC20Mock{salt: salt}(
-            arg1,
-            arg2,
-            arg3,
-            arg4
-        );
+        ERC20Mock create2AddressComputedOnChain = new ERC20Mock{salt: salt}(arg1, arg2, arg3, arg4);
         assertEq(create2AddressComputed, create2AddressOZComputed);
-        assertEq(
-            create2AddressComputed,
-            address(create2AddressComputedOnChain)
-        );
+        assertEq(create2AddressComputed, address(create2AddressComputedOnChain));
     }
 }
