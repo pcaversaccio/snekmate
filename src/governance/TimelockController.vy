@@ -176,47 +176,87 @@ def supportsInterface(interface_id: bytes4) -> bool:
 
 # TODO: Most helper funtions below are originally public, but Vyper doesn't support that. wat do?
 
-@internal
+@external
 @view
 def isOperation(id: bytes32) -> bool:
-    return self.getOperationState(id) != OperationState.Unset
+    return self._isOperation(id)
 
 @internal
+@view
+def _isOperation(id: bytes32) -> bool:
+    return self._getOperationState(id) != OperationState.Unset
+
+@external
 @view
 def isOperationPending(id: bytes32) -> bool:
-    state: OperationState = self.getOperationState(id)
+    return self._isOperationPending(id)
+
+@internal
+@view
+def _isOperationPending(id: bytes32) -> bool:
+    state: OperationState = self._getOperationState(id)
     return state == OperationState.Waiting or state == OperationState.Ready
 
-@internal
+@external
 @view
 def isOperationReady(id: bytes32) -> bool:
-    return self.getOperationState(id) == OperationState.Ready
+    return self._isOperationReady(id)
 
 @internal
+@view
+def _isOperationReady(id: bytes32) -> bool:
+    return self._getOperationState(id) == OperationState.Ready
+
+@external
 @view
 def isOperationDone(id: bytes32) -> bool:
-    return self.getOperationState(id) == OperationState.Done
+    return self._isOperationDone(id)
 
 @internal
 @view
+def _isOperationDone(id: bytes32) -> bool:
+    return self._getOperationState(id) == OperationState.Done
+
+@external
+@view
 def getTimestamp(id: bytes32) -> uint256:
+    return self._getTimestamp(id)
+
+@internal
+@view
+def _getTimestamp(id: bytes32) -> uint256:
     return self._timestamps[id]
+
+@external
+@pure
+def hashOperation(target: address, x: uint256, data: Bytes[1_024], predecessor: bytes32, salt: bytes32) -> bytes32:
+    return self._hashOperation(target, x, data, predecessor, salt)
 
 @internal
 @pure
-def hashOperation(target: address, x: uint256, data: Bytes[1_024], predecessor: bytes32, salt: bytes32) -> bytes32:
+def _hashOperation(target: address, x: uint256, data: Bytes[1_024], predecessor: bytes32, salt: bytes32) -> bytes32:
     value: uint256 = x
     return keccak256(_abi_encode(target, value, data, predecessor, salt))
 
-@internal
+@external
 @pure
 def hashOperationBatch(targets: DynArray[address, 128], values: DynArray[uint256, 128], payloads: DynArray[Bytes[1_024], 128], predecessor: bytes32, salt: bytes32) -> bytes32:
+    return self._hashOperationBatch(targets, values, payloads, predecessor, salt)
+
+@internal
+@pure
+def _hashOperationBatch(targets: DynArray[address, 128], values: DynArray[uint256, 128], payloads: DynArray[Bytes[1_024], 128], predecessor: bytes32, salt: bytes32) -> bytes32:
     return keccak256(_abi_encode(targets, values, payloads, predecessor, salt))
+
+@external
+@view
+def getOperationState(id: bytes32) -> OperationState:
+    return self._getOperationState(id)
 
 @internal
 @view
-def getOperationState(id: bytes32) -> OperationState:
-    timestamp: uint256 = self.getTimestamp(id)
+def _getOperationState(id: bytes32) -> OperationState:
+    timestamp: uint256 = self._getTimestamp(id)
     if (timestamp == 0):
         return OperationState.Unset
     elif (timestamp == _DONE_TIMESTAMP):
@@ -227,10 +267,15 @@ def getOperationState(id: bytes32) -> OperationState:
         return OperationState.Ready
 
 @external
+@view
+def getMinDelay() -> uint256:
+    return self._minDelay
+
+@external
 def schedule(target: address, x: uint256, data: Bytes[1_024], predecessor: bytes32, salt: bytes32, delay: uint256):
     self._check_role(PROPOSER_ROLE, msg.sender)
     value: uint256 = x
-    id: bytes32 = self.hashOperation(target, value, data, predecessor, salt)
+    id: bytes32 = self._hashOperation(target, value, data, predecessor, salt)
     self._schedule(id, delay)
     log CallScheduled(id, 0, target, value, data, predecessor, delay)
     if (salt != empty(bytes32)):
@@ -240,7 +285,7 @@ def schedule(target: address, x: uint256, data: Bytes[1_024], predecessor: bytes
 def scheduleBatch(targets: DynArray[address, 128], values: DynArray[uint256, 128], payloads: DynArray[Bytes[1_024], 128], predecessor: bytes32, salt: bytes32, delay: uint256):
     self._check_role(PROPOSER_ROLE, msg.sender)
     assert len(targets) == len(values) and len(targets) == len(payloads), "TimelockController: invalid operation length"
-    id: bytes32 = self.hashOperationBatch(targets, values, payloads, predecessor, salt)
+    id: bytes32 = self._hashOperationBatch(targets, values, payloads, predecessor, salt)
     self._schedule(id, delay)
     idx: uint256 = empty(uint256)
     for target in targets:
@@ -253,14 +298,14 @@ def scheduleBatch(targets: DynArray[address, 128], values: DynArray[uint256, 128
 
 @internal
 def _schedule(id: bytes32, delay: uint256):
-    assert not(self.isOperation(id)), "TimelockController: operation already scheduled"
+    assert not(self._isOperation(id)), "TimelockController: operation already scheduled"
     assert delay >= self._minDelay, "TimelockController: insufficient delay"
     self._timestamps[id] = block.timestamp + delay
 
 @external
 def cancel(id: bytes32):
     self._check_role(CANCELLER_ROLE, msg.sender)
-    assert self.isOperationPending(id), "TimelockController: operation cannot be cancelled"
+    assert self._isOperationPending(id), "TimelockController: operation cannot be cancelled"
     self._timestamps[id] = 0
     log Cancelled(id)
 
@@ -268,7 +313,7 @@ def cancel(id: bytes32):
 def execute(target: address, x: uint256, payload: Bytes[1_024], predecessor: bytes32, salt: bytes32):
     self._onlyRoleOrOpenRole(EXECUTOR_ROLE)
     value: uint256 = x
-    id: bytes32 = self.hashOperation(target, value, payload, predecessor, salt)
+    id: bytes32 = self._hashOperation(target, value, payload, predecessor, salt)
 
     self._beforeCall(id, predecessor)
     self._execute(target, value, payload)
@@ -279,7 +324,7 @@ def execute(target: address, x: uint256, payload: Bytes[1_024], predecessor: byt
 def executeBatch(targets: DynArray[address, 128], values: DynArray[uint256, 128], payloads: DynArray[Bytes[1_024], 128], predecessor: bytes32, salt: bytes32):
     self._onlyRoleOrOpenRole(EXECUTOR_ROLE)
     assert len(targets) == len(values) and len(targets) == len(payloads), "TimelockController: invalid operation length"
-    id: bytes32 = self.hashOperationBatch(targets, values, payloads, predecessor, salt)
+    id: bytes32 = self._hashOperationBatch(targets, values, payloads, predecessor, salt)
 
     self._beforeCall(id, predecessor)
     idx: uint256 = empty(uint256)
@@ -302,12 +347,12 @@ def _execute(target: address, x: uint256, payload: Bytes[1_024]):
 @internal
 @view
 def _beforeCall(id: bytes32, predecessor: bytes32):
-    assert self.isOperationReady(id), "TimelockController: operation is not ready"
-    assert predecessor == empty(bytes32) or self.isOperationDone(predecessor), "TimelockController: predecessor operation is not done"
+    assert self._isOperationReady(id), "TimelockController: operation is not ready"
+    assert predecessor == empty(bytes32) or self._isOperationDone(predecessor), "TimelockController: predecessor operation is not done"
 
 @internal
 def _afterCall(id: bytes32):
-    assert self.isOperationReady(id), "TimelockController: operation is not ready"
+    assert self._isOperationReady(id), "TimelockController: operation is not ready"
     self._timestamps[id] = _DONE_TIMESTAMP
 
 @external
