@@ -144,7 +144,7 @@ contract TimelockControllerTest is Test {
         timelockController.execute(target, value, data, predecessor, salt);
 
         uint256 minDelay = timelockController.getMinDelay();
-        assertEq(minDelay, 3 days);
+        assertEq(minDelay, 2 days);
     }
 
     function testRevertWhenLessThanMinDelay() public {
@@ -693,6 +693,345 @@ contract TimelockControllerTest is Test {
         timelockController.scheduleBatch(targets, values, payloads, NO_PREDECESSOR, EMPTY_SALT, MIN_DELAY);
 
         vm.warp(block.timestamp + MIN_DELAY + 2 days);
+    }
+
+    event CallExecuted(bytes32 indexed id, uint256 indexed index, address target, uint256 value, bytes data);
+
+    function testEmitsEvent() public {
+        address[] memory targets = new address[](1);
+        targets[0] = address(counter);
+
+        uint256[] memory values = new uint256[](1);
+        values[0] = 0;
+
+        bytes[] memory payloads = new bytes[](1);
+        payloads[0] = abi.encodeWithSelector(Counter.increment.selector);
+
+        vm.prank(PROPOSER_ONE);
+        timelockController.scheduleBatch(targets, values, payloads, NO_PREDECESSOR, EMPTY_SALT, MIN_DELAY);
+        vm.warp(block.timestamp + MIN_DELAY + 2 days);
+        bytes32 predecessor = NO_PREDECESSOR;
+        bytes32 salt = EMPTY_SALT;
+        bytes32 id = timelockController.hashOperationBatch(targets, values, payloads, predecessor, salt);
+
+        vm.prank(EXECUTOR_ONE);
+        vm.expectEmit(true, true, true, true);
+        emit CallExecuted(id, 0, targets[0], values[0], payloads[0]);
+        timelockController.executeBatch(targets, values, payloads, NO_PREDECESSOR, EMPTY_SALT);
+    }
+
+    function testRevertWhenNonCanceller() public {
+        vm.expectRevert("AccessControl: account is missing role");
+        vm.prank(EXECUTOR_ONE);
+        timelockController.cancel(EMPTY_SALT);
+    }
+
+    function testRevertWhenFinishedOperation() public {
+        address[] memory targets = new address[](1);
+        targets[0] = address(counter);
+
+        uint256[] memory values = new uint256[](1);
+        values[0] = 0;
+
+        bytes[] memory payloads = new bytes[](1);
+        payloads[0] = abi.encodeWithSelector(Counter.increment.selector);
+
+        vm.prank(PROPOSER_ONE);
+        timelockController.scheduleBatch(targets, values, payloads, NO_PREDECESSOR, EMPTY_SALT, MIN_DELAY);
+
+        vm.warp(block.timestamp + MIN_DELAY + 1);
+        vm.prank(EXECUTOR_ONE);
+        timelockController.executeBatch(targets, values, payloads, NO_PREDECESSOR, EMPTY_SALT);
+        bytes32 operationID =
+            timelockController.hashOperationBatch(targets, values, payloads, NO_PREDECESSOR, EMPTY_SALT);
+        vm.prank(PROPOSER_ONE);
+        vm.expectRevert("TimelockController: operation cannot be cancelled");
+        timelockController.cancel(operationID);
+    }
+
+    function testCancellerCanCancelOperation() public {
+        (bytes32 operationID) = _cancelOperation();
+
+        vm.prank(PROPOSER_ONE);
+        timelockController.cancel(operationID);
+        assertFalse(timelockController.isOperation(operationID));
+    }
+
+    function testAdminCanCancelOperation() public {
+        (bytes32 operationID) = _cancelOperation();
+
+        vm.expectRevert("AccessControl: account is missing role");
+        vm.prank(ADMIN);
+        timelockController.cancel(operationID);
+        assertTrue(timelockController.isOperation(operationID));
+    }
+
+    function _cancelOperation() internal returns (bytes32 operationID) {
+        address[] memory targets = new address[](1);
+        targets[0] = address(counter);
+
+        uint256[] memory values = new uint256[](1);
+        values[0] = 0;
+
+        bytes[] memory payloads = new bytes[](1);
+        payloads[0] = abi.encodeWithSelector(Counter.increment.selector);
+
+        vm.prank(PROPOSER_ONE);
+        timelockController.scheduleBatch(targets, values, payloads, NO_PREDECESSOR, EMPTY_SALT, MIN_DELAY);
+        operationID = timelockController.hashOperationBatch(targets, values, payloads, NO_PREDECESSOR, EMPTY_SALT);
+    }
+
+    function testCanReceiveETH() public {
+        vm.prank(ADMIN);
+        payable(address(timelockController)).transfer(0.5 ether);
+        assertEq(address(timelockController).balance, 0.5 ether);
+    }
+
+    function testFalseIfNotAnOperation() public {
+        bool isOperation = timelockController.isOperation(bytes32("non-op"));
+        assertEq(isOperation, false);
+    }
+
+    function testTrueIfAnOperation() public {
+        address[] memory targets = new address[](1);
+        targets[0] = address(counter);
+
+        uint256[] memory values = new uint256[](1);
+        values[0] = 0;
+
+        bytes[] memory payloads = new bytes[](1);
+        payloads[0] = abi.encodeWithSelector(Counter.increment.selector);
+
+        vm.prank(PROPOSER_ONE);
+        timelockController.scheduleBatch(targets, values, payloads, NO_PREDECESSOR, EMPTY_SALT, MIN_DELAY);
+
+        bytes32 operationID =
+            timelockController.hashOperationBatch(targets, values, payloads, NO_PREDECESSOR, EMPTY_SALT);
+
+        bool isOperation = timelockController.isOperation(operationID);
+        assertEq(isOperation, true);
+    }
+
+    function testTrueIfScheduledOperatonNotYetExecuted() public {
+        address[] memory targets = new address[](1);
+        targets[0] = address(counter);
+
+        uint256[] memory values = new uint256[](1);
+        values[0] = 0;
+
+        bytes[] memory payloads = new bytes[](1);
+        payloads[0] = abi.encodeWithSelector(Counter.increment.selector);
+
+        vm.prank(PROPOSER_ONE);
+        timelockController.scheduleBatch(targets, values, payloads, NO_PREDECESSOR, EMPTY_SALT, MIN_DELAY);
+
+        bytes32 operationID =
+            timelockController.hashOperationBatch(targets, values, payloads, NO_PREDECESSOR, EMPTY_SALT);
+
+        bool isOperationPending = timelockController.isOperationPending(operationID);
+        assertEq(isOperationPending, true);
+    }
+
+    function testFalseIfPendingOperationHasBeenExecuted() public {
+        address[] memory targets = new address[](1);
+        targets[0] = address(counter);
+
+        uint256[] memory values = new uint256[](1);
+        values[0] = 0;
+
+        bytes[] memory payloads = new bytes[](1);
+        payloads[0] = abi.encodeWithSelector(Counter.increment.selector);
+
+        vm.prank(PROPOSER_ONE);
+        timelockController.scheduleBatch(targets, values, payloads, NO_PREDECESSOR, EMPTY_SALT, MIN_DELAY);
+
+        vm.warp(block.timestamp + MIN_DELAY);
+        vm.prank(EXECUTOR_ONE);
+        timelockController.executeBatch(targets, values, payloads, NO_PREDECESSOR, EMPTY_SALT);
+
+        bytes32 operationID =
+            timelockController.hashOperationBatch(targets, values, payloads, NO_PREDECESSOR, EMPTY_SALT);
+
+        bool isOperationPending = timelockController.isOperationPending(operationID);
+        assertEq(isOperationPending, false);
+    }
+
+    function testTrueIfOnTheDelayedExecutionTime() public {
+        address[] memory targets = new address[](1);
+        targets[0] = address(counter);
+
+        uint256[] memory values = new uint256[](1);
+        values[0] = 0;
+
+        bytes[] memory payloads = new bytes[](1);
+        payloads[0] = abi.encodeWithSelector(Counter.increment.selector);
+
+        vm.prank(PROPOSER_ONE);
+        timelockController.scheduleBatch(targets, values, payloads, NO_PREDECESSOR, EMPTY_SALT, MIN_DELAY);
+
+        vm.warp(block.timestamp + MIN_DELAY);
+
+        bytes32 operationID =
+            timelockController.hashOperationBatch(targets, values, payloads, NO_PREDECESSOR, EMPTY_SALT);
+
+        bool isOperationReady = timelockController.isOperationReady(operationID);
+        assertEq(isOperationReady, true);
+    }
+
+    function testTrueIfAfterTheDelayedExecutionTime() public {
+        address[] memory targets = new address[](1);
+        targets[0] = address(counter);
+
+        uint256[] memory values = new uint256[](1);
+        values[0] = 0;
+
+        bytes[] memory payloads = new bytes[](1);
+        payloads[0] = abi.encodeWithSelector(Counter.increment.selector);
+
+        vm.prank(PROPOSER_ONE);
+        timelockController.scheduleBatch(targets, values, payloads, NO_PREDECESSOR, EMPTY_SALT, MIN_DELAY);
+
+        vm.warp(block.timestamp + MIN_DELAY + 1 days);
+
+        bytes32 operationID =
+            timelockController.hashOperationBatch(targets, values, payloads, NO_PREDECESSOR, EMPTY_SALT);
+
+        bool isOperationReady = timelockController.isOperationReady(operationID);
+        assertEq(isOperationReady, true);
+    }
+
+    function testFalseIfBeforeTheDelayedExecutionTime() public {
+        address[] memory targets = new address[](1);
+        targets[0] = address(counter);
+
+        uint256[] memory values = new uint256[](1);
+        values[0] = 0;
+
+        bytes[] memory payloads = new bytes[](1);
+        payloads[0] = abi.encodeWithSelector(Counter.increment.selector);
+
+        vm.prank(PROPOSER_ONE);
+        timelockController.scheduleBatch(targets, values, payloads, NO_PREDECESSOR, EMPTY_SALT, MIN_DELAY);
+
+        vm.warp(block.timestamp + MIN_DELAY - 1 days);
+
+        bytes32 operationID =
+            timelockController.hashOperationBatch(targets, values, payloads, NO_PREDECESSOR, EMPTY_SALT);
+
+        bool isOperationReady = timelockController.isOperationReady(operationID);
+        assertEq(isOperationReady, false);
+    }
+
+    function testFalseIfReadyOperationHasBeenExecuted() public {
+        address[] memory targets = new address[](1);
+        targets[0] = address(counter);
+
+        uint256[] memory values = new uint256[](1);
+        values[0] = 0;
+
+        bytes[] memory payloads = new bytes[](1);
+        payloads[0] = abi.encodeWithSelector(Counter.increment.selector);
+
+        vm.prank(PROPOSER_ONE);
+        timelockController.scheduleBatch(targets, values, payloads, NO_PREDECESSOR, EMPTY_SALT, MIN_DELAY);
+
+        vm.warp(block.timestamp + MIN_DELAY);
+        vm.prank(EXECUTOR_ONE);
+        timelockController.executeBatch(targets, values, payloads, NO_PREDECESSOR, EMPTY_SALT);
+
+        bytes32 operationID =
+            timelockController.hashOperationBatch(targets, values, payloads, NO_PREDECESSOR, EMPTY_SALT);
+
+        bool isOperationReady = timelockController.isOperationReady(operationID);
+        assertEq(isOperationReady, false);
+    }
+
+    function testFalseItTheOperationHasNotBeenExecuted() public {
+        address[] memory targets = new address[](1);
+        targets[0] = address(counter);
+
+        uint256[] memory values = new uint256[](1);
+        values[0] = 0;
+
+        bytes[] memory payloads = new bytes[](1);
+        payloads[0] = abi.encodeWithSelector(Counter.increment.selector);
+
+        vm.prank(PROPOSER_ONE);
+        timelockController.scheduleBatch(targets, values, payloads, NO_PREDECESSOR, EMPTY_SALT, MIN_DELAY);
+
+        bytes32 operationID =
+            timelockController.hashOperationBatch(targets, values, payloads, NO_PREDECESSOR, EMPTY_SALT);
+
+        bool isOperationDone = timelockController.isOperationDone(operationID);
+        assertEq(isOperationDone, false);
+    }
+
+    function testTrueIfOperationHasBeenExecuted() public {
+        address[] memory targets = new address[](1);
+        targets[0] = address(counter);
+
+        uint256[] memory values = new uint256[](1);
+        values[0] = 0;
+
+        bytes[] memory payloads = new bytes[](1);
+        payloads[0] = abi.encodeWithSelector(Counter.increment.selector);
+
+        vm.prank(PROPOSER_ONE);
+        timelockController.scheduleBatch(targets, values, payloads, NO_PREDECESSOR, EMPTY_SALT, MIN_DELAY);
+
+        vm.warp(block.timestamp + MIN_DELAY);
+        vm.prank(EXECUTOR_ONE);
+        timelockController.executeBatch(targets, values, payloads, NO_PREDECESSOR, EMPTY_SALT);
+
+        bytes32 operationID =
+            timelockController.hashOperationBatch(targets, values, payloads, NO_PREDECESSOR, EMPTY_SALT);
+
+        bool isOperationDone = timelockController.isOperationDone(operationID);
+        assertEq(isOperationDone, true);
+    }
+
+    function testReturnsTheCorrectTimestampIfTheOperationHasNotBeenExecuted() public {
+        address[] memory targets = new address[](1);
+        targets[0] = address(counter);
+
+        uint256[] memory values = new uint256[](1);
+        values[0] = 0;
+
+        bytes[] memory payloads = new bytes[](1);
+        payloads[0] = abi.encodeWithSelector(Counter.increment.selector);
+
+        vm.prank(PROPOSER_ONE);
+        timelockController.scheduleBatch(targets, values, payloads, NO_PREDECESSOR, EMPTY_SALT, MIN_DELAY);
+
+        bytes32 operationID =
+            timelockController.hashOperationBatch(targets, values, payloads, NO_PREDECESSOR, EMPTY_SALT);
+
+        uint256 operationTimestamp = timelockController.getTimestamp(operationID);
+        assertEq(operationTimestamp, block.timestamp + MIN_DELAY);
+    }
+
+    function testReturnsOneIfOperationHasBeenExecuted() public {
+        address[] memory targets = new address[](1);
+        targets[0] = address(counter);
+
+        uint256[] memory values = new uint256[](1);
+        values[0] = 0;
+
+        bytes[] memory payloads = new bytes[](1);
+        payloads[0] = abi.encodeWithSelector(Counter.increment.selector);
+
+        vm.prank(PROPOSER_ONE);
+        timelockController.scheduleBatch(targets, values, payloads, NO_PREDECESSOR, EMPTY_SALT, MIN_DELAY);
+
+        vm.warp(block.timestamp + MIN_DELAY);
+        vm.prank(EXECUTOR_ONE);
+        timelockController.executeBatch(targets, values, payloads, NO_PREDECESSOR, EMPTY_SALT);
+
+        bytes32 operationID =
+            timelockController.hashOperationBatch(targets, values, payloads, NO_PREDECESSOR, EMPTY_SALT);
+
+        uint256 operationTimestamp = timelockController.getTimestamp(operationID);
+        assertEq(operationTimestamp, DONE_TIMESTAMP);
     }
 }
 
