@@ -1060,3 +1060,49 @@ contract Counter {
         _;
     }
 }
+
+contract TimelockControllerInvariants is Test {
+    VyperDeployer private vyperDeployer = new VyperDeployer();
+
+    TimelockController private timelockController;
+    TimelockControllerHandler private timelockControllerHandler;
+
+    address private deployer = address(vyperDeployer);
+
+    function setUp() public {
+        address[] memory proposers = new address[](2);
+        proposers[0] = PROPOSER_ONE;
+        proposers[1] = PROPOSER_TWO;
+
+        address[] memory executors = new address[](2);
+        executors[0] = EXECUTOR_ONE;
+        executors[1] = EXECUTOR_TWO;
+
+        bytes memory args = abi.encode(MIN_DELAY, proposers, executors, ADMIN);
+        timelockController =
+            TimelockController(payable(vyperDeployer.deployContract("src/governance/", "TimelockController", args)));
+
+        timelockControllerHandler = new AccessControlHandler(timelockController);
+        targetContract(address(timelockControllerHandler));
+    }
+}
+
+contract TimelockControllerHandler {
+    TimelockController private timelockController;
+
+    constructor(
+        TimelockController timelockController_,
+        address defaultAdmin_,
+        bytes32 adminRole_,
+        bytes32 additionalRole1_,
+        bytes32 additionalRole2_
+    ) {
+        timelockController = timelockController_;
+    }
+
+    function schedule() public {}
+
+    function execute() public {}
+
+    function cancel() public {}
+}
