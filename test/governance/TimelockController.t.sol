@@ -194,12 +194,12 @@ contract TimelockControllerTest is Test {
     }
 
     function _scheduleBatchedOperation()
-        internal
+        internal view
         returns (address[] memory targets, uint256[] memory values, bytes[] memory payloads)
     {
-        address[] memory targets = new address[](calls.length);
-        uint256[] memory values = new uint256[](calls.length);
-        bytes[] memory payloads = new bytes[](calls.length);
+        targets = new address[](calls.length);
+        values = new uint256[](calls.length);
+        payloads = new bytes[](calls.length);
 
         for (uint256 i = 0; i < calls.length; ++i) {
             targets[i] = calls[i].target;
@@ -1103,13 +1103,13 @@ contract TimelockControllerInvariants is Test {
         assertLe(timelockControllerHandler.execute_count(), timelockControllerHandler.schedule_count());
     }
 
-    // Number of proposals executed must match the count number).
-    function invariantOnceProposalExecution() public {
+    // Number of proposals executed must match the count number.
+    function invariantProposalsExecutedMatchCount() public {
         assertEq(timelockControllerHandler.execute_count(), timelockControllerHandler.counter());
     }
 
     // Proposals can only be scheduled and executed once
-    function invariantOnceProposalExecution2() public {
+    function invariantOnceProposalExecution() public {
         uint256[] memory executed = timelockControllerHandler.getExecuted();
         // Loop over all executed proposals.
         for (uint256 i = 0; i < executed.length; ++i) {
@@ -1125,16 +1125,16 @@ contract TimelockControllerInvariants is Test {
         }
     }
 
-    // Sum of number of executed proposals and cancelled proposals must match the amount of proposals scheduled.
-    function invariantExecutedProposalCancellation() public {
-        assertEq(
+    // Sum of number of executed proposals and cancelled proposals must be less or equal to the amount of proposals scheduled.
+    function invariantSumOfProposals() public {
+        assertLe(
             timelockControllerHandler.cancel_count() + timelockControllerHandler.execute_count(),
             timelockControllerHandler.schedule_count()
         );
     }
 
     // Executed proposals cannot be cancelled
-    function invariantExecutedProposalCancellation2() public {
+    function invariantExecutedProposalCancellation() public {
         uint256[] memory executed = timelockControllerHandler.getExecuted();
         // Loop over all executed proposals.
         for (uint256 i = 0; i < executed.length; ++i) {
@@ -1145,13 +1145,38 @@ contract TimelockControllerInvariants is Test {
     }
 
     // Executing a proposal that has been cancelled is not possible
-    function invariantExecutingCancelledProposal() public {}
+    function invariantExecutingCancelledProposal() public {
+        uint256[] memory cancelled = timelockControllerHandler.getCancelled();
+        // Loop over all cancelled proposals.
+        for (uint256 i = 0; i < cancelled.length; ++i) {
+            // Check that the cancelled proposal cannot be executed.
+            vm.expectRevert("TimelockController: operation is not ready");
+            timelockController.execute(
+                address(timelockControllerHandler),
+                0,
+                abi.encodeWithSelector(TimelockControllerHandler.increment.selector),
+                bytes32(""),
+                bytes32(cancelled[i])
+            );
+        }
+    }
 
     // Executing a proposal that is not ready is not possible
-    function invariantExecutingNotReadyProposal() public {}
-
-    // Executing a proposal that is not scheduled is not possible
-    function invariantExecutingNotScheduledProposal() public {}
+    function invariantExecutingNotReadyProposal() public {
+        uint256[] memory pending = timelockControllerHandler.getPending();
+        // Loop over all pending proposals.
+        for (uint256 i = 0; i < pending.length; ++i) {
+            // Check that the pending proposal cannot be executed.
+            vm.expectRevert("TimelockController: operation is not ready");
+            timelockController.execute(
+                address(timelockControllerHandler),
+                0,
+                abi.encodeWithSelector(TimelockControllerHandler.increment.selector),
+                bytes32(""),
+                bytes32(pending[i])
+            );
+        }
+    }
 }
 
 contract TimelockControllerHandler is Test {
@@ -1193,17 +1218,18 @@ contract TimelockControllerHandler is Test {
 
         pending.push(random);
         schedule_count++;
-
-        vm.warp(block.timestamp + minDelay);
     }
 
     function execute(uint256 random) external {
-        if (pending.length == 0) {
+        if (pending.length == 0 || schedule_count == 0) {
             return;
         }
 
         uint256 identifier = random % pending.length;
         uint256 operation = pending[identifier];
+
+        // Advance time to make the proposal ready.
+        vm.warp(block.timestamp + minDelay);
 
         vm.prank(executor);
         timelockController.execute(
@@ -1217,7 +1243,7 @@ contract TimelockControllerHandler is Test {
     }
 
     function cancel(uint256 random) external {
-        if (pending.length == 0) {
+        if (pending.length == 0 || schedule_count == 0) {
             return;
         }
 
@@ -1235,6 +1261,14 @@ contract TimelockControllerHandler is Test {
 
     function getExecuted() external view returns (uint256[] memory) {
         return executed;
+    }
+
+    function getCancelled() external view returns (uint256[] memory) {
+        return cancelled;
+    }
+
+    function getPending() external view returns (uint256[] memory) {
+        return pending;
     }
 
     function increment() external {
