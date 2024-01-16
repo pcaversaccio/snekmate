@@ -1070,39 +1070,97 @@ contract TimelockControllerInvariants is Test {
     address private deployer = address(vyperDeployer);
 
     function setUp() public {
-        address[] memory proposers = new address[](2);
-        proposers[0] = PROPOSER_ONE;
-        proposers[1] = PROPOSER_TWO;
+        address[] memory proposers = new address[](1);
+        proposers[0] = address(this);
 
-        address[] memory executors = new address[](2);
-        executors[0] = EXECUTOR_ONE;
-        executors[1] = EXECUTOR_TWO;
+        address[] memory executors = new address[](1);
+        executors[0] = address(this);
 
-        bytes memory args = abi.encode(MIN_DELAY, proposers, executors, ADMIN);
+        uint256 minDelay = 2 days;
+
+        bytes memory args = abi.encode(minDelay, proposers, executors, address(this));
         timelockController =
             TimelockController(payable(vyperDeployer.deployContract("src/governance/", "TimelockController", args)));
 
-        timelockControllerHandler = new AccessControlHandler(timelockController);
+        timelockControllerHandler =
+            new TimelockControllerHandler(timelockController, minDelay, proposers, executors, address(this));
         targetContract(address(timelockControllerHandler));
     }
+
+    // Proposals can only be scheduled and executed once
+    function invariantOnceProposalExecution() public {}
+
+    // Executed proposals cannot be cancelled
+    function invariantExecutedProposalCancellation() public {}
+
+    // Executing a proposal twice is not possible
+    function invariantExecutingProposalTwice() public {}
+
+    // Executing a proposal that has been cancelled is not possible
+    function invariantExecutingCancelledProposal() public {}
+
+    // Executing a proposal that is not ready is not possible
+    function invariantExecutingNotReadyProposal() public {}
+
+    // Executing a proposal that is not scheduled is not possible
+    function invariantExecutingNotScheduledProposal() public {}
 }
 
-contract TimelockControllerHandler {
+contract TimelockControllerHandler is Test {
     TimelockController private timelockController;
+    uint256 private minDelay;
+    address private admin;
+    address private proposer;
+    address private executor;
+
+    uint256 public counter;
+
+    uint256 public schedule_count;
+    uint256 public execute_count;
+    uint256 public cancel_count;
+
+    mapping(bytes32 => bool) public operations;
+
+    bytes32[] public operationIDs;
 
     constructor(
         TimelockController timelockController_,
-        address defaultAdmin_,
-        bytes32 adminRole_,
-        bytes32 additionalRole1_,
-        bytes32 additionalRole2_
+        uint256 minDelay_,
+        address[] memory proposer_,
+        address[] memory executor_,
+        address admin_
     ) {
         timelockController = timelockController_;
+        minDelay = minDelay_;
+        proposer = proposer_[0];
+        executor = executor_[0];
+        admin = admin_;
     }
 
-    function schedule() public {}
+    function schedule(uint256 random) external {
+        vm.prank(proposer);
+        timelockController.schedule(
+            address(this),
+            0,
+            abi.encodeWithSelector(this.increment.selector),
+            bytes32(random),
+            bytes32(random),
+            minDelay
+        );
 
-    function execute() public {}
+        bytes32 operationID = timelockController.hashOperation(
+            address(this), 0, abi.encodeWithSelector(this.increment.selector), bytes32(random), bytes32(random)
+        );
 
-    function cancel() public {}
+        operationIDs.push(operationID);
+        schedule_count++;
+    }
+
+    function execute() external {}
+
+    function cancel() external {}
+
+    function increment() external {
+        counter++;
+    }
 }
