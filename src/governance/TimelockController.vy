@@ -1,4 +1,34 @@
 # pragma version ^0.3.10
+"""
+@title Owner-Based Timelock Controller
+@custom:contract-name TimelockController
+@license GNU Affero General Public License v3.0 only
+@author cairoeth
+@notice This module allows for timelocking operations by scheduling and
+        executing transactions. By leveraging AccessControl, the 
+        TimelockController introduces three roles: proposer, executor,
+        and canceller. The proposer role is responsible for proposing
+        operations, the executor is responsible for executing scheduled
+        proposals, and the canceller is responsible for cancelling
+        proposals. The owner is the sole admin of the roles and can grant
+        and revoke them. In the constructor, proposers will be granted
+        the proposer and canceller roles.
+        
+        Proposals must be scheduled with a delay that is greater than or
+        equal to the minimum delay (`minDelay()`), which can be updated via
+        a proposal to itself and is measured in seconds. Additionally,
+        proposals can be associated with preceding proposals, which must be
+        executed before the proposal can be executed. Ready proposals can be
+        executed by the executor, who is solely responsible for calling the
+        `execute()` function.
+        
+        Proposals can be timelocked individually or in batches. The latter is
+        useful for operations that require execution in the same block.
+
+        The implementation is inspired by OpenZeppelin's implementation here:
+        https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/governance/TimelockController.sol.
+"""
+
 
 # @dev We import and implement the `ERC165` interface,
 # which is a built-in interface of the Vyper compiler.
@@ -86,24 +116,50 @@ event RoleRevoked:
     account: indexed(address)
     sender: indexed(address)
 
+
+# @dev Proposer 32-byte role.
+# @notice Responsable for proposing operations.
 PROPOSER_ROLE: public(constant(bytes32)) = keccak256("PROPOSER_ROLE")
 
+
+# @dev Executor 32-byte role.
+# @notice Responsable for executing scheduled
+# proposals.
 EXECUTOR_ROLE: public(constant(bytes32)) = keccak256("EXECUTOR_ROLE")
 
+
+# @dev Canceller 32-byte role.
+# @notice Responsable for cancelling proposals.
 CANCELLER_ROLE: public(constant(bytes32)) = keccak256("CANCELLER_ROLE")
 
+
+# @dev The timestamp that represents that a
+# proposal has been executed.
 _DONE_TIMESTAMP: constant(uint256) = 1
 
+
+# @dev The mapping of proposal IDs to their 
+# timestamps.
 _timestamps: HashMap[bytes32, uint256]
 
+
+# @dev The minimum delay required to schedule a
+# proposal.
 _minDelay: uint256
 
+
+# @dev The possible statuses of a proposal.
 enum OperationState:
     Unset
     Waiting
     Ready
     Done
 
+
+# @dev Emitted when a call is scheduled as part
+# of operation `id`. Note that the `index` is the
+# index position of the proposal. If the proposal
+# is individual, the `index` is 0.
 event CallScheduled:
     id: indexed(bytes32)
     index: indexed(uint256)
@@ -113,6 +169,11 @@ event CallScheduled:
     predecessor: bytes32
     delay: uint256
 
+
+# @dev Emitted when a call is performed as part
+# of operation `id`. Note that the `index` is
+# the index position of the proposal. If the
+# proposal is individual, the `index` is 0.
 event CallExecuted:
     id: indexed(bytes32)
     index: indexed(uint256)
@@ -120,19 +181,40 @@ event CallExecuted:
     value: uint256
     data: Bytes[1_024]
 
+
+# @dev Emitted when new proposal is scheduled
+# with non-zero salt.
 event CallSalt:
     id: indexed(bytes32)
     salt: bytes32
 
+
+# @dev Emitted when operation `id` is cancelled.
 event Cancelled:
     id: indexed(bytes32)
 
+
+# @dev Emitted when the minimum delay for future
+# operations is modified.
 event MinDelayChange:
     oldDuration: uint256
     newDuration: uint256
 
+
 @external
 def __init__(minDelay: uint256, proposers: DynArray[address, 128], executors: DynArray[address, 128], admin: address):
+    """
+    @dev The optional admin can aid with initial
+         configuration of roles after deployment without
+         being subject to delay, but this role should be
+         subsequently renounced in favor of
+         administration through timelocked proposals.
+         Previous versions of this contract would assign
+         this admin to the deployer automatically and
+         should be renounced as well.
+    @notice Assigns roles to given addresses and sets the
+            minimum delay.
+    """
     # Self administration
     self._grant_role(DEFAULT_ADMIN_ROLE, self)
 
@@ -152,15 +234,30 @@ def __init__(minDelay: uint256, proposers: DynArray[address, 128], executors: Dy
     self._minDelay = minDelay
     log MinDelayChange(0, minDelay)
 
+
 @external
 @payable
 def __default__():
+    """
+    @dev Contract might receive/hold ETH as part of the
+         maintenance process.
+    """
     pass
+
 
 @internal
 def _onlyRoleOrOpenRole(role: bytes32):
+    """
+    @dev Used to limit a function to be callable only by
+         a certain role. In addition to checking the 
+         sender's role, `empty(address)` is also
+         considered. Granting a role to `empty(address)`
+         is equivalent to enabling this role for everyone.
+    @param role The 32-byte role definition.
+    """
     if (not(self.hasRole[role][empty(address)])):
         self._check_role(role, msg.sender)
+
 
 @external
 @view
@@ -174,88 +271,159 @@ def supportsInterface(interface_id: bytes4) -> bool:
     """
     return interface_id in _SUPPORTED_INTERFACES
 
-# TODO: Most helper funtions below are originally public, but Vyper doesn't support that. wat do?
 
 @external
 @view
 def isOperation(id: bytes32) -> bool:
+    """
+    @dev Returns whether an id corresponds to a registered
+         operation. This includes both Waiting, Ready, and
+         Done operations.
+    @param id The 32-byte operation identifier.
+    @return bool The verification whether the id
+            corresponds to a registered operation or not.
+    """
     return self._isOperation(id)
+
 
 @internal
 @view
 def _isOperation(id: bytes32) -> bool:
+    """
+    @dev Internal logic of `isOperation`.
+    @param id The 32-byte operation identifier.
+    @return bool The verification whether the id
+            corresponds to a registered operation or not.
+    """
     return self._getOperationState(id) != OperationState.Unset
+
 
 @external
 @view
 def isOperationPending(id: bytes32) -> bool:
+    """
+    @dev Returns whether an operation is pending or not.
+         Note that a "pending" operation may also be
+         "ready".
+    @param id The 32-byte operation identifier.
+    @return bool The verification whether the operation
+            is pending or not.
+    """
     return self._isOperationPending(id)
+
 
 @internal
 @view
 def _isOperationPending(id: bytes32) -> bool:
+    """
+    @dev Internal logic of `isOperationPending`.
+    @param id The 32-byte operation identifier.
+    @return bool The verification whether the operation
+            is pending or not.
+    """
     state: OperationState = self._getOperationState(id)
     return state == OperationState.Waiting or state == OperationState.Ready
+
 
 @external
 @view
 def isOperationReady(id: bytes32) -> bool:
+    """
+    @dev Returns whether an operation is ready
+         for execution. Note that a "ready" 
+         operation is also "pending".
+    @param id The 32-byte operation identifier.
+    @return bool The verification whether
+            the operation is ready or not.
+    """
     return self._isOperationReady(id)
+
 
 @internal
 @view
 def _isOperationReady(id: bytes32) -> bool:
+    """
+    @dev Internal logic of `_isOperationReady`.
+    @param id The 32-byte operation identifier.
+    @return bool The verification whether
+            the operation is ready or not.
+    """
     return self._getOperationState(id) == OperationState.Ready
+
 
 @external
 @view
 def isOperationDone(id: bytes32) -> bool:
+    """
+    @dev Returns whether an operation is done
+         or not.
+    @param id The 32-byte operation identifier.
+    @return bool The verification whether
+            the operation is done or not.
+    """
     return self._isOperationDone(id)
+
 
 @internal
 @view
 def _isOperationDone(id: bytes32) -> bool:
+    """
+    @dev Internal logic of `_isOperationDone`.
+    @param id The 32-byte operation identifier.
+    @return bool The verification whether
+            the operation is done or not.
+    """
     return self._getOperationState(id) == OperationState.Done
+
 
 @external
 @view
 def getTimestamp(id: bytes32) -> uint256:
+    """
+    @dev Returns the timestamp at which an
+         operation becomes ready (0 for
+         unset operations, 1 for done
+         operations).
+    @param id The 32-byte operation identifier.
+    @return uint256 The timestamp at which
+            the operation becomes ready.
+    """
     return self._getTimestamp(id)
+
 
 @internal
 @view
 def _getTimestamp(id: bytes32) -> uint256:
+    """
+    @dev Internal logic of `_getTimestamp`.
+    @param id The 32-byte operation identifier.
+    @return uint256 The timestamp at which
+            the operation becomes ready.
+    """
     return self._timestamps[id]
 
-@external
-@pure
-def hashOperation(target: address, x: uint256, data: Bytes[1_024], predecessor: bytes32, salt: bytes32) -> bytes32:
-    return self._hashOperation(target, x, data, predecessor, salt)
-
-@internal
-@pure
-def _hashOperation(target: address, x: uint256, data: Bytes[1_024], predecessor: bytes32, salt: bytes32) -> bytes32:
-    value: uint256 = x
-    return keccak256(_abi_encode(target, value, data, predecessor, salt))
-
-@external
-@pure
-def hashOperationBatch(targets: DynArray[address, 128], values: DynArray[uint256, 128], payloads: DynArray[Bytes[1_024], 128], predecessor: bytes32, salt: bytes32) -> bytes32:
-    return self._hashOperationBatch(targets, values, payloads, predecessor, salt)
-
-@internal
-@pure
-def _hashOperationBatch(targets: DynArray[address, 128], values: DynArray[uint256, 128], payloads: DynArray[Bytes[1_024], 128], predecessor: bytes32, salt: bytes32) -> bytes32:
-    return keccak256(_abi_encode(targets, values, payloads, predecessor, salt))
 
 @external
 @view
 def getOperationState(id: bytes32) -> OperationState:
+    """
+    @dev Returns the state of an operation.
+    @param id The 32-byte operation identifier.
+    @return OperationState The state of the
+            operation.
+    """
     return self._getOperationState(id)
+
 
 @internal
 @view
 def _getOperationState(id: bytes32) -> OperationState:
+    """
+    @dev Internal logic of `_getOperationState`.
+    @param id The 32-byte operation identifier.
+    @return OperationState The state of the
+            operation.
+    """
     timestamp: uint256 = self._getTimestamp(id)
     if (timestamp == 0):
         return OperationState.Unset
@@ -266,13 +434,111 @@ def _getOperationState(id: bytes32) -> OperationState:
     else:
         return OperationState.Ready
 
+
 @external
 @view
 def getMinDelay() -> uint256:
+    """
+    @dev Returns the minimum delay in seconds
+         for an operation to become valid.
+         This value can be changed by executing
+         an operation that calls `updateDelay`. 
+    @return uint256 The minimum delay required
+            to schedule a proposal.
+    """
     return self._minDelay
+
+
+@external
+@pure
+def hashOperation(target: address, x: uint256, data: Bytes[1_024], predecessor: bytes32, salt: bytes32) -> bytes32:
+    """
+    @dev Returns the identifier of an operation
+         containing a single transaction.
+    @param target The address of the target contract.
+    @param x The amount of native token to send
+           with the call.
+    @param data The ABI-encoded call data.
+    @param predecessor The hash of the preceding
+           operation (optional with empty bytes).
+    @param salt The salt of the operation.
+    @return bytes32 The hash of the operation.
+    """
+    return self._hashOperation(target, x, data, predecessor, salt)
+
+
+@internal
+@pure
+def _hashOperation(target: address, x: uint256, data: Bytes[1_024], predecessor: bytes32, salt: bytes32) -> bytes32:
+    """
+    @dev Internal logic of `hashOperation`.
+    @param target The address of the target contract.
+    @param x The amount of native token to send
+           with the call.
+    @param data The ABI-encoded call data.
+    @param predecessor The hash of the preceding
+           operation (optional with empty bytes).
+    @param salt The salt of the operation.
+    @return bytes32 The hash of the operation.
+    """
+    value: uint256 = x
+    return keccak256(_abi_encode(target, value, data, predecessor, salt))
+
+
+@external
+@pure
+def hashOperationBatch(targets: DynArray[address, 128], values: DynArray[uint256, 128], payloads: DynArray[Bytes[1_024], 128], predecessor: bytes32, salt: bytes32) -> bytes32:
+    """
+    @dev Returns the identifier of an operation
+         containing a batch of transactions.
+    @param targets The address of the targets contract.
+    @param values The amounts of native token to send
+           with each call.
+    @param payloads The ABI-encoded calls data.
+    @param predecessor The hash of the preceding
+           operation (optional with empty bytes).
+    @param salt The salt of the operation.
+    @return bytes32 The hash of the operation.
+    """
+    return self._hashOperationBatch(targets, values, payloads, predecessor, salt)
+
+
+@internal
+@pure
+def _hashOperationBatch(targets: DynArray[address, 128], values: DynArray[uint256, 128], payloads: DynArray[Bytes[1_024], 128], predecessor: bytes32, salt: bytes32) -> bytes32:
+    """
+    @dev Internal logic of `hashOperationBatch`.
+    @param targets The address of the targets contract.
+    @param values The amounts of native token to send
+           with each call.
+    @param payloads The ABI-encoded calls data.
+    @param predecessor The hash of the preceding
+           operation (optional with empty bytes).
+    @param salt The salt of the operation.
+    @return bytes32 The hash of the operation.
+    """
+    return keccak256(_abi_encode(targets, values, payloads, predecessor, salt))
+
 
 @external
 def schedule(target: address, x: uint256, data: Bytes[1_024], predecessor: bytes32, salt: bytes32, delay: uint256):
+    """
+    @dev Schedule an operation containing a single
+         transaction. Emits `CallSalt` if salt is
+        nonzero, and `CallScheduled`.
+    @param target The address of the target contract.
+    @param x The amount of native token to send
+           with the call.
+    @param data The ABI-encoded call data.
+    @param predecessor The hash of the preceding
+           operation.
+    @param salt The salt of the operation.
+    @param delay The delay before the operation
+           becomes valid. Must be greater than or
+           equal to the minimum delay.
+    @notice Requires the caller to have the 
+            `proposer` role.
+    """
     self._check_role(PROPOSER_ROLE, msg.sender)
     value: uint256 = x
     id: bytes32 = self._hashOperation(target, value, data, predecessor, salt)
@@ -281,8 +547,27 @@ def schedule(target: address, x: uint256, data: Bytes[1_024], predecessor: bytes
     if (salt != empty(bytes32)):
         log CallSalt(id, salt)
 
+
 @external
 def scheduleBatch(targets: DynArray[address, 128], values: DynArray[uint256, 128], payloads: DynArray[Bytes[1_024], 128], predecessor: bytes32, salt: bytes32, delay: uint256):
+    """
+    @dev Schedule an operation containing a batch
+         of transactions. Emits `CallSalt` if salt
+         is nonzero, and one `CallScheduled` event
+         per transaction in the batch.
+    @param targets The address of the target contracts.
+    @param values The amounts of native token to send
+           with the call.
+    @param payloads The ABI-encoded calls data.
+    @param predecessor The hash of the preceding
+           operation.
+    @param salt The salt of the operation.
+    @param delay The delay before the operation
+           becomes valid. Must be greater than or
+           equal to the minimum delay.
+    @notice Requires the caller to have the 
+            `proposer` role.
+    """
     self._check_role(PROPOSER_ROLE, msg.sender)
     assert len(targets) == len(values) and len(targets) == len(payloads), "TimelockController: invalid operation length"
     id: bytes32 = self._hashOperationBatch(targets, values, payloads, predecessor, salt)
@@ -296,21 +581,55 @@ def scheduleBatch(targets: DynArray[address, 128], values: DynArray[uint256, 128
     if (salt != empty(bytes32)):
         log CallSalt(id, salt)
 
+
 @internal
 def _schedule(id: bytes32, delay: uint256):
+    """
+    @dev Schedule an operation that is to become
+         valid after a given delay.
+    @param id The 32-byte operation identifier.
+    @param delay The delay before the operation
+           becomes valid. Must be greater than or
+           equal to the minimum delay.
+    """
     assert not(self._isOperation(id)), "TimelockController: operation already scheduled"
     assert delay >= self._minDelay, "TimelockController: insufficient delay"
     self._timestamps[id] = block.timestamp + delay
 
+
 @external
 def cancel(id: bytes32):
+    """
+    @dev Cancel an operation.
+    @notice Requires the caller to have the 
+            `canceller` role.
+    @param id The 32-byte operation identifier.
+    """
     self._check_role(CANCELLER_ROLE, msg.sender)
     assert self._isOperationPending(id), "TimelockController: operation cannot be cancelled"
     self._timestamps[id] = 0
     log Cancelled(id)
 
+
 @external
 def execute(target: address, x: uint256, payload: Bytes[1_024], predecessor: bytes32, salt: bytes32):
+    """
+    @dev Execute an (ready) operation
+         containing a single transaction.
+         Emits a `CallExecuted` event.
+    @param target The address of the target contract.
+    @param x The amount of native token to send
+           with the call.
+    @param payload The ABI-encoded call data.
+    @param predecessor The hash of the preceding
+           operation.
+    @param salt The salt of the operation.
+    @notice Requires the caller to have the `executor` role.
+            This function can reenter, but it doesn't pose
+            a risk because `_afterCall` checks that the
+            proposal is pending, thus any modifications to
+            the operation during reentrancy should be caught.
+    """
     self._onlyRoleOrOpenRole(EXECUTOR_ROLE)
     value: uint256 = x
     id: bytes32 = self._hashOperation(target, value, payload, predecessor, salt)
@@ -320,8 +639,27 @@ def execute(target: address, x: uint256, payload: Bytes[1_024], predecessor: byt
     log CallExecuted(id, 0, target, value, payload)
     self._afterCall(id)
 
+
 @external
 def executeBatch(targets: DynArray[address, 128], values: DynArray[uint256, 128], payloads: DynArray[Bytes[1_024], 128], predecessor: bytes32, salt: bytes32):
+    """
+    @dev Execute an (ready) operation
+         containing a batch of transactions.
+         Emits one `CallExecuted` event per
+         transaction in the batch.
+    @param targets The address of the target contracts.
+    @param values The amounts of native token to send
+           with the call.
+    @param payloads The ABI-encoded calls data.
+    @param predecessor The hash of the preceding
+           operation.
+    @param salt The salt of the operation.
+    @notice Requires the caller to have the `executor` role.
+            This function can reenter, but it doesn't pose
+            a risk because `_afterCall` checks that the
+            proposal is pending, thus any modifications to
+            the operation during reentrancy should be caught.
+    """
     self._onlyRoleOrOpenRole(EXECUTOR_ROLE)
     assert len(targets) == len(values) and len(targets) == len(payloads), "TimelockController: invalid operation length"
     id: bytes32 = self._hashOperationBatch(targets, values, payloads, predecessor, salt)
@@ -336,30 +674,62 @@ def executeBatch(targets: DynArray[address, 128], values: DynArray[uint256, 128]
         idx = unsafe_add(idx, 1)
     self._afterCall(id)
 
+
 @internal
 def _execute(target: address, x: uint256, payload: Bytes[1_024]):
+    """
+    @dev Execute an operation's call.
+    @param target The address of the target contract.
+    @param x The amount of native token to send
+           with the call.
+    @param payload The ABI-encoded call data.
+    """
     value: uint256 = x
     return_data: Bytes[max_value(uint8)] = b""
     success: bool = empty(bool)
     success, return_data = raw_call(target, payload, max_outsize=255, revert_on_failure=False)
     assert success, "TimelockController: underlying transaction reverted"
 
+
 @internal
 @view
 def _beforeCall(id: bytes32, predecessor: bytes32):
+    """
+    @dev Checks before execution of an operation's calls.
+    @param id The 32-byte operation identifier.
+    @param predecessor The hash of the preceding
+           operation.
+    """
     assert self._isOperationReady(id), "TimelockController: operation is not ready"
     assert predecessor == empty(bytes32) or self._isOperationDone(predecessor), "TimelockController: predecessor operation is not done"
 
+
 @internal
 def _afterCall(id: bytes32):
+    """
+    @dev Checks after execution of an operation's calls.
+    @param id The 32-byte operation identifier.
+    """
     assert self._isOperationReady(id), "TimelockController: operation is not ready"
     self._timestamps[id] = _DONE_TIMESTAMP
 
+
 @external
 def updateDelay(newDelay: uint256):
+    """
+    @dev Changes the minimum timelock duration for future
+         operations. Emits a `MinDelayChange` event.
+    @param newDelay The new minimum delay in seconds.
+    @notice Requires the caller to be the timelock itself.
+            This can only be achieved by scheduling and
+            later executing an operation where the timelock
+            is the target and the data is the ABI-encoded
+            call to this function.
+    """
     assert msg.sender == self, "TimelockController: unauthorized"
     log MinDelayChange(self._minDelay, newDelay)
     self._minDelay = newDelay
+
 
 @external
 def grantRole(role: bytes32, account: address):

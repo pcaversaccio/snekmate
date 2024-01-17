@@ -194,7 +194,8 @@ contract TimelockControllerTest is Test {
     }
 
     function _scheduleBatchedOperation()
-        internal view
+        internal
+        view
         returns (address[] memory targets, uint256[] memory values, bytes[] memory payloads)
     {
         targets = new address[](calls.length);
