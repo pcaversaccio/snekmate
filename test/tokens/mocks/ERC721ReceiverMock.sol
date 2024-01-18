@@ -21,7 +21,6 @@ contract ERC721ReceiverMock is IERC721Receiver {
         Panic
     }
     // solhint-disable-next-line var-name-mixedcase
-
     Error private immutable _ERROR;
 
     event Received(address operator, address from, uint256 tokenId, bytes data);

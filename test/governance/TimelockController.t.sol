@@ -925,7 +925,7 @@ contract TimelockControllerTest is Test {
 
         vm.prank(PROPOSER_ONE);
 
-        // Schedule batch executon
+        // Schedule batch execution
         timelockController.scheduleBatch(
             targets,
             values,

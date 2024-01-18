@@ -118,18 +118,18 @@ event RoleRevoked:
 
 
 # @dev Proposer 32-byte role.
-# @notice Responsable for proposing operations.
+# @notice Responsible for proposing operations.
 PROPOSER_ROLE: public(constant(bytes32)) = keccak256("PROPOSER_ROLE")
 
 
 # @dev Executor 32-byte role.
-# @notice Responsable for executing scheduled
+# @notice Responsible for executing scheduled
 # proposals.
 EXECUTOR_ROLE: public(constant(bytes32)) = keccak256("EXECUTOR_ROLE")
 
 
 # @dev Canceller 32-byte role.
-# @notice Responsable for cancelling proposals.
+# @notice Responsible for cancelling proposals.
 CANCELLER_ROLE: public(constant(bytes32)) = keccak256("CANCELLER_ROLE")
 
 
