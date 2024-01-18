@@ -16,7 +16,9 @@ contract Ownable2StepTest is Test {
     address private zeroAddress = address(0);
 
     function setUp() public {
-        ownable2Step = IOwnable2Step(vyperDeployer.deployContract("src/auth/", "Ownable2Step"));
+        ownable2Step = IOwnable2Step(
+            vyperDeployer.deployContract("src/auth/", "Ownable2Step")
+        );
     }
 
     function testInitialSetup() public {
@@ -25,7 +27,9 @@ contract Ownable2StepTest is Test {
 
         vm.expectEmit(true, true, false, false);
         emit IOwnable2Step.OwnershipTransferred(zeroAddress, deployer);
-        ownable2StepInitialEvent = IOwnable2Step(vyperDeployer.deployContract("src/auth/", "Ownable2Step"));
+        ownable2StepInitialEvent = IOwnable2Step(
+            vyperDeployer.deployContract("src/auth/", "Ownable2Step")
+        );
         assertEq(ownable2StepInitialEvent.owner(), deployer);
         assertEq(ownable2StepInitialEvent.pending_owner(), zeroAddress);
     }
@@ -126,7 +130,10 @@ contract Ownable2StepTest is Test {
         vm.stopPrank();
     }
 
-    function testFuzzTransferOwnershipSuccess(address newOwner1, address newOwner2) public {
+    function testFuzzTransferOwnershipSuccess(
+        address newOwner1,
+        address newOwner2
+    ) public {
         vm.assume(newOwner1 != zeroAddress && newOwner2 != zeroAddress);
         address oldOwner = deployer;
         vm.startPrank(oldOwner);
@@ -145,14 +152,20 @@ contract Ownable2StepTest is Test {
         vm.stopPrank();
     }
 
-    function testFuzzTransferOwnershipNonOwner(address nonOwner, address newOwner) public {
+    function testFuzzTransferOwnershipNonOwner(
+        address nonOwner,
+        address newOwner
+    ) public {
         vm.assume(nonOwner != deployer);
         vm.prank(nonOwner);
         vm.expectRevert(bytes("Ownable2Step: caller is not the owner"));
         ownable2Step.transfer_ownership(newOwner);
     }
 
-    function testFuzzAcceptOwnershipSuccess(address newOwner1, address newOwner2) public {
+    function testFuzzAcceptOwnershipSuccess(
+        address newOwner1,
+        address newOwner2
+    ) public {
         vm.assume(newOwner1 != zeroAddress && newOwner2 != zeroAddress);
         address oldOwner = deployer;
         vm.startPrank(oldOwner);
@@ -236,7 +249,9 @@ contract Ownable2StepTest is Test {
         ownable2Step.renounce_ownership();
     }
 
-    function testFuzzPendingOwnerResetAfterRenounceOwnership(address newOwner) public {
+    function testFuzzPendingOwnerResetAfterRenounceOwnership(
+        address newOwner
+    ) public {
         vm.assume(newOwner != zeroAddress);
         address oldOwner = deployer;
         vm.startPrank(oldOwner);
@@ -269,8 +284,14 @@ contract Ownable2StepInvariants is Test {
     address private zeroAddress = address(0);
 
     function setUp() public {
-        ownable2Step = IOwnable2Step(vyperDeployer.deployContract("src/auth/", "Ownable2Step"));
-        owner2StepHandler = new Owner2StepHandler(ownable2Step, deployer, zeroAddress);
+        ownable2Step = IOwnable2Step(
+            vyperDeployer.deployContract("src/auth/", "Ownable2Step")
+        );
+        owner2StepHandler = new Owner2StepHandler(
+            ownable2Step,
+            deployer,
+            zeroAddress
+        );
         targetContract(address(owner2StepHandler));
     }
 
@@ -279,7 +300,10 @@ contract Ownable2StepInvariants is Test {
     }
 
     function invariantPendingOwner() public {
-        assertEq(ownable2Step.pending_owner(), owner2StepHandler.pending_owner());
+        assertEq(
+            ownable2Step.pending_owner(),
+            owner2StepHandler.pending_owner()
+        );
     }
 }
 

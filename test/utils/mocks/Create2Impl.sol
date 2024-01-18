@@ -30,7 +30,10 @@ contract Create2Impl {
      * @param codeHash The 32-byte bytecode digest of the contract creation bytecode.
      * @return address The 20-byte address where a contract will be stored.
      */
-    function computeAddress(bytes32 salt, bytes32 codeHash) public view returns (address) {
+    function computeAddress(
+        bytes32 salt,
+        bytes32 codeHash
+    ) public view returns (address) {
         return Create2.computeAddress(salt, codeHash);
     }
 
@@ -43,11 +46,11 @@ contract Create2Impl {
      * @param deployer The 20-byte deployer address.
      * @return address The 20-byte address where a contract will be stored.
      */
-    function computeAddressWithDeployer(bytes32 salt, bytes32 codeHash, address deployer)
-        public
-        pure
-        returns (address)
-    {
+    function computeAddressWithDeployer(
+        bytes32 salt,
+        bytes32 codeHash,
+        address deployer
+    ) public pure returns (address) {
         return Create2.computeAddress(salt, codeHash, deployer);
     }
 

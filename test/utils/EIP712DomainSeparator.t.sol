@@ -10,9 +10,17 @@ contract EIP712DomainSeparatorTest is Test {
     string private constant _NAME = "WAGMI";
     string private constant _VERSION = "1";
     bytes32 private constant _TYPE_HASH =
-        keccak256(bytes("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)"));
+        keccak256(
+            bytes(
+                "EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)"
+            )
+        );
     bytes32 private constant _PERMIT_TYPE_HASH =
-        keccak256(bytes("Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)"));
+        keccak256(
+            bytes(
+                "Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)"
+            )
+        );
 
     VyperDeployer private vyperDeployer = new VyperDeployer();
 
@@ -26,8 +34,13 @@ contract EIP712DomainSeparatorTest is Test {
 
     function setUp() public {
         bytes memory args = abi.encode(_NAME, _VERSION);
-        EIP712domainSeparator =
-            IEIP712DomainSeparator(vyperDeployer.deployContract("src/utils/", "EIP712DomainSeparator", args));
+        EIP712domainSeparator = IEIP712DomainSeparator(
+            vyperDeployer.deployContract(
+                "src/utils/",
+                "EIP712DomainSeparator",
+                args
+            )
+        );
         EIP712domainSeparatorAddr = address(EIP712domainSeparator);
         _CACHED_DOMAIN_SEPARATOR = keccak256(
             abi.encode(
@@ -41,7 +54,10 @@ contract EIP712DomainSeparatorTest is Test {
     }
 
     function testCachedDomainSeparatorV4() public {
-        assertEq(EIP712domainSeparator.domain_separator_v4(), _CACHED_DOMAIN_SEPARATOR);
+        assertEq(
+            EIP712domainSeparator.domain_separator_v4(),
+            _CACHED_DOMAIN_SEPARATOR
+        );
     }
 
     function testDomainSeparatorV4() public {
@@ -69,10 +85,24 @@ contract EIP712DomainSeparatorTest is Test {
         uint256 nonce = 1;
         // solhint-disable-next-line not-rely-on-time
         uint256 deadline = block.timestamp + 100_000;
-        bytes32 structHash = keccak256(abi.encode(_PERMIT_TYPE_HASH, owner, spender, value, nonce, deadline));
+        bytes32 structHash = keccak256(
+            abi.encode(
+                _PERMIT_TYPE_HASH,
+                owner,
+                spender,
+                value,
+                nonce,
+                deadline
+            )
+        );
         bytes32 digest1 = EIP712domainSeparator.hash_typed_data_v4(structHash);
-        bytes32 digest2 =
-            keccak256(abi.encodePacked("\x19\x01", EIP712domainSeparator.domain_separator_v4(), structHash));
+        bytes32 digest2 = keccak256(
+            abi.encodePacked(
+                "\x19\x01",
+                EIP712domainSeparator.domain_separator_v4(),
+                structHash
+            )
+        );
         assertEq(digest1, digest2);
     }
 
@@ -95,7 +125,13 @@ contract EIP712DomainSeparatorTest is Test {
         assertEq(extensions, new uint256[](0));
 
         bytes32 digest = keccak256(
-            abi.encode(_TYPE_HASH, keccak256(bytes(name)), keccak256(bytes(version)), chainId, verifyingContract)
+            abi.encode(
+                _TYPE_HASH,
+                keccak256(bytes(name)),
+                keccak256(bytes(version)),
+                chainId,
+                verifyingContract
+            )
         );
         assertEq(EIP712domainSeparator.domain_separator_v4(), digest);
     }
@@ -118,15 +154,33 @@ contract EIP712DomainSeparatorTest is Test {
         assertEq(EIP712domainSeparator.domain_separator_v4(), digest);
     }
 
-    function testFuzzHashTypedDataV4(address owner, address spender, uint256 value, uint256 nonce, uint64 increment)
-        public
-    {
+    function testFuzzHashTypedDataV4(
+        address owner,
+        address spender,
+        uint256 value,
+        uint256 nonce,
+        uint64 increment
+    ) public {
         // solhint-disable-next-line not-rely-on-time
         uint256 deadline = block.timestamp + increment;
-        bytes32 structHash = keccak256(abi.encode(_PERMIT_TYPE_HASH, owner, spender, value, nonce, deadline));
+        bytes32 structHash = keccak256(
+            abi.encode(
+                _PERMIT_TYPE_HASH,
+                owner,
+                spender,
+                value,
+                nonce,
+                deadline
+            )
+        );
         bytes32 digest1 = EIP712domainSeparator.hash_typed_data_v4(structHash);
-        bytes32 digest2 =
-            keccak256(abi.encodePacked("\x19\x01", EIP712domainSeparator.domain_separator_v4(), structHash));
+        bytes32 digest2 = keccak256(
+            abi.encodePacked(
+                "\x19\x01",
+                EIP712domainSeparator.domain_separator_v4(),
+                structHash
+            )
+        );
         assertEq(digest1, digest2);
     }
 
@@ -136,7 +190,11 @@ contract EIP712DomainSeparatorTest is Test {
         bytes32 randomSalt,
         uint256[] calldata randomExtensions
     ) public {
-        vm.assume(randomHex != hex"0f" && randomSalt != bytes32(0) && randomExtensions.length != 0);
+        vm.assume(
+            randomHex != hex"0f" &&
+                randomSalt != bytes32(0) &&
+                randomExtensions.length != 0
+        );
         vm.chainId(block.chainid + increment);
         (
             bytes1 fields,
@@ -153,10 +211,19 @@ contract EIP712DomainSeparatorTest is Test {
         assertEq(chainId, block.chainid);
         assertEq(verifyingContract, EIP712domainSeparatorAddr);
         assertTrue(salt != randomSalt);
-        assertTrue(keccak256(abi.encode(extensions)) != keccak256(abi.encode(randomExtensions)));
+        assertTrue(
+            keccak256(abi.encode(extensions)) !=
+                keccak256(abi.encode(randomExtensions))
+        );
 
         bytes32 digest = keccak256(
-            abi.encode(_TYPE_HASH, keccak256(bytes(name)), keccak256(bytes(version)), chainId, verifyingContract)
+            abi.encode(
+                _TYPE_HASH,
+                keccak256(bytes(name)),
+                keccak256(bytes(version)),
+                chainId,
+                verifyingContract
+            )
         );
         assertEq(EIP712domainSeparator.domain_separator_v4(), digest);
     }

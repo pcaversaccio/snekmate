@@ -41,11 +41,12 @@ contract ERC721ReceiverMock is IERC721Receiver {
      * to this smart contract.
      * @return bytes4 The 4-byte return identifier.
      */
-    function onERC721Received(address operator, address from, uint256 tokenId, bytes memory data)
-        public
-        override
-        returns (bytes4)
-    {
+    function onERC721Received(
+        address operator,
+        address from,
+        uint256 tokenId,
+        bytes memory data
+    ) public override returns (bytes4) {
         if (_ERROR == Error.RevertWithMessage) {
             // solhint-disable-next-line custom-errors
             revert("ERC721ReceiverMock: reverting");

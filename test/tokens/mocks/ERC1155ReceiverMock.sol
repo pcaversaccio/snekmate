@@ -18,11 +18,28 @@ contract ERC1155ReceiverMock is ERC165, IERC1155Receiver {
     bytes4 private batRetval;
     bool private batReverts;
 
-    event Received(address indexed operator, address indexed from, uint256 id, uint256 amount, bytes data);
+    event Received(
+        address indexed operator,
+        address indexed from,
+        uint256 id,
+        uint256 amount,
+        bytes data
+    );
 
-    event BatchReceived(address indexed operator, address indexed from, uint256[] ids, uint256[] amounts, bytes data);
+    event BatchReceived(
+        address indexed operator,
+        address indexed from,
+        uint256[] ids,
+        uint256[] amounts,
+        bytes data
+    );
 
-    constructor(bytes4 recRetval_, bool recReverts_, bytes4 batRetval_, bool batReverts_) {
+    constructor(
+        bytes4 recRetval_,
+        bool recReverts_,
+        bytes4 batRetval_,
+        bool batReverts_
+    ) {
         recRetval = recRetval_;
         recReverts = recReverts_;
         batRetval = batRetval_;
@@ -42,10 +59,13 @@ contract ERC1155ReceiverMock is ERC165, IERC1155Receiver {
      * to this smart contract.
      * @return bytes4 The 4-byte return identifier.
      */
-    function onERC1155Received(address operator, address from, uint256 id, uint256 amount, bytes memory data)
-        external
-        returns (bytes4)
-    {
+    function onERC1155Received(
+        address operator,
+        address from,
+        uint256 id,
+        uint256 amount,
+        bytes memory data
+    ) external returns (bytes4) {
         // solhint-disable-next-line reason-string, custom-errors
         require(!recReverts, "ERC1155ReceiverMock: reverting on receive");
         emit Received(operator, from, id, amount, data);

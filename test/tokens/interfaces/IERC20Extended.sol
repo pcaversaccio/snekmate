@@ -6,7 +6,10 @@ import {IERC20Permit} from "openzeppelin/token/ERC20/extensions/IERC20Permit.sol
 import {IERC5267} from "openzeppelin/interfaces/IERC5267.sol";
 
 interface IERC20Extended is IERC20Metadata, IERC20Permit, IERC5267 {
-    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
+    event OwnershipTransferred(
+        address indexed previousOwner,
+        address indexed newOwner
+    );
 
     event RoleMinterChanged(address indexed minter, bool status);
 

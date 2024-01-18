@@ -7,8 +7,17 @@ import {IERC5267} from "openzeppelin/interfaces/IERC5267.sol";
 import {IERC4906} from "openzeppelin/interfaces/IERC4906.sol";
 import {IERC4494} from "./IERC4494.sol";
 
-interface IERC721Extended is IERC721Metadata, IERC721Enumerable, IERC4494, IERC5267, IERC4906 {
-    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
+interface IERC721Extended is
+    IERC721Metadata,
+    IERC721Enumerable,
+    IERC4494,
+    IERC5267,
+    IERC4906
+{
+    event OwnershipTransferred(
+        address indexed previousOwner,
+        address indexed newOwner
+    );
 
     event RoleMinterChanged(address indexed minter, bool status);
 
