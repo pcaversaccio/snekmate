@@ -1,6 +1,6 @@
 # pragma version ^0.3.10
 """
-@title Owner-Based Timelock Controller
+@title Multi-Role-Based Timelock Controller Reference Implementation
 @custom:contract-name TimelockController
 @license GNU Affero General Public License v3.0 only
 @author cairoeth
