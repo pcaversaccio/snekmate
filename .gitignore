@@ -58,5 +58,5 @@ venv
 dist
 *.egg-info
 
-# Vyper build files
+# Ape build files
 .build
