@@ -235,13 +235,13 @@ event RoleRevoked:
 def __init__(minimum_delay_: uint256, proposers_: DynArray[address, 128], executors_: DynArray[address, 128], admin_: address):
     """
     @dev Initialises the contract with the following parameters:
-         - `minimum_delay_`: The initial minimum delay in seconds
-            for operations,
-         - `proposers_`: The accounts to be granted proposer and
-            canceller roles,
-         - `executors_`: The accounts to be granted executor role,
-         - `admin_`: The optional account to be granted admin role
-            (disable with the zero address).
+           - `minimum_delay_`: The initial minimum delay in seconds
+              for operations,
+           - `proposers_`: The accounts to be granted proposer and
+              canceller roles,
+           - `executors_`: The accounts to be granted executor role,
+           - `admin_`: The optional account to be granted admin role
+              (disable with the zero address).
 
          IMPORTANT: The optional admin can aid with initial
          configuration of roles after deployment without being
