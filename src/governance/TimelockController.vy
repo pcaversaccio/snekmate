@@ -8,29 +8,31 @@
 @notice This module enables the timelocking of operations by scheduling
         and executing transactions. By leveraging `AccessControl`, the
         `TimelockController` contract introduces three roles:
-            1. proposer (`PROPOSER_ROLE`),
-            2. executor (`EXECUTOR_ROLE`), and
-            3. canceller (`CANCELLER_ROLE`).
-        The proposer role is responsible for proposing operations, the executor
-        role is responsible for executing scheduled proposals, and the canceller
-        is responsible for cancelling proposals. This contract is self-administered
-        by default (unless an optional admin account is granted at construction),
-        meaning administration tasks (e.g. grant or revoke roles) have to go through
-        the timelock process. At contract creation time, proposers are granted
-        the proposer and canceller roles.
+          1. proposer (`PROPOSER_ROLE`),
+          2. executor (`EXECUTOR_ROLE`), and
+          3. canceller (`CANCELLER_ROLE`).
+        The proposer role is responsible for proposing operations, the
+        executor role is responsible for executing scheduled proposal(s),
+        and the canceller is responsible for cancelling proposal(s). This
+        contract is self-administered by default (unless an optional admin
+        account is granted at construction), meaning administration tasks
+        (e.g. grant or revoke roles) have to go through the timelock process.
+        At contract creation time, proposers are granted the proposer and
+        canceller roles.
 
-        The proposals must be scheduled with a delay that is greater than or equal
-        to the minimum delay 'get_minimum_delay', which can be updated via a proposal
-        to itself and is measured in seconds. Additionally, proposals can be linked
-        to preceding proposals that must be executed before the proposal can be executed.
-        
-        Ready proposals can be executed by the executor, who is solely responsible
-        for calling the `execute` function. Eventually, the proposals can be batched
-        individually or in batches. The latter is useful for processes that have to
-        be executed in the same block.
+        The proposal(s) must be scheduled with a delay that is greater
+        than or equal to the minimum delay `get_minimum_delay`, which can
+        be updated via a proposal to itself and is measured in seconds.
+        Additionally, proposal(s) can be linked to preceding proposal(s)
+        that must be executed before the proposal can be executed.
 
-        Please note that the `TimelockController` contract is able to receive and
-        transfer ERC-721 and ERC-1155 tokens.
+        Ready proposal(s) can be executed by the executor, who is solely
+        responsible for calling the `execute` function. Eventually, the
+        proposal(s) can be batched individually or in batches. The latter
+        is useful for processes that have to be executed in the same block.
+
+        Please note that the `TimelockController` contract is able to receive
+        and transfer ERC-721 and ERC-1155 tokens.
 
         The implementation is inspired by OpenZeppelin's implementation here:
         https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/governance/TimelockController.sol.
@@ -158,7 +160,7 @@ event CallScheduled:
     id: indexed(bytes32)
     index: indexed(uint256)
     target: address
-    value: uint256
+    amount: uint256
     data: Bytes[1_024]
     predecessor: bytes32
     delay: uint256
@@ -172,7 +174,7 @@ event CallExecuted:
     id: indexed(bytes32)
     index: indexed(uint256)
     target: address
-    value: uint256
+    amount: uint256
     data: Bytes[1_024]
 
 
@@ -425,6 +427,7 @@ def schedule(target: address, amount: uint256, payload: Bytes[1_024], predecesso
     """
     self._check_role(PROPOSER_ROLE, msg.sender)
     id: bytes32 = self._hash_operation(target, amount, payload, predecessor, salt)
+
     self._schedule(id, delay)
     log CallScheduled(id, empty(uint256), target, amount, payload, predecessor, delay)
     if (salt != empty(bytes32)):
@@ -453,6 +456,7 @@ def schedule_batch(targets: DynArray[address, 128], amounts: DynArray[uint256, 1
     self._check_role(PROPOSER_ROLE, msg.sender)
     assert len(targets) == len(amounts) and len(targets) == len(payloads), "TimelockController: length mismatch"
     id: bytes32 = self._hash_operation_batch(targets, amounts, payloads, predecessor, salt)
+
     self._schedule(id, delay)
     idx: uint256 = empty(uint256)
     for target in targets:
@@ -608,7 +612,7 @@ def set_role_admin(role: bytes32, admin_role: bytes32):
 def onERC721Received(operator: address, owner: address, token_id: uint256, data: Bytes[1_024]) -> bytes4:
     """
     @dev Whenever a `token_id` token is transferred to
-         this contract via `safeTransferFrom` by
+         this contract via ERC-721 `safeTransferFrom` by
          `operator` from `owner`, this function is called.
     @notice It must return its function selector to
             confirm the token transfer. If any other value
@@ -667,10 +671,10 @@ def onERC1155BatchReceived(operator: address, owner: address, ids: DynArray[uint
            owned the tokens.
     @param ids The 32-byte array of token identifiers. Note
            that the order and length must match the 32-byte
-           `_values` array.
+           `amounts` array.
     @param amounts The 32-byte array of token amounts that are
            being transferred. Note that the order and length must
-           match the 32-byte `_ids` array.
+           match the 32-byte `ids` array.
     @param data The maximum 1,024-byte additional data
            with no specified format.
     @return bytes4 The 4-byte function selector of `onERC1155BatchReceived`.
