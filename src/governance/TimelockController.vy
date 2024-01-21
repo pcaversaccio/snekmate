@@ -497,9 +497,9 @@ def execute(target: address, amount: uint256, payload: Bytes[1_024], predecessor
            (optional with empty bytes).
     @param salt The 32-byte salt of the operation.
     @custom:security This function can reenter, but it doesn't pose
-            a risk because `_after_call` checks that the proposal is
-            pending, thus any modifications to the operation during
-            reentrancy are caught.
+                     a risk because `_after_call` checks that the
+                     proposal is pending, thus any modifications to
+                     the operation during reentrancy are caught.
     """
     self._only_role_or_open_role(EXECUTOR_ROLE)
     id: bytes32 = self._hash_operation(target, amount, payload, predecessor, salt)
@@ -527,9 +527,9 @@ def execute_batch(targets: DynArray[address, 128], amounts: DynArray[uint256, 12
            (optional with empty bytes).
     @param salt The 32-byte salt of the operation.
     @custom:security This function can reenter, but it doesn't pose
-            a risk because `_after_call` checks that the proposal is
-            pending, thus any modifications to the operation during
-            reentrancy are caught.
+                     a risk because `_after_call` checks that the
+                     proposal is pending, thus any modifications to
+                     the operation during reentrancy are caught.
     """
     self._only_role_or_open_role(EXECUTOR_ROLE)
     assert len(targets) == len(amounts) and len(targets) == len(payloads), "TimelockController: length mismatch"
