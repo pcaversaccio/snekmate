@@ -16,6 +16,9 @@
 
 
 # @dev Returns the address of the current owner.
+# @notice If you declare a variable as `public`,
+# Vyper automatically generates an `external`
+# getter function for the variable.
 owner: public(address)
 
 
