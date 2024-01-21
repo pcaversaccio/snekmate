@@ -63,6 +63,9 @@ implements: IAccessControl
 
 
 # @dev The default 32-byte admin role.
+# @notice If you declare a variable as `public`,
+# Vyper automatically generates an `external`
+# getter function for the variable.
 DEFAULT_ADMIN_ROLE: public(constant(bytes32)) = empty(bytes32)
 
 
@@ -93,9 +96,6 @@ _SUPPORTED_INTERFACES: constant(bytes4[2]) = [
 
 
 # @dev Returns `True` if `account` has been granted `role`.
-# @notice If you declare a variable as `public`,
-# Vyper automatically generates an `external`
-# getter function for the variable.
 hasRole: public(HashMap[bytes32, HashMap[address, bool]])
 
 
@@ -226,6 +226,7 @@ def set_role_admin(role: bytes32, admin_role: bytes32):
 
 
 @internal
+@view
 def _check_role(role: bytes32, account: address):
     """
     @dev Reverts with a standard message if `account`

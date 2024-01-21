@@ -76,6 +76,9 @@ _BASE_URI: immutable(String[80])
 
 
 # @dev Mapping from owner to operator approvals.
+# @notice If you declare a variable as `public`,
+# Vyper automatically generates an `external`
+# getter function for the variable.
 isApprovedForAll: public(HashMap[address, HashMap[address, bool]])
 
 
