@@ -17,7 +17,7 @@ interface ITimelockController {
     function execute_batch(
         address[] memory targets,
         uint256[] memory values,
-        bytes[] memory datas,
+        bytes[] memory data,
         bytes32 predecessor,
         bytes32 salt
     ) external;
@@ -39,7 +39,7 @@ interface ITimelockController {
     function hash_operation_batch(
         address[] memory targets,
         uint256[] memory values,
-        bytes[] memory datas,
+        bytes[] memory data,
         bytes32 predecessor,
         bytes32 salt
     ) external pure returns (bytes32 hash);
@@ -60,7 +60,7 @@ interface ITimelockController {
     function schedule_batch(
         address[] memory targets,
         uint256[] memory values,
-        bytes[] memory datas,
+        bytes[] memory data,
         bytes32 predecessor,
         bytes32 salt,
         uint256 delay
