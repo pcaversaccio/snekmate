@@ -27,9 +27,10 @@
         that must be executed before the proposal can be executed.
 
         Ready proposal(s) can be executed by the executor, who is solely
-        responsible for calling the `execute` function. Eventually, the
-        proposal(s) can be batched individually or in batches. The latter
-        is useful for processes that have to be executed in the same block.
+        responsible for calling the `execute` or `execute_batch` functions.
+        Eventually, the proposal(s) can be batched individually or in batches.
+        The latter is useful for processes that have to be executed in the
+        same block.
 
         Please note that the `TimelockController` contract is able to receive
         and transfer ERC-721 and ERC-1155 tokens.
@@ -104,6 +105,10 @@ IERC1155_TOKENRECEIVER_BATCH_SELECTOR:  public(constant(bytes4)) = 0xBC197C81
 # imported interface. The ERC-165 interface identifier
 # is defined as the XOR of all function selectors in the
 # interface.
+# @notice Note that the ERC-165 interface identifier for
+# the `ERC721TokenReceiver` interface is not included as
+# it is not required by the EIP:
+# https://eips.ethereum.org/EIPS/eip-721#specification.
 _SUPPORTED_INTERFACES: constant(bytes4[3]) = [
     0x01FFC9A7, # The ERC-165 identifier for ERC-165.
     0x7965DB0B, # The ERC-165 identifier for `IAccessControl`.
@@ -828,7 +833,7 @@ def _execute(target: address, amount: uint256, payload: Bytes[1_024]):
     success, return_data = raw_call(target, payload, max_outsize=255, value=amount, revert_on_failure=False)
     if (not(success)):
         if len(return_data) != empty(uint256):
-            # We bubble up the revert reason.
+            # Bubble up the revert reason.
             raw_revert(return_data)
         else:
             raise "TimelockController: underlying transaction reverted"
