@@ -1741,6 +1741,51 @@ contract TimelockControllerTest is Test {
         );
         assertEq(operationTimestamp, DONE_TIMESTAMP);
     }
+
+    function testProposeValueProposal() public {
+        address target = address(counter);
+        uint256 value = 1 wei;
+        bytes memory payload = abi.encodeWithSelector(
+            Counter.increment.selector
+        );
+
+        // Transfer to TimelockController
+        payable(address(timelockController)).transfer(value);
+
+        vm.prank(PROPOSER_ONE);
+        timelockController.schedule(
+            target,
+            value,
+            payload,
+            NO_PREDECESSOR,
+            EMPTY_SALT,
+            MIN_DELAY
+        );
+
+        vm.warp(block.timestamp + MIN_DELAY);
+        vm.prank(EXECUTOR_ONE);
+        timelockController.execute(
+            target,
+            value,
+            payload,
+            NO_PREDECESSOR,
+            EMPTY_SALT
+        );
+
+        bytes32 operationID = timelockController.hash_operation(
+            target,
+            value,
+            payload,
+            NO_PREDECESSOR,
+            EMPTY_SALT
+        );
+
+        uint256 operationTimestamp = timelockController.get_timestamp(
+            operationID
+        );
+        assertEq(operationTimestamp, DONE_TIMESTAMP);
+        assertEq(address(counter).balance, value);
+    }
 }
 
 contract Counter {
@@ -1751,21 +1796,21 @@ contract Counter {
         timelock = _timelock;
     }
 
-    function setNumber(uint256 newNumber) public onlyTimelock {
-        number = newNumber;
-    }
-
-    function increment() public onlyTimelock {
-        number++;
-    }
-
-    function mockRevert() public pure {
-        revert("Transaction reverted");
-    }
-
     modifier onlyTimelock() {
         require(msg.sender == timelock, "Not timelock controller");
         _;
+    }
+
+    function setNumber(uint256 newNumber) external onlyTimelock {
+        number = newNumber;
+    }
+
+    function increment() external payable onlyTimelock {
+        number++;
+    }
+
+    function mockRevert() external pure {
+        revert("Transaction reverted");
     }
 }
 

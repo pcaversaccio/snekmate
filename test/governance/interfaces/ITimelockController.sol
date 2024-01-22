@@ -29,6 +29,13 @@ interface ITimelockController {
         bytes32 role,
         address account
     ) external view returns (bool);
+    function hash_operation(
+        address target,
+        uint256 value,
+        bytes memory data,
+        bytes32 predecessor,
+        bytes32 salt
+    ) external pure returns (bytes32 hash);
     function hash_operation_batch(
         address[] memory targets,
         uint256[] memory values,
