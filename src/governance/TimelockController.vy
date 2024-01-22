@@ -166,7 +166,7 @@ event CallScheduled:
     index: indexed(uint256)
     target: address
     amount: uint256
-    data: Bytes[1_024]
+    payload: Bytes[1_024]
     predecessor: bytes32
     delay: uint256
 
@@ -180,7 +180,7 @@ event CallExecuted:
     index: indexed(uint256)
     target: address
     amount: uint256
-    data: Bytes[1_024]
+    payload: Bytes[1_024]
 
 
 # @dev Emitted when new proposal is scheduled with
