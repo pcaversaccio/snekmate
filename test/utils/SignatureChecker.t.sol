@@ -26,6 +26,13 @@ contract SignatureCheckerTest is Test {
         );
     }
 
+    function testInitialSetup() public {
+        assertEq(
+            bytes32(signatureChecker.IERC1271_ISVALIDSIGNATURE_SELECTOR()),
+            bytes32(ERC1271WalletMock.isValidSignature.selector)
+        );
+    }
+
     function testEOAWithValidSignature() public {
         (address alice, uint256 key) = makeAddrAndKey("alice");
         bytes32 hash = keccak256("WAGMI");
