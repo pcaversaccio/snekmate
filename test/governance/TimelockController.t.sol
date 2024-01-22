@@ -4,7 +4,7 @@ pragma solidity ^0.8.23;
 import {Test} from "forge-std/Test.sol";
 import {VyperDeployer} from "utils/VyperDeployer.sol";
 
-import {TimelockController} from "openzeppelin/governance/TimelockController.sol";
+import {ITimelockController} from "./interfaces/ITimelockController.sol";
 
 contract TimelockControllerTest is Test {
     uint256 internal constant MIN_DELAY = 2 days;
@@ -37,7 +37,7 @@ contract TimelockControllerTest is Test {
 
     VyperDeployer private vyperDeployer = new VyperDeployer();
 
-    TimelockController private timelockController;
+    ITimelockController private timelockController;
 
     address private deployer = address(vyperDeployer);
 
@@ -57,7 +57,7 @@ contract TimelockControllerTest is Test {
         executors[1] = EXECUTOR_TWO;
 
         bytes memory args = abi.encode(MIN_DELAY, proposers, executors, ADMIN);
-        timelockController = TimelockController(
+        timelockController = ITimelockController(
             payable(
                 vyperDeployer.deployContract(
                     "src/governance/",
@@ -86,7 +86,7 @@ contract TimelockControllerTest is Test {
     }
 
     function checkRoleNotSetForAddresses(
-        TimelockController timelock,
+        ITimelockController timelock,
         bytes32 role,
         address[2] storage addresses
     ) internal {
@@ -168,7 +168,7 @@ contract TimelockControllerTest is Test {
             timelockController.EXECUTOR_ROLE(),
             PROPOSERS
         );
-        assertEq(timelockController.getMinDelay(), MIN_DELAY);
+        assertEq(timelockController.get_minimum_delay(), MIN_DELAY);
 
         // TODO: Add event emit checks.
     }
@@ -193,7 +193,7 @@ contract TimelockControllerTest is Test {
         bytes32 predecessor = NO_PREDECESSOR;
         bytes32 salt = EMPTY_SALT;
 
-        bytes32 hashedOperation = timelockController.hashOperationBatch(
+        bytes32 hashedOperation = timelockController.hash_operation_batch(
             targets,
             values,
             payloads,
@@ -208,17 +208,17 @@ contract TimelockControllerTest is Test {
 
     event MinDelayChange(uint256 oldDuration, uint256 newDuration);
 
-    function testRevertWhenNotAdminRole() public {
-        vm.expectRevert("TimelockController: unauthorized");
+    function testRevertWhenNotTimelock() public {
+        vm.expectRevert("TimelockController: caller must be timelock");
         vm.prank(STRANGER);
-        timelockController.updateDelay(3 days);
+        timelockController.update_delay(3 days);
     }
 
     function testUpdatesMinDelay() public {
         address target = address(timelockController);
         uint256 value = 0;
         bytes memory data = abi.encodeWithSelector(
-            timelockController.updateDelay.selector,
+            timelockController.update_delay.selector,
             MIN_DELAY
         );
 
@@ -240,7 +240,7 @@ contract TimelockControllerTest is Test {
         vm.prank(EXECUTOR_ONE);
         timelockController.execute(target, value, data, predecessor, salt);
 
-        uint256 minDelay = timelockController.getMinDelay();
+        uint256 minDelay = timelockController.get_minimum_delay();
         assertEq(minDelay, 2 days);
     }
 
@@ -248,7 +248,7 @@ contract TimelockControllerTest is Test {
         address target = address(timelockController);
         uint256 value = 0;
         bytes memory data = abi.encodeWithSelector(
-            timelockController.updateDelay.selector,
+            timelockController.update_delay.selector,
             0
         );
 
@@ -269,12 +269,12 @@ contract TimelockControllerTest is Test {
 
     function testUpdatesDelayAtLeastMinDelay() public {
         vm.prank(address(timelockController));
-        timelockController.updateDelay(0); // set min delay to 0
+        timelockController.update_delay(0); // set min delay to 0
 
         address target = address(timelockController);
         uint256 value = 0;
         bytes memory data = abi.encodeWithSelector(
-            timelockController.updateDelay.selector,
+            timelockController.update_delay.selector,
             MIN_DELAY
         );
 
@@ -296,7 +296,7 @@ contract TimelockControllerTest is Test {
         vm.prank(EXECUTOR_ONE);
         timelockController.execute(target, value, data, predecessor, salt);
 
-        uint256 minDelay = timelockController.getMinDelay();
+        uint256 minDelay = timelockController.get_minimum_delay();
         assertEq(minDelay, MIN_DELAY);
     }
 
@@ -307,7 +307,7 @@ contract TimelockControllerTest is Test {
 
         vm.expectRevert("AccessControl: account is missing role");
         vm.prank(STRANGER);
-        timelockController.scheduleBatch(
+        timelockController.schedule_batch(
             targets,
             values,
             payloads,
@@ -317,7 +317,7 @@ contract TimelockControllerTest is Test {
         );
     }
 
-    function _scheduleBatchedOperation()
+    function _schedule_batchedOperation()
         internal
         view
         returns (
@@ -342,9 +342,9 @@ contract TimelockControllerTest is Test {
             address[] memory targets,
             uint256[] memory values,
             bytes[] memory payloads
-        ) = _scheduleBatchedOperation();
+        ) = _schedule_batchedOperation();
 
-        bytes32 batchedOperationID = timelockController.hashOperationBatch(
+        bytes32 batchedOperationID = timelockController.hash_operation_batch(
             targets,
             values,
             payloads,
@@ -352,10 +352,10 @@ contract TimelockControllerTest is Test {
             EMPTY_SALT
         );
 
-        assertEq(timelockController.isOperation(batchedOperationID), false);
+        assertEq(timelockController.is_operation(batchedOperationID), false);
 
         vm.prank(PROPOSER_ONE);
-        timelockController.scheduleBatch(
+        timelockController.schedule_batch(
             targets,
             values,
             payloads,
@@ -364,7 +364,7 @@ contract TimelockControllerTest is Test {
             MIN_DELAY
         );
 
-        assertEq(timelockController.isOperation(batchedOperationID), true);
+        assertEq(timelockController.is_operation(batchedOperationID), true);
     }
 
     function testAdminCantBatchSchedule() public {
@@ -372,9 +372,9 @@ contract TimelockControllerTest is Test {
             address[] memory targets,
             uint256[] memory values,
             bytes[] memory payloads
-        ) = _scheduleBatchedOperation();
+        ) = _schedule_batchedOperation();
 
-        bytes32 batchedOperationID = timelockController.hashOperationBatch(
+        bytes32 batchedOperationID = timelockController.hash_operation_batch(
             targets,
             values,
             payloads,
@@ -382,11 +382,11 @@ contract TimelockControllerTest is Test {
             EMPTY_SALT
         );
 
-        assertEq(timelockController.isOperation(batchedOperationID), false);
+        assertEq(timelockController.is_operation(batchedOperationID), false);
 
         vm.expectRevert("AccessControl: account is missing role");
         vm.prank(ADMIN);
-        timelockController.scheduleBatch(
+        timelockController.schedule_batch(
             targets,
             values,
             payloads,
@@ -395,7 +395,7 @@ contract TimelockControllerTest is Test {
             MIN_DELAY
         );
 
-        assertEq(timelockController.isOperation(batchedOperationID), false);
+        assertEq(timelockController.is_operation(batchedOperationID), false);
     }
 
     function testRevertWhenScheduleIfOperationScheduled() public {
@@ -409,7 +409,7 @@ contract TimelockControllerTest is Test {
         payloads[0] = abi.encodeWithSelector(Counter.increment.selector);
 
         vm.startPrank(PROPOSER_ONE);
-        timelockController.scheduleBatch(
+        timelockController.schedule_batch(
             targets,
             values,
             payloads,
@@ -419,7 +419,7 @@ contract TimelockControllerTest is Test {
         );
 
         vm.expectRevert("TimelockController: operation already scheduled");
-        timelockController.scheduleBatch(
+        timelockController.schedule_batch(
             targets,
             values,
             payloads,
@@ -441,7 +441,7 @@ contract TimelockControllerTest is Test {
 
         vm.expectRevert("TimelockController: insufficient delay");
         vm.prank(PROPOSER_ONE);
-        timelockController.scheduleBatch(
+        timelockController.schedule_batch(
             targets,
             values,
             payloads,
@@ -453,13 +453,13 @@ contract TimelockControllerTest is Test {
 
     function testProposerCanScheduleOperation() public {
         bytes32 operationID = _scheduleOperation(PROPOSER_ONE);
-        assertTrue(timelockController.isOperation(operationID));
+        assertTrue(timelockController.is_operation(operationID));
     }
 
     function testAdminCantScheduleOperation() public {
         vm.expectRevert("AccessControl: account is missing role");
         bytes32 operationID = _scheduleOperation(ADMIN);
-        assertFalse(timelockController.isOperation(operationID));
+        assertFalse(timelockController.is_operation(operationID));
     }
 
     function _scheduleOperation(
@@ -475,7 +475,7 @@ contract TimelockControllerTest is Test {
         payloads[0] = abi.encodeWithSelector(Counter.increment.selector);
 
         vm.startPrank(proposer);
-        timelockController.scheduleBatch(
+        timelockController.schedule_batch(
             targets,
             values,
             payloads,
@@ -483,7 +483,7 @@ contract TimelockControllerTest is Test {
             EMPTY_SALT,
             MIN_DELAY
         );
-        operationID = timelockController.hashOperationBatch(
+        operationID = timelockController.hash_operation_batch(
             targets,
             values,
             payloads,
@@ -494,12 +494,12 @@ contract TimelockControllerTest is Test {
 
     function _laterDelay() internal {
         vm.prank(address(timelockController));
-        timelockController.updateDelay(31 days);
+        timelockController.update_delay(31 days);
     }
 
     function testReturnsLaterMinDelayForCalls() public {
         _laterDelay();
-        uint256 minDelay = timelockController.getMinDelay();
+        uint256 minDelay = timelockController.get_minimum_delay();
         assertEq(minDelay, 31 days);
     }
 
@@ -518,7 +518,7 @@ contract TimelockControllerTest is Test {
 
         vm.expectRevert("TimelockController: insufficient delay");
         vm.prank(PROPOSER_ONE);
-        timelockController.scheduleBatch(
+        timelockController.schedule_batch(
             targets,
             values,
             payloads,
@@ -528,7 +528,7 @@ contract TimelockControllerTest is Test {
         );
     }
 
-    function _scheduleBatchedOperation(
+    function _schedule_batchedOperation(
         address proposer,
         uint256 delay
     ) internal {
@@ -542,7 +542,7 @@ contract TimelockControllerTest is Test {
             payloads[i] = calls[i].data;
         }
 
-        bytes32 batchedOperationID = timelockController.hashOperationBatch(
+        bytes32 batchedOperationID = timelockController.hash_operation_batch(
             targets,
             values,
             payloads,
@@ -550,10 +550,10 @@ contract TimelockControllerTest is Test {
             EMPTY_SALT
         );
 
-        assertEq(timelockController.isOperation(batchedOperationID), false);
+        assertEq(timelockController.is_operation(batchedOperationID), false);
 
         vm.prank(proposer);
-        timelockController.scheduleBatch(
+        timelockController.schedule_batch(
             targets,
             values,
             payloads,
@@ -562,9 +562,9 @@ contract TimelockControllerTest is Test {
             delay
         );
 
-        assertEq(timelockController.isOperation(batchedOperationID), true);
+        assertEq(timelockController.is_operation(batchedOperationID), true);
 
-        uint256 operationTimestamp = timelockController.getTimestamp(
+        uint256 operationTimestamp = timelockController.get_timestamp(
             batchedOperationID
         );
         assertEq(operationTimestamp, block.timestamp + delay);
@@ -572,7 +572,7 @@ contract TimelockControllerTest is Test {
 
     function testProposerCanBatchScheduleGreaterEqualToLaterMinDelay() public {
         _laterDelay();
-        _scheduleBatchedOperation(PROPOSER_ONE, 31 days);
+        _schedule_batchedOperation(PROPOSER_ONE, 31 days);
     }
 
     function testUpdateDelayDoesNotChangeExistingOperationTimestamps() public {
@@ -588,7 +588,7 @@ contract TimelockControllerTest is Test {
             payloads[i] = calls[i].data;
         }
 
-        bytes32 batchedOperationID = timelockController.hashOperationBatch(
+        bytes32 batchedOperationID = timelockController.hash_operation_batch(
             targets,
             values,
             payloads,
@@ -597,7 +597,7 @@ contract TimelockControllerTest is Test {
         );
 
         vm.prank(PROPOSER_ONE);
-        timelockController.scheduleBatch(
+        timelockController.schedule_batch(
             targets,
             values,
             payloads,
@@ -606,16 +606,16 @@ contract TimelockControllerTest is Test {
             31 days
         );
 
-        uint256 operationTimestampBefore = timelockController.getTimestamp(
+        uint256 operationTimestampBefore = timelockController.get_timestamp(
             batchedOperationID
         );
 
         // Set a new delay value
         vm.prank(address(timelockController));
-        timelockController.updateDelay(31 days + 1);
+        timelockController.update_delay(31 days + 1);
 
         // New delay value should only apply on future operations, not existing ones
-        uint256 operationTimestampAfter = timelockController.getTimestamp(
+        uint256 operationTimestampAfter = timelockController.get_timestamp(
             batchedOperationID
         );
         assertEq(operationTimestampAfter, operationTimestampBefore);
@@ -628,7 +628,7 @@ contract TimelockControllerTest is Test {
 
         vm.expectRevert("AccessControl: account is missing role");
         vm.prank(STRANGER);
-        timelockController.executeBatch(
+        timelockController.execute_batch(
             targets,
             values,
             payloads,
@@ -649,7 +649,7 @@ contract TimelockControllerTest is Test {
         }
 
         vm.prank(PROPOSER_ONE);
-        timelockController.scheduleBatch(
+        timelockController.schedule_batch(
             targets,
             values,
             payloads,
@@ -662,7 +662,7 @@ contract TimelockControllerTest is Test {
 
         vm.expectRevert("TimelockController: operation is not ready");
         vm.prank(EXECUTOR_ONE);
-        timelockController.executeBatch(
+        timelockController.execute_batch(
             targets,
             values,
             payloads,
@@ -684,7 +684,7 @@ contract TimelockControllerTest is Test {
         vm.startPrank(PROPOSER_ONE);
 
         // Schedule predecessor job
-        timelockController.scheduleBatch(
+        timelockController.schedule_batch(
             targets,
             values,
             payloads,
@@ -692,7 +692,7 @@ contract TimelockControllerTest is Test {
             EMPTY_SALT,
             MIN_DELAY
         );
-        bytes32 operationOneID = timelockController.hashOperationBatch(
+        bytes32 operationOneID = timelockController.hash_operation_batch(
             targets,
             values,
             payloads,
@@ -701,7 +701,7 @@ contract TimelockControllerTest is Test {
         );
 
         // Schedule dependent job
-        timelockController.scheduleBatch(
+        timelockController.schedule_batch(
             targets,
             values,
             payloads,
@@ -713,11 +713,9 @@ contract TimelockControllerTest is Test {
 
         // Check that executing the dependent job reverts
         vm.warp(block.timestamp + MIN_DELAY + 2 days);
-        vm.expectRevert(
-            "TimelockController: predecessor operation is not done"
-        );
+        vm.expectRevert("TimelockController: missing dependency");
         vm.prank(EXECUTOR_ONE);
-        timelockController.executeBatch(
+        timelockController.execute_batch(
             targets,
             values,
             payloads,
@@ -739,7 +737,7 @@ contract TimelockControllerTest is Test {
         vm.startPrank(PROPOSER_ONE);
 
         // Prepare predecessor job
-        bytes32 operationOneID = timelockController.hashOperationBatch(
+        bytes32 operationOneID = timelockController.hash_operation_batch(
             targets,
             values,
             payloads,
@@ -748,7 +746,7 @@ contract TimelockControllerTest is Test {
         );
 
         // Schedule dependent job
-        timelockController.scheduleBatch(
+        timelockController.schedule_batch(
             targets,
             values,
             payloads,
@@ -760,11 +758,9 @@ contract TimelockControllerTest is Test {
 
         // Check that executing the dependent job reverts
         vm.warp(block.timestamp + MIN_DELAY + 2 days);
-        vm.expectRevert(
-            "TimelockController: predecessor operation is not done"
-        );
+        vm.expectRevert("TimelockController: missing dependency");
         vm.prank(EXECUTOR_ONE);
-        timelockController.executeBatch(
+        timelockController.execute_batch(
             targets,
             values,
             payloads,
@@ -788,7 +784,7 @@ contract TimelockControllerTest is Test {
 
         // Schedule dependent job
         vm.prank(PROPOSER_ONE);
-        timelockController.scheduleBatch(
+        timelockController.schedule_batch(
             targets,
             values,
             payloads,
@@ -799,11 +795,9 @@ contract TimelockControllerTest is Test {
 
         // Check that executing the dependent job reverts
         vm.warp(block.timestamp + MIN_DELAY + 2 days);
-        vm.expectRevert(
-            "TimelockController: predecessor operation is not done"
-        );
+        vm.expectRevert("TimelockController: missing dependency");
         vm.prank(EXECUTOR_ONE);
-        timelockController.executeBatch(
+        timelockController.execute_batch(
             targets,
             values,
             payloads,
@@ -824,7 +818,7 @@ contract TimelockControllerTest is Test {
 
         // Schedule a job where one target will revert
         vm.prank(PROPOSER_ONE);
-        timelockController.scheduleBatch(
+        timelockController.schedule_batch(
             targets,
             values,
             payloads,
@@ -834,9 +828,9 @@ contract TimelockControllerTest is Test {
         );
 
         vm.warp(block.timestamp + MIN_DELAY + 2 days);
-        vm.expectRevert("TimelockController: underlying transaction reverted");
+        vm.expectRevert("Transaction reverted");
         vm.prank(EXECUTOR_ONE);
-        timelockController.executeBatch(
+        timelockController.execute_batch(
             targets,
             values,
             payloads,
@@ -853,7 +847,7 @@ contract TimelockControllerTest is Test {
         ) = _scheduleSingleBatchedOperation();
 
         vm.prank(EXECUTOR_ONE);
-        timelockController.executeBatch(
+        timelockController.execute_batch(
             targets,
             values,
             payloads,
@@ -861,14 +855,14 @@ contract TimelockControllerTest is Test {
             EMPTY_SALT
         );
 
-        bytes32 operationID = timelockController.hashOperationBatch(
+        bytes32 operationID = timelockController.hash_operation_batch(
             targets,
             values,
             payloads,
             NO_PREDECESSOR,
             EMPTY_SALT
         );
-        uint256 operationTimestamp = timelockController.getTimestamp(
+        uint256 operationTimestamp = timelockController.get_timestamp(
             operationID
         );
 
@@ -884,7 +878,7 @@ contract TimelockControllerTest is Test {
 
         vm.expectRevert("AccessControl: account is missing role");
         vm.prank(ADMIN);
-        timelockController.executeBatch(
+        timelockController.execute_batch(
             targets,
             values,
             payloads,
@@ -892,14 +886,14 @@ contract TimelockControllerTest is Test {
             EMPTY_SALT
         );
 
-        bytes32 operationID = timelockController.hashOperationBatch(
+        bytes32 operationID = timelockController.hash_operation_batch(
             targets,
             values,
             payloads,
             NO_PREDECESSOR,
             EMPTY_SALT
         );
-        uint256 operationTimestamp = timelockController.getTimestamp(
+        uint256 operationTimestamp = timelockController.get_timestamp(
             operationID
         );
 
@@ -926,7 +920,7 @@ contract TimelockControllerTest is Test {
         vm.prank(PROPOSER_ONE);
 
         // Schedule batch execution
-        timelockController.scheduleBatch(
+        timelockController.schedule_batch(
             targets,
             values,
             payloads,
@@ -950,7 +944,7 @@ contract TimelockControllerTest is Test {
 
         vm.expectRevert("AccessControl: account is missing role");
         vm.prank(STRANGER);
-        timelockController.executeBatch(
+        timelockController.execute_batch(
             targets,
             values,
             payloads,
@@ -970,7 +964,7 @@ contract TimelockControllerTest is Test {
         payloads[0] = abi.encodeWithSelector(Counter.increment.selector);
 
         vm.prank(PROPOSER_ONE);
-        timelockController.scheduleBatch(
+        timelockController.schedule_batch(
             targets,
             values,
             payloads,
@@ -981,7 +975,7 @@ contract TimelockControllerTest is Test {
         vm.warp(block.timestamp + MIN_DELAY - 2 days);
         vm.expectRevert("TimelockController: operation is not ready");
         vm.prank(EXECUTOR_ONE);
-        timelockController.executeBatch(
+        timelockController.execute_batch(
             targets,
             values,
             payloads,
@@ -1002,7 +996,7 @@ contract TimelockControllerTest is Test {
 
         // Schedule predecessor job
         vm.prank(PROPOSER_ONE);
-        timelockController.scheduleBatch(
+        timelockController.schedule_batch(
             targets,
             values,
             payloads,
@@ -1010,7 +1004,7 @@ contract TimelockControllerTest is Test {
             EMPTY_SALT,
             MIN_DELAY
         );
-        bytes32 operationOneID = timelockController.hashOperationBatch(
+        bytes32 operationOneID = timelockController.hash_operation_batch(
             targets,
             values,
             payloads,
@@ -1022,7 +1016,7 @@ contract TimelockControllerTest is Test {
 
         // Schedule dependent job
         vm.prank(PROPOSER_ONE);
-        timelockController.scheduleBatch(
+        timelockController.schedule_batch(
             targets,
             values,
             payloads,
@@ -1033,11 +1027,9 @@ contract TimelockControllerTest is Test {
 
         // Check that executing the dependent job reverts
         vm.warp(block.timestamp + MIN_DELAY + 2 days);
-        vm.expectRevert(
-            "TimelockController: predecessor operation is not done"
-        );
+        vm.expectRevert("TimelockController: missing dependency");
         vm.prank(EXECUTOR_ONE);
-        timelockController.executeBatch(
+        timelockController.execute_batch(
             targets,
             values,
             payloads,
@@ -1059,7 +1051,7 @@ contract TimelockControllerTest is Test {
         vm.prank(PROPOSER_ONE);
 
         // Schedule predecessor job
-        timelockController.scheduleBatch(
+        timelockController.schedule_batch(
             targets,
             values,
             payloads,
@@ -1069,9 +1061,9 @@ contract TimelockControllerTest is Test {
         );
 
         vm.warp(block.timestamp + MIN_DELAY + 2 days);
-        vm.expectRevert("TimelockController: underlying transaction reverted");
+        vm.expectRevert("Transaction reverted");
         vm.prank(EXECUTOR_ONE);
-        timelockController.executeBatch(
+        timelockController.execute_batch(
             targets,
             values,
             payloads,
@@ -1089,7 +1081,7 @@ contract TimelockControllerTest is Test {
         ) = _executeOperation(num);
 
         vm.prank(EXECUTOR_ONE);
-        timelockController.executeBatch(
+        timelockController.execute_batch(
             targets,
             values,
             payloads,
@@ -1097,14 +1089,14 @@ contract TimelockControllerTest is Test {
             EMPTY_SALT
         );
 
-        bytes32 operationID = timelockController.hashOperationBatch(
+        bytes32 operationID = timelockController.hash_operation_batch(
             targets,
             values,
             payloads,
             NO_PREDECESSOR,
             EMPTY_SALT
         );
-        uint256 operationTimestamp = timelockController.getTimestamp(
+        uint256 operationTimestamp = timelockController.get_timestamp(
             operationID
         );
         assertEq(operationTimestamp, DONE_TIMESTAMP);
@@ -1122,7 +1114,7 @@ contract TimelockControllerTest is Test {
 
         vm.expectRevert("AccessControl: account is missing role");
         vm.prank(ADMIN);
-        timelockController.executeBatch(
+        timelockController.execute_batch(
             targets,
             values,
             payloads,
@@ -1130,14 +1122,14 @@ contract TimelockControllerTest is Test {
             EMPTY_SALT
         );
 
-        bytes32 operationID = timelockController.hashOperationBatch(
+        bytes32 operationID = timelockController.hash_operation_batch(
             targets,
             values,
             payloads,
             NO_PREDECESSOR,
             EMPTY_SALT
         );
-        uint256 operationTimestamp = timelockController.getTimestamp(
+        uint256 operationTimestamp = timelockController.get_timestamp(
             operationID
         );
         assertEq(operationTimestamp, block.timestamp - MIN_DELAY);
@@ -1165,7 +1157,7 @@ contract TimelockControllerTest is Test {
         payloads[0] = abi.encodeWithSelector(Counter.setNumber.selector, num);
 
         vm.prank(PROPOSER_ONE);
-        timelockController.scheduleBatch(
+        timelockController.schedule_batch(
             targets,
             values,
             payloads,
@@ -1196,7 +1188,7 @@ contract TimelockControllerTest is Test {
         payloads[0] = abi.encodeWithSelector(Counter.increment.selector);
 
         vm.prank(PROPOSER_ONE);
-        timelockController.scheduleBatch(
+        timelockController.schedule_batch(
             targets,
             values,
             payloads,
@@ -1207,7 +1199,7 @@ contract TimelockControllerTest is Test {
         vm.warp(block.timestamp + MIN_DELAY + 2 days);
         bytes32 predecessor = NO_PREDECESSOR;
         bytes32 salt = EMPTY_SALT;
-        bytes32 id = timelockController.hashOperationBatch(
+        bytes32 id = timelockController.hash_operation_batch(
             targets,
             values,
             payloads,
@@ -1218,7 +1210,7 @@ contract TimelockControllerTest is Test {
         vm.prank(EXECUTOR_ONE);
         vm.expectEmit(true, true, true, true);
         emit CallExecuted(id, 0, targets[0], values[0], payloads[0]);
-        timelockController.executeBatch(
+        timelockController.execute_batch(
             targets,
             values,
             payloads,
@@ -1244,7 +1236,7 @@ contract TimelockControllerTest is Test {
         payloads[0] = abi.encodeWithSelector(Counter.increment.selector);
 
         vm.prank(PROPOSER_ONE);
-        timelockController.scheduleBatch(
+        timelockController.schedule_batch(
             targets,
             values,
             payloads,
@@ -1255,14 +1247,14 @@ contract TimelockControllerTest is Test {
 
         vm.warp(block.timestamp + MIN_DELAY + 1);
         vm.prank(EXECUTOR_ONE);
-        timelockController.executeBatch(
+        timelockController.execute_batch(
             targets,
             values,
             payloads,
             NO_PREDECESSOR,
             EMPTY_SALT
         );
-        bytes32 operationID = timelockController.hashOperationBatch(
+        bytes32 operationID = timelockController.hash_operation_batch(
             targets,
             values,
             payloads,
@@ -1279,7 +1271,7 @@ contract TimelockControllerTest is Test {
 
         vm.prank(PROPOSER_ONE);
         timelockController.cancel(operationID);
-        assertFalse(timelockController.isOperation(operationID));
+        assertFalse(timelockController.is_operation(operationID));
     }
 
     function testAdminCanCancelOperation() public {
@@ -1288,7 +1280,7 @@ contract TimelockControllerTest is Test {
         vm.expectRevert("AccessControl: account is missing role");
         vm.prank(ADMIN);
         timelockController.cancel(operationID);
-        assertTrue(timelockController.isOperation(operationID));
+        assertTrue(timelockController.is_operation(operationID));
     }
 
     function _cancelOperation() internal returns (bytes32 operationID) {
@@ -1302,7 +1294,7 @@ contract TimelockControllerTest is Test {
         payloads[0] = abi.encodeWithSelector(Counter.increment.selector);
 
         vm.prank(PROPOSER_ONE);
-        timelockController.scheduleBatch(
+        timelockController.schedule_batch(
             targets,
             values,
             payloads,
@@ -1310,7 +1302,7 @@ contract TimelockControllerTest is Test {
             EMPTY_SALT,
             MIN_DELAY
         );
-        operationID = timelockController.hashOperationBatch(
+        operationID = timelockController.hash_operation_batch(
             targets,
             values,
             payloads,
@@ -1326,8 +1318,8 @@ contract TimelockControllerTest is Test {
     }
 
     function testFalseIfNotAnOperation() public {
-        bool isOperation = timelockController.isOperation(bytes32("non-op"));
-        assertEq(isOperation, false);
+        bool is_operation = timelockController.is_operation(bytes32("non-op"));
+        assertEq(is_operation, false);
     }
 
     function testTrueIfAnOperation() public {
@@ -1341,7 +1333,7 @@ contract TimelockControllerTest is Test {
         payloads[0] = abi.encodeWithSelector(Counter.increment.selector);
 
         vm.prank(PROPOSER_ONE);
-        timelockController.scheduleBatch(
+        timelockController.schedule_batch(
             targets,
             values,
             payloads,
@@ -1350,7 +1342,7 @@ contract TimelockControllerTest is Test {
             MIN_DELAY
         );
 
-        bytes32 operationID = timelockController.hashOperationBatch(
+        bytes32 operationID = timelockController.hash_operation_batch(
             targets,
             values,
             payloads,
@@ -1358,8 +1350,8 @@ contract TimelockControllerTest is Test {
             EMPTY_SALT
         );
 
-        bool isOperation = timelockController.isOperation(operationID);
-        assertEq(isOperation, true);
+        bool is_operation = timelockController.is_operation(operationID);
+        assertEq(is_operation, true);
     }
 
     function testTrueIfScheduledOperatonNotYetExecuted() public {
@@ -1373,7 +1365,7 @@ contract TimelockControllerTest is Test {
         payloads[0] = abi.encodeWithSelector(Counter.increment.selector);
 
         vm.prank(PROPOSER_ONE);
-        timelockController.scheduleBatch(
+        timelockController.schedule_batch(
             targets,
             values,
             payloads,
@@ -1382,7 +1374,7 @@ contract TimelockControllerTest is Test {
             MIN_DELAY
         );
 
-        bytes32 operationID = timelockController.hashOperationBatch(
+        bytes32 operationID = timelockController.hash_operation_batch(
             targets,
             values,
             payloads,
@@ -1390,10 +1382,10 @@ contract TimelockControllerTest is Test {
             EMPTY_SALT
         );
 
-        bool isOperationPending = timelockController.isOperationPending(
+        bool is_operation_pending = timelockController.is_operation_pending(
             operationID
         );
-        assertEq(isOperationPending, true);
+        assertEq(is_operation_pending, true);
     }
 
     function testFalseIfPendingOperationHasBeenExecuted() public {
@@ -1407,7 +1399,7 @@ contract TimelockControllerTest is Test {
         payloads[0] = abi.encodeWithSelector(Counter.increment.selector);
 
         vm.prank(PROPOSER_ONE);
-        timelockController.scheduleBatch(
+        timelockController.schedule_batch(
             targets,
             values,
             payloads,
@@ -1418,7 +1410,7 @@ contract TimelockControllerTest is Test {
 
         vm.warp(block.timestamp + MIN_DELAY);
         vm.prank(EXECUTOR_ONE);
-        timelockController.executeBatch(
+        timelockController.execute_batch(
             targets,
             values,
             payloads,
@@ -1426,7 +1418,7 @@ contract TimelockControllerTest is Test {
             EMPTY_SALT
         );
 
-        bytes32 operationID = timelockController.hashOperationBatch(
+        bytes32 operationID = timelockController.hash_operation_batch(
             targets,
             values,
             payloads,
@@ -1434,10 +1426,10 @@ contract TimelockControllerTest is Test {
             EMPTY_SALT
         );
 
-        bool isOperationPending = timelockController.isOperationPending(
+        bool is_operation_pending = timelockController.is_operation_pending(
             operationID
         );
-        assertEq(isOperationPending, false);
+        assertEq(is_operation_pending, false);
     }
 
     function testTrueIfOnTheDelayedExecutionTime() public {
@@ -1451,7 +1443,7 @@ contract TimelockControllerTest is Test {
         payloads[0] = abi.encodeWithSelector(Counter.increment.selector);
 
         vm.prank(PROPOSER_ONE);
-        timelockController.scheduleBatch(
+        timelockController.schedule_batch(
             targets,
             values,
             payloads,
@@ -1462,7 +1454,7 @@ contract TimelockControllerTest is Test {
 
         vm.warp(block.timestamp + MIN_DELAY);
 
-        bytes32 operationID = timelockController.hashOperationBatch(
+        bytes32 operationID = timelockController.hash_operation_batch(
             targets,
             values,
             payloads,
@@ -1470,10 +1462,10 @@ contract TimelockControllerTest is Test {
             EMPTY_SALT
         );
 
-        bool isOperationReady = timelockController.isOperationReady(
+        bool is_operation_ready = timelockController.is_operation_ready(
             operationID
         );
-        assertEq(isOperationReady, true);
+        assertEq(is_operation_ready, true);
     }
 
     function testTrueIfAfterTheDelayedExecutionTime() public {
@@ -1487,7 +1479,7 @@ contract TimelockControllerTest is Test {
         payloads[0] = abi.encodeWithSelector(Counter.increment.selector);
 
         vm.prank(PROPOSER_ONE);
-        timelockController.scheduleBatch(
+        timelockController.schedule_batch(
             targets,
             values,
             payloads,
@@ -1498,7 +1490,7 @@ contract TimelockControllerTest is Test {
 
         vm.warp(block.timestamp + MIN_DELAY + 1 days);
 
-        bytes32 operationID = timelockController.hashOperationBatch(
+        bytes32 operationID = timelockController.hash_operation_batch(
             targets,
             values,
             payloads,
@@ -1506,10 +1498,10 @@ contract TimelockControllerTest is Test {
             EMPTY_SALT
         );
 
-        bool isOperationReady = timelockController.isOperationReady(
+        bool is_operation_ready = timelockController.is_operation_ready(
             operationID
         );
-        assertEq(isOperationReady, true);
+        assertEq(is_operation_ready, true);
     }
 
     function testFalseIfBeforeTheDelayedExecutionTime() public {
@@ -1523,7 +1515,7 @@ contract TimelockControllerTest is Test {
         payloads[0] = abi.encodeWithSelector(Counter.increment.selector);
 
         vm.prank(PROPOSER_ONE);
-        timelockController.scheduleBatch(
+        timelockController.schedule_batch(
             targets,
             values,
             payloads,
@@ -1534,7 +1526,7 @@ contract TimelockControllerTest is Test {
 
         vm.warp(block.timestamp + MIN_DELAY - 1 days);
 
-        bytes32 operationID = timelockController.hashOperationBatch(
+        bytes32 operationID = timelockController.hash_operation_batch(
             targets,
             values,
             payloads,
@@ -1542,10 +1534,10 @@ contract TimelockControllerTest is Test {
             EMPTY_SALT
         );
 
-        bool isOperationReady = timelockController.isOperationReady(
+        bool is_operation_ready = timelockController.is_operation_ready(
             operationID
         );
-        assertEq(isOperationReady, false);
+        assertEq(is_operation_ready, false);
     }
 
     function testFalseIfReadyOperationHasBeenExecuted() public {
@@ -1559,7 +1551,7 @@ contract TimelockControllerTest is Test {
         payloads[0] = abi.encodeWithSelector(Counter.increment.selector);
 
         vm.prank(PROPOSER_ONE);
-        timelockController.scheduleBatch(
+        timelockController.schedule_batch(
             targets,
             values,
             payloads,
@@ -1570,7 +1562,7 @@ contract TimelockControllerTest is Test {
 
         vm.warp(block.timestamp + MIN_DELAY);
         vm.prank(EXECUTOR_ONE);
-        timelockController.executeBatch(
+        timelockController.execute_batch(
             targets,
             values,
             payloads,
@@ -1578,7 +1570,7 @@ contract TimelockControllerTest is Test {
             EMPTY_SALT
         );
 
-        bytes32 operationID = timelockController.hashOperationBatch(
+        bytes32 operationID = timelockController.hash_operation_batch(
             targets,
             values,
             payloads,
@@ -1586,10 +1578,10 @@ contract TimelockControllerTest is Test {
             EMPTY_SALT
         );
 
-        bool isOperationReady = timelockController.isOperationReady(
+        bool is_operation_ready = timelockController.is_operation_ready(
             operationID
         );
-        assertEq(isOperationReady, false);
+        assertEq(is_operation_ready, false);
     }
 
     function testFalseItTheOperationHasNotBeenExecuted() public {
@@ -1603,7 +1595,7 @@ contract TimelockControllerTest is Test {
         payloads[0] = abi.encodeWithSelector(Counter.increment.selector);
 
         vm.prank(PROPOSER_ONE);
-        timelockController.scheduleBatch(
+        timelockController.schedule_batch(
             targets,
             values,
             payloads,
@@ -1612,7 +1604,7 @@ contract TimelockControllerTest is Test {
             MIN_DELAY
         );
 
-        bytes32 operationID = timelockController.hashOperationBatch(
+        bytes32 operationID = timelockController.hash_operation_batch(
             targets,
             values,
             payloads,
@@ -1620,8 +1612,10 @@ contract TimelockControllerTest is Test {
             EMPTY_SALT
         );
 
-        bool isOperationDone = timelockController.isOperationDone(operationID);
-        assertEq(isOperationDone, false);
+        bool is_operation_done = timelockController.is_operation_done(
+            operationID
+        );
+        assertEq(is_operation_done, false);
     }
 
     function testTrueIfOperationHasBeenExecuted() public {
@@ -1635,7 +1629,7 @@ contract TimelockControllerTest is Test {
         payloads[0] = abi.encodeWithSelector(Counter.increment.selector);
 
         vm.prank(PROPOSER_ONE);
-        timelockController.scheduleBatch(
+        timelockController.schedule_batch(
             targets,
             values,
             payloads,
@@ -1646,7 +1640,7 @@ contract TimelockControllerTest is Test {
 
         vm.warp(block.timestamp + MIN_DELAY);
         vm.prank(EXECUTOR_ONE);
-        timelockController.executeBatch(
+        timelockController.execute_batch(
             targets,
             values,
             payloads,
@@ -1654,7 +1648,7 @@ contract TimelockControllerTest is Test {
             EMPTY_SALT
         );
 
-        bytes32 operationID = timelockController.hashOperationBatch(
+        bytes32 operationID = timelockController.hash_operation_batch(
             targets,
             values,
             payloads,
@@ -1662,8 +1656,10 @@ contract TimelockControllerTest is Test {
             EMPTY_SALT
         );
 
-        bool isOperationDone = timelockController.isOperationDone(operationID);
-        assertEq(isOperationDone, true);
+        bool is_operation_done = timelockController.is_operation_done(
+            operationID
+        );
+        assertEq(is_operation_done, true);
     }
 
     function testReturnsTheCorrectTimestampIfTheOperationHasNotBeenExecuted()
@@ -1679,7 +1675,7 @@ contract TimelockControllerTest is Test {
         payloads[0] = abi.encodeWithSelector(Counter.increment.selector);
 
         vm.prank(PROPOSER_ONE);
-        timelockController.scheduleBatch(
+        timelockController.schedule_batch(
             targets,
             values,
             payloads,
@@ -1688,7 +1684,7 @@ contract TimelockControllerTest is Test {
             MIN_DELAY
         );
 
-        bytes32 operationID = timelockController.hashOperationBatch(
+        bytes32 operationID = timelockController.hash_operation_batch(
             targets,
             values,
             payloads,
@@ -1696,7 +1692,7 @@ contract TimelockControllerTest is Test {
             EMPTY_SALT
         );
 
-        uint256 operationTimestamp = timelockController.getTimestamp(
+        uint256 operationTimestamp = timelockController.get_timestamp(
             operationID
         );
         assertEq(operationTimestamp, block.timestamp + MIN_DELAY);
@@ -1713,7 +1709,7 @@ contract TimelockControllerTest is Test {
         payloads[0] = abi.encodeWithSelector(Counter.increment.selector);
 
         vm.prank(PROPOSER_ONE);
-        timelockController.scheduleBatch(
+        timelockController.schedule_batch(
             targets,
             values,
             payloads,
@@ -1724,7 +1720,7 @@ contract TimelockControllerTest is Test {
 
         vm.warp(block.timestamp + MIN_DELAY);
         vm.prank(EXECUTOR_ONE);
-        timelockController.executeBatch(
+        timelockController.execute_batch(
             targets,
             values,
             payloads,
@@ -1732,7 +1728,7 @@ contract TimelockControllerTest is Test {
             EMPTY_SALT
         );
 
-        bytes32 operationID = timelockController.hashOperationBatch(
+        bytes32 operationID = timelockController.hash_operation_batch(
             targets,
             values,
             payloads,
@@ -1740,7 +1736,7 @@ contract TimelockControllerTest is Test {
             EMPTY_SALT
         );
 
-        uint256 operationTimestamp = timelockController.getTimestamp(
+        uint256 operationTimestamp = timelockController.get_timestamp(
             operationID
         );
         assertEq(operationTimestamp, DONE_TIMESTAMP);
@@ -1776,7 +1772,7 @@ contract Counter {
 contract TimelockControllerInvariants is Test {
     VyperDeployer private vyperDeployer = new VyperDeployer();
 
-    TimelockController private timelockController;
+    ITimelockController private timelockController;
     TimelockControllerHandler private timelockControllerHandler;
 
     address private deployer = address(vyperDeployer);
@@ -1796,7 +1792,7 @@ contract TimelockControllerInvariants is Test {
             executors,
             address(this)
         );
-        timelockController = TimelockController(
+        timelockController = ITimelockController(
             payable(
                 vyperDeployer.deployContract(
                     "src/governance/",
@@ -1929,7 +1925,7 @@ contract TimelockControllerInvariants is Test {
 }
 
 contract TimelockControllerHandler is Test {
-    TimelockController private timelockController;
+    ITimelockController private timelockController;
     uint256 private minDelay;
     address private admin;
     address private proposer;
@@ -1946,7 +1942,7 @@ contract TimelockControllerHandler is Test {
     uint256[] public cancelled;
 
     constructor(
-        TimelockController timelockController_,
+        ITimelockController timelockController_,
         uint256 minDelay_,
         address[] memory proposer_,
         address[] memory executor_,
