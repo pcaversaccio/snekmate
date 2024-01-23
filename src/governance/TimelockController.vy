@@ -121,6 +121,10 @@ _SUPPORTED_INTERFACES: constant(bytes4[3]) = [
 _DONE_TIMESTAMP: constant(uint256) = 1
 
 
+# @dev Stores the 1-byte upper bound for the dynamic arrays.
+_DYNARRAY_BOUND: constant(uint8) = max_value(uint8)
+
+
 # @dev The possible states of a proposal.
 # @notice Enums are treated differently in Vyper and
 # Solidity. The members are represented by `uint256`
@@ -237,7 +241,7 @@ event RoleRevoked:
 
 @external
 @payable
-def __init__(minimum_delay_: uint256, proposers_: DynArray[address, 128], executors_: DynArray[address, 128], admin_: address):
+def __init__(minimum_delay_: uint256, proposers_: DynArray[address, _DYNARRAY_BOUND], executors_: DynArray[address, _DYNARRAY_BOUND], admin_: address):
     """
     @dev Initialises the contract with the following parameters:
            - `minimum_delay_`: The initial minimum delay in seconds
@@ -396,8 +400,8 @@ def hash_operation(target: address, amount: uint256, payload: Bytes[1_024], pred
 
 @external
 @pure
-def hash_operation_batch(targets: DynArray[address, 128], amounts: DynArray[uint256, 128], payloads: DynArray[Bytes[1_024], 128], predecessor: bytes32,
-                         salt: bytes32) -> bytes32:
+def hash_operation_batch(targets: DynArray[address, _DYNARRAY_BOUND], amounts: DynArray[uint256, _DYNARRAY_BOUND], payloads: DynArray[Bytes[1_024], _DYNARRAY_BOUND],
+                         predecessor: bytes32, salt: bytes32) -> bytes32:
     """
     @dev Returns the identifier of an operation containing
          a batch of transactions.
@@ -440,8 +444,8 @@ def schedule(target: address, amount: uint256, payload: Bytes[1_024], predecesso
 
 
 @external
-def schedule_batch(targets: DynArray[address, 128], amounts: DynArray[uint256, 128], payloads: DynArray[Bytes[1_024], 128], predecessor: bytes32,
-                   salt: bytes32, delay: uint256):
+def schedule_batch(targets: DynArray[address, _DYNARRAY_BOUND], amounts: DynArray[uint256, _DYNARRAY_BOUND], payloads: DynArray[Bytes[1_024], _DYNARRAY_BOUND],
+                   predecessor: bytes32, salt: bytes32, delay: uint256):
     """
     @dev Schedules an operation containing a batch of transactions.
          Emits one `CallScheduled` event per transaction in the
@@ -467,8 +471,9 @@ def schedule_batch(targets: DynArray[address, 128], amounts: DynArray[uint256, 1
     for target in targets:
         log CallScheduled(id, idx, target, amounts[idx], payloads[idx], predecessor, delay)
         # The following line cannot overflow because we have
-        # limited the dynamic array `targets` by the maximum
-        # value of `128`.
+        # limited the dynamic array `targets` by the `constant`
+        # parameter `_DYNARRAY_BOUND`, which is bounded by the
+        # maximum value of `uint8`.
         idx = unsafe_add(idx, 1)
     if (salt != empty(bytes32)):
         log CallSalt(id, salt)
@@ -517,8 +522,8 @@ def execute(target: address, amount: uint256, payload: Bytes[1_024], predecessor
 
 @external
 @payable
-def execute_batch(targets: DynArray[address, 128], amounts: DynArray[uint256, 128], payloads: DynArray[Bytes[1_024], 128], predecessor: bytes32,
-                  salt: bytes32):
+def execute_batch(targets: DynArray[address, _DYNARRAY_BOUND], amounts: DynArray[uint256, _DYNARRAY_BOUND], payloads: DynArray[Bytes[1_024], _DYNARRAY_BOUND],
+                  predecessor: bytes32, salt: bytes32):
     """
     @dev Executes a ready operation containing a batch of transactions.
          Emits one `CallExecuted` event per transaction in the batch.
@@ -546,8 +551,9 @@ def execute_batch(targets: DynArray[address, 128], amounts: DynArray[uint256, 12
         self._execute(target, amounts[idx], payloads[idx])
         log CallExecuted(id, idx, target, amounts[idx], payloads[idx])
         # The following line cannot overflow because we have
-        # limited the dynamic array `targets` by the maximum
-        # value of `128`.
+        # limited the dynamic array `targets` by the `constant`
+        # parameter `_DYNARRAY_BOUND`, which is bounded by the
+        # maximum value of `uint8`.
         idx = unsafe_add(idx, 1)
     self._after_call(id)
 
@@ -782,8 +788,8 @@ def _hash_operation(target: address, amount: uint256, payload: Bytes[1_024], pre
 
 @internal
 @pure
-def _hash_operation_batch(targets: DynArray[address, 128], amounts: DynArray[uint256, 128], payloads: DynArray[Bytes[1_024], 128], predecessor: bytes32,
-                          salt: bytes32) -> bytes32:
+def _hash_operation_batch(targets: DynArray[address, _DYNARRAY_BOUND], amounts: DynArray[uint256, _DYNARRAY_BOUND], payloads: DynArray[Bytes[1_024], _DYNARRAY_BOUND],
+                          predecessor: bytes32, salt: bytes32) -> bytes32:
     """
     @dev Returns the identifier of an operation containing
          a batch of transactions.
