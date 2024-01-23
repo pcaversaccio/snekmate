@@ -4,7 +4,7 @@
 
 ### 💥 New Features
 
-- **Extensions**
+- **Governance**
   - [`TimelockController`](https://github.com/pcaversaccio/snekmate/blob/v0.0.5/src/governance/TimelockController.vy): A multi-role-based timelock controller reference implementation. ([#195](https://github.com/pcaversaccio/snekmate/pull/195))
 
 ### ♻️ Refactoring
