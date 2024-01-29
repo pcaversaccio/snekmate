@@ -36,7 +36,7 @@
     "CHANGELOG.md"
   ],
   "devDependencies": {
-    "@openzeppelin/merkle-tree": "^1.0.5",
+    "@openzeppelin/merkle-tree": "^1.0.6",
     "eslint": "^8.56.0",
     "eslint-config-prettier": "^9.1.0",
     "ethers": "^6.10.0",
