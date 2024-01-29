@@ -61,8 +61,6 @@ interface ITimelockController is
         pure
         returns (bytes4);
 
-    receive() external payable;
-
     function get_timestamp(bytes32 id) external view returns (uint256);
 
     function get_minimum_delay() external view returns (uint256);
