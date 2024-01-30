@@ -709,14 +709,12 @@ contract TimelockControllerTest is Test {
             MIN_DELAY
         );
         assertEq(timelockController.is_operation(operationId), true);
-        // solhint-disable-next-line not-rely-on-time
         assertEq(
             timelockController.get_timestamp(operationId),
             block.timestamp + MIN_DELAY
         );
         vm.stopPrank();
 
-        // solhint-disable-next-line not-rely-on-time
         vm.warp(block.timestamp + MIN_DELAY);
         vm.startPrank(EXECUTOR_ONE);
         vm.expectEmit(true, true, false, true);
@@ -782,14 +780,12 @@ contract TimelockControllerTest is Test {
             MIN_DELAY
         );
         assertEq(timelockController.is_operation(operationId), true);
-        // solhint-disable-next-line not-rely-on-time
         assertEq(
             timelockController.get_timestamp(operationId),
             block.timestamp + MIN_DELAY
         );
         vm.stopPrank();
 
-        // solhint-disable-next-line not-rely-on-time
         vm.warp(block.timestamp + MIN_DELAY);
         vm.startPrank(EXECUTOR_ONE);
         vm.expectEmit(true, true, false, true);

@@ -1596,7 +1596,6 @@ contract ERC4626VaultTest is ERC4626Test {
         address spender = makeAddr("spender");
         uint256 amount = 100;
         uint256 nonce = ERC4626ExtendedDecimalsOffset0.nonces(owner);
-        // solhint-disable-next-line not-rely-on-time
         uint256 deadline = block.timestamp + 100_000;
         bytes32 domainSeparator = ERC4626ExtendedDecimalsOffset0
             .DOMAIN_SEPARATOR();
@@ -1642,7 +1641,6 @@ contract ERC4626VaultTest is ERC4626Test {
         address spender = makeAddr("spender");
         uint256 amount = 100;
         uint256 nonce = ERC4626ExtendedDecimalsOffset0.nonces(owner);
-        // solhint-disable-next-line not-rely-on-time
         uint256 deadline = block.timestamp + 100_000;
         bytes32 domainSeparator = ERC4626ExtendedDecimalsOffset0
             .DOMAIN_SEPARATOR();
@@ -1693,7 +1691,6 @@ contract ERC4626VaultTest is ERC4626Test {
         address spender = makeAddr("spender");
         uint256 amount = 100;
         uint256 nonce = ERC4626ExtendedDecimalsOffset0.nonces(owner);
-        // solhint-disable-next-line not-rely-on-time
         uint256 deadline = block.timestamp + 100_000;
         bytes32 domainSeparator = ERC4626ExtendedDecimalsOffset0
             .DOMAIN_SEPARATOR();
@@ -1733,7 +1730,6 @@ contract ERC4626VaultTest is ERC4626Test {
         address spender = makeAddr("spender");
         uint256 amount = 100;
         uint256 nonce = ERC4626ExtendedDecimalsOffset0.nonces(owner);
-        // solhint-disable-next-line not-rely-on-time
         uint256 deadline = block.timestamp + 100_000;
         bytes32 domainSeparator = keccak256(
             abi.encode(
@@ -1780,7 +1776,6 @@ contract ERC4626VaultTest is ERC4626Test {
         address spender = makeAddr("spender");
         uint256 amount = 100;
         uint256 nonce = 1;
-        // solhint-disable-next-line not-rely-on-time
         uint256 deadline = block.timestamp + 100_000;
         bytes32 domainSeparator = ERC4626ExtendedDecimalsOffset0
             .DOMAIN_SEPARATOR();
@@ -1820,7 +1815,6 @@ contract ERC4626VaultTest is ERC4626Test {
         address spender = makeAddr("spender");
         uint256 amount = 100;
         uint256 nonce = ERC4626ExtendedDecimalsOffset0.nonces(owner);
-        // solhint-disable-next-line not-rely-on-time
         uint256 deadline = block.timestamp - 1;
         bytes32 domainSeparator = ERC4626ExtendedDecimalsOffset0
             .DOMAIN_SEPARATOR();
@@ -1915,7 +1909,6 @@ contract ERC4626VaultTest is ERC4626Test {
         address spenderAddr = makeAddr(spender);
         uint256 amount = block.number;
         uint256 nonce = ERC4626ExtendedDecimalsOffset0.nonces(ownerAddr);
-        // solhint-disable-next-line not-rely-on-time
         uint256 deadline = block.timestamp + increment;
         bytes32 domainSeparator = ERC4626ExtendedDecimalsOffset0
             .DOMAIN_SEPARATOR();
@@ -1969,7 +1962,6 @@ contract ERC4626VaultTest is ERC4626Test {
         address spenderAddr = makeAddr(spender);
         uint256 amount = block.number;
         uint256 nonce = ERC4626ExtendedDecimalsOffset0.nonces(ownerAddr);
-        // solhint-disable-next-line not-rely-on-time
         uint256 deadline = block.timestamp + increment;
         bytes32 domainSeparator = ERC4626ExtendedDecimalsOffset0
             .DOMAIN_SEPARATOR();
