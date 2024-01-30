@@ -432,7 +432,7 @@ def wad_exp(x: int256) -> int256:
     value: int256 = x
 
     # If the result is `< 0.5`, we return zero. This happens when we have the following:
-    # "x <= log(1e-18) ~ -41.5e18".
+    # "x <= log(1e-18) * 1e18 ~ -4.15e19".
     if (x <= -41_446_531_673_892_822_313):
         return empty(int256)
 
