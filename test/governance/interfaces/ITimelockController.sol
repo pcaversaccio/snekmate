@@ -10,13 +10,6 @@ interface ITimelockController is
     IERC1155Receiver,
     IAccessControl
 {
-    enum OperationState {
-        Unset,
-        Waiting,
-        Ready,
-        Done
-    }
-
     event CallScheduled(
         bytes32 indexed id,
         uint256 indexed index,
@@ -73,9 +66,12 @@ interface ITimelockController is
 
     function is_operation_done(bytes32 id) external view returns (bool);
 
-    function get_operation_state(
-        bytes32 id
-    ) external view returns (OperationState);
+    /**
+     * @dev As Enums are handled differently in Vyper and Solidity, we return
+     * the directly underlying Vyper type `uint256` (instead of `OperationState`)
+     * for Enums for ease of testing.
+     */
+    function get_operation_state(bytes32 id) external view returns (uint256);
 
     function hash_operation(
         address target,
