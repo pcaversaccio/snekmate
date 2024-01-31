@@ -93,7 +93,7 @@ contract CallReceiverMock {
     function mockFunctionWritesStorage(
         bytes32 slot,
         bytes32 value
-    ) public returns (string memory) {
+    ) public payable returns (string memory) {
         // solhint-disable-next-line no-inline-assembly
         assembly {
             sstore(slot, value)

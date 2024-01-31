@@ -12,6 +12,8 @@ import {ERC721ReceiverMock} from "../tokens/mocks/ERC721ReceiverMock.sol";
 import {ERC1155ReceiverMock} from "../tokens/mocks/ERC1155ReceiverMock.sol";
 import {CallReceiverMock} from "./mocks/CallReceiverMock.sol";
 
+import {IERC721Extended} from "../tokens/interfaces/IERC721Extended.sol";
+import {IERC1155Extended} from "../tokens/interfaces/IERC1155Extended.sol";
 import {ITimelockController} from "./interfaces/ITimelockController.sol";
 
 contract TimelockControllerTest is Test {
@@ -51,10 +53,12 @@ contract TimelockControllerTest is Test {
     ITimelockController private timelockController;
     ITimelockController private timelockControllerInitialEventEmptyAdmin;
     ITimelockController private timelockControllerInitialEventNonEmptyAdmin;
+    IERC721Extended private erc721Mock;
+    IERC1155Extended private erc1155Mock;
 
     address private deployer = address(vyperDeployer);
     address private self = address(this);
-    address private zeroAddress = address(0);
+    address private zeroAddress = zeroAddress;
     address private target = address(callReceiverMock);
     address private timelockControllerAddr;
     address private timelockControllerInitialEventEmptyAdminAddr;
@@ -237,7 +241,7 @@ contract TimelockControllerTest is Test {
             MIN_DELAY,
             proposers_,
             executors_,
-            address(0)
+            zeroAddress
         );
         vm.expectEmit(true, true, true, false);
         emit IAccessControl.RoleGranted(
@@ -3245,1071 +3249,962 @@ contract TimelockControllerTest is Test {
         assertTrue(!timelockController.is_operation(keccak256("Invalid")));
     }
 
-    // /*//////////////////////////////////////////////////////////////
-    //                          PERMISSION TESTS
-    // //////////////////////////////////////////////////////////////*/
-
-    // // Timelock
-
-    // function testRevertWhenNotTimelock() public {
-    //     vm.expectRevert("TimelockController: caller must be timelock");
-    //     vm.prank(STRANGER);
-    //     timelockController.update_delay(3 days);
-    // }
-
-    // // Admin
-
-    // function testAdminCantBatchSchedule() public {
-    //     address[] memory targets = new address[](0);
-    //     uint256[] memory amounts = new uint256[](0);
-    //     bytes[] memory payloads = new bytes[](0);
-
-    //     vm.expectRevert("AccessControl: account is missing role");
-    //     vm.prank(ADMIN);
-    //     timelockController.schedule_batch(
-    //         targets,
-    //         amounts,
-    //         payloads,
-    //         NO_PREDECESSOR,
-    //         EMPTY_SALT,
-    //         MIN_DELAY
-    //     );
-    // }
-
-    // function testAdminCantSchedule() public {
-    //     vm.expectRevert("AccessControl: account is missing role");
-    //     vm.prank(ADMIN);
-    //     timelockController.schedule(
-    //         address(0),
-    //         0,
-    //         new bytes(0),
-    //         NO_PREDECESSOR,
-    //         EMPTY_SALT,
-    //         MIN_DELAY
-    //     );
-    // }
-
-    // function testAdminCantBatchExecute() public {
-    //     address[] memory targets = new address[](0);
-    //     uint256[] memory amounts = new uint256[](0);
-    //     bytes[] memory payloads = new bytes[](0);
-
-    //     vm.expectRevert("AccessControl: account is missing role");
-    //     vm.prank(ADMIN);
-    //     timelockController.execute_batch(
-    //         targets,
-    //         amounts,
-    //         payloads,
-    //         NO_PREDECESSOR,
-    //         EMPTY_SALT
-    //     );
-    // }
-
-    // function testAdminCantExecute() public {
-    //     vm.expectRevert("AccessControl: account is missing role");
-    //     vm.prank(ADMIN);
-    //     timelockController.execute(
-    //         address(0),
-    //         0,
-    //         new bytes(0),
-    //         NO_PREDECESSOR,
-    //         EMPTY_SALT
-    //     );
-    // }
-
-    // function testAdminCantCancel() public {
-    //     vm.expectRevert("AccessControl: account is missing role");
-    //     vm.prank(ADMIN);
-    //     timelockController.cancel(EMPTY_SALT);
-    // }
-
-    // // Proposer
-
-    // function testProposerCanBatchSchedule() public {
-    //     address[] memory targets = new address[](0);
-    //     uint256[] memory amounts = new uint256[](0);
-    //     bytes[] memory payloads = new bytes[](0);
-
-    //     vm.prank(PROPOSER_ONE);
-    //     timelockController.schedule_batch(
-    //         targets,
-    //         amounts,
-    //         payloads,
-    //         NO_PREDECESSOR,
-    //         EMPTY_SALT,
-    //         MIN_DELAY
-    //     );
-
-    //     vm.prank(PROPOSER_TWO);
-    //     timelockController.schedule_batch(
-    //         targets,
-    //         amounts,
-    //         payloads,
-    //         NO_PREDECESSOR,
-    //         bytes32("1"),
-    //         MIN_DELAY
-    //     );
-    // }
-
-    // function testProposerCanSchedule() public {
-    //     vm.prank(PROPOSER_ONE);
-    //     timelockController.schedule(
-    //         address(0),
-    //         0,
-    //         new bytes(0),
-    //         NO_PREDECESSOR,
-    //         EMPTY_SALT,
-    //         MIN_DELAY
-    //     );
-
-    //     vm.prank(PROPOSER_TWO);
-    //     timelockController.schedule(
-    //         address(0),
-    //         0,
-    //         new bytes(0),
-    //         NO_PREDECESSOR,
-    //         bytes32("1"),
-    //         MIN_DELAY
-    //     );
-    // }
-
-    // function testProposerCantBatchExecute() public {
-    //     address[] memory targets = new address[](0);
-    //     uint256[] memory amounts = new uint256[](0);
-    //     bytes[] memory payloads = new bytes[](0);
-
-    //     vm.expectRevert("AccessControl: account is missing role");
-    //     vm.prank(PROPOSER_ONE);
-    //     timelockController.execute_batch(
-    //         targets,
-    //         amounts,
-    //         payloads,
-    //         NO_PREDECESSOR,
-    //         EMPTY_SALT
-    //     );
-
-    //     vm.expectRevert("AccessControl: account is missing role");
-    //     vm.prank(PROPOSER_TWO);
-    //     timelockController.execute_batch(
-    //         targets,
-    //         amounts,
-    //         payloads,
-    //         NO_PREDECESSOR,
-    //         bytes32("1")
-    //     );
-    // }
-
-    // function testProposerCantExecute() public {
-    //     vm.expectRevert("AccessControl: account is missing role");
-    //     vm.prank(PROPOSER_ONE);
-    //     timelockController.execute(
-    //         address(0),
-    //         0,
-    //         new bytes(0),
-    //         NO_PREDECESSOR,
-    //         EMPTY_SALT
-    //     );
-
-    //     vm.expectRevert("AccessControl: account is missing role");
-    //     vm.prank(PROPOSER_TWO);
-    //     timelockController.execute(
-    //         address(0),
-    //         0,
-    //         new bytes(0),
-    //         NO_PREDECESSOR,
-    //         bytes32("1")
-    //     );
-    // }
-
-    // function testProposerCanCancel() public {
-    //     vm.expectRevert("TimelockController: operation cannot be cancelled");
-    //     vm.prank(PROPOSER_ONE);
-    //     timelockController.cancel(EMPTY_SALT);
-
-    //     vm.expectRevert("TimelockController: operation cannot be cancelled");
-    //     vm.prank(PROPOSER_TWO);
-    //     timelockController.cancel(EMPTY_SALT);
-    // }
-
-    // // Executor
-
-    // function testExecutorCantBatchSchedule() public {
-    //     address[] memory targets = new address[](0);
-    //     uint256[] memory amounts = new uint256[](0);
-    //     bytes[] memory payloads = new bytes[](0);
-
-    //     vm.expectRevert("AccessControl: account is missing role");
-    //     vm.prank(EXECUTOR_ONE);
-    //     timelockController.schedule_batch(
-    //         targets,
-    //         amounts,
-    //         payloads,
-    //         NO_PREDECESSOR,
-    //         EMPTY_SALT,
-    //         MIN_DELAY
-    //     );
-
-    //     vm.expectRevert("AccessControl: account is missing role");
-    //     vm.prank(EXECUTOR_TWO);
-    //     timelockController.schedule_batch(
-    //         targets,
-    //         amounts,
-    //         payloads,
-    //         NO_PREDECESSOR,
-    //         bytes32("1"),
-    //         MIN_DELAY
-    //     );
-    // }
-
-    // function testExecutorCantSchedule() public {
-    //     vm.expectRevert("AccessControl: account is missing role");
-    //     vm.prank(EXECUTOR_ONE);
-    //     timelockController.schedule(
-    //         address(0),
-    //         0,
-    //         new bytes(0),
-    //         NO_PREDECESSOR,
-    //         EMPTY_SALT,
-    //         MIN_DELAY
-    //     );
-
-    //     vm.expectRevert("AccessControl: account is missing role");
-    //     vm.prank(EXECUTOR_TWO);
-    //     timelockController.schedule(
-    //         address(0),
-    //         0,
-    //         new bytes(0),
-    //         NO_PREDECESSOR,
-    //         bytes32("1"),
-    //         MIN_DELAY
-    //     );
-    // }
-
-    // function testExecutorCanBatchExecute() public {
-    //     address[] memory targets = new address[](0);
-    //     uint256[] memory amounts = new uint256[](0);
-    //     bytes[] memory payloads = new bytes[](0);
-
-    //     vm.expectRevert("TimelockController: operation is not ready");
-    //     vm.prank(EXECUTOR_ONE);
-    //     timelockController.execute_batch(
-    //         targets,
-    //         amounts,
-    //         payloads,
-    //         NO_PREDECESSOR,
-    //         EMPTY_SALT
-    //     );
-
-    //     vm.expectRevert("TimelockController: operation is not ready");
-    //     vm.prank(EXECUTOR_TWO);
-    //     timelockController.execute_batch(
-    //         targets,
-    //         amounts,
-    //         payloads,
-    //         NO_PREDECESSOR,
-    //         bytes32("1")
-    //     );
-    // }
-
-    // function testExecutorCanExecute() public {
-    //     vm.expectRevert("TimelockController: operation is not ready");
-    //     vm.prank(EXECUTOR_ONE);
-    //     timelockController.execute(
-    //         address(0),
-    //         0,
-    //         new bytes(0),
-    //         NO_PREDECESSOR,
-    //         EMPTY_SALT
-    //     );
-
-    //     vm.expectRevert("TimelockController: operation is not ready");
-    //     vm.prank(EXECUTOR_TWO);
-    //     timelockController.execute(
-    //         address(0),
-    //         0,
-    //         new bytes(0),
-    //         NO_PREDECESSOR,
-    //         bytes32("1")
-    //     );
-    // }
-
-    // function testExecutorCantCancel() public {
-    //     vm.expectRevert("AccessControl: account is missing role");
-    //     vm.prank(EXECUTOR_ONE);
-    //     timelockController.cancel(EMPTY_SALT);
-
-    //     vm.expectRevert("AccessControl: account is missing role");
-    //     vm.prank(EXECUTOR_TWO);
-    //     timelockController.cancel(EMPTY_SALT);
-    // }
-
-    // // Stanger
-
-    // function testStrangerCantBatchSchedule() public {
-    //     address[] memory targets = new address[](0);
-    //     uint256[] memory amounts = new uint256[](0);
-    //     bytes[] memory payloads = new bytes[](0);
-
-    //     vm.expectRevert("AccessControl: account is missing role");
-    //     vm.prank(STRANGER);
-    //     timelockController.schedule_batch(
-    //         targets,
-    //         amounts,
-    //         payloads,
-    //         NO_PREDECESSOR,
-    //         EMPTY_SALT,
-    //         MIN_DELAY
-    //     );
-    // }
-
-    // function testStrangerCantSchedule() public {
-    //     vm.expectRevert("AccessControl: account is missing role");
-    //     vm.prank(STRANGER);
-    //     timelockController.schedule(
-    //         address(0),
-    //         0,
-    //         new bytes(0),
-    //         NO_PREDECESSOR,
-    //         EMPTY_SALT,
-    //         MIN_DELAY
-    //     );
-    // }
-
-    // function testStrangerCantBatchExecute() public {
-    //     address[] memory targets = new address[](0);
-    //     uint256[] memory amounts = new uint256[](0);
-    //     bytes[] memory payloads = new bytes[](0);
-
-    //     vm.expectRevert("AccessControl: account is missing role");
-    //     vm.prank(STRANGER);
-    //     timelockController.execute_batch(
-    //         targets,
-    //         amounts,
-    //         payloads,
-    //         NO_PREDECESSOR,
-    //         EMPTY_SALT
-    //     );
-    // }
-
-    // function testStrangerCantExecute() public {
-    //     vm.expectRevert("AccessControl: account is missing role");
-    //     vm.prank(STRANGER);
-    //     timelockController.execute(
-    //         address(0),
-    //         0,
-    //         new bytes(0),
-    //         NO_PREDECESSOR,
-    //         EMPTY_SALT
-    //     );
-    // }
-
-    // function testStrangerCantCancel() public {
-    //     vm.expectRevert("AccessControl: account is missing role");
-    //     vm.prank(STRANGER);
-    //     timelockController.cancel(EMPTY_SALT);
-    // }
-
-    // // TODO: Move this somewhere in correct place
-    // function testCancellerCanCancelOperation() public {
-    //     bytes32 operationId = _cancelOperation();
-
-    //     vm.prank(PROPOSER_ONE);
-    //     vm.expectEmit(true, false, false, false);
-    //     emit ITimelockController.Cancelled(operationId);
-    //     timelockController.cancel(operationId);
-    //     assertTrue(!timelockController.is_operation(operationId));
-    // }
-
-    // function testOperationERC721() public {
-    //     ERC721Mock erc721 = new ERC721Mock("SYMBOL", "SML");
-    //     erc721.mint(address(timelockController), 1);
-
-    //     assertEq(erc721.balanceOf(address(timelockController)), 1);
-
-    //     address[] memory targets = new address[](1);
-    //     targets[0] = address(erc721);
-
-    //     uint256[] memory amounts = new uint256[](1);
-    //     amounts[0] = 0;
-
-    //     bytes[] memory payloads = new bytes[](1);
-    //     payloads[0] = abi.encodeWithSelector(ERC721Mock.burn.selector, 1);
-
-    //     bytes32 batchedOperationId = timelockController.hash_operation_batch(
-    //         targets,
-    //         amounts,
-    //         payloads,
-    //         NO_PREDECESSOR,
-    //         EMPTY_SALT
-    //     );
-
-    //     vm.prank(PROPOSER_ONE);
-    //     for (uint256 i = 0; i < targets.length; ++i) {
-    //         vm.expectEmit(true, true, false, true);
-    //         emit ITimelockController.CallScheduled(
-    //             batchedOperationId,
-    //             i,
-    //             targets[i],
-    //             amounts[i],
-    //             payloads[i],
-    //             NO_PREDECESSOR,
-    //             MIN_DELAY
-    //         );
-    //     }
-    //     timelockController.schedule_batch(
-    //         targets,
-    //         amounts,
-    //         payloads,
-    //         NO_PREDECESSOR,
-    //         EMPTY_SALT,
-    //         MIN_DELAY
-    //     );
-
-    //     vm.warp(block.timestamp + MIN_DELAY);
-
-    //     vm.prank(EXECUTOR_ONE);
-    //     for (uint256 i = 0; i < targets.length; ++i) {
-    //         vm.expectEmit(true, true, false, true);
-    //         emit ITimelockController.CallExecuted(
-    //             batchedOperationId,
-    //             i,
-    //             targets[i],
-    //             amounts[i],
-    //             payloads[i]
-    //         );
-    //     }
-    //     timelockController.execute_batch(
-    //         targets,
-    //         amounts,
-    //         payloads,
-    //         NO_PREDECESSOR,
-    //         EMPTY_SALT
-    //     );
-
-    //     uint256 operationTimestamp = timelockController.get_timestamp(
-    //         batchedOperationId
-    //     );
-    //     assertEq(operationTimestamp, DONE_TIMESTAMP);
-    //     assertEq(erc721.balanceOf(address(timelockController)), 0);
-    // }
-
-    // function testOperationERC1155() public {
-    //     ERC1155Mock erc1155 = new ERC1155Mock("");
-    //     erc1155.mint(address(timelockController), 1, 1, new bytes(0));
-
-    //     assertEq(erc1155.balanceOf(address(timelockController), 1), 1);
-
-    //     address[] memory targets = new address[](1);
-    //     targets[0] = address(erc1155);
-
-    //     uint256[] memory amounts = new uint256[](1);
-    //     amounts[0] = 0;
-
-    //     bytes[] memory payloads = new bytes[](1);
-    //     payloads[0] = abi.encodeWithSelector(
-    //         ERC1155Mock.burn.selector,
-    //         address(timelockController),
-    //         1,
-    //         1
-    //     );
-
-    //     bytes32 batchedOperationId = timelockController.hash_operation_batch(
-    //         targets,
-    //         amounts,
-    //         payloads,
-    //         NO_PREDECESSOR,
-    //         EMPTY_SALT
-    //     );
-
-    //     vm.prank(PROPOSER_ONE);
-    //     for (uint256 i = 0; i < targets.length; ++i) {
-    //         vm.expectEmit(true, true, false, true);
-    //         emit ITimelockController.CallScheduled(
-    //             batchedOperationId,
-    //             i,
-    //             targets[i],
-    //             amounts[i],
-    //             payloads[i],
-    //             NO_PREDECESSOR,
-    //             MIN_DELAY
-    //         );
-    //     }
-    //     timelockController.schedule_batch(
-    //         targets,
-    //         amounts,
-    //         payloads,
-    //         NO_PREDECESSOR,
-    //         EMPTY_SALT,
-    //         MIN_DELAY
-    //     );
-
-    //     vm.warp(block.timestamp + MIN_DELAY);
-
-    //     vm.prank(EXECUTOR_ONE);
-    //     for (uint256 i = 0; i < targets.length; ++i) {
-    //         vm.expectEmit(true, true, false, true);
-    //         emit ITimelockController.CallExecuted(
-    //             batchedOperationId,
-    //             i,
-    //             targets[i],
-    //             amounts[i],
-    //             payloads[i]
-    //         );
-    //     }
-    //     timelockController.execute_batch(
-    //         targets,
-    //         amounts,
-    //         payloads,
-    //         NO_PREDECESSOR,
-    //         EMPTY_SALT
-    //     );
-
-    //     uint256 operationTimestamp = timelockController.get_timestamp(
-    //         batchedOperationId
-    //     );
-    //     assertEq(operationTimestamp, DONE_TIMESTAMP);
-    //     assertEq(erc1155.balanceOf(address(timelockController), 1), 0);
-    // }
-
-    // function testBatchERC1155() public {
-    //     ERC1155Mock erc1155 = new ERC1155Mock("");
-    //     erc1155.mint(address(timelockController), 1, 1, new bytes(0));
-
-    //     assertEq(erc1155.balanceOf(address(timelockController), 1), 1);
-
-    //     address[] memory targets = new address[](1);
-    //     targets[0] = address(erc1155);
-
-    //     uint256[] memory amounts = new uint256[](1);
-    //     amounts[0] = 0;
-
-    //     bytes[] memory payloads = new bytes[](1);
-    //     payloads[0] = abi.encodeWithSelector(
-    //         ERC1155Mock.burn.selector,
-    //         address(timelockController),
-    //         1,
-    //         1
-    //     );
-
-    //     bytes32 batchedOperationId = timelockController.hash_operation_batch(
-    //         targets,
-    //         amounts,
-    //         payloads,
-    //         NO_PREDECESSOR,
-    //         EMPTY_SALT
-    //     );
-
-    //     vm.prank(PROPOSER_ONE);
-    //     for (uint256 i = 0; i < targets.length; ++i) {
-    //         vm.expectEmit(true, true, false, true);
-    //         emit ITimelockController.CallScheduled(
-    //             batchedOperationId,
-    //             i,
-    //             targets[i],
-    //             amounts[i],
-    //             payloads[i],
-    //             NO_PREDECESSOR,
-    //             MIN_DELAY
-    //         );
-    //     }
-    //     timelockController.schedule_batch(
-    //         targets,
-    //         amounts,
-    //         payloads,
-    //         NO_PREDECESSOR,
-    //         EMPTY_SALT,
-    //         MIN_DELAY
-    //     );
-
-    //     vm.warp(block.timestamp + MIN_DELAY);
-
-    //     vm.prank(EXECUTOR_ONE);
-    //     for (uint256 i = 0; i < targets.length; ++i) {
-    //         vm.expectEmit(true, true, false, true);
-    //         emit ITimelockController.CallExecuted(
-    //             batchedOperationId,
-    //             i,
-    //             targets[i],
-    //             amounts[i],
-    //             payloads[i]
-    //         );
-    //     }
-    //     timelockController.execute_batch(
-    //         targets,
-    //         amounts,
-    //         payloads,
-    //         NO_PREDECESSOR,
-    //         EMPTY_SALT
-    //     );
-
-    //     uint256 operationTimestamp = timelockController.get_timestamp(
-    //         batchedOperationId
-    //     );
-    //     assertEq(operationTimestamp, DONE_TIMESTAMP);
-    //     assertEq(erc1155.balanceOf(address(timelockController), 1), 0);
-    // }
-
-    // function testBatchERC721() public {
-    //     ERC721Mock erc721 = new ERC721Mock("SYMBOL", "SML");
-    //     erc721.mint(address(timelockController), 1);
-
-    //     assertEq(erc721.balanceOf(address(timelockController)), 1);
-
-    //     address[] memory targets = new address[](1);
-    //     targets[0] = address(erc721);
-
-    //     uint256[] memory amounts = new uint256[](1);
-    //     amounts[0] = 0;
-
-    //     bytes[] memory payloads = new bytes[](1);
-    //     payloads[0] = abi.encodeWithSelector(ERC721Mock.burn.selector, 1);
-
-    //     bytes32 batchedOperationId = timelockController.hash_operation_batch(
-    //         targets,
-    //         amounts,
-    //         payloads,
-    //         NO_PREDECESSOR,
-    //         EMPTY_SALT
-    //     );
-
-    //     vm.prank(PROPOSER_ONE);
-    //     for (uint256 i = 0; i < targets.length; ++i) {
-    //         vm.expectEmit(true, true, false, true);
-    //         emit ITimelockController.CallScheduled(
-    //             batchedOperationId,
-    //             i,
-    //             targets[i],
-    //             amounts[i],
-    //             payloads[i],
-    //             NO_PREDECESSOR,
-    //             MIN_DELAY
-    //         );
-    //     }
-    //     timelockController.schedule_batch(
-    //         targets,
-    //         amounts,
-    //         payloads,
-    //         NO_PREDECESSOR,
-    //         EMPTY_SALT,
-    //         MIN_DELAY
-    //     );
-
-    //     vm.warp(block.timestamp + MIN_DELAY);
-
-    //     vm.prank(EXECUTOR_ONE);
-    //     for (uint256 i = 0; i < targets.length; ++i) {
-    //         vm.expectEmit(true, true, false, true);
-    //         emit ITimelockController.CallExecuted(
-    //             batchedOperationId,
-    //             i,
-    //             targets[i],
-    //             amounts[i],
-    //             payloads[i]
-    //         );
-    //     }
-    //     timelockController.execute_batch(
-    //         targets,
-    //         amounts,
-    //         payloads,
-    //         NO_PREDECESSOR,
-    //         EMPTY_SALT
-    //     );
-
-    //     uint256 operationTimestamp = timelockController.get_timestamp(
-    //         batchedOperationId
-    //     );
-    //     assertEq(operationTimestamp, DONE_TIMESTAMP);
-    //     assertEq(erc721.balanceOf(address(timelockController)), 0);
-    // }
-
-    // function testFuzzOperationValue(uint256 amount) public {
-    //     address target = address(counter);
-    //     bytes memory payload = abi.encodeWithSelector(
-    //         Counter.increment.selector
-    //     );
-
-    //     bytes32 operationId = timelockController.hash_operation(
-    //         target,
-    //         amount,
-    //         payload,
-    //         NO_PREDECESSOR,
-    //         EMPTY_SALT
-    //     );
-
-    //     deal(address(timelockController), amount);
-
-    //     vm.prank(PROPOSER_ONE);
-    //     vm.expectEmit(true, true, false, true);
-    //     emit ITimelockController.CallScheduled(
-    //         operationId,
-    //         0,
-    //         target,
-    //         amount,
-    //         payload,
-    //         NO_PREDECESSOR,
-    //         MIN_DELAY
-    //     );
-    //     timelockController.schedule(
-    //         target,
-    //         amount,
-    //         payload,
-    //         NO_PREDECESSOR,
-    //         EMPTY_SALT,
-    //         MIN_DELAY
-    //     );
-
-    //     vm.warp(block.timestamp + MIN_DELAY);
-
-    //     vm.prank(EXECUTOR_ONE);
-    //     vm.expectEmit(true, true, false, true);
-    //     emit ITimelockController.CallExecuted(
-    //         operationId,
-    //         0,
-    //         target,
-    //         amount,
-    //         payload
-    //     );
-    //     timelockController.execute(
-    //         target,
-    //         amount,
-    //         payload,
-    //         NO_PREDECESSOR,
-    //         EMPTY_SALT
-    //     );
-
-    //     uint256 operationTimestamp = timelockController.get_timestamp(
-    //         operationId
-    //     );
-    //     assertEq(operationTimestamp, DONE_TIMESTAMP);
-    //     assertEq(address(counter).balance, amount);
-    // }
-
-    // function testFuzzBatchValue(uint256 amount) public {
-    //     address[] memory targets = new address[](1);
-    //     targets[0] = address(counter);
-
-    //     uint256[] memory amounts = new uint256[](1);
-    //     amounts[0] = amount;
-
-    //     bytes[] memory payloads = new bytes[](1);
-    //     payloads[0] = abi.encodeWithSelector(Counter.increment.selector);
-
-    //     deal(address(timelockController), amount);
-
-    //     bytes32 batchedOperationId = timelockController.hash_operation_batch(
-    //         targets,
-    //         amounts,
-    //         payloads,
-    //         NO_PREDECESSOR,
-    //         EMPTY_SALT
-    //     );
-
-    //     vm.prank(PROPOSER_ONE);
-    //     for (uint256 i = 0; i < targets.length; ++i) {
-    //         vm.expectEmit(true, true, false, true);
-    //         emit ITimelockController.CallScheduled(
-    //             batchedOperationId,
-    //             i,
-    //             targets[i],
-    //             amounts[i],
-    //             payloads[i],
-    //             NO_PREDECESSOR,
-    //             MIN_DELAY
-    //         );
-    //     }
-    //     timelockController.schedule_batch(
-    //         targets,
-    //         amounts,
-    //         payloads,
-    //         NO_PREDECESSOR,
-    //         EMPTY_SALT,
-    //         MIN_DELAY
-    //     );
-
-    //     vm.warp(block.timestamp + MIN_DELAY);
-
-    //     vm.prank(EXECUTOR_ONE);
-    //     for (uint256 i = 0; i < targets.length; ++i) {
-    //         vm.expectEmit(true, true, false, true);
-    //         emit ITimelockController.CallExecuted(
-    //             batchedOperationId,
-    //             i,
-    //             targets[i],
-    //             amounts[i],
-    //             payloads[i]
-    //         );
-    //     }
-    //     timelockController.execute_batch(
-    //         targets,
-    //         amounts,
-    //         payloads,
-    //         NO_PREDECESSOR,
-    //         EMPTY_SALT
-    //     );
-
-    //     uint256 operationTimestamp = timelockController.get_timestamp(
-    //         batchedOperationId
-    //     );
-    //     assertEq(operationTimestamp, DONE_TIMESTAMP);
-    //     assertEq(address(counter).balance, amounts[0]);
-    // }
+    function testRevertWhenNotTimelock() public {
+        vm.expectRevert("TimelockController: caller must be timelock");
+        vm.prank(STRANGER);
+        timelockController.update_delay(3 days);
+    }
+
+    function testAdminCantBatchSchedule() public {
+        address[] memory targets = new address[](0);
+        uint256[] memory amounts = new uint256[](0);
+        bytes[] memory payloads = new bytes[](0);
+        vm.expectRevert("AccessControl: account is missing role");
+        vm.prank(self);
+        timelockController.schedule_batch(
+            targets,
+            amounts,
+            payloads,
+            NO_PREDECESSOR,
+            EMPTY_SALT,
+            MIN_DELAY
+        );
+    }
+
+    function testAdminCantSchedule() public {
+        vm.expectRevert("AccessControl: account is missing role");
+        vm.prank(self);
+        timelockController.schedule(
+            zeroAddress,
+            0,
+            new bytes(0),
+            NO_PREDECESSOR,
+            EMPTY_SALT,
+            MIN_DELAY
+        );
+    }
+
+    function testAdminCantBatchExecute() public {
+        address[] memory targets = new address[](0);
+        uint256[] memory amounts = new uint256[](0);
+        bytes[] memory payloads = new bytes[](0);
+
+        vm.expectRevert("AccessControl: account is missing role");
+        vm.prank(self);
+        timelockController.execute_batch(
+            targets,
+            amounts,
+            payloads,
+            NO_PREDECESSOR,
+            EMPTY_SALT
+        );
+    }
+
+    function testAdminCantExecute() public {
+        vm.expectRevert("AccessControl: account is missing role");
+        vm.prank(self);
+        timelockController.execute(
+            zeroAddress,
+            0,
+            new bytes(0),
+            NO_PREDECESSOR,
+            EMPTY_SALT
+        );
+    }
+
+    function testAdminCantCancel() public {
+        vm.expectRevert("AccessControl: account is missing role");
+        vm.prank(self);
+        timelockController.cancel(EMPTY_SALT);
+    }
+
+    function testProposerCanBatchSchedule() public {
+        address[] memory targets = new address[](0);
+        uint256[] memory amounts = new uint256[](0);
+        bytes[] memory payloads = new bytes[](0);
+        vm.startPrank(PROPOSER_ONE);
+        timelockController.schedule_batch(
+            targets,
+            amounts,
+            payloads,
+            NO_PREDECESSOR,
+            EMPTY_SALT,
+            MIN_DELAY
+        );
+        vm.stopPrank();
+
+        vm.prank(PROPOSER_TWO);
+        timelockController.schedule_batch(
+            targets,
+            amounts,
+            payloads,
+            NO_PREDECESSOR,
+            SALT,
+            MIN_DELAY
+        );
+        vm.stopPrank();
+    }
+
+    function testProposerCanSchedule() public {
+        vm.startPrank(PROPOSER_ONE);
+        timelockController.schedule(
+            zeroAddress,
+            0,
+            new bytes(0),
+            NO_PREDECESSOR,
+            EMPTY_SALT,
+            MIN_DELAY
+        );
+        vm.stopPrank();
+
+        vm.startPrank(PROPOSER_TWO);
+        timelockController.schedule(
+            zeroAddress,
+            0,
+            new bytes(0),
+            NO_PREDECESSOR,
+            bytes32("1"),
+            MIN_DELAY
+        );
+        vm.stopPrank();
+    }
+
+    function testProposerCantBatchExecute() public {
+        address[] memory targets = new address[](0);
+        uint256[] memory amounts = new uint256[](0);
+        bytes[] memory payloads = new bytes[](0);
+
+        vm.expectRevert("AccessControl: account is missing role");
+        vm.prank(PROPOSER_ONE);
+        timelockController.execute_batch(
+            targets,
+            amounts,
+            payloads,
+            NO_PREDECESSOR,
+            EMPTY_SALT
+        );
+
+        vm.expectRevert("AccessControl: account is missing role");
+        vm.prank(PROPOSER_TWO);
+        timelockController.execute_batch(
+            targets,
+            amounts,
+            payloads,
+            NO_PREDECESSOR,
+            bytes32("1")
+        );
+    }
+
+    function testProposerCantExecute() public {
+        vm.expectRevert("AccessControl: account is missing role");
+        vm.prank(PROPOSER_ONE);
+        timelockController.execute(
+            zeroAddress,
+            0,
+            new bytes(0),
+            NO_PREDECESSOR,
+            EMPTY_SALT
+        );
+
+        vm.expectRevert("AccessControl: account is missing role");
+        vm.prank(PROPOSER_TWO);
+        timelockController.execute(
+            zeroAddress,
+            0,
+            new bytes(0),
+            NO_PREDECESSOR,
+            bytes32("1")
+        );
+    }
+
+    function testProposerCanCancel() public {
+        vm.expectRevert("TimelockController: operation cannot be cancelled");
+        vm.prank(PROPOSER_ONE);
+        timelockController.cancel(EMPTY_SALT);
+
+        vm.expectRevert("TimelockController: operation cannot be cancelled");
+        vm.prank(PROPOSER_TWO);
+        timelockController.cancel(EMPTY_SALT);
+    }
+
+    function testExecutorCantBatchSchedule() public {
+        address[] memory targets = new address[](0);
+        uint256[] memory amounts = new uint256[](0);
+        bytes[] memory payloads = new bytes[](0);
+
+        vm.expectRevert("AccessControl: account is missing role");
+        vm.prank(EXECUTOR_ONE);
+        timelockController.schedule_batch(
+            targets,
+            amounts,
+            payloads,
+            NO_PREDECESSOR,
+            EMPTY_SALT,
+            MIN_DELAY
+        );
+
+        vm.expectRevert("AccessControl: account is missing role");
+        vm.prank(EXECUTOR_TWO);
+        timelockController.schedule_batch(
+            targets,
+            amounts,
+            payloads,
+            NO_PREDECESSOR,
+            bytes32("1"),
+            MIN_DELAY
+        );
+    }
+
+    function testExecutorCantSchedule() public {
+        vm.expectRevert("AccessControl: account is missing role");
+        vm.prank(EXECUTOR_ONE);
+        timelockController.schedule(
+            zeroAddress,
+            0,
+            new bytes(0),
+            NO_PREDECESSOR,
+            EMPTY_SALT,
+            MIN_DELAY
+        );
+
+        vm.expectRevert("AccessControl: account is missing role");
+        vm.prank(EXECUTOR_TWO);
+        timelockController.schedule(
+            zeroAddress,
+            0,
+            new bytes(0),
+            NO_PREDECESSOR,
+            bytes32("1"),
+            MIN_DELAY
+        );
+    }
+
+    function testExecutorCanBatchExecute() public {
+        address[] memory targets = new address[](0);
+        uint256[] memory amounts = new uint256[](0);
+        bytes[] memory payloads = new bytes[](0);
+
+        vm.expectRevert("TimelockController: operation is not ready");
+        vm.prank(EXECUTOR_ONE);
+        timelockController.execute_batch(
+            targets,
+            amounts,
+            payloads,
+            NO_PREDECESSOR,
+            EMPTY_SALT
+        );
+
+        vm.expectRevert("TimelockController: operation is not ready");
+        vm.prank(EXECUTOR_TWO);
+        timelockController.execute_batch(
+            targets,
+            amounts,
+            payloads,
+            NO_PREDECESSOR,
+            bytes32("1")
+        );
+    }
+
+    function testExecutorCanExecute() public {
+        vm.expectRevert("TimelockController: operation is not ready");
+        vm.prank(EXECUTOR_ONE);
+        timelockController.execute(
+            zeroAddress,
+            0,
+            new bytes(0),
+            NO_PREDECESSOR,
+            EMPTY_SALT
+        );
+
+        vm.expectRevert("TimelockController: operation is not ready");
+        vm.prank(EXECUTOR_TWO);
+        timelockController.execute(
+            zeroAddress,
+            0,
+            new bytes(0),
+            NO_PREDECESSOR,
+            bytes32("1")
+        );
+    }
+
+    function testExecutorCantCancel() public {
+        vm.expectRevert("AccessControl: account is missing role");
+        vm.prank(EXECUTOR_ONE);
+        timelockController.cancel(EMPTY_SALT);
+
+        vm.expectRevert("AccessControl: account is missing role");
+        vm.prank(EXECUTOR_TWO);
+        timelockController.cancel(EMPTY_SALT);
+    }
+
+    function testStrangerCantBatchSchedule() public {
+        address[] memory targets = new address[](0);
+        uint256[] memory amounts = new uint256[](0);
+        bytes[] memory payloads = new bytes[](0);
+
+        vm.expectRevert("AccessControl: account is missing role");
+        vm.prank(STRANGER);
+        timelockController.schedule_batch(
+            targets,
+            amounts,
+            payloads,
+            NO_PREDECESSOR,
+            EMPTY_SALT,
+            MIN_DELAY
+        );
+    }
+
+    function testStrangerCantSchedule() public {
+        vm.expectRevert("AccessControl: account is missing role");
+        vm.prank(STRANGER);
+        timelockController.schedule(
+            zeroAddress,
+            0,
+            new bytes(0),
+            NO_PREDECESSOR,
+            EMPTY_SALT,
+            MIN_DELAY
+        );
+    }
+
+    function testStrangerCantBatchExecute() public {
+        address[] memory targets = new address[](0);
+        uint256[] memory amounts = new uint256[](0);
+        bytes[] memory payloads = new bytes[](0);
+
+        vm.expectRevert("AccessControl: account is missing role");
+        vm.prank(STRANGER);
+        timelockController.execute_batch(
+            targets,
+            amounts,
+            payloads,
+            NO_PREDECESSOR,
+            EMPTY_SALT
+        );
+    }
+
+    function testStrangerCantExecute() public {
+        vm.expectRevert("AccessControl: account is missing role");
+        vm.prank(STRANGER);
+        timelockController.execute(
+            zeroAddress,
+            0,
+            new bytes(0),
+            NO_PREDECESSOR,
+            EMPTY_SALT
+        );
+    }
+
+    function testStrangerCantCancel() public {
+        vm.expectRevert("AccessControl: account is missing role");
+        vm.prank(STRANGER);
+        timelockController.cancel(EMPTY_SALT);
+    }
+
+    function testCancellerCanCancelOperation() public {
+        address[] memory targets = new address[](1);
+        targets[0] = target;
+        uint256[] memory amounts = new uint256[](1);
+        amounts[0] = 0;
+        bytes32 slot = bytes32(uint256(1337));
+        bytes32 value = bytes32(uint256(6699));
+        bytes[] memory payloads = new bytes[](1);
+        payloads[0] = abi.encodeWithSelector(
+            callReceiverMock.mockFunctionWritesStorage.selector,
+            slot,
+            value
+        );
+        bytes32 batchedOperationId = timelockController.hash_operation_batch(
+            targets,
+            amounts,
+            payloads,
+            NO_PREDECESSOR,
+            EMPTY_SALT
+        );
+
+        vm.startPrank(PROPOSER_ONE);
+        for (uint256 i = 0; i < targets.length; ++i) {
+            vm.expectEmit();
+            emit ITimelockController.CallScheduled(
+                batchedOperationId,
+                i,
+                targets[i],
+                amounts[i],
+                payloads[i],
+                NO_PREDECESSOR,
+                MIN_DELAY
+            );
+        }
+        timelockController.schedule_batch(
+            targets,
+            amounts,
+            payloads,
+            NO_PREDECESSOR,
+            EMPTY_SALT,
+            MIN_DELAY
+        );
+        vm.expectEmit(true, false, false, false);
+        emit ITimelockController.Cancelled(batchedOperationId);
+        timelockController.cancel(batchedOperationId);
+        assertTrue(!timelockController.is_operation(batchedOperationId));
+        vm.stopPrank();
+    }
+
+    function testHandleERC721() public {
+        bytes memory args = abi.encode(
+            "MyNFT",
+            "WAGMI",
+            "https://www.wagmi.xyz/",
+            "MyNFT",
+            "1"
+        );
+        erc721Mock = IERC721Extended(
+            vyperDeployer.deployContract("src/tokens/", "ERC721", args)
+        );
+        vm.startPrank(deployer);
+        erc721Mock.safe_mint(timelockControllerAddr, "my_awesome_nft_uri_1");
+        assertEq(erc721Mock.balanceOf(timelockControllerAddr), 1);
+        vm.stopPrank();
+
+        address[] memory targets = new address[](1);
+        targets[0] = address(erc721Mock);
+        uint256[] memory amounts = new uint256[](1);
+        amounts[0] = 0;
+        bytes[] memory payloads = new bytes[](1);
+        payloads[0] = abi.encodeWithSelector(erc721Mock.burn.selector, 0);
+        bytes32 batchedOperationId = timelockController.hash_operation_batch(
+            targets,
+            amounts,
+            payloads,
+            NO_PREDECESSOR,
+            EMPTY_SALT
+        );
+
+        vm.startPrank(PROPOSER_ONE);
+        for (uint256 i = 0; i < targets.length; ++i) {
+            vm.expectEmit(true, true, false, true);
+            emit ITimelockController.CallScheduled(
+                batchedOperationId,
+                i,
+                targets[i],
+                amounts[i],
+                payloads[i],
+                NO_PREDECESSOR,
+                MIN_DELAY
+            );
+        }
+        timelockController.schedule_batch(
+            targets,
+            amounts,
+            payloads,
+            NO_PREDECESSOR,
+            EMPTY_SALT,
+            MIN_DELAY
+        );
+        vm.stopPrank();
+
+        vm.warp(block.timestamp + MIN_DELAY);
+        vm.startPrank(EXECUTOR_ONE);
+        for (uint256 i = 0; i < targets.length; ++i) {
+            vm.expectEmit(true, true, false, true);
+            emit ITimelockController.CallExecuted(
+                batchedOperationId,
+                i,
+                targets[i],
+                amounts[i],
+                payloads[i]
+            );
+        }
+        timelockController.execute_batch(
+            targets,
+            amounts,
+            payloads,
+            NO_PREDECESSOR,
+            EMPTY_SALT
+        );
+        assertEq(timelockController.get_timestamp(
+            batchedOperationId
+        ), DONE_TIMESTAMP);
+        assertEq(erc721Mock.balanceOf(timelockControllerAddr), 0);
+    }
+
+    function testHandleERC1155() public {
+        bytes memory args = abi.encode("https://www.wagmi.xyz/");
+        erc1155Mock = IERC1155Extended(
+            vyperDeployer.deployContract("src/tokens/", "ERC1155", args)
+        );
+
+        uint256[] memory ids = new uint256[](2);
+        uint256[] memory tokenAmounts = new uint256[](2);
+        ids[0] = 1;
+        ids[1] = 2;
+        tokenAmounts[0] = 1;
+        tokenAmounts[1] = 2;
+
+        vm.startPrank(deployer);
+        erc1155Mock.safe_mint(timelockControllerAddr, 0, 1, new bytes(0));
+        erc1155Mock.safe_mint_batch(timelockControllerAddr, ids, tokenAmounts, new bytes(0));
+        assertEq(erc1155Mock.balanceOf(timelockControllerAddr, 0), 1);
+        assertEq(erc1155Mock.balanceOf(timelockControllerAddr, 1), 1);
+        assertEq(erc1155Mock.balanceOf(timelockControllerAddr, 2), 2);
+        vm.stopPrank();
+
+        address[] memory targets = new address[](1);
+        targets[0] = address(erc1155Mock);
+        uint256[] memory amounts = new uint256[](1);
+        amounts[0] = 0;
+        bytes[] memory payloads = new bytes[](1);
+        payloads[0] = abi.encodeWithSelector(
+            erc1155Mock.burn.selector,
+            timelockControllerAddr,
+            0,
+            1
+        );
+        bytes32 batchedOperationId = timelockController.hash_operation_batch(
+            targets,
+            amounts,
+            payloads,
+            NO_PREDECESSOR,
+            EMPTY_SALT
+        );
+
+        vm.prank(PROPOSER_ONE);
+        for (uint256 i = 0; i < targets.length; ++i) {
+            vm.expectEmit(true, true, false, true);
+            emit ITimelockController.CallScheduled(
+                batchedOperationId,
+                i,
+                targets[i],
+                amounts[i],
+                payloads[i],
+                NO_PREDECESSOR,
+                MIN_DELAY
+            );
+        }
+        timelockController.schedule_batch(
+            targets,
+            amounts,
+            payloads,
+            NO_PREDECESSOR,
+            EMPTY_SALT,
+            MIN_DELAY
+        );
+
+        vm.warp(block.timestamp + MIN_DELAY);
+
+        vm.prank(EXECUTOR_ONE);
+        for (uint256 i = 0; i < targets.length; ++i) {
+            vm.expectEmit(true, true, false, true);
+            emit ITimelockController.CallExecuted(
+                batchedOperationId,
+                i,
+                targets[i],
+                amounts[i],
+                payloads[i]
+            );
+        }
+        timelockController.execute_batch(
+            targets,
+            amounts,
+            payloads,
+            NO_PREDECESSOR,
+            EMPTY_SALT
+        );
+
+        assertEq(timelockController.get_timestamp(
+            batchedOperationId
+        ), DONE_TIMESTAMP);
+        assertEq(erc1155Mock.balanceOf(timelockControllerAddr, 0), 0);
+    }
+
+    function testFuzzOperationValue(uint256 amount) public {
+        amount = bound(amount, 0, type(uint64).max);
+        bytes32 slot = bytes32(uint256(1337));
+        bytes32 value = bytes32(uint256(6699));
+        bytes memory payload = abi.encodeWithSelector(
+            callReceiverMock.mockFunctionWritesStorage.selector,
+            slot,
+            value
+        );
+        bytes32 operationId = timelockController.hash_operation(
+            target,
+            amount,
+            payload,
+            NO_PREDECESSOR,
+            EMPTY_SALT
+        );
+        deal(timelockControllerAddr, amount);
+
+        vm.prank(PROPOSER_ONE);
+        vm.expectEmit(true, true, false, true);
+        emit ITimelockController.CallScheduled(
+            operationId,
+            0,
+            target,
+            amount,
+            payload,
+            NO_PREDECESSOR,
+            MIN_DELAY
+        );
+        timelockController.schedule(
+            target,
+            amount,
+            payload,
+            NO_PREDECESSOR,
+            EMPTY_SALT,
+            MIN_DELAY
+        );
+
+        vm.warp(block.timestamp + MIN_DELAY);
+        vm.prank(EXECUTOR_ONE);
+        vm.expectEmit(true, true, false, true);
+        emit ITimelockController.CallExecuted(
+            operationId,
+            0,
+            target,
+            amount,
+            payload
+        );
+        timelockController.execute(
+            target,
+            amount,
+            payload,
+            NO_PREDECESSOR,
+            EMPTY_SALT
+        );
+        assertEq(timelockController.get_timestamp(
+            operationId
+        ), DONE_TIMESTAMP);
+        assertEq(address(callReceiverMock).balance, amount);
+    }
+
+    function testFuzzBatchValue(uint256 amount) public {
+        amount = bound(amount, 0, type(uint64).max);
+        address[] memory targets = new address[](1);
+        targets[0] = target;
+        uint256[] memory amounts = new uint256[](1);
+        amounts[0] = amount;
+        bytes32 slot = bytes32(uint256(1337));
+        bytes32 value = bytes32(uint256(6699));
+        bytes[] memory payloads = new bytes[](1);
+        payloads[0] = abi.encodeWithSelector(
+            callReceiverMock.mockFunctionWritesStorage.selector,
+            slot,
+            value
+        );
+        bytes32 batchedOperationId = timelockController.hash_operation_batch(
+            targets,
+            amounts,
+            payloads,
+            NO_PREDECESSOR,
+            EMPTY_SALT
+        );
+        deal(timelockControllerAddr, amount);
+
+        vm.prank(PROPOSER_ONE);
+        for (uint256 i = 0; i < targets.length; ++i) {
+            vm.expectEmit(true, true, false, true);
+            emit ITimelockController.CallScheduled(
+                batchedOperationId,
+                i,
+                targets[i],
+                amounts[i],
+                payloads[i],
+                NO_PREDECESSOR,
+                MIN_DELAY
+            );
+        }
+        timelockController.schedule_batch(
+            targets,
+            amounts,
+            payloads,
+            NO_PREDECESSOR,
+            EMPTY_SALT,
+            MIN_DELAY
+        );
+
+        vm.warp(block.timestamp + MIN_DELAY);
+
+        vm.prank(EXECUTOR_ONE);
+        for (uint256 i = 0; i < targets.length; ++i) {
+            vm.expectEmit(true, true, false, true);
+            emit ITimelockController.CallExecuted(
+                batchedOperationId,
+                i,
+                targets[i],
+                amounts[i],
+                payloads[i]
+            );
+        }
+        timelockController.execute_batch(
+            targets,
+            amounts,
+            payloads,
+            NO_PREDECESSOR,
+            EMPTY_SALT
+        );
+        assertEq(timelockController.get_timestamp(
+            batchedOperationId
+        ), DONE_TIMESTAMP);
+        assertEq(address(callReceiverMock).balance, amounts[0]);
+    }
 }
 
-// contract TimelockControllerInvariants is Test {
-//     VyperDeployer private vyperDeployer = new VyperDeployer();
+contract TimelockControllerInvariants is Test {
+    VyperDeployer private vyperDeployer = new VyperDeployer();
 
-//     ITimelockController private timelockController;
-//     TimelockControllerHandler private timelockControllerHandler;
+    ITimelockController private timelockController;
+    TimelockControllerHandler private timelockControllerHandler;
 
-//     function setUp() public {
-//         address[] memory proposers = new address[](1);
-//         proposers[0] = address(this);
+    function setUp() public {
+        address[] memory proposers = new address[](1);
+        proposers[0] = address(this);
 
-//         address[] memory executors = new address[](1);
-//         executors[0] = address(this);
+        address[] memory executors = new address[](1);
+        executors[0] = address(this);
 
-//         uint256 minDelay = 2 days;
+        uint256 minDelay = 2 days;
 
-//         bytes memory args = abi.encode(
-//             minDelay,
-//             proposers,
-//             executors,
-//             address(this)
-//         );
-//         timelockController = ITimelockController(
-//             payable(
-//                 vyperDeployer.deployContract(
-//                     "src/governance/",
-//                     "TimelockController",
-//                     args
-//                 )
-//             )
-//         );
+        bytes memory args = abi.encode(
+            minDelay,
+            proposers,
+            executors,
+            address(this)
+        );
+        timelockController = ITimelockController(
+            payable(
+                vyperDeployer.deployContract(
+                    "src/governance/",
+                    "TimelockController",
+                    args
+                )
+            )
+        );
 
-//         timelockControllerHandler = new TimelockControllerHandler(
-//             timelockController,
-//             minDelay,
-//             proposers,
-//             executors,
-//             address(this)
-//         );
+        timelockControllerHandler = new TimelockControllerHandler(
+            timelockController,
+            minDelay,
+            proposers,
+            executors,
+            address(this)
+        );
 
-//         // Select the selectors to use for fuzzing.
-//         bytes4[] memory selectors = new bytes4[](3);
-//         selectors[0] = TimelockControllerHandler.schedule.selector;
-//         selectors[1] = TimelockControllerHandler.execute.selector;
-//         selectors[2] = TimelockControllerHandler.cancel.selector;
+        // Select the selectors to use for fuzzing.
+        bytes4[] memory selectors = new bytes4[](3);
+        selectors[0] = TimelockControllerHandler.schedule.selector;
+        selectors[1] = TimelockControllerHandler.execute.selector;
+        selectors[2] = TimelockControllerHandler.cancel.selector;
 
-//         // Set the target selector.
-//         targetSelector(
-//             FuzzSelector({
-//                 addr: address(timelockControllerHandler),
-//                 selectors: selectors
-//             })
-//         );
+        // Set the target selector.
+        targetSelector(
+            FuzzSelector({
+                addr: address(timelockControllerHandler),
+                selectors: selectors
+            })
+        );
 
-//         // Set the target contract.
-//         targetContract(address(timelockControllerHandler));
-//     }
+        // Set the target contract.
+        targetContract(address(timelockControllerHandler));
+    }
 
-//     // Number of pending transactions cannot exceed executed transactions
-//     function invariantExecutedLessThanOrEqualToPending() public {
-//         assertLe(
-//             timelockControllerHandler.execute_count(),
-//             timelockControllerHandler.schedule_count()
-//         );
-//     }
+    // Number of pending transactions cannot exceed executed transactions
+    function invariantExecutedLessThanOrEqualToPending() public {
+        assertLe(
+            timelockControllerHandler.execute_count(),
+            timelockControllerHandler.schedule_count()
+        );
+    }
 
-//     // Number of proposals executed must match the count number.
-//     function invariantProposalsExecutedMatchCount() public {
-//         assertEq(
-//             timelockControllerHandler.execute_count(),
-//             timelockControllerHandler.counter()
-//         );
-//     }
+    // Number of proposals executed must match the count number.
+    function invariantProposalsExecutedMatchCount() public {
+        assertEq(
+            timelockControllerHandler.execute_count(),
+            timelockControllerHandler.counter()
+        );
+    }
 
-//     // Proposals can only be scheduled and executed once
-//     function invariantOnceProposalExecution() public {
-//         uint256[] memory executed = timelockControllerHandler.getExecuted();
-//         // Loop over all executed proposals.
-//         for (uint256 i = 0; i < executed.length; ++i) {
-//             // Check that the executed proposal cannot be executed again.
-//             vm.expectRevert("TimelockController: operation is not ready");
-//             timelockController.execute(
-//                 address(timelockControllerHandler),
-//                 0,
-//                 abi.encodeWithSelector(
-//                     TimelockControllerHandler.increment.selector
-//                 ),
-//                 bytes32(""),
-//                 bytes32(executed[i])
-//             );
-//         }
-//     }
+    // Proposals can only be scheduled and executed once
+    function invariantOnceProposalExecution() public {
+        uint256[] memory executed = timelockControllerHandler.getExecuted();
+        // Loop over all executed proposals.
+        for (uint256 i = 0; i < executed.length; ++i) {
+            // Check that the executed proposal cannot be executed again.
+            vm.expectRevert("TimelockController: operation is not ready");
+            timelockController.execute(
+                address(timelockControllerHandler),
+                0,
+                abi.encodeWithSelector(
+                    TimelockControllerHandler.increment.selector
+                ),
+                bytes32(""),
+                bytes32(executed[i])
+            );
+        }
+    }
 
-//     // Sum of number of executed proposals and cancelled proposals must be less or equal to the amount of proposals scheduled.
-//     function invariantSumOfProposals() public {
-//         assertLe(
-//             timelockControllerHandler.cancel_count() +
-//                 timelockControllerHandler.execute_count(),
-//             timelockControllerHandler.schedule_count()
-//         );
-//     }
+    // Sum of number of executed proposals and cancelled proposals must be less or equal to the amount of proposals scheduled.
+    function invariantSumOfProposals() public {
+        assertLe(
+            timelockControllerHandler.cancel_count() +
+                timelockControllerHandler.execute_count(),
+            timelockControllerHandler.schedule_count()
+        );
+    }
 
-//     // Executed proposals cannot be cancelled
-//     function invariantExecutedProposalCancellation() public {
-//         uint256[] memory executed = timelockControllerHandler.getExecuted();
-//         // Loop over all executed proposals.
-//         for (uint256 i = 0; i < executed.length; ++i) {
-//             // Check that the executed proposal cannot be cancelled.
-//             vm.expectRevert(
-//                 "TimelockController: operation cannot be cancelled"
-//             );
-//             timelockController.cancel(bytes32(executed[i]));
-//         }
-//     }
+    // Executed proposals cannot be cancelled
+    function invariantExecutedProposalCancellation() public {
+        uint256[] memory executed = timelockControllerHandler.getExecuted();
+        // Loop over all executed proposals.
+        for (uint256 i = 0; i < executed.length; ++i) {
+            // Check that the executed proposal cannot be cancelled.
+            vm.expectRevert(
+                "TimelockController: operation cannot be cancelled"
+            );
+            timelockController.cancel(bytes32(executed[i]));
+        }
+    }
 
-//     // Executing a proposal that has been cancelled is not possible
-//     function invariantExecutingCancelledProposal() public {
-//         uint256[] memory cancelled = timelockControllerHandler.getCancelled();
-//         // Loop over all cancelled proposals.
-//         for (uint256 i = 0; i < cancelled.length; ++i) {
-//             // Check that the cancelled proposal cannot be executed.
-//             vm.expectRevert("TimelockController: operation is not ready");
-//             timelockController.execute(
-//                 address(timelockControllerHandler),
-//                 0,
-//                 abi.encodeWithSelector(
-//                     TimelockControllerHandler.increment.selector
-//                 ),
-//                 bytes32(""),
-//                 bytes32(cancelled[i])
-//             );
-//         }
-//     }
+    // Executing a proposal that has been cancelled is not possible
+    function invariantExecutingCancelledProposal() public {
+        uint256[] memory cancelled = timelockControllerHandler.getCancelled();
+        // Loop over all cancelled proposals.
+        for (uint256 i = 0; i < cancelled.length; ++i) {
+            // Check that the cancelled proposal cannot be executed.
+            vm.expectRevert("TimelockController: operation is not ready");
+            timelockController.execute(
+                address(timelockControllerHandler),
+                0,
+                abi.encodeWithSelector(
+                    TimelockControllerHandler.increment.selector
+                ),
+                bytes32(""),
+                bytes32(cancelled[i])
+            );
+        }
+    }
 
-//     // Executing a proposal that is not ready is not possible
-//     function invariantExecutingNotReadyProposal() public {
-//         uint256[] memory pending = timelockControllerHandler.getPending();
-//         // Loop over all pending proposals.
-//         for (uint256 i = 0; i < pending.length; ++i) {
-//             // Check that the pending proposal cannot be executed.
-//             vm.expectRevert("TimelockController: operation is not ready");
-//             timelockController.execute(
-//                 address(timelockControllerHandler),
-//                 0,
-//                 abi.encodeWithSelector(
-//                     TimelockControllerHandler.increment.selector
-//                 ),
-//                 bytes32(""),
-//                 bytes32(pending[i])
-//             );
-//         }
-//     }
-// }
+    // Executing a proposal that is not ready is not possible
+    function invariantExecutingNotReadyProposal() public {
+        uint256[] memory pending = timelockControllerHandler.getPending();
+        // Loop over all pending proposals.
+        for (uint256 i = 0; i < pending.length; ++i) {
+            // Check that the pending proposal cannot be executed.
+            vm.expectRevert("TimelockController: operation is not ready");
+            timelockController.execute(
+                address(timelockControllerHandler),
+                0,
+                abi.encodeWithSelector(
+                    TimelockControllerHandler.increment.selector
+                ),
+                bytes32(""),
+                bytes32(pending[i])
+            );
+        }
+    }
+}
 
-// contract TimelockControllerHandler is Test {
-//     ITimelockController private timelockController;
-//     uint256 private minDelay;
-//     address private admin;
-//     address private proposer;
-//     address private executor;
+contract TimelockControllerHandler is Test {
+    ITimelockController private timelockController;
+    uint256 private minDelay;
+    address private admin;
+    address private proposer;
+    address private executor;
 
-//     uint256 public counter;
+    uint256 public counter;
 
-//     uint256 public schedule_count;
-//     uint256 public execute_count;
-//     uint256 public cancel_count;
+    uint256 public schedule_count;
+    uint256 public execute_count;
+    uint256 public cancel_count;
 
-//     uint256[] public pending;
-//     uint256[] public executed;
-//     uint256[] public cancelled;
+    uint256[] public pending;
+    uint256[] public executed;
+    uint256[] public cancelled;
 
-//     constructor(
-//         ITimelockController timelockController_,
-//         uint256 minDelay_,
-//         address[] memory proposer_,
-//         address[] memory executor_,
-//         address admin_
-//     ) {
-//         timelockController = timelockController_;
-//         minDelay = minDelay_;
-//         proposer = proposer_[0];
-//         executor = executor_[0];
-//         admin = admin_;
-//     }
+    constructor(
+        ITimelockController timelockController_,
+        uint256 minDelay_,
+        address[] memory proposer_,
+        address[] memory executor_,
+        address admin_
+    ) {
+        timelockController = timelockController_;
+        minDelay = minDelay_;
+        proposer = proposer_[0];
+        executor = executor_[0];
+        admin = admin_;
+    }
 
-//     function schedule(uint256 random) external {
-//         vm.prank(proposer);
-//         timelockController.schedule(
-//             address(this),
-//             0,
-//             abi.encodeWithSelector(this.increment.selector),
-//             bytes32(""),
-//             bytes32(random),
-//             minDelay
-//         );
+    function schedule(uint256 random) external {
+        vm.prank(proposer);
+        timelockController.schedule(
+            address(this),
+            0,
+            abi.encodeWithSelector(this.increment.selector),
+            bytes32(""),
+            bytes32(random),
+            minDelay
+        );
 
-//         pending.push(random);
-//         schedule_count++;
-//     }
+        pending.push(random);
+        schedule_count++;
+    }
 
-//     function execute(uint256 random) external {
-//         if (pending.length == 0 || schedule_count == 0) {
-//             return;
-//         }
+    function execute(uint256 random) external {
+        if (pending.length == 0 || schedule_count == 0) {
+            return;
+        }
 
-//         uint256 identifier = random % pending.length;
-//         uint256 operation = pending[identifier];
+        uint256 identifier = random % pending.length;
+        uint256 operation = pending[identifier];
 
-//         // Advance time to make the proposal ready.
-//         vm.warp(block.timestamp + minDelay);
+        // Advance time to make the proposal ready.
+        vm.warp(block.timestamp + minDelay);
 
-//         vm.prank(executor);
-//         timelockController.execute(
-//             address(this),
-//             0,
-//             abi.encodeWithSelector(this.increment.selector),
-//             bytes32(""),
-//             bytes32(operation)
-//         );
+        vm.prank(executor);
+        timelockController.execute(
+            address(this),
+            0,
+            abi.encodeWithSelector(this.increment.selector),
+            bytes32(""),
+            bytes32(operation)
+        );
 
-//         delete pending[identifier];
-//         executed.push(operation);
+        delete pending[identifier];
+        executed.push(operation);
 
-//         execute_count++;
-//     }
+        execute_count++;
+    }
 
-//     function cancel(uint256 random) external {
-//         if (pending.length == 0 || schedule_count == 0) {
-//             return;
-//         }
+    function cancel(uint256 random) external {
+        if (pending.length == 0 || schedule_count == 0) {
+            return;
+        }
 
-//         uint256 identifier = random % pending.length;
-//         uint256 operation = pending[identifier];
+        uint256 identifier = random % pending.length;
+        uint256 operation = pending[identifier];
 
-//         vm.prank(proposer);
-//         timelockController.cancel(bytes32(operation));
+        vm.prank(proposer);
+        timelockController.cancel(bytes32(operation));
 
-//         delete pending[identifier];
-//         cancelled.push(operation);
+        delete pending[identifier];
+        cancelled.push(operation);
 
-//         cancel_count++;
-//     }
+        cancel_count++;
+    }
 
-//     function getExecuted() external view returns (uint256[] memory) {
-//         return executed;
-//     }
+    function getExecuted() external view returns (uint256[] memory) {
+        return executed;
+    }
 
-//     function getCancelled() external view returns (uint256[] memory) {
-//         return cancelled;
-//     }
+    function getCancelled() external view returns (uint256[] memory) {
+        return cancelled;
+    }
 
-//     function getPending() external view returns (uint256[] memory) {
-//         return pending;
-//     }
+    function getPending() external view returns (uint256[] memory) {
+        return pending;
+    }
 
-//     function increment() external {
-//         counter++;
-//     }
-// }
+    function increment() external {
+        counter++;
+    }
+}
