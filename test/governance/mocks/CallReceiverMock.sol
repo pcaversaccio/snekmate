@@ -4,7 +4,6 @@ pragma solidity ^0.8.23;
 /**
  * @title CallReceiverMock
  * @author pcaversaccio
- * @custom:coauthor cairoeth
  * @notice Forked and adjusted accordingly from here:
  * https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/mocks/CallReceiverMock.sol.
  * @dev Allows to test receiving state-changing and/or static external calls.

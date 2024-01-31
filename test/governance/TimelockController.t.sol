@@ -16,6 +16,12 @@ import {IERC721Extended} from "../tokens/interfaces/IERC721Extended.sol";
 import {IERC1155Extended} from "../tokens/interfaces/IERC1155Extended.sol";
 import {ITimelockController} from "./interfaces/ITimelockController.sol";
 
+/**
+ * @dev The standard access control functionalities are not tested as they
+ * were taken 1:1 from `AccessControl.vy`. See `AccessControl.t.sol` for the
+ * corresponding tests. However, please integrate these tests into your own
+ * test suite before deploying `TimelockController` into production!
+ */
 contract TimelockControllerTest is Test {
     bytes32 private constant DEFAULT_ADMIN_ROLE = bytes32(0);
     bytes32 private constant PROPOSER_ROLE = keccak256("PROPOSER_ROLE");
@@ -3722,9 +3728,10 @@ contract TimelockControllerTest is Test {
             NO_PREDECESSOR,
             EMPTY_SALT
         );
-        assertEq(timelockController.get_timestamp(
-            batchedOperationId
-        ), DONE_TIMESTAMP);
+        assertEq(
+            timelockController.get_timestamp(batchedOperationId),
+            DONE_TIMESTAMP
+        );
         assertEq(erc721Mock.balanceOf(timelockControllerAddr), 0);
     }
 
@@ -3743,7 +3750,12 @@ contract TimelockControllerTest is Test {
 
         vm.startPrank(deployer);
         erc1155Mock.safe_mint(timelockControllerAddr, 0, 1, new bytes(0));
-        erc1155Mock.safe_mint_batch(timelockControllerAddr, ids, tokenAmounts, new bytes(0));
+        erc1155Mock.safe_mint_batch(
+            timelockControllerAddr,
+            ids,
+            tokenAmounts,
+            new bytes(0)
+        );
         assertEq(erc1155Mock.balanceOf(timelockControllerAddr, 0), 1);
         assertEq(erc1155Mock.balanceOf(timelockControllerAddr, 1), 1);
         assertEq(erc1155Mock.balanceOf(timelockControllerAddr, 2), 2);
@@ -3811,9 +3823,10 @@ contract TimelockControllerTest is Test {
             EMPTY_SALT
         );
 
-        assertEq(timelockController.get_timestamp(
-            batchedOperationId
-        ), DONE_TIMESTAMP);
+        assertEq(
+            timelockController.get_timestamp(batchedOperationId),
+            DONE_TIMESTAMP
+        );
         assertEq(erc1155Mock.balanceOf(timelockControllerAddr, 0), 0);
     }
 
@@ -3872,9 +3885,7 @@ contract TimelockControllerTest is Test {
             NO_PREDECESSOR,
             EMPTY_SALT
         );
-        assertEq(timelockController.get_timestamp(
-            operationId
-        ), DONE_TIMESTAMP);
+        assertEq(timelockController.get_timestamp(operationId), DONE_TIMESTAMP);
         assertEq(address(callReceiverMock).balance, amount);
     }
 
@@ -3943,9 +3954,10 @@ contract TimelockControllerTest is Test {
             NO_PREDECESSOR,
             EMPTY_SALT
         );
-        assertEq(timelockController.get_timestamp(
-            batchedOperationId
-        ), DONE_TIMESTAMP);
+        assertEq(
+            timelockController.get_timestamp(batchedOperationId),
+            DONE_TIMESTAMP
+        );
         assertEq(address(callReceiverMock).balance, amounts[0]);
     }
 }
