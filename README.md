@@ -26,6 +26,8 @@ src
 │   ├── ERC4626 — "Modern and Gas-Efficient ERC-4626 Tokenised Vault Implementation"
 │   └── interfaces
 │       └── IERC2981 — "EIP-2981 Interface Definition"
+├── governance
+│   └── TimelockController — "Multi-Role-Based Timelock Controller Reference Implementation"
 ├── tokens
 │   ├── ERC20 — "Modern and Gas-Efficient ERC-20 + EIP-2612 Implementation"
 │   ├── ERC721 — "Modern and Gas-Efficient ERC-721 + EIP-4494 Implementation"
@@ -113,6 +115,7 @@ This repository contains [Foundry](https://github.com/foundry-rs/foundry)-based 
 | `AccessControl`           |       ✅       |            ✅            |         ✅          |
 | `ERC2981`                 |       ✅       |            ✅            |         ✅          |
 | `ERC4626`                 |       ✅       |            ✅            |         ✅          |
+| `TimelockController`      |       ✅       |            ✅            |         ✅          |
 | `ERC20`                   |       ✅       |            ✅            |         ✅          |
 | `ERC721`                  |       ✅       |            ✅            |         ✅          |
 | `ERC1155`                 |       ✅       |            ✅            |         ✅          |

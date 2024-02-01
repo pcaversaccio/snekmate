@@ -12,6 +12,9 @@
 """
 
 
+# @dev The 1-byte `CREATE2` offset constant used to prevent
+# collisions with addresses created using the traditional
+# `keccak256(rlp([sender, nonce]))` formula.
 _COLLISION_OFFSET: constant(bytes1) = 0xFF
 
 

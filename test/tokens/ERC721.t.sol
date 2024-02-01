@@ -1629,7 +1629,6 @@ contract ERC721Test is Test {
         vm.stopPrank();
 
         uint256 nonce = ERC721Extended.nonces(tokenId);
-        // solhint-disable-next-line not-rely-on-time
         uint256 deadline = block.timestamp + 100_000;
         bytes32 domainSeparator = ERC721Extended.DOMAIN_SEPARATOR();
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(
@@ -1667,7 +1666,6 @@ contract ERC721Test is Test {
         vm.stopPrank();
 
         uint256 nonce = ERC721Extended.nonces(tokenId);
-        // solhint-disable-next-line not-rely-on-time
         uint256 deadline = block.timestamp + 100_000;
         bytes32 domainSeparator = ERC721Extended.DOMAIN_SEPARATOR();
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(
@@ -1705,7 +1703,6 @@ contract ERC721Test is Test {
         vm.stopPrank();
 
         uint256 nonce = ERC721Extended.nonces(tokenId);
-        // solhint-disable-next-line not-rely-on-time
         uint256 deadline = block.timestamp + 100_000;
         bytes32 domainSeparator = ERC721Extended.DOMAIN_SEPARATOR();
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(
@@ -1740,7 +1737,6 @@ contract ERC721Test is Test {
         vm.stopPrank();
 
         uint256 nonce = ERC721Extended.nonces(tokenId);
-        // solhint-disable-next-line not-rely-on-time
         uint256 deadline = block.timestamp + 100_000;
         bytes32 domainSeparator = keccak256(
             abi.encode(
@@ -1783,7 +1779,6 @@ contract ERC721Test is Test {
         vm.stopPrank();
 
         uint256 nonce = 1;
-        // solhint-disable-next-line not-rely-on-time
         uint256 deadline = block.timestamp + 100_000;
         bytes32 domainSeparator = ERC721Extended.DOMAIN_SEPARATOR();
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(
@@ -1818,7 +1813,6 @@ contract ERC721Test is Test {
         vm.stopPrank();
 
         uint256 nonce = 1;
-        // solhint-disable-next-line not-rely-on-time
         uint256 deadline = block.timestamp - 1;
         bytes32 domainSeparator = ERC721Extended.DOMAIN_SEPARATOR();
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(
@@ -2353,7 +2347,6 @@ contract ERC721Test is Test {
         vm.stopPrank();
 
         uint256 nonce = ERC721Extended.nonces(tokenId);
-        // solhint-disable-next-line not-rely-on-time
         uint256 deadline = block.timestamp + increment;
         bytes32 domainSeparator = ERC721Extended.DOMAIN_SEPARATOR();
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(
@@ -2399,7 +2392,6 @@ contract ERC721Test is Test {
         vm.stopPrank();
 
         uint256 nonce = ERC721Extended.nonces(tokenId);
-        // solhint-disable-next-line not-rely-on-time
         uint256 deadline = block.timestamp + increment;
         bytes32 domainSeparator = ERC721Extended.DOMAIN_SEPARATOR();
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(

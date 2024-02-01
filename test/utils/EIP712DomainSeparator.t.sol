@@ -83,7 +83,6 @@ contract EIP712DomainSeparatorTest is Test {
         address spender = makeAddr("spender");
         uint256 value = 100;
         uint256 nonce = 1;
-        // solhint-disable-next-line not-rely-on-time
         uint256 deadline = block.timestamp + 100_000;
         bytes32 structHash = keccak256(
             abi.encode(
@@ -161,7 +160,6 @@ contract EIP712DomainSeparatorTest is Test {
         uint256 nonce,
         uint64 increment
     ) public {
-        // solhint-disable-next-line not-rely-on-time
         uint256 deadline = block.timestamp + increment;
         bytes32 structHash = keccak256(
             abi.encode(

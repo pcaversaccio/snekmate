@@ -11,16 +11,14 @@ import {IERC721Receiver} from "openzeppelin/token/ERC721/IERC721Receiver.sol";
  * @dev Allows to test receiving ERC-721 tokens as a smart contract.
  */
 contract ERC721ReceiverMock is IERC721Receiver {
-    // solhint-disable-next-line var-name-mixedcase
-    bytes4 private immutable _RETVAL;
-
     enum Error {
         None,
         RevertWithMessage,
         RevertWithoutMessage,
         Panic
     }
-    // solhint-disable-next-line var-name-mixedcase
+
+    bytes4 private immutable _RETVAL;
     Error private immutable _ERROR;
 
     event Received(address operator, address from, uint256 tokenId, bytes data);

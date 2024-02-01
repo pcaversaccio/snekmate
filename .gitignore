@@ -57,3 +57,6 @@ venv
 # Python build files
 dist
 *.egg-info
+
+# Ape build files
+.build
