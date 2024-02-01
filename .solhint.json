@@ -4,6 +4,7 @@
     "func-visibility": ["warn", { "ignoreConstructors": true }],
     "func-name-mixedcase": "off",
     "private-vars-leading-underscore": "off",
-    "one-contract-per-file": "off"
+    "one-contract-per-file": "off",
+    "max-states-count": "off"
   }
 }

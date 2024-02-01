@@ -85,9 +85,10 @@ contract TimelockControllerTest is Test {
         bytes32 role,
         address[2] storage addresses
     ) internal {
-        for (uint256 i = 0; i < addresses.length; ++i) {
-            assertTrue(!accessControl.hasRole(role, addresses[i]));
-        }
+        assertTrue(
+            !accessControl.hasRole(role, addresses[0]) &&
+                !accessControl.hasRole(role, addresses[1])
+        );
     }
 
     function setUp() public {
@@ -991,6 +992,62 @@ contract TimelockControllerTest is Test {
         );
         assertEq(timelockController.get_minimum_delay(), MIN_DELAY + 31 days);
         assertEq(operationTimestampAfter, operationTimestampBefore);
+        vm.stopPrank();
+    }
+
+    function testCompletePipelineOperationMinimumDelayUpdate() public {
+        uint256 amount = 0;
+        bytes memory payload = abi.encodeWithSelector(
+            timelockController.update_delay.selector,
+            MIN_DELAY + 31 days
+        );
+        bytes32 operationId = timelockController.hash_operation(
+            timelockControllerAddr,
+            amount,
+            payload,
+            NO_PREDECESSOR,
+            EMPTY_SALT
+        );
+
+        vm.startPrank(PROPOSER_ONE);
+        vm.expectEmit(true, true, false, true);
+        emit ITimelockController.CallScheduled(
+            operationId,
+            0,
+            timelockControllerAddr,
+            amount,
+            payload,
+            NO_PREDECESSOR,
+            MIN_DELAY
+        );
+        timelockController.schedule(
+            timelockControllerAddr,
+            amount,
+            payload,
+            NO_PREDECESSOR,
+            EMPTY_SALT,
+            MIN_DELAY
+        );
+        vm.stopPrank();
+
+        vm.warp(block.timestamp + MIN_DELAY);
+        vm.startPrank(EXECUTOR_ONE);
+        vm.expectEmit(true, true, false, true);
+        emit ITimelockController.CallExecuted(
+            operationId,
+            0,
+            timelockControllerAddr,
+            amount,
+            payload
+        );
+        timelockController.execute(
+            timelockControllerAddr,
+            amount,
+            payload,
+            NO_PREDECESSOR,
+            EMPTY_SALT
+        );
+        assertEq(timelockController.get_minimum_delay(), MIN_DELAY + 31 days);
         vm.stopPrank();
     }
 
@@ -2066,6 +2123,7 @@ contract TimelockControllerTest is Test {
             NO_PREDECESSOR,
             EMPTY_SALT
         );
+
         vm.startPrank(PROPOSER_ONE);
         for (uint256 i = 0; i < targets.length; ++i) {
             vm.expectEmit(true, true, false, true);
@@ -3247,8 +3305,7 @@ contract TimelockControllerTest is Test {
         );
         timelockController.update_delay(newMinDelay);
         vm.stopPrank();
-        uint256 minDelay = timelockController.get_minimum_delay();
-        assertEq(minDelay, newMinDelay);
+        assertEq(timelockController.get_minimum_delay(), newMinDelay);
     }
 
     function testInvalidOperation() public {
@@ -3261,7 +3318,7 @@ contract TimelockControllerTest is Test {
         timelockController.update_delay(3 days);
     }
 
-    function testAdminCantBatchSchedule() public {
+    function testAdminCannotBatchSchedule() public {
         address[] memory targets = new address[](0);
         uint256[] memory amounts = new uint256[](0);
         bytes[] memory payloads = new bytes[](0);
@@ -3277,7 +3334,7 @@ contract TimelockControllerTest is Test {
         );
     }
 
-    function testAdminCantSchedule() public {
+    function testAdminCannotSchedule() public {
         vm.expectRevert("AccessControl: account is missing role");
         vm.prank(self);
         timelockController.schedule(
@@ -3290,7 +3347,7 @@ contract TimelockControllerTest is Test {
         );
     }
 
-    function testAdminCantBatchExecute() public {
+    function testAdminCannotBatchExecute() public {
         address[] memory targets = new address[](0);
         uint256[] memory amounts = new uint256[](0);
         bytes[] memory payloads = new bytes[](0);
@@ -3306,7 +3363,7 @@ contract TimelockControllerTest is Test {
         );
     }
 
-    function testAdminCantExecute() public {
+    function testAdminCannotExecute() public {
         vm.expectRevert("AccessControl: account is missing role");
         vm.prank(self);
         timelockController.execute(
@@ -3318,7 +3375,7 @@ contract TimelockControllerTest is Test {
         );
     }
 
-    function testAdminCantCancel() public {
+    function testAdminCannotCancel() public {
         vm.expectRevert("AccessControl: account is missing role");
         vm.prank(self);
         timelockController.cancel(EMPTY_SALT);
@@ -3369,13 +3426,13 @@ contract TimelockControllerTest is Test {
             0,
             new bytes(0),
             NO_PREDECESSOR,
-            bytes32("1"),
+            SALT,
             MIN_DELAY
         );
         vm.stopPrank();
     }
 
-    function testProposerCantBatchExecute() public {
+    function testProposerCannotBatchExecute() public {
         address[] memory targets = new address[](0);
         uint256[] memory amounts = new uint256[](0);
         bytes[] memory payloads = new bytes[](0);
@@ -3397,11 +3454,11 @@ contract TimelockControllerTest is Test {
             amounts,
             payloads,
             NO_PREDECESSOR,
-            bytes32("1")
+            SALT
         );
     }
 
-    function testProposerCantExecute() public {
+    function testProposerCannotExecute() public {
         vm.expectRevert("AccessControl: account is missing role");
         vm.prank(PROPOSER_ONE);
         timelockController.execute(
@@ -3419,7 +3476,7 @@ contract TimelockControllerTest is Test {
             0,
             new bytes(0),
             NO_PREDECESSOR,
-            bytes32("1")
+            SALT
         );
     }
 
@@ -3433,7 +3490,7 @@ contract TimelockControllerTest is Test {
         timelockController.cancel(EMPTY_SALT);
     }
 
-    function testExecutorCantBatchSchedule() public {
+    function testExecutorCannotBatchSchedule() public {
         address[] memory targets = new address[](0);
         uint256[] memory amounts = new uint256[](0);
         bytes[] memory payloads = new bytes[](0);
@@ -3456,12 +3513,12 @@ contract TimelockControllerTest is Test {
             amounts,
             payloads,
             NO_PREDECESSOR,
-            bytes32("1"),
+            SALT,
             MIN_DELAY
         );
     }
 
-    function testExecutorCantSchedule() public {
+    function testExecutorCannotSchedule() public {
         vm.expectRevert("AccessControl: account is missing role");
         vm.prank(EXECUTOR_ONE);
         timelockController.schedule(
@@ -3480,7 +3537,7 @@ contract TimelockControllerTest is Test {
             0,
             new bytes(0),
             NO_PREDECESSOR,
-            bytes32("1"),
+            SALT,
             MIN_DELAY
         );
     }
@@ -3507,7 +3564,7 @@ contract TimelockControllerTest is Test {
             amounts,
             payloads,
             NO_PREDECESSOR,
-            bytes32("1")
+            SALT
         );
     }
 
@@ -3529,11 +3586,11 @@ contract TimelockControllerTest is Test {
             0,
             new bytes(0),
             NO_PREDECESSOR,
-            bytes32("1")
+            SALT
         );
     }
 
-    function testExecutorCantCancel() public {
+    function testExecutorCannotCancel() public {
         vm.expectRevert("AccessControl: account is missing role");
         vm.prank(EXECUTOR_ONE);
         timelockController.cancel(EMPTY_SALT);
@@ -3543,7 +3600,7 @@ contract TimelockControllerTest is Test {
         timelockController.cancel(EMPTY_SALT);
     }
 
-    function testStrangerCantBatchSchedule() public {
+    function testStrangerCannotBatchSchedule() public {
         address[] memory targets = new address[](0);
         uint256[] memory amounts = new uint256[](0);
         bytes[] memory payloads = new bytes[](0);
@@ -3560,7 +3617,7 @@ contract TimelockControllerTest is Test {
         );
     }
 
-    function testStrangerCantSchedule() public {
+    function testStrangerCannotSchedule() public {
         vm.expectRevert("AccessControl: account is missing role");
         vm.prank(STRANGER);
         timelockController.schedule(
@@ -3573,7 +3630,7 @@ contract TimelockControllerTest is Test {
         );
     }
 
-    function testStrangerCantBatchExecute() public {
+    function testStrangerCannotBatchExecute() public {
         address[] memory targets = new address[](0);
         uint256[] memory amounts = new uint256[](0);
         bytes[] memory payloads = new bytes[](0);
@@ -3589,7 +3646,7 @@ contract TimelockControllerTest is Test {
         );
     }
 
-    function testStrangerCantExecute() public {
+    function testStrangerCannotExecute() public {
         vm.expectRevert("AccessControl: account is missing role");
         vm.prank(STRANGER);
         timelockController.execute(
@@ -3601,7 +3658,7 @@ contract TimelockControllerTest is Test {
         );
     }
 
-    function testStrangerCantCancel() public {
+    function testStrangerCannotCancel() public {
         vm.expectRevert("AccessControl: account is missing role");
         vm.prank(STRANGER);
         timelockController.cancel(EMPTY_SALT);
@@ -3653,6 +3710,142 @@ contract TimelockControllerTest is Test {
         emit ITimelockController.Cancelled(batchedOperationId);
         timelockController.cancel(batchedOperationId);
         assertTrue(!timelockController.is_operation(batchedOperationId));
+        vm.stopPrank();
+    }
+
+    function testCompletePipelineOperationSetRoleAdmin() public {
+        uint256 amount = 0;
+        bytes memory payload = abi.encodeWithSelector(
+            timelockController.set_role_admin.selector,
+            EXECUTOR_ROLE,
+            PROPOSER_ROLE
+        );
+        bytes32 operationId = timelockController.hash_operation(
+            timelockControllerAddr,
+            amount,
+            payload,
+            NO_PREDECESSOR,
+            EMPTY_SALT
+        );
+
+        vm.startPrank(PROPOSER_ONE);
+        vm.expectEmit(true, true, false, true);
+        emit ITimelockController.CallScheduled(
+            operationId,
+            0,
+            timelockControllerAddr,
+            amount,
+            payload,
+            NO_PREDECESSOR,
+            MIN_DELAY
+        );
+        timelockController.schedule(
+            timelockControllerAddr,
+            amount,
+            payload,
+            NO_PREDECESSOR,
+            EMPTY_SALT,
+            MIN_DELAY
+        );
+        vm.stopPrank();
+
+        vm.warp(block.timestamp + MIN_DELAY);
+        vm.startPrank(EXECUTOR_ONE);
+        vm.expectEmit(true, true, true, false);
+        emit IAccessControl.RoleAdminChanged(
+            EXECUTOR_ROLE,
+            DEFAULT_ADMIN_ROLE,
+            PROPOSER_ROLE
+        );
+        vm.expectEmit(true, true, false, true);
+        emit ITimelockController.CallExecuted(
+            operationId,
+            0,
+            timelockControllerAddr,
+            amount,
+            payload
+        );
+        timelockController.execute(
+            timelockControllerAddr,
+            amount,
+            payload,
+            NO_PREDECESSOR,
+            EMPTY_SALT
+        );
+        assertEq(timelockController.getRoleAdmin(EXECUTOR_ROLE), PROPOSER_ROLE);
+        assertTrue(
+            timelockController.getRoleAdmin(EXECUTOR_ROLE) != DEFAULT_ADMIN_ROLE
+        );
+        vm.stopPrank();
+    }
+
+    function testCompleteOperationWithAssignExecutorRoleToZeroAddress() public {
+        vm.startPrank(timelockControllerAddr);
+        timelockController.grantRole(EXECUTOR_ROLE, zeroAddress);
+        vm.stopPrank();
+
+        uint256 amount = 0;
+        bytes memory payload = abi.encodeWithSelector(
+            timelockController.set_role_admin.selector,
+            EXECUTOR_ROLE,
+            PROPOSER_ROLE
+        );
+        bytes32 operationId = timelockController.hash_operation(
+            timelockControllerAddr,
+            amount,
+            payload,
+            NO_PREDECESSOR,
+            EMPTY_SALT
+        );
+
+        vm.startPrank(PROPOSER_ONE);
+        vm.expectEmit(true, true, false, true);
+        emit ITimelockController.CallScheduled(
+            operationId,
+            0,
+            timelockControllerAddr,
+            amount,
+            payload,
+            NO_PREDECESSOR,
+            MIN_DELAY
+        );
+        timelockController.schedule(
+            timelockControllerAddr,
+            amount,
+            payload,
+            NO_PREDECESSOR,
+            EMPTY_SALT,
+            MIN_DELAY
+        );
+        vm.stopPrank();
+
+        vm.warp(block.timestamp + MIN_DELAY);
+        vm.startPrank(STRANGER);
+        vm.expectEmit(true, true, true, false);
+        emit IAccessControl.RoleAdminChanged(
+            EXECUTOR_ROLE,
+            DEFAULT_ADMIN_ROLE,
+            PROPOSER_ROLE
+        );
+        vm.expectEmit(true, true, false, true);
+        emit ITimelockController.CallExecuted(
+            operationId,
+            0,
+            timelockControllerAddr,
+            amount,
+            payload
+        );
+        timelockController.execute(
+            timelockControllerAddr,
+            amount,
+            payload,
+            NO_PREDECESSOR,
+            EMPTY_SALT
+        );
+        assertEq(timelockController.getRoleAdmin(EXECUTOR_ROLE), PROPOSER_ROLE);
+        assertTrue(
+            timelockController.getRoleAdmin(EXECUTOR_ROLE) != DEFAULT_ADMIN_ROLE
+        );
         vm.stopPrank();
     }
 
@@ -3733,6 +3926,7 @@ contract TimelockControllerTest is Test {
             DONE_TIMESTAMP
         );
         assertEq(erc721Mock.balanceOf(timelockControllerAddr), 0);
+        vm.stopPrank();
     }
 
     function testHandleERC1155() public {
@@ -3740,7 +3934,6 @@ contract TimelockControllerTest is Test {
         erc1155Mock = IERC1155Extended(
             vyperDeployer.deployContract("src/tokens/", "ERC1155", args)
         );
-
         uint256[] memory ids = new uint256[](2);
         uint256[] memory tokenAmounts = new uint256[](2);
         ids[0] = 1;
@@ -3780,7 +3973,7 @@ contract TimelockControllerTest is Test {
             EMPTY_SALT
         );
 
-        vm.prank(PROPOSER_ONE);
+        vm.startPrank(PROPOSER_ONE);
         for (uint256 i = 0; i < targets.length; ++i) {
             vm.expectEmit(true, true, false, true);
             emit ITimelockController.CallScheduled(
@@ -3801,10 +3994,10 @@ contract TimelockControllerTest is Test {
             EMPTY_SALT,
             MIN_DELAY
         );
+        vm.stopPrank();
 
         vm.warp(block.timestamp + MIN_DELAY);
-
-        vm.prank(EXECUTOR_ONE);
+        vm.startPrank(EXECUTOR_ONE);
         for (uint256 i = 0; i < targets.length; ++i) {
             vm.expectEmit(true, true, false, true);
             emit ITimelockController.CallExecuted(
@@ -3822,12 +4015,32 @@ contract TimelockControllerTest is Test {
             NO_PREDECESSOR,
             EMPTY_SALT
         );
-
         assertEq(
             timelockController.get_timestamp(batchedOperationId),
             DONE_TIMESTAMP
         );
         assertEq(erc1155Mock.balanceOf(timelockControllerAddr, 0), 0);
+        vm.stopPrank();
+    }
+
+    function testFuzzHashOperation(
+        address target_,
+        uint256 amount,
+        bytes memory payload,
+        bytes32 predecessor,
+        bytes32 salt
+    ) public {
+        bytes32 operationId = timelockController.hash_operation(
+            target_,
+            amount,
+            payload,
+            predecessor,
+            salt
+        );
+        assertEq(
+            operationId,
+            keccak256(abi.encode(target_, amount, payload, predecessor, salt))
+        );
     }
 
     function testFuzzOperationValue(uint256 amount) public {
@@ -3848,7 +4061,7 @@ contract TimelockControllerTest is Test {
         );
         deal(timelockControllerAddr, amount);
 
-        vm.prank(PROPOSER_ONE);
+        vm.startPrank(PROPOSER_ONE);
         vm.expectEmit(true, true, false, true);
         emit ITimelockController.CallScheduled(
             operationId,
@@ -3867,9 +4080,10 @@ contract TimelockControllerTest is Test {
             EMPTY_SALT,
             MIN_DELAY
         );
+        vm.stopPrank();
 
         vm.warp(block.timestamp + MIN_DELAY);
-        vm.prank(EXECUTOR_ONE);
+        vm.startPrank(EXECUTOR_ONE);
         vm.expectEmit(true, true, false, true);
         emit ITimelockController.CallExecuted(
             operationId,
@@ -3887,6 +4101,29 @@ contract TimelockControllerTest is Test {
         );
         assertEq(timelockController.get_timestamp(operationId), DONE_TIMESTAMP);
         assertEq(address(callReceiverMock).balance, amount);
+        vm.stopPrank();
+    }
+
+    function testFuzzHashOperationBatch(
+        address[] memory targets_,
+        uint256[] memory amounts,
+        bytes[] memory payloads,
+        bytes32 predecessor,
+        bytes32 salt
+    ) public {
+        bytes32 batchedOperationId = timelockController.hash_operation_batch(
+            targets_,
+            amounts,
+            payloads,
+            predecessor,
+            salt
+        );
+        assertEq(
+            batchedOperationId,
+            keccak256(
+                abi.encode(targets_, amounts, payloads, predecessor, salt)
+            )
+        );
     }
 
     function testFuzzBatchValue(uint256 amount) public {
@@ -3912,7 +4149,7 @@ contract TimelockControllerTest is Test {
         );
         deal(timelockControllerAddr, amount);
 
-        vm.prank(PROPOSER_ONE);
+        vm.startPrank(PROPOSER_ONE);
         for (uint256 i = 0; i < targets.length; ++i) {
             vm.expectEmit(true, true, false, true);
             emit ITimelockController.CallScheduled(
@@ -3933,10 +4170,10 @@ contract TimelockControllerTest is Test {
             EMPTY_SALT,
             MIN_DELAY
         );
+        vm.stopPrank();
 
         vm.warp(block.timestamp + MIN_DELAY);
-
-        vm.prank(EXECUTOR_ONE);
+        vm.startPrank(EXECUTOR_ONE);
         for (uint256 i = 0; i < targets.length; ++i) {
             vm.expectEmit(true, true, false, true);
             emit ITimelockController.CallExecuted(
@@ -3959,6 +4196,7 @@ contract TimelockControllerTest is Test {
             DONE_TIMESTAMP
         );
         assertEq(address(callReceiverMock).balance, amounts[0]);
+        vm.stopPrank();
     }
 }
 
