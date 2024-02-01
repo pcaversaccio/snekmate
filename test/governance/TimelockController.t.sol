@@ -4206,82 +4206,73 @@ contract TimelockControllerInvariants is Test {
     ITimelockController private timelockController;
     TimelockControllerHandler private timelockControllerHandler;
 
+    address private self = address(this);
+    address private timelockControllerAddr;
+
     function setUp() public {
         address[] memory proposers = new address[](1);
-        proposers[0] = address(this);
-
+        proposers[0] = self;
         address[] memory executors = new address[](1);
-        executors[0] = address(this);
-
+        executors[0] = self;
         uint256 minDelay = 2 days;
-
-        bytes memory args = abi.encode(
-            minDelay,
-            proposers,
-            executors,
-            address(this)
-        );
+        bytes memory args = abi.encode(minDelay, proposers, executors, self);
         timelockController = ITimelockController(
-            payable(
-                vyperDeployer.deployContract(
-                    "src/governance/",
-                    "TimelockController",
-                    args
-                )
+            vyperDeployer.deployContract(
+                "src/governance/",
+                "TimelockController",
+                args
             )
         );
-
         timelockControllerHandler = new TimelockControllerHandler(
             timelockController,
             minDelay,
             proposers,
             executors,
-            address(this)
+            self
         );
+        timelockControllerAddr = address(timelockControllerHandler);
 
-        // Select the selectors to use for fuzzing.
         bytes4[] memory selectors = new bytes4[](3);
         selectors[0] = TimelockControllerHandler.schedule.selector;
         selectors[1] = TimelockControllerHandler.execute.selector;
         selectors[2] = TimelockControllerHandler.cancel.selector;
-
-        // Set the target selector.
         targetSelector(
-            FuzzSelector({
-                addr: address(timelockControllerHandler),
-                selectors: selectors
-            })
+            FuzzSelector({addr: timelockControllerAddr, selectors: selectors})
         );
-
-        // Set the target contract.
-        targetContract(address(timelockControllerHandler));
+        targetContract(timelockControllerAddr);
     }
 
-    // Number of pending transactions cannot exceed executed transactions
-    function invariantExecutedLessThanOrEqualToPending() public {
-        assertLe(
-            timelockControllerHandler.execute_count(),
-            timelockControllerHandler.schedule_count()
+    /**
+     * @dev The number of scheduled transactions cannot exceed the number of
+     * executed transactions.
+     */
+    function invariantExecutedLessThanOrEqualToScheduled() public {
+        assertTrue(
+            timelockControllerHandler.executeCount() <=
+                timelockControllerHandler.scheduleCount()
         );
     }
 
-    // Number of proposals executed must match the count number.
+    /**
+     * @dev The number of proposals executed must match the count number.
+     */
     function invariantProposalsExecutedMatchCount() public {
         assertEq(
-            timelockControllerHandler.execute_count(),
+            timelockControllerHandler.executeCount(),
             timelockControllerHandler.counter()
         );
     }
 
-    // Proposals can only be scheduled and executed once
+    /**
+     * @dev Proposals can only be scheduled and executed once.
+     */
     function invariantOnceProposalExecution() public {
         uint256[] memory executed = timelockControllerHandler.getExecuted();
-        // Loop over all executed proposals.
         for (uint256 i = 0; i < executed.length; ++i) {
-            // Check that the executed proposal cannot be executed again.
+            // Ensure that the executed proposal cannot be executed again.
             vm.expectRevert("TimelockController: operation is not ready");
             timelockController.execute(
-                address(timelockControllerHandler),
+                timelockControllerAddr,
                 0,
                 abi.encodeWithSelector(
                     TimelockControllerHandler.increment.selector
@@ -4292,21 +4283,25 @@ contract TimelockControllerInvariants is Test {
         }
     }
 
-    // Sum of number of executed proposals and cancelled proposals must be less or equal to the amount of proposals scheduled.
+    /**
+     * @dev The sum of the executed proposals and the cancelled proposals must
+     * be less than or equal to the number of scheduled proposals.
+     */
     function invariantSumOfProposals() public {
-        assertLe(
-            timelockControllerHandler.cancel_count() +
-                timelockControllerHandler.execute_count(),
-            timelockControllerHandler.schedule_count()
+        assertTrue(
+            (timelockControllerHandler.cancelCount() +
+                timelockControllerHandler.executeCount()) <=
+                timelockControllerHandler.scheduleCount()
         );
     }
 
-    // Executed proposals cannot be cancelled
+    /**
+     * @dev The executed proposals cannot be cancelled.
+     */
     function invariantExecutedProposalCancellation() public {
         uint256[] memory executed = timelockControllerHandler.getExecuted();
-        // Loop over all executed proposals.
         for (uint256 i = 0; i < executed.length; ++i) {
-            // Check that the executed proposal cannot be cancelled.
+            // Ensure that the executed proposal cannot be cancelled.
             vm.expectRevert(
                 "TimelockController: operation cannot be cancelled"
             );
@@ -4314,12 +4309,13 @@ contract TimelockControllerInvariants is Test {
         }
     }
 
-    // Executing a proposal that has been cancelled is not possible
+    /**
+     * @dev The execution of a proposal that has been cancelled is not possible.
+     */
     function invariantExecutingCancelledProposal() public {
         uint256[] memory cancelled = timelockControllerHandler.getCancelled();
-        // Loop over all cancelled proposals.
         for (uint256 i = 0; i < cancelled.length; ++i) {
-            // Check that the cancelled proposal cannot be executed.
+            // Ensure that the cancelled proposal cannot be executed.
             vm.expectRevert("TimelockController: operation is not ready");
             timelockController.execute(
                 address(timelockControllerHandler),
@@ -4333,12 +4329,13 @@ contract TimelockControllerInvariants is Test {
         }
     }
 
-    // Executing a proposal that is not ready is not possible
+    /**
+     * @dev The execution of a proposal that is not ready is not possible.
+     */
     function invariantExecutingNotReadyProposal() public {
         uint256[] memory pending = timelockControllerHandler.getPending();
-        // Loop over all pending proposals.
         for (uint256 i = 0; i < pending.length; ++i) {
-            // Check that the pending proposal cannot be executed.
+            // Ensure that the pending proposal cannot be executed.
             vm.expectRevert("TimelockController: operation is not ready");
             timelockController.execute(
                 address(timelockControllerHandler),
@@ -4354,21 +4351,21 @@ contract TimelockControllerInvariants is Test {
 }
 
 contract TimelockControllerHandler is Test {
+    uint256 public counter;
+    uint256 public scheduleCount;
+    uint256 public executeCount;
+    uint256 public cancelCount;
+
     ITimelockController private timelockController;
+
+    address private self = address(this);
     uint256 private minDelay;
     address private admin;
     address private proposer;
     address private executor;
-
-    uint256 public counter;
-
-    uint256 public schedule_count;
-    uint256 public execute_count;
-    uint256 public cancel_count;
-
-    uint256[] public pending;
-    uint256[] public executed;
-    uint256[] public cancelled;
+    uint256[] private pending;
+    uint256[] private executed;
+    uint256[] private cancelled;
 
     constructor(
         ITimelockController timelockController_,
@@ -4385,61 +4382,58 @@ contract TimelockControllerHandler is Test {
     }
 
     function schedule(uint256 random) external {
-        vm.prank(proposer);
+        vm.startPrank(proposer);
         timelockController.schedule(
-            address(this),
+            self,
             0,
             abi.encodeWithSelector(this.increment.selector),
             bytes32(""),
             bytes32(random),
             minDelay
         );
-
         pending.push(random);
-        schedule_count++;
+        scheduleCount++;
+        vm.stopPrank();
     }
 
     function execute(uint256 random) external {
-        if (pending.length == 0 || schedule_count == 0) {
+        if (pending.length == 0 || scheduleCount == 0) {
             return;
         }
 
         uint256 identifier = random % pending.length;
         uint256 operation = pending[identifier];
 
-        // Advance time to make the proposal ready.
+        // Advance the time to make the proposal ready.
         vm.warp(block.timestamp + minDelay);
-
-        vm.prank(executor);
+        vm.startPrank(executor);
         timelockController.execute(
-            address(this),
+            self,
             0,
             abi.encodeWithSelector(this.increment.selector),
             bytes32(""),
             bytes32(operation)
         );
-
         delete pending[identifier];
         executed.push(operation);
-
-        execute_count++;
+        executeCount++;
+        vm.stopPrank();
     }
 
     function cancel(uint256 random) external {
-        if (pending.length == 0 || schedule_count == 0) {
+        if (pending.length == 0 || scheduleCount == 0) {
             return;
         }
 
         uint256 identifier = random % pending.length;
         uint256 operation = pending[identifier];
 
-        vm.prank(proposer);
+        vm.startPrank(proposer);
         timelockController.cancel(bytes32(operation));
-
         delete pending[identifier];
         cancelled.push(operation);
-
-        cancel_count++;
+        cancelCount++;
+        vm.stopPrank();
     }
 
     function getExecuted() external view returns (uint256[] memory) {
