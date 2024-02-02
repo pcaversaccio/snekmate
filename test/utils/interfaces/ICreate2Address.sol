@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: WTFPL
-pragma solidity ^0.8.23;
+pragma solidity ^0.8.24;
 
 interface ICreate2Address {
     function compute_address_self(

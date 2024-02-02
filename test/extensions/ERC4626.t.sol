@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: WTFPL
-pragma solidity ^0.8.23;
+pragma solidity ^0.8.24;
 
 import {Test} from "forge-std/Test.sol";
 import {ERC4626Test} from "erc4626-tests/ERC4626.test.sol";

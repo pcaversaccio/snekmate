@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: WTFPL
-pragma solidity ^0.8.23;
+pragma solidity ^0.8.24;
 
 import {Create} from "create-util/Create.sol";
 
