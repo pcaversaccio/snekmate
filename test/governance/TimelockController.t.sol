@@ -4207,7 +4207,7 @@ contract TimelockControllerInvariants is Test {
     TimelockControllerHandler private timelockControllerHandler;
 
     address private self = address(this);
-    address private timelockControllerAddr;
+    address private timelockControllerHandlerAddr;
 
     function setUp() public {
         address[] memory proposers = new address[](1);
@@ -4230,16 +4230,19 @@ contract TimelockControllerInvariants is Test {
             executors,
             self
         );
-        timelockControllerAddr = address(timelockControllerHandler);
+        timelockControllerHandlerAddr = address(timelockControllerHandler);
 
         bytes4[] memory selectors = new bytes4[](3);
         selectors[0] = TimelockControllerHandler.schedule.selector;
         selectors[1] = TimelockControllerHandler.execute.selector;
         selectors[2] = TimelockControllerHandler.cancel.selector;
         targetSelector(
-            FuzzSelector({addr: timelockControllerAddr, selectors: selectors})
+            FuzzSelector({
+                addr: timelockControllerHandlerAddr,
+                selectors: selectors
+            })
         );
-        targetContract(timelockControllerAddr);
+        targetContract(timelockControllerHandlerAddr);
     }
 
     /**
@@ -4272,7 +4275,7 @@ contract TimelockControllerInvariants is Test {
             // Ensure that the executed proposal cannot be executed again.
             vm.expectRevert("TimelockController: operation is not ready");
             timelockController.execute(
-                timelockControllerAddr,
+                timelockControllerHandlerAddr,
                 0,
                 abi.encodeWithSelector(
                     TimelockControllerHandler.increment.selector
@@ -4305,7 +4308,19 @@ contract TimelockControllerInvariants is Test {
             vm.expectRevert(
                 "TimelockController: operation cannot be cancelled"
             );
-            timelockController.cancel(bytes32(executed[i]));
+            timelockController.cancel(
+                keccak256(
+                    abi.encode(
+                        timelockControllerHandlerAddr,
+                        0,
+                        abi.encodeWithSelector(
+                            TimelockControllerHandler.increment.selector
+                        ),
+                        bytes32(""),
+                        bytes32(executed[i])
+                    )
+                )
+            );
         }
     }
 
@@ -4318,7 +4333,7 @@ contract TimelockControllerInvariants is Test {
             // Ensure that the cancelled proposal cannot be executed.
             vm.expectRevert("TimelockController: operation is not ready");
             timelockController.execute(
-                address(timelockControllerHandler),
+                timelockControllerHandlerAddr,
                 0,
                 abi.encodeWithSelector(
                     TimelockControllerHandler.increment.selector
@@ -4338,7 +4353,7 @@ contract TimelockControllerInvariants is Test {
             // Ensure that the pending proposal cannot be executed.
             vm.expectRevert("TimelockController: operation is not ready");
             timelockController.execute(
-                address(timelockControllerHandler),
+                timelockControllerHandlerAddr,
                 0,
                 abi.encodeWithSelector(
                     TimelockControllerHandler.increment.selector
@@ -4382,11 +4397,6 @@ contract TimelockControllerHandler is Test {
     }
 
     function schedule(uint256 random) external {
-        // Ensure no overlapping entries with executed proposals.
-        for (uint256 i = 0; i < executed.length; ++i) {
-            vm.assume(random != executed[i]);
-        }
-
         vm.startPrank(proposer);
         timelockController.schedule(
             self,
@@ -4434,7 +4444,17 @@ contract TimelockControllerHandler is Test {
         uint256 operation = pending[identifier];
 
         vm.startPrank(proposer);
-        timelockController.cancel(bytes32(operation));
+        timelockController.cancel(
+            keccak256(
+                abi.encode(
+                    self,
+                    0,
+                    abi.encodeWithSelector(this.increment.selector),
+                    bytes32(""),
+                    bytes32(operation)
+                )
+            )
+        );
         delete pending[identifier];
         cancelled.push(operation);
         cancelCount++;
