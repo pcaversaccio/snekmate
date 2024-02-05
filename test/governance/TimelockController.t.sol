@@ -4302,25 +4302,23 @@ contract TimelockControllerInvariants is Test {
      * @dev The executed proposals cannot be cancelled.
      */
     function invariantExecutedProposalCancellation() public {
+        bytes32 operationId;
         uint256[] memory executed = timelockControllerHandler.getExecuted();
         for (uint256 i = 0; i < executed.length; ++i) {
+            operationId = timelockController.hash_operation(
+                timelockControllerHandlerAddr,
+                0,
+                abi.encodeWithSelector(
+                    TimelockControllerHandler.increment.selector
+                ),
+                bytes32(""),
+                bytes32(executed[i])
+            );
             // Ensure that the executed proposal cannot be cancelled.
             vm.expectRevert(
                 "TimelockController: operation cannot be cancelled"
             );
-            timelockController.cancel(
-                keccak256(
-                    abi.encode(
-                        timelockControllerHandlerAddr,
-                        0,
-                        abi.encodeWithSelector(
-                            TimelockControllerHandler.increment.selector
-                        ),
-                        bytes32(""),
-                        bytes32(executed[i])
-                    )
-                )
-            );
+            timelockController.cancel(operationId);
         }
     }
 
@@ -4445,14 +4443,12 @@ contract TimelockControllerHandler is Test {
 
         vm.startPrank(proposer);
         timelockController.cancel(
-            keccak256(
-                abi.encode(
-                    self,
-                    0,
-                    abi.encodeWithSelector(this.increment.selector),
-                    bytes32(""),
-                    bytes32(operation)
-                )
+            timelockController.hash_operation(
+                self,
+                0,
+                abi.encodeWithSelector(this.increment.selector),
+                bytes32(""),
+                bytes32(operation)
             )
         );
         delete pending[identifier];
