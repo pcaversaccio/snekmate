@@ -39,19 +39,19 @@
         https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/governance/TimelockController.sol.
 """
 
-
 # @dev We import and implement the `ERC165` interface,
 # which is a built-in interface of the Vyper compiler.
-from vyper.interfaces import ERC165
+from ethereum.ercs import ERC165
 implements: ERC165
 
 
-# @dev We import and implement the `IAccessControl`
-# interface, which is written using standard Vyper
-# syntax.
+# @dev We import and implement the `IAccessControl` interface
 from ..auth.interfaces import IAccessControl
 implements: IAccessControl
+from ..auth import AccessControl as acl
+# TODO: use bundle exports once that is available
 
+initializes: acl
 
 # @dev We import and implement the `IERC721Receiver`
 # interface, which is written using standard Vyper
@@ -126,15 +126,7 @@ _DYNARRAY_BOUND: constant(uint8) = max_value(uint8)
 
 
 # @dev The possible states of a proposal.
-# @notice Enums are treated differently in Vyper and
-# Solidity. The members are represented by `uint256`
-# values (in Solidity the values are of type `uint8`)
-# in the form `2**n`, where `n` is the index of the
-# member in the range `0 <= n <= 255` (i.e. the first
-# index value is `1`). For further insights also, see
-# the following Twitter thread:
-# https://twitter.com/pcaversaccio/status/1626514029094047747.
-enum OperationState:
+flag OperationState:
     UNSET
     WAITING
     READY
@@ -154,10 +146,12 @@ get_minimum_delay: public(uint256)
 
 
 # @dev Returns `True` if `account` has been granted `role`.
+# TODO: export from ACL
 hasRole: public(HashMap[bytes32, HashMap[address, bool]])
 
 
 # @dev Returns the admin role that controls `role`.
+# TODO: export from ACL
 getRoleAdmin: public(HashMap[bytes32, bytes32])
 
 
@@ -239,7 +233,7 @@ event RoleRevoked:
     sender: indexed(address)
 
 
-@external
+@deploy
 @payable
 def __init__(minimum_delay_: uint256, proposers_: DynArray[address, _DYNARRAY_BOUND], executors_: DynArray[address, _DYNARRAY_BOUND], admin_: address):
     """
@@ -270,21 +264,16 @@ def __init__(minimum_delay_: uint256, proposers_: DynArray[address, _DYNARRAY_BO
     @param admin_ The 20-byte (optional) account to be granted admin
            role.
     """
-    # Configure the contract to be self-administered.
-    self._grant_role(DEFAULT_ADMIN_ROLE, self)
-
-    # Set the optional admin.
-    if (admin_ != empty(address)):
-        self._grant_role(DEFAULT_ADMIN_ROLE, admin_)
+    acl.__init__()
 
     # Register the proposers and cancellers.
-    for proposer in proposers_:
-        self._grant_role(PROPOSER_ROLE, proposer)
-        self._grant_role(CANCELLER_ROLE, proposer)
+    for proposer: address in proposers_:
+        acl._grant_role(PROPOSER_ROLE, proposer)
+        acl._grant_role(CANCELLER_ROLE, proposer)
 
     # Register the executors.
-    for executor in executors_:
-        self._grant_role(EXECUTOR_ROLE, executor)
+    for executor: address in executors_:
+        acl._grant_role(EXECUTOR_ROLE, executor)
 
     # Set the minimum delay.
     self.get_minimum_delay = minimum_delay_
@@ -434,7 +423,7 @@ def schedule(target: address, amount: uint256, payload: Bytes[1_024], predecesso
     @param delay The 32-byte delay before the operation becomes valid.
            Must be greater than or equal to the minimum delay.
     """
-    self._check_role(PROPOSER_ROLE, msg.sender)
+    acl._check_role(PROPOSER_ROLE, msg.sender)
     id: bytes32 = self._hash_operation(target, amount, payload, predecessor, salt)
 
     self._schedule(id, delay)
@@ -462,13 +451,13 @@ def schedule_batch(targets: DynArray[address, _DYNARRAY_BOUND], amounts: DynArra
     @param delay The 32-byte delay before the operation becomes valid.
            Must be greater than or equal to the minimum delay.
     """
-    self._check_role(PROPOSER_ROLE, msg.sender)
+    acl._check_role(PROPOSER_ROLE, msg.sender)
     assert len(targets) == len(amounts) and len(targets) == len(payloads), "TimelockController: length mismatch"
     id: bytes32 = self._hash_operation_batch(targets, amounts, payloads, predecessor, salt)
 
     self._schedule(id, delay)
     idx: uint256 = empty(uint256)
-    for target in targets:
+    for target: address in targets:
         log CallScheduled(id, idx, target, amounts[idx], payloads[idx], predecessor, delay)
         # The following line cannot overflow because we have
         # limited the dynamic array `targets` by the `constant`
@@ -486,7 +475,7 @@ def cancel(id: bytes32):
     @notice Note that the caller must have the `CANCELLER_ROLE` role.
     @param id The 32-byte operation identifier.
     """
-    self._check_role(CANCELLER_ROLE, msg.sender)
+    acl._check_role(CANCELLER_ROLE, msg.sender)
     assert self._is_operation_pending(id), "TimelockController: operation cannot be cancelled"
     self.get_timestamp[id] = empty(uint256)
     log Cancelled(id)
@@ -547,7 +536,7 @@ def execute_batch(targets: DynArray[address, _DYNARRAY_BOUND], amounts: DynArray
 
     self._before_call(id, predecessor)
     idx: uint256 = empty(uint256)
-    for target in targets:
+    for target: address in targets:
         self._execute(target, amounts[idx], payloads[idx])
         log CallExecuted(id, idx, target, amounts[idx], payloads[idx])
         # The following line cannot overflow because we have
@@ -582,8 +571,8 @@ def grantRole(role: bytes32, account: address):
     @notice See {AccessControl-grantRole} for the
             function docstring.
     """
-    self._check_role(self.getRoleAdmin[role], msg.sender)
-    self._grant_role(role, account)
+    acl._check_role(acl.getRoleAdmin[role], msg.sender)
+    acl._grant_role(role, account)
 
 
 @external
@@ -593,8 +582,8 @@ def revokeRole(role: bytes32, account: address):
     @notice See {AccessControl-revokeRole} for the
             function docstring.
     """
-    self._check_role(self.getRoleAdmin[role], msg.sender)
-    self._revoke_role(role, account)
+    acl._check_role(acl.getRoleAdmin[role], msg.sender)
+    acl._revoke_role(role, account)
 
 
 @external
@@ -605,7 +594,7 @@ def renounceRole(role: bytes32, account: address):
             function docstring.
     """
     assert account == msg.sender, "AccessControl: can only renounce roles for itself"
-    self._revoke_role(role, account)
+    acl._revoke_role(role, account)
 
 
 @external
@@ -615,8 +604,8 @@ def set_role_admin(role: bytes32, admin_role: bytes32):
     @notice See {AccessControl-set_role_admin} for the
             function docstring.
     """
-    self._check_role(self.getRoleAdmin[role], msg.sender)
-    self._set_role_admin(role, admin_role)
+    acl._check_role(acl.getRoleAdmin[role], msg.sender)
+    acl._set_role_admin(role, admin_role)
 
 
 @external
@@ -881,52 +870,5 @@ def _only_role_or_open_role(role: bytes32):
          enabling this role for everyone.
     @param role The 32-byte role definition.
     """
-    if (not(self.hasRole[role][empty(address)])):
-        self._check_role(role, msg.sender)
-
-
-@internal
-@view
-def _check_role(role: bytes32, account: address):
-    """
-    @dev Sourced from {AccessControl-_check_role}.
-    @notice See {AccessControl-_check_role} for the
-            function docstring.
-    """
-    assert self.hasRole[role][account], "AccessControl: account is missing role"
-
-
-@internal
-def _set_role_admin(role: bytes32, admin_role: bytes32):
-    """
-    @dev Sourced from {AccessControl-_set_role_admin}.
-    @notice See {AccessControl-_set_role_admin} for the
-            function docstring.
-    """
-    previous_admin_role: bytes32 = self.getRoleAdmin[role]
-    self.getRoleAdmin[role] = admin_role
-    log RoleAdminChanged(role, previous_admin_role, admin_role)
-
-
-@internal
-def _grant_role(role: bytes32, account: address):
-    """
-    @dev Sourced from {AccessControl-_grant_role}.
-    @notice See {AccessControl-_grant_role} for the
-            function docstring.
-    """
-    if (not(self.hasRole[role][account])):
-        self.hasRole[role][account] = True
-        log RoleGranted(role, account, msg.sender)
-
-
-@internal
-def _revoke_role(role: bytes32, account: address):
-    """
-    @dev Sourced from {AccessControl-_revoke_role}.
-    @notice See {AccessControl-_revoke_role} for the
-            function docstring.
-    """
-    if (self.hasRole[role][account]):
-        self.hasRole[role][account] = False
-        log RoleRevoked(role, account, msg.sender)
+    if (not(acl.hasRole[role][empty(address)])):
+        acl._check_role(role, msg.sender)

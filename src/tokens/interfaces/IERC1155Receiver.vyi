@@ -17,7 +17,7 @@
 
 # @dev We import and implement the `ERC165` interface,
 # which is a built-in interface of the Vyper compiler.
-from vyper.interfaces import ERC165
+from ethereum.ercs import ERC165
 implements: ERC165
 
 
@@ -34,7 +34,7 @@ def supportsInterface(interfaceId: bytes4) -> bool:
     @return bool The verification whether the contract
             implements the interface or not.
     """
-    return empty(bool)
+    ...
 
 
 @external
@@ -58,7 +58,7 @@ def onERC1155Received(_operator: address, _from: address, _id: uint256, _value: 
            with no specified format.
     @return bytes4 The 4-byte function selector of `onERC1155Received`.
     """
-    return empty(bytes4)
+    ...
 
 
 @external
@@ -86,4 +86,4 @@ def onERC1155BatchReceived(_operator: address, _from: address, _ids: DynArray[ui
            with no specified format.
     @return bytes4 The 4-byte function selector of `onERC1155BatchReceived`.
     """
-    return empty(bytes4)
+    ...
