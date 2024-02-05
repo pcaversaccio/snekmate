@@ -467,7 +467,7 @@ packages:
     engines: { node: ">= 8" }
     dependencies:
       "@nodelib/fs.scandir": 2.1.5
-      fastq: 1.17.0
+      fastq: 1.17.1
     dev: true
 
   /@openzeppelin/merkle-tree@1.0.6:
@@ -1290,10 +1290,10 @@ packages:
       }
     dev: true
 
-  /fastq@1.17.0:
+  /fastq@1.17.1:
     resolution:
       {
-        integrity: sha512-zGygtijUMT7jnk3h26kUms3BkSDp4IfIKjmnqI2tvx6nuBfiF1UqOxbnLfzdv+apBy+53oaImsKtMw/xYbW+1w==,
+        integrity: sha512-sRVD3lWVIXWg6By68ZN7vho9a1pQcN/WBFaAAsDDFzlJjvoGx0P8z7V1t72grFJfJhu3YPZBuu25f7Kaw2jN1w==,
       }
     dependencies:
       reusify: 1.0.4
@@ -1793,7 +1793,7 @@ packages:
       buffer-reverse: 1.0.1
       crypto-js: 4.2.0
       treeify: 1.1.0
-      web3-utils: 1.10.3
+      web3-utils: 1.10.4
     dev: true
 
   /micro-ftch@0.3.1:
@@ -1969,7 +1969,7 @@ packages:
       got: 12.6.1
       registry-auth-token: 5.0.2
       registry-url: 6.0.1
-      semver: 7.5.4
+      semver: 7.6.0
     dev: true
 
   /parent-module@1.0.1:
@@ -2054,7 +2054,7 @@ packages:
     dependencies:
       "@solidity-parser/parser": 0.17.0
       prettier: 3.2.5
-      semver: 7.5.4
+      semver: 7.6.0
       solidity-comments-extractor: 0.0.8
     dev: true
 
@@ -2229,10 +2229,10 @@ packages:
       }
     dev: true
 
-  /semver@7.5.4:
+  /semver@7.6.0:
     resolution:
       {
-        integrity: sha512-1bCSESV6Pv+i21Hvpxp3Dx+pSD8lIPt8uVjRrxAUt/nbswYc+tK6Y2btiULjd4+fnq15PX+nqQDC7Oft7WkwcA==,
+        integrity: sha512-EnwXhrlwXMk9gKu5/flx5sv/an57AkRplG3hTK68W7FRDN+k+OWBj65M7719OkA82XLBxrcX0KSHj+X5COhOVg==,
       }
     engines: { node: ">=10" }
     hasBin: true
@@ -2291,7 +2291,7 @@ packages:
       latest-version: 7.0.0
       lodash: 4.17.21
       pluralize: 8.0.0
-      semver: 7.5.4
+      semver: 7.6.0
       strip-ansi: 6.0.1
       table: 6.8.1
       text-table: 0.2.0
@@ -2462,10 +2462,10 @@ packages:
       }
     dev: true
 
-  /web3-utils@1.10.3:
+  /web3-utils@1.10.4:
     resolution:
       {
-        integrity: sha512-OqcUrEE16fDBbGoQtZXWdavsPzbGIDc5v3VrRTZ0XrIpefC/viZ1ZU9bGEemazyS0catk/3rkOOxpzTfY+XsyQ==,
+        integrity: sha512-tsu8FiKJLk2PzhDl9fXbGUWTkkVXYhtTA+SmEFkKft+9BgwLxfCRpU96sWv7ICC8zixBNd3JURVoiR3dUXgP8A==,
       }
     engines: { node: ">=8.0.0" }
     dependencies:
