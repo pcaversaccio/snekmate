@@ -4382,6 +4382,11 @@ contract TimelockControllerHandler is Test {
     }
 
     function schedule(uint256 random) external {
+        // Ensure no overlapping entries with executed proposals.
+        for (uint256 i = 0; i < executed.length; ++i) {
+            vm.assume(random != executed[i]);
+        }
+
         vm.startPrank(proposer);
         timelockController.schedule(
             self,
