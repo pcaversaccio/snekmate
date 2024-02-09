@@ -16,7 +16,7 @@
 
 ### 🔖 Release Management
 
-- Implement `snekmate` namespaced distribution package building for TestPyPI and PyPI. ([#204](https://github.com/pcaversaccio/snekmate/pull/204))
+- Implement `snekmate`-namespaced distribution package building for TestPyPI and PyPI. ([#204](https://github.com/pcaversaccio/snekmate/pull/204))
 
 ### 👀 Full Changelog
 
