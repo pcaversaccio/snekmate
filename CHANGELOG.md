@@ -14,6 +14,10 @@
   - [`Math`](https://github.com/pcaversaccio/snekmate/blob/v0.0.5/src/utils/Math.vy): Rename the recently added `sign` function to `signum` to avoid any ambiguity with cryptographic signing utility functions. ([#188](https://github.com/pcaversaccio/snekmate/pull/188))
   - [`Math`](https://github.com/pcaversaccio/snekmate/blob/v0.0.5/src/utils/Math.vy): Optimise the zero point threshold in `wad_exp`. ([#189](https://github.com/pcaversaccio/snekmate/pull/189))
 
+### 🔖 Release Management
+
+- Implement `snekmate`-namespaced distribution package building for TestPyPI and PyPI. ([#204](https://github.com/pcaversaccio/snekmate/pull/204))
+
 ### 👀 Full Changelog
 
 - [`v0.0.4...v0.0.5`](https://github.com/pcaversaccio/snekmate/compare/v0.0.4...v0.0.5)

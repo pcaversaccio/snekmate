@@ -37,7 +37,7 @@ jobs:
           --user
 
       - name: Build a binary wheel and a source tarball
-        run: python -m build
+        run: python scripts/build.py
 
       - name: Store the distribution packages
         uses: actions/upload-artifact@v4
