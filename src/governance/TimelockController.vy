@@ -51,7 +51,7 @@ implements: IAccessControl
 from ..auth import AccessControl as acl
 # TODO: use bundle exports once that is available
 
-initializes: acl
+uses: acl
 
 # @dev We import and implement the `IERC721Receiver`
 # interface, which is written using standard Vyper
@@ -264,8 +264,7 @@ def __init__(minimum_delay_: uint256, proposers_: DynArray[address, _DYNARRAY_BO
     @param admin_ The 20-byte (optional) account to be granted admin
            role.
     """
-    acl.__init__()
-
+#acl.__init__()
     # Register the proposers and cancellers.
     for proposer: address in proposers_:
         acl._grant_role(PROPOSER_ROLE, proposer)
