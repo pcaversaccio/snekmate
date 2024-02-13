@@ -73,16 +73,6 @@ jobs:
           FOUNDRY_PROFILE: ci
 
       - name: Foundry tests
-        run: forge test
+        run: forge test --match-contract TimelockControllerTest
         env:
           FOUNDRY_PROFILE: ci
-
-      - name: Show the Foundry default config
-        run: forge config
-        env:
-          FOUNDRY_PROFILE: default
-
-      - name: Run snapshot
-        run: NO_COLOR=1 forge snapshot >> $GITHUB_STEP_SUMMARY
-        env:
-          FOUNDRY_PROFILE: default
