@@ -21,7 +21,7 @@ contract MulticallTest is Test {
 
     function setUp() public {
         multicall = IMulticall(
-            vyperDeployer.deployContract("src/utils/", "Multicall")
+            vyperDeployer.deployContract("src/snekmate/utils/", "Multicall")
         );
     }
 

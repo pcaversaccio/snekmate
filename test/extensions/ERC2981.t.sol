@@ -22,7 +22,7 @@ contract ERC2981Test is Test {
 
     function setUp() public {
         ERC2981Extended = IERC2981Extended(
-            vyperDeployer.deployContract("src/extensions/", "ERC2981")
+            vyperDeployer.deployContract("src/snekmate/extensions/", "ERC2981")
         );
     }
 
@@ -40,7 +40,7 @@ contract ERC2981Test is Test {
         vm.expectEmit(true, true, false, false);
         emit IERC2981Extended.OwnershipTransferred(zeroAddress, deployer);
         ERC2981ExtendedInitialEvent = IERC2981Extended(
-            vyperDeployer.deployContract("src/extensions/", "ERC2981")
+            vyperDeployer.deployContract("src/snekmate/extensions/", "ERC2981")
         );
         (
             address receiverInitialSetup,
@@ -775,7 +775,7 @@ contract ERC2981Invariants is Test {
 
     function setUp() public {
         ERC2981Extended = IERC2981Extended(
-            vyperDeployer.deployContract("src/extensions/", "ERC2981")
+            vyperDeployer.deployContract("src/snekmate/extensions/", "ERC2981")
         );
         erc2981Handler = new ERC2981Handler(ERC2981Extended, deployer);
         targetContract(address(erc2981Handler));

@@ -17,6 +17,7 @@
 ### 🔖 Release Management
 
 - Implement `snekmate`-namespaced distribution package building for TestPyPI and PyPI. ([#204](https://github.com/pcaversaccio/snekmate/pull/204))
+- Implement [`src` layout](https://setuptools.pypa.io/en/latest/userguide/package_discovery.html#src-layout) to enable an enhanced local `pip install git+https://github.com/pcaversaccio/snekmate.git@<branch>` building. ([#206](https://github.com/pcaversaccio/snekmate/pull/206))
 
 ### 👀 Full Changelog
 

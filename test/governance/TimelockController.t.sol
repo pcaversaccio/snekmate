@@ -102,7 +102,7 @@ contract TimelockControllerTest is Test {
         bytes memory args = abi.encode(MIN_DELAY, proposers_, executors_, self);
         timelockController = ITimelockController(
             vyperDeployer.deployContract(
-                "src/governance/",
+                "src/snekmate/governance/",
                 "TimelockController",
                 args
             )
@@ -272,7 +272,7 @@ contract TimelockControllerTest is Test {
         emit ITimelockController.MinimumDelayChange(0, MIN_DELAY);
         timelockControllerInitialEventEmptyAdmin = ITimelockController(
             vyperDeployer.deployContract(
-                "src/governance/",
+                "src/snekmate/governance/",
                 "TimelockController",
                 argsEmptyAdmin
             )
@@ -455,7 +455,7 @@ contract TimelockControllerTest is Test {
         emit ITimelockController.MinimumDelayChange(0, MIN_DELAY);
         timelockControllerInitialEventNonEmptyAdmin = ITimelockController(
             vyperDeployer.deployContract(
-                "src/governance/",
+                "src/snekmate/governance/",
                 "TimelockController",
                 argsNonEmptyAdmin
             )
@@ -3858,7 +3858,7 @@ contract TimelockControllerTest is Test {
             "1"
         );
         erc721Mock = IERC721Extended(
-            vyperDeployer.deployContract("src/tokens/", "ERC721", args)
+            vyperDeployer.deployContract("src/snekmate/tokens/", "ERC721", args)
         );
         vm.startPrank(deployer);
         erc721Mock.safe_mint(timelockControllerAddr, "my_awesome_nft_uri_1");
@@ -3932,7 +3932,11 @@ contract TimelockControllerTest is Test {
     function testHandleERC1155() public {
         bytes memory args = abi.encode("https://www.wagmi.xyz/");
         erc1155Mock = IERC1155Extended(
-            vyperDeployer.deployContract("src/tokens/", "ERC1155", args)
+            vyperDeployer.deployContract(
+                "src/snekmate/tokens/",
+                "ERC1155",
+                args
+            )
         );
         uint256[] memory ids = new uint256[](2);
         uint256[] memory tokenAmounts = new uint256[](2);
@@ -4218,7 +4222,7 @@ contract TimelockControllerInvariants is Test {
         bytes memory args = abi.encode(minDelay, proposers, executors, self);
         timelockController = ITimelockController(
             vyperDeployer.deployContract(
-                "src/governance/",
+                "src/snekmate/governance/",
                 "TimelockController",
                 args
             )

@@ -19,7 +19,10 @@ contract Create2AddressTest is Test {
 
     function setUp() public {
         create2Address = ICreate2Address(
-            vyperDeployer.deployContract("src/utils/", "Create2Address")
+            vyperDeployer.deployContract(
+                "src/snekmate/utils/",
+                "Create2Address"
+            )
         );
         create2AddressAddr = address(create2Address);
     }

@@ -50,7 +50,7 @@ contract ERC20Test is Test {
             _VERSION_EIP712
         );
         ERC20Extended = IERC20Extended(
-            vyperDeployer.deployContract("src/tokens/", "ERC20", args)
+            vyperDeployer.deployContract("src/snekmate/tokens/", "ERC20", args)
         );
         ERC20ExtendedAddr = address(ERC20Extended);
         _CACHED_DOMAIN_SEPARATOR = keccak256(
@@ -95,7 +95,7 @@ contract ERC20Test is Test {
             _VERSION_EIP712
         );
         ERC20ExtendedInitialEvent = IERC20Extended(
-            vyperDeployer.deployContract("src/tokens/", "ERC20", args)
+            vyperDeployer.deployContract("src/snekmate/tokens/", "ERC20", args)
         );
         assertEq(ERC20ExtendedInitialEvent.decimals(), 18);
         assertEq(ERC20ExtendedInitialEvent.name(), _NAME);
@@ -1299,7 +1299,7 @@ contract ERC20Invariants is Test {
             _VERSION_EIP712
         );
         ERC20Extended = IERC20Extended(
-            vyperDeployer.deployContract("src/tokens/", "ERC20", args)
+            vyperDeployer.deployContract("src/snekmate/tokens/", "ERC20", args)
         );
         erc20Handler = new ERC20Handler(
             ERC20Extended,

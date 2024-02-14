@@ -30,7 +30,7 @@
     "lint:fix": "pnpm prettier:fix && pnpm solhint:fix && npx eslint . --fix"
   },
   "files": [
-    "src/**/*.vy",
+    "src/snekmate/**/*.vy",
     "LICENSE",
     "README.md",
     "CHANGELOG.md"

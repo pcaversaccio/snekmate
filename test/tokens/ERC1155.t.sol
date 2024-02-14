@@ -31,7 +31,11 @@ contract ERC1155Test is Test {
     function setUp() public {
         bytes memory args = abi.encode(_BASE_URI);
         ERC1155Extended = IERC1155Extended(
-            vyperDeployer.deployContract("src/tokens/", "ERC1155", args)
+            vyperDeployer.deployContract(
+                "src/snekmate/tokens/",
+                "ERC1155",
+                args
+            )
         );
     }
 
@@ -53,7 +57,11 @@ contract ERC1155Test is Test {
         emit IERC1155Extended.RoleMinterChanged(deployer, true);
         bytes memory args = abi.encode(_BASE_URI);
         ERC1155ExtendedInitialEvent = IERC1155Extended(
-            vyperDeployer.deployContract("src/tokens/", "ERC1155", args)
+            vyperDeployer.deployContract(
+                "src/snekmate/tokens/",
+                "ERC1155",
+                args
+            )
         );
         assertEq(ERC1155ExtendedInitialEvent.owner(), deployer);
         assertTrue(ERC1155ExtendedInitialEvent.is_minter(deployer));
@@ -1197,7 +1205,11 @@ contract ERC1155Test is Test {
     function testUriNoBaseURI() public {
         bytes memory args = abi.encode("");
         ERC1155ExtendedNoBaseURI = IERC1155Extended(
-            vyperDeployer.deployContract("src/tokens/", "ERC1155", args)
+            vyperDeployer.deployContract(
+                "src/snekmate/tokens/",
+                "ERC1155",
+                args
+            )
         );
         string memory uri = "my_awesome_uri";
         uint256 id = 1;
@@ -1217,7 +1229,11 @@ contract ERC1155Test is Test {
     function testUriBaseAndTokenUriNotSet() public {
         bytes memory args = abi.encode("");
         ERC1155ExtendedNoBaseURI = IERC1155Extended(
-            vyperDeployer.deployContract("src/tokens/", "ERC1155", args)
+            vyperDeployer.deployContract(
+                "src/snekmate/tokens/",
+                "ERC1155",
+                args
+            )
         );
         uint256 id = 1;
         assertEq(ERC1155ExtendedNoBaseURI.uri(id), "");
@@ -3569,7 +3585,11 @@ contract ERC1155Invariants is Test {
     function setUp() public {
         bytes memory args = abi.encode(_BASE_URI);
         ERC1155Extended = IERC1155Extended(
-            vyperDeployer.deployContract("src/tokens/", "ERC1155", args)
+            vyperDeployer.deployContract(
+                "src/snekmate/tokens/",
+                "ERC1155",
+                args
+            )
         );
         erc1155Handler = new ERC1155Handler(ERC1155Extended, deployer);
         targetContract(address(erc1155Handler));

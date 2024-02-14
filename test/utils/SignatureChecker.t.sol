@@ -22,7 +22,10 @@ contract SignatureCheckerTest is Test {
 
     function setUp() public {
         signatureChecker = ISignatureChecker(
-            vyperDeployer.deployContract("src/utils/", "SignatureChecker")
+            vyperDeployer.deployContract(
+                "src/snekmate/utils/",
+                "SignatureChecker"
+            )
         );
     }
 

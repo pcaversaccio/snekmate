@@ -277,7 +277,7 @@ contract MerkleProofVerificationTest is Test {
     function setUp() public {
         merkleProofVerification = IMerkleProofVerification(
             vyperDeployer.deployContract(
-                "src/utils/",
+                "src/snekmate/utils/",
                 "MerkleProofVerification"
             )
         );

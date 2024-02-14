@@ -20,7 +20,10 @@ contract BatchDistributorTest is Test {
 
     function setUp() public {
         batchDistributor = IBatchDistributor(
-            vyperDeployer.deployContract("src/utils/", "BatchDistributor")
+            vyperDeployer.deployContract(
+                "src/snekmate/utils/",
+                "BatchDistributor"
+            )
         );
         batchDistributorAddr = address(batchDistributor);
     }
@@ -440,7 +443,10 @@ contract BatchDistributorInvariants is Test {
 
     function setUp() public {
         batchDistributor = IBatchDistributor(
-            vyperDeployer.deployContract("src/utils/", "BatchDistributor")
+            vyperDeployer.deployContract(
+                "src/snekmate/utils/",
+                "BatchDistributor"
+            )
         );
         batchDistributorAddr = address(batchDistributor);
         address msgSender = makeAddr("msgSender");

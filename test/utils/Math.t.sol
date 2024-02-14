@@ -110,7 +110,9 @@ contract MathTest is Test {
     }
 
     function setUp() public {
-        math = IMath(vyperDeployer.deployContract("src/utils/", "Math"));
+        math = IMath(
+            vyperDeployer.deployContract("src/snekmate/utils/", "Math")
+        );
     }
 
     function testUint256Average() public {

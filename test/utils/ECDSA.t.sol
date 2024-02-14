@@ -51,7 +51,9 @@ contract ECDSATest is Test {
     }
 
     function setUp() public {
-        ECDSA = IECDSA(vyperDeployer.deployContract("src/utils/", "ECDSA"));
+        ECDSA = IECDSA(
+            vyperDeployer.deployContract("src/snekmate/utils/", "ECDSA")
+        );
         ECDSAAddr = address(ECDSA);
     }
 
