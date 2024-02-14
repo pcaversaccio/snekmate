@@ -17,7 +17,7 @@ contract OwnableTest is Test {
 
     function setUp() public {
         ownable = IOwnable(
-            vyperDeployer.deployContract("src/auth/", "Ownable")
+            vyperDeployer.deployContract("src/snekmate/auth/", "Ownable")
         );
     }
 
@@ -27,7 +27,7 @@ contract OwnableTest is Test {
         vm.expectEmit(true, true, false, false);
         emit IOwnable.OwnershipTransferred(zeroAddress, deployer);
         ownableInitialEvent = IOwnable(
-            vyperDeployer.deployContract("src/auth/", "Ownable")
+            vyperDeployer.deployContract("src/snekmate/auth/", "Ownable")
         );
         assertEq(ownableInitialEvent.owner(), deployer);
     }
@@ -142,7 +142,7 @@ contract OwnableInvariants is Test {
 
     function setUp() public {
         ownable = IOwnable(
-            vyperDeployer.deployContract("src/auth/", "Ownable")
+            vyperDeployer.deployContract("src/snekmate/auth/", "Ownable")
         );
         ownerHandler = new OwnerHandler(ownable, deployer);
         targetContract(address(ownerHandler));

@@ -15,46 +15,47 @@
 
 ```ml
 src
-├── auth
-│   ├── Ownable — "Owner-Based Access Control Functions"
-│   ├── Ownable2Step — "2-Step Ownership Transfer Functions"
-│   ├── AccessControl — "Multi-Role-Based Access Control Functions"
-│   └── interfaces
-│       └── IAccessControl — "AccessControl Interface Definition"
-├── extensions
-│   ├── ERC2981 — "ERC-721 and ERC-1155 Compatible ERC-2981 Reference Implementation"
-│   ├── ERC4626 — "Modern and Gas-Efficient ERC-4626 Tokenised Vault Implementation"
-│   └── interfaces
-│       └── IERC2981 — "EIP-2981 Interface Definition"
-├── governance
-│   └── TimelockController — "Multi-Role-Based Timelock Controller Reference Implementation"
-├── tokens
-│   ├── ERC20 — "Modern and Gas-Efficient ERC-20 + EIP-2612 Implementation"
-│   ├── ERC721 — "Modern and Gas-Efficient ERC-721 + EIP-4494 Implementation"
-│   ├── ERC1155 — "Modern and Gas-Efficient ERC-1155 Implementation"
-│   └── interfaces
-│       ├── IERC20Permit — "EIP-2612 Interface Definition"
-│       ├── IERC721Enumerable — "EIP-721 Optional Enumeration Interface Definition"
-│       ├── IERC721Metadata — "EIP-721 Optional Metadata Interface Definition"
-│       ├── IERC721Permit — "EIP-4494 Interface Definition"
-│       ├── IERC721Receiver — "EIP-721 Token Receiver Interface Definition"
-│       ├── IERC1155 — "EIP-1155 Interface Definition"
-│       ├── IERC1155MetadataURI — "EIP-1155 Optional Metadata Interface Definition"
-│       ├── IERC1155Receiver — "EIP-1155 Token Receiver Interface Definition"
-│       └── IERC4906 — "EIP-4906 Interface Definition"
-└── utils
-    ├── Base64 — "Base64 Encoding and Decoding Functions"
-    ├── BatchDistributor — "Batch Sending Both Native and ERC-20 Tokens"
-    ├── CreateAddress — "`CREATE` EVM Opcode Utility Function for Address Calculation"
-    ├── Create2Address — "`CREATE2` EVM Opcode Utility Functions for Address Calculations"
-    ├── ECDSA — "Elliptic Curve Digital Signature Algorithm (ECDSA) Functions"
-    ├── SignatureChecker — "ECDSA and EIP-1271 Signature Verification Functions"
-    ├── EIP712DomainSeparator — "EIP-712 Domain Separator"
-    ├── Math — "Standard Mathematical Utility Functions"
-    ├── MerkleProofVerification — "Merkle Tree Proof Verification Functions"
-    ├── Multicall — "Multicall Functions"
-    └── interfaces
-        └── IERC5267 — "EIP-5267 Interface Definition"
+└── snekmate
+    ├── auth
+    │   ├── Ownable — "Owner-Based Access Control Functions"
+    │   ├── Ownable2Step — "2-Step Ownership Transfer Functions"
+    │   ├── AccessControl — "Multi-Role-Based Access Control Functions"
+    │   └── interfaces
+    │       └── IAccessControl — "AccessControl Interface Definition"
+    ├── extensions
+    │   ├── ERC2981 — "ERC-721 and ERC-1155 Compatible ERC-2981 Reference Implementation"
+    │   ├── ERC4626 — "Modern and Gas-Efficient ERC-4626 Tokenised Vault Implementation"
+    │   └── interfaces
+    │       └── IERC2981 — "EIP-2981 Interface Definition"
+    ├── governance
+    │   └── TimelockController — "Multi-Role-Based Timelock Controller Reference Implementation"
+    ├── tokens
+    │   ├── ERC20 — "Modern and Gas-Efficient ERC-20 + EIP-2612 Implementation"
+    │   ├── ERC721 — "Modern and Gas-Efficient ERC-721 + EIP-4494 Implementation"
+    │   ├── ERC1155 — "Modern and Gas-Efficient ERC-1155 Implementation"
+    │   └── interfaces
+    │       ├── IERC20Permit — "EIP-2612 Interface Definition"
+    │       ├── IERC721Enumerable — "EIP-721 Optional Enumeration Interface Definition"
+    │       ├── IERC721Metadata — "EIP-721 Optional Metadata Interface Definition"
+    │       ├── IERC721Permit — "EIP-4494 Interface Definition"
+    │       ├── IERC721Receiver — "EIP-721 Token Receiver Interface Definition"
+    │       ├── IERC1155 — "EIP-1155 Interface Definition"
+    │       ├── IERC1155MetadataURI — "EIP-1155 Optional Metadata Interface Definition"
+    │       ├── IERC1155Receiver — "EIP-1155 Token Receiver Interface Definition"
+    │       └── IERC4906 — "EIP-4906 Interface Definition"
+    └── utils
+        ├── Base64 — "Base64 Encoding and Decoding Functions"
+        ├── BatchDistributor — "Batch Sending Both Native and ERC-20 Tokens"
+        ├── CreateAddress — "`CREATE` EVM Opcode Utility Function for Address Calculation"
+        ├── Create2Address — "`CREATE2` EVM Opcode Utility Functions for Address Calculations"
+        ├── ECDSA — "Elliptic Curve Digital Signature Algorithm (ECDSA) Functions"
+        ├── SignatureChecker — "ECDSA and EIP-1271 Signature Verification Functions"
+        ├── EIP712DomainSeparator — "EIP-712 Domain Separator"
+        ├── Math — "Standard Mathematical Utility Functions"
+        ├── MerkleProofVerification — "Merkle Tree Proof Verification Functions"
+        ├── Multicall — "Multicall Functions"
+        └── interfaces
+            └── IERC5267 — "EIP-5267 Interface Definition"
 ```
 
 ## 🎛 Installation
@@ -100,6 +101,9 @@ In case you are using [pnpm](https://pnpm.io), invoke:
 ```console
 pnpm add --save-dev snekmate
 ```
+
+> [!CAUTION]
+> It is possible to install the latest versions of `main` or any other branch locally via `pip install git+https://github.com/pcaversaccio/snekmate.git@<branch>` or `forge install pcaversaccio/snekmate && forge update`. Each branch, _including the `main` branch_, must be understood as a development branch that should be avoided in favour of tagged releases. The release process includes security measures that the repository branches do not guarantee.
 
 ## 👩🏼‍⚖️ Tests
 

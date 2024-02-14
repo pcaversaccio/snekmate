@@ -23,7 +23,7 @@ contract AccessControlTest is Test {
 
     function setUp() public {
         accessControl = IAccessControlExtended(
-            vyperDeployer.deployContract("src/auth/", "AccessControl")
+            vyperDeployer.deployContract("src/snekmate/auth/", "AccessControl")
         );
     }
 
@@ -54,7 +54,7 @@ contract AccessControlTest is Test {
         vm.expectEmit(true, true, true, false);
         emit IAccessControl.RoleGranted(ADDITIONAL_ROLE_2, deployer, deployer);
         accessControlInitialEvent = IAccessControlExtended(
-            vyperDeployer.deployContract("src/auth/", "AccessControl")
+            vyperDeployer.deployContract("src/snekmate/auth/", "AccessControl")
         );
         assertEq(
             accessControlInitialEvent.DEFAULT_ADMIN_ROLE(),
@@ -645,7 +645,7 @@ contract AccessControlInvariants is Test {
 
     function setUp() public {
         accessControl = IAccessControlExtended(
-            vyperDeployer.deployContract("src/auth/", "AccessControl")
+            vyperDeployer.deployContract("src/snekmate/auth/", "AccessControl")
         );
         accessControlHandler = new AccessControlHandler(
             accessControl,

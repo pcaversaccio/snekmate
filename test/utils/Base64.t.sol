@@ -20,7 +20,9 @@ contract Base64Test is PRBTest {
     IBase64 private base64;
 
     function setUp() public {
-        base64 = IBase64(vyperDeployer.deployContract("src/utils/", "Base64"));
+        base64 = IBase64(
+            vyperDeployer.deployContract("src/snekmate/utils/", "Base64")
+        );
     }
 
     function testEncodeEmptyString() public {

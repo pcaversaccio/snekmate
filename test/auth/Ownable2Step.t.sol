@@ -17,7 +17,7 @@ contract Ownable2StepTest is Test {
 
     function setUp() public {
         ownable2Step = IOwnable2Step(
-            vyperDeployer.deployContract("src/auth/", "Ownable2Step")
+            vyperDeployer.deployContract("src/snekmate/auth/", "Ownable2Step")
         );
     }
 
@@ -28,7 +28,7 @@ contract Ownable2StepTest is Test {
         vm.expectEmit(true, true, false, false);
         emit IOwnable2Step.OwnershipTransferred(zeroAddress, deployer);
         ownable2StepInitialEvent = IOwnable2Step(
-            vyperDeployer.deployContract("src/auth/", "Ownable2Step")
+            vyperDeployer.deployContract("src/snekmate/auth/", "Ownable2Step")
         );
         assertEq(ownable2StepInitialEvent.owner(), deployer);
         assertEq(ownable2StepInitialEvent.pending_owner(), zeroAddress);
@@ -285,7 +285,7 @@ contract Ownable2StepInvariants is Test {
 
     function setUp() public {
         ownable2Step = IOwnable2Step(
-            vyperDeployer.deployContract("src/auth/", "Ownable2Step")
+            vyperDeployer.deployContract("src/snekmate/auth/", "Ownable2Step")
         );
         owner2StepHandler = new Owner2StepHandler(
             ownable2Step,
