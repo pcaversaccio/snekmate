@@ -10,7 +10,7 @@
         By default, the owner account will be the one that deploys
         the contract. This can later be changed with `transfer_ownership`.
         An exemplary integration can be found in the ERC-20 implementation here:
-        https://github.com/pcaversaccio/snekmate/blob/main/src/tokens/ERC20.vy.
+        https://github.com/pcaversaccio/snekmate/blob/main/src/snekmate/tokens/ERC20.vy.
         The implementation is inspired by OpenZeppelin's implementation here:
         https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/Ownable.sol.
 """
