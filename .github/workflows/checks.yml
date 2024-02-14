@@ -107,7 +107,7 @@ jobs:
 
       - name: Validate URLs
         run: |
-          awesome_bot ./*.md src/**/*.vy src/**/interfaces/*.vy \
+          awesome_bot ./*.md src/snekmate/**/*.vy src/snekmate/**/interfaces/*.vy \
           test/**/*.sol test/**/interfaces/*.sol test/**/mocks/*.sol \
           test/**/scripts/*.js scripts/*.py --allow-dupe --allow-redirect \
           --request-delay 0.4 \
