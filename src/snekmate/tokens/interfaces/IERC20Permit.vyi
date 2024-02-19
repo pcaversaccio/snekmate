@@ -43,7 +43,7 @@ def permit(owner: address, spender: address, amount: uint256, deadline: uint256,
     @param r The secp256k1 32-byte signature parameter `r`.
     @param s The secp256k1 32-byte signature parameter `s`.
     """
-    pass
+    ...
 
 
 @external
@@ -54,7 +54,7 @@ def nonces(owner: address) -> uint256:
     @param owner The 20-byte owner address.
     @return uint256 The 32-byte owner nonce.
     """
-    return empty(uint256)
+    return ...
 
 
 @external
@@ -64,4 +64,4 @@ def DOMAIN_SEPARATOR() -> bytes32:
     @dev Returns the domain separator for the current chain.
     @return bytes32 The 32-byte domain separator.
     """
-    return empty(bytes32)
+    return ...

@@ -84,7 +84,7 @@ def supportsInterface(interfaceId: bytes4) -> bool:
     @return bool The verification whether the contract
             implements the interface or not.
     """
-    return empty(bool)
+    return ...
 
 
 @external
@@ -116,7 +116,7 @@ def safeTransferFrom(_from: address, _to: address, _id: uint256, _value: uint256
     @param _data The maximum 1,024-byte additional data
            with no specified format.
     """
-    pass
+    ...
 
 
 @external
@@ -146,7 +146,7 @@ def safeBatchTransferFrom(_from: address, _to: address, _ids: DynArray[uint256, 
     @param _data The maximum 1,024-byte additional data
            with no specified format.
     """
-    pass
+    ...
 
 
 @external
@@ -162,7 +162,7 @@ def balanceOf(_owner: address, _id: uint256) -> uint256:
     @return uint256 The 32-byte token amount owned
             by `_owner`.
     """
-    return empty(uint256)
+    return ...
 
 
 @external
@@ -177,7 +177,7 @@ def balanceOfBatch(_owners: DynArray[address, 128], _ids: DynArray[uint256, 128]
     @return DynArray The 32-byte array of token amounts
             owned by `_owners`.
     """
-    return empty(DynArray[uint256, 128])
+    return ...
 
 
 @external
@@ -190,7 +190,7 @@ def setApprovalForAll(_operator: address, _approved: bool):
     @param _approved The Boolean variable that sets the
            approval status.
     """
-    pass
+    ...
 
 
 @external
@@ -205,4 +205,4 @@ def isApprovedForAll(_owner: address, _operator: address) -> bool:
     @return bool The verification whether `_operator` is approved
             or not.
     """
-    return empty(bool)
+    return ...

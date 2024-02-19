@@ -1,4 +1,4 @@
-# pragma version ^0.3.10
+# pragma version ^0.3.11
 """
 @title ERC-721 and ERC-1155 Compatible ERC-2981 Reference Implementation
 @custom:contract-name ERC2981
@@ -43,7 +43,7 @@
 
 # @dev We import and implement the `ERC165` interface,
 # which is a built-in interface of the Vyper compiler.
-from vyper.interfaces import ERC165
+from ethereum.ercs import ERC165
 implements: ERC165
 
 
@@ -103,7 +103,7 @@ event OwnershipTransferred:
     new_owner: indexed(address)
 
 
-@external
+@deploy
 @payable
 def __init__():
     """

@@ -1,4 +1,4 @@
-# pragma version ^0.3.10
+# pragma version ^0.3.11
 """
 @title 2-Step Ownership Transfer Functions
 @custom:contract-name Ownable2Step
@@ -40,7 +40,7 @@ event OwnershipTransferred:
     new_owner: indexed(address)
 
 
-@external
+@deploy
 @payable
 def __init__():
     """

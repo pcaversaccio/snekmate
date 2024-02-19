@@ -1,4 +1,4 @@
-# pragma version ^0.3.10
+# pragma version ^0.3.11
 """
 @title Standard Mathematical Utility Functions
 @custom:contract-name Math
@@ -27,7 +27,7 @@
 """
 
 
-@external
+@deploy
 @payable
 def __init__():
     """

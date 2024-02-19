@@ -1,4 +1,4 @@
-# pragma version ^0.3.10
+# pragma version ^0.3.11
 """
 @title Owner-Based Access Control Functions
 @custom:contract-name Ownable
@@ -30,7 +30,7 @@ event OwnershipTransferred:
     new_owner: indexed(address)
 
 
-@external
+@deploy
 @payable
 def __init__():
     """

@@ -1,4 +1,4 @@
-# pragma version ^0.3.10
+# pragma version ^0.3.11
 """
 @title `CREATE` EVM Opcode Utility Functions for Address Calculations
 @custom:contract-name CreateAddress
@@ -12,7 +12,7 @@
 """
 
 
-@external
+@deploy
 @payable
 def __init__():
     """

@@ -54,7 +54,7 @@ def supportsInterface(interfaceId: bytes4) -> bool:
     @return bool The verification whether the contract
             implements the interface or not.
     """
-    return empty(bool)
+    return ...
 
 
 @external
@@ -66,7 +66,7 @@ def name() -> String[25]:
             user-readable string name of the
             token collection.
     """
-    return empty(String[25])
+    return ...
 
 
 @external
@@ -78,7 +78,7 @@ def symbol() -> String[5]:
             user-readable string symbol of the
             token collection.
     """
-    return empty(String[5])
+    return ...
 
 
 @external
@@ -92,4 +92,4 @@ def tokenURI(_tokenId: uint256) -> String[512]:
     @return String The maximum 512-character user-readable
             string token URI of the `_tokenId` token.
     """
-    return empty(String[512])
+    return ...

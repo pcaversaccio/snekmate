@@ -1,4 +1,4 @@
-# pragma version ^0.3.10
+# pragma version ^0.3.11
 """
 @title Multi-Role-Based Access Control Functions
 @custom:contract-name AccessControl
@@ -51,7 +51,7 @@
 
 # @dev We import and implement the `ERC165` interface,
 # which is a built-in interface of the Vyper compiler.
-from vyper.interfaces import ERC165
+from ethereum.ercs import ERC165
 implements: ERC165
 
 
@@ -136,7 +136,7 @@ event RoleRevoked:
     sender: indexed(address)
 
 
-@external
+@deploy
 @payable
 def __init__():
     """

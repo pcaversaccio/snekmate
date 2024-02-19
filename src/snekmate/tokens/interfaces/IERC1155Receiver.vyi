@@ -34,7 +34,7 @@ def supportsInterface(interfaceId: bytes4) -> bool:
     @return bool The verification whether the contract
             implements the interface or not.
     """
-    return empty(bool)
+    return ...
 
 
 @external
@@ -58,7 +58,7 @@ def onERC1155Received(_operator: address, _from: address, _id: uint256, _value: 
            with no specified format.
     @return bytes4 The 4-byte function selector of `onERC1155Received`.
     """
-    return empty(bytes4)
+    return ...
 
 
 @external
@@ -86,4 +86,4 @@ def onERC1155BatchReceived(_operator: address, _from: address, _ids: DynArray[ui
            with no specified format.
     @return bytes4 The 4-byte function selector of `onERC1155BatchReceived`.
     """
-    return empty(bytes4)
+    return ...

@@ -54,7 +54,7 @@ def supportsInterface(interfaceId: bytes4) -> bool:
     @return bool The verification whether the contract
             implements the interface or not.
     """
-    return empty(bool)
+    return ...
 
 
 @external
@@ -73,4 +73,4 @@ def uri(_id: uint256) -> String[512]:
     @return String The maximum 512-character user-readable
             string token URI of the token type `_id`.
     """
-    return empty(String[512])
+    return ...

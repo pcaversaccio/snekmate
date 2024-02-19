@@ -1,4 +1,4 @@
-# pragma version ^0.3.10
+# pragma version ^0.3.11
 """
 @title EIP-712 Domain Separator
 @custom:contract-name EIP712DomainSeparator
@@ -53,7 +53,7 @@ event EIP712DomainChanged:
     pass
 
 
-@external
+@deploy
 @payable
 def __init__(name_: String[50], version_: String[20]):
     """

@@ -1,4 +1,4 @@
-# pragma version ^0.3.10
+# pragma version ^0.3.11
 """
 @title Multicall Functions
 @custom:contract-name Multicall
@@ -54,7 +54,7 @@ struct Result:
     return_data: Bytes[max_value(uint8)]
 
 
-@external
+@deploy
 @payable
 def __init__():
     """
@@ -81,7 +81,7 @@ def multicall(data: DynArray[Batch, max_value(uint8)]) -> DynArray[Result, max_v
     results: DynArray[Result, max_value(uint8)] = []
     return_data: Bytes[max_value(uint8)] = b""
     success: bool = empty(bool)
-    for batch in data:
+    for batch: Batch in data:
         if (batch.allow_failure == False):
             return_data = raw_call(batch.target, batch.call_data, max_outsize=255)
             success = True
@@ -112,7 +112,7 @@ def multicall_value(data: DynArray[BatchValue, max_value(uint8)]) -> DynArray[Re
     results: DynArray[Result, max_value(uint8)] = []
     return_data: Bytes[max_value(uint8)] = b""
     success: bool = empty(bool)
-    for batch in data:
+    for batch: Batch in data:
         msg_value: uint256 = batch.value
         # WARNING: If you expect to hold any funds in a contract that integrates
         # this function, you must ensure that the next line uses checked arithmetic!
@@ -155,7 +155,7 @@ def multicall_self(data: DynArray[BatchSelf, max_value(uint8)]) -> DynArray[Resu
     results: DynArray[Result, max_value(uint8)] = []
     return_data: Bytes[max_value(uint8)] = b""
     success: bool = empty(bool)
-    for batch in data:
+    for batch: Batch in data:
         if (batch.allow_failure == False):
             return_data = raw_call(self, batch.call_data, max_outsize=255, is_delegate_call=True)
             success = True
@@ -182,7 +182,7 @@ def multistaticcall(data: DynArray[Batch, max_value(uint8)]) -> DynArray[Result,
     results: DynArray[Result, max_value(uint8)] = []
     return_data: Bytes[max_value(uint8)] = b""
     success: bool = empty(bool)
-    for batch in data:
+    for batch: Batch in data:
         if (batch.allow_failure == False):
             return_data = raw_call(batch.target, batch.call_data, max_outsize=255, is_static_call=True)
             success = True

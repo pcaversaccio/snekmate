@@ -1,4 +1,4 @@
-# pragma version ^0.3.10
+# pragma version ^0.3.11
 """
 @title Base64 Encoding and Decoding Functions
 @custom:contract-name Base64
@@ -29,7 +29,7 @@ _TABLE_STD_CHARS: constant(String[65]) = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijkl
 _TABLE_URL_CHARS: constant(String[65]) = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_="
 
 
-@external
+@deploy
 @payable
 def __init__():
     """
@@ -81,7 +81,7 @@ def encode(data: Bytes[_DATA_INPUT_BOUND], base64_url: bool) -> DynArray[String[
 
     char_chunks: DynArray[String[4], _DATA_OUTPUT_BOUND] = []
     idx: uint256 = empty(uint256)
-    for _ in range(_DATA_INPUT_BOUND):
+    for _: uint256 in range(_DATA_INPUT_BOUND):
         # For the Base64 encoding, three bytes (= chunk)
         # of the bytestream (= 24 bits) are divided into
         # four 6-bit blocks.
@@ -176,7 +176,7 @@ def decode(data: String[_DATA_OUTPUT_BOUND], base64_url: bool) -> DynArray[Bytes
 
     result: DynArray[Bytes[3], _DATA_INPUT_BOUND] = []
     idx: uint256 = empty(uint256)
-    for _ in range(_DATA_OUTPUT_BOUND):
+    for _: uint256 in range(_DATA_OUTPUT_BOUND):
         # Each of these four characters represents
         # a 6-bit index in the Base64 character list
         # which, when concatenated, gives the 24-bit
@@ -279,7 +279,7 @@ def _index_of(char: String[1], base64_url: bool) -> uint256:
             `char` in the Base64 encoding table.
     """
     pos: uint256 = empty(uint256)
-    for _ in range(len(_TABLE_URL_CHARS)):
+    for _: uint256 in range(len(_TABLE_URL_CHARS)):
         # Base64 encoding with an URL and filename-safe
         # alphabet.
         if (base64_url):

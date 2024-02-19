@@ -1,4 +1,4 @@
-# pragma version ^0.3.10
+# pragma version ^0.3.11
 """
 @title Batch Sending Both Native and ERC-20 Tokens
 @custom:contract-name BatchDistributor
@@ -15,7 +15,7 @@
 
 # @dev We import the `ERC20` interface, which is a
 # built-in interface of the Vyper compiler.
-from vyper.interfaces import ERC20
+from ethereum.ercs import ERC20
 
 
 # @dev Transaction struct for the transaction payload.
@@ -29,7 +29,7 @@ struct Batch:
      txns: DynArray[Transaction, max_value(uint8)]
 
 
-@external
+@deploy
 @payable
 def __init__():
     """
@@ -42,7 +42,7 @@ def __init__():
 
 @external
 @payable
-@nonreentrant("lock")
+@nonreentrant
 def distribute_ether(data: Batch):
     """
     @dev Distributes ether, denominated in wei, to a
@@ -58,7 +58,7 @@ def distribute_ether(data: Batch):
            of tuples that contain each a recipient address &
            ether amount in wei.
     """
-    for txn in data.txns:
+    for txn: Transaction in data.txns:
         # A low-level call is used to guarantee compatibility
         # with smart contract wallets. As a general pre-emptive
         # safety measure, a reentrancy guard is used.
@@ -92,7 +92,7 @@ def distribute_token(token: ERC20, data: Batch):
            token amount.
     """
     total: uint256 = empty(uint256)
-    for txn in data.txns:
+    for txn: Transaction in data.txns:
         total += txn.amount
 
     # It is important to note that an external call via interface casting
@@ -101,5 +101,5 @@ def distribute_token(token: ERC20, data: Batch):
     # the target address is an EOA), the call reverts.
     assert token.transferFrom(msg.sender, self, total, default_return_value=True), "BatchDistributor: transferFrom operation did not succeed"
 
-    for txn in data.txns:
+    for txn: Transaction in data.txns:
         assert token.transfer(txn.recipient, txn.amount, default_return_value=True), "BatchDistributor: transfer operation did not succeed"

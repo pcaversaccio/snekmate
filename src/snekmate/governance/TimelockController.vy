@@ -1,4 +1,4 @@
-# pragma version ^0.3.10
+# pragma version ^0.3.11
 """
 @title Multi-Role-Based Timelock Controller Reference Implementation
 @custom:contract-name TimelockController
@@ -42,7 +42,7 @@
 
 # @dev We import and implement the `ERC165` interface,
 # which is a built-in interface of the Vyper compiler.
-from vyper.interfaces import ERC165
+from ethereum.ercs import ERC165
 implements: ERC165
 
 
@@ -134,7 +134,7 @@ _DYNARRAY_BOUND: constant(uint8) = max_value(uint8)
 # index value is `1`). For further insights also, see
 # the following Twitter thread:
 # https://twitter.com/pcaversaccio/status/1626514029094047747.
-enum OperationState:
+flag OperationState:
     UNSET
     WAITING
     READY
@@ -239,7 +239,7 @@ event RoleRevoked:
     sender: indexed(address)
 
 
-@external
+@deploy
 @payable
 def __init__(minimum_delay_: uint256, proposers_: DynArray[address, _DYNARRAY_BOUND], executors_: DynArray[address, _DYNARRAY_BOUND], admin_: address):
     """
@@ -278,12 +278,12 @@ def __init__(minimum_delay_: uint256, proposers_: DynArray[address, _DYNARRAY_BO
         self._grant_role(DEFAULT_ADMIN_ROLE, admin_)
 
     # Register the proposers and cancellers.
-    for proposer in proposers_:
+    for proposer: address in proposers_:
         self._grant_role(PROPOSER_ROLE, proposer)
         self._grant_role(CANCELLER_ROLE, proposer)
 
     # Register the executors.
-    for executor in executors_:
+    for executor: address in executors_:
         self._grant_role(EXECUTOR_ROLE, executor)
 
     # Set the minimum delay.
@@ -468,7 +468,7 @@ def schedule_batch(targets: DynArray[address, _DYNARRAY_BOUND], amounts: DynArra
 
     self._schedule(id, delay)
     idx: uint256 = empty(uint256)
-    for target in targets:
+    for target: address in targets:
         log CallScheduled(id, idx, target, amounts[idx], payloads[idx], predecessor, delay)
         # The following line cannot overflow because we have
         # limited the dynamic array `targets` by the `constant`
@@ -547,7 +547,7 @@ def execute_batch(targets: DynArray[address, _DYNARRAY_BOUND], amounts: DynArray
 
     self._before_call(id, predecessor)
     idx: uint256 = empty(uint256)
-    for target in targets:
+    for target: address in targets:
         self._execute(target, amounts[idx], payloads[idx])
         log CallExecuted(id, idx, target, amounts[idx], payloads[idx])
         # The following line cannot overflow because we have

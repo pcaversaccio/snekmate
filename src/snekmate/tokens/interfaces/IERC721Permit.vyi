@@ -47,7 +47,7 @@ def supportsInterface(interfaceId: bytes4) -> bool:
     @return bool The verification whether the contract
             implements the interface or not.
     """
-    return empty(bool)
+    return ...
 
 
 @external
@@ -70,7 +70,7 @@ def permit(spender: address, tokenId: uint256, deadline: uint256, v: uint8, r: b
     @param r The secp256k1 32-byte signature parameter `r`.
     @param s The secp256k1 32-byte signature parameter `s`.
     """
-    pass
+    ...
 
 
 @external
@@ -81,7 +81,7 @@ def nonces(tokenId: uint256) -> uint256:
     @param tokenId The 32-byte identifier of the token.
     @return uint256 The 32-byte `tokenId` nonce.
     """
-    return empty(uint256)
+    return ...
 
 
 @external
@@ -91,4 +91,4 @@ def DOMAIN_SEPARATOR() -> bytes32:
     @dev Returns the domain separator for the current chain.
     @return bytes32 The 32-byte domain separator.
     """
-    return empty(bytes32)
+    return ...

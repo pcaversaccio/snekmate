@@ -1,4 +1,4 @@
-# pragma version ^0.3.10
+# pragma version ^0.3.11
 """
 @title `CREATE2` EVM Opcode Utility Functions for Address Calculations
 @custom:contract-name Create2Address
@@ -18,7 +18,7 @@
 _COLLISION_OFFSET: constant(bytes1) = 0xFF
 
 
-@external
+@deploy
 @payable
 def __init__():
     """

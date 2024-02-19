@@ -1,4 +1,4 @@
-# pragma version ^0.3.10
+# pragma version ^0.3.11
 """
 @title Modern and Gas-Efficient ERC-721 + EIP-4494 Implementation
 @custom:contract-name ERC721
@@ -48,13 +48,13 @@
 
 # @dev We import and implement the `ERC165` interface,
 # which is a built-in interface of the Vyper compiler.
-from vyper.interfaces import ERC165
+from ethereum.ercs import ERC165
 implements: ERC165
 
 
 # @dev We import and implement the `ERC721` interface,
 # which is a built-in interface of the Vyper compiler.
-from vyper.interfaces import ERC721
+from ethereum.ercs import ERC721
 implements: ERC721
 
 
@@ -288,7 +288,7 @@ event RoleMinterChanged:
     status: bool
 
 
-@external
+@deploy
 @payable
 def __init__(name_: String[25], symbol_: String[5], base_uri_: String[80], name_eip712_: String[50], version_eip712_: String[20]):
     """

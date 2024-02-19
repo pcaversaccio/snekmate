@@ -1,4 +1,4 @@
-# pragma version ^0.3.10
+# pragma version ^0.3.11
 """
 @title Modern and Gas-Efficient ERC-4626 Tokenised Vault Implementation
 @custom:contract-name ERC4626
@@ -52,13 +52,13 @@
 
 # @dev We import and implement the `ERC20` interface,
 # which is a built-in interface of the Vyper compiler.
-from vyper.interfaces import ERC20
+from ethereum.ercs import ERC20
 implements: ERC20
 
 
 # @dev We import and implement the `ERC20Detailed` interface,
 # which is a built-in interface of the Vyper compiler.
-from vyper.interfaces import ERC20Detailed
+from ethereum.ercs import ERC20Detailed
 implements: ERC20Detailed
 
 
@@ -71,7 +71,7 @@ implements: IERC20Permit
 
 # @dev We import and implement the `ERC4626` interface,
 # which is a built-in interface of the Vyper compiler.
-from vyper.interfaces import ERC4626
+from ethereum.ercs import ERC4626
 implements: ERC4626
 
 
@@ -228,7 +228,7 @@ event EIP712DomainChanged:
     pass
 
 
-@external
+@deploy
 @payable
 def __init__(name_: String[25], symbol_: String[5], asset_: ERC20, decimals_offset_: uint8, name_eip712_: String[50], version_eip712_: String[20]):
     """
