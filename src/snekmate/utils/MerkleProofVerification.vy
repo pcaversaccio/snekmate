@@ -98,8 +98,8 @@ def _process_proof(proof: DynArray[bytes32, max_value(uint16)], leaf: bytes32) -
             and `proof`.
     """
     computed_hash: bytes32 = leaf
-    for i: bytes32 in proof:
-        computed_hash = self._hash_pair(computed_hash, i)
+    for proof_element: bytes32 in proof:
+        computed_hash = self._hash_pair(computed_hash, proof_element)
     return computed_hash
 
 
