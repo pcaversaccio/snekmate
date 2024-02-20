@@ -277,7 +277,7 @@ def _set_default_royalty(receiver: address, fee_numerator: uint96):
     denominator: uint256 = self._fee_denominator
     assert convert(fee_numerator, uint256) <= denominator, "ERC2981: royalty fee will exceed sale_price"
     assert receiver != empty(address), "ERC2981: invalid receiver"
-    self._default_royalty_info = RoyaltyInfo({receiver: receiver, royalty_fraction: fee_numerator})
+    self._default_royalty_info = RoyaltyInfo(receiver=receiver, royalty_fraction=fee_numerator)
 
 
 @internal
@@ -286,7 +286,7 @@ def _delete_default_royalty():
     @dev Removes the default royalty information.
     @notice This is an `internal` function without access restriction.
     """
-    self._default_royalty_info = RoyaltyInfo({receiver: empty(address), royalty_fraction: empty(uint96)})
+    self._default_royalty_info = RoyaltyInfo(receiver=empty(address), royalty_fraction=empty(uint96))
 
 
 @internal
@@ -307,7 +307,7 @@ def _set_token_royalty(token_id: uint256, receiver: address, fee_numerator: uint
     denominator: uint256 = self._fee_denominator
     assert convert(fee_numerator, uint256) <= denominator, "ERC2981: royalty fee will exceed sale_price"
     assert receiver != empty(address), "ERC2981: invalid receiver"
-    self._token_royalty_info[token_id] = RoyaltyInfo({receiver: receiver, royalty_fraction: fee_numerator})
+    self._token_royalty_info[token_id] = RoyaltyInfo(receiver=receiver, royalty_fraction=fee_numerator)
 
 
 @internal
@@ -318,7 +318,7 @@ def _reset_token_royalty(token_id: uint256):
     @notice This is an `internal` function without access restriction.
     @param token_id The 32-byte identifier of the token.
     """
-    self._token_royalty_info[token_id] = RoyaltyInfo({receiver: empty(address), royalty_fraction: empty(uint96)})
+    self._token_royalty_info[token_id] = RoyaltyInfo(receiver=empty(address), royalty_fraction=empty(uint96))
 
 
 @internal
