@@ -161,7 +161,7 @@ def royaltyInfo(token_id: uint256, sale_price: uint256) -> (address, uint256):
 
     # The following line uses intentionally checked arithmetic to
     # prevent a theoretically possible overflow.
-    royalty_amount: uint256 = (sale_price * convert(royalty.royalty_fraction, uint256)) / self._fee_denominator
+    royalty_amount: uint256 = (sale_price * convert(royalty.royalty_fraction, uint256)) // self._fee_denominator
 
     return (royalty.receiver, royalty_amount)
 
