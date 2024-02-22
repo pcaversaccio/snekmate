@@ -22,6 +22,12 @@
         OpenZeppelin provides some good examples of how to construct
         Merkle tree proofs correctly:
         https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/test/utils/cryptography/MerkleProof.test.js.
+
+        Please note that this contract is written in the most agnostic
+        way possible and users should adjust statically allocatable memory
+        to their specific needs before deploying it:
+        https://github.com/pcaversaccio/snekmate/discussions/82.
+
         The implementation is inspired by OpenZeppelin's implementation here:
         https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/cryptography/MerkleProof.sol.
 """
