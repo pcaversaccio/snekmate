@@ -1,4 +1,4 @@
-# pragma version ^0.3.11
+# pragma version ~=0.3.11
 """
 @title Modern and Gas-Efficient ERC-721 + EIP-4494 Implementation
 @custom:contract-name ERC721

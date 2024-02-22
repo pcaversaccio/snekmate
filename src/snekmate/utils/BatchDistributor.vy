@@ -1,4 +1,4 @@
-# pragma version ^0.3.11
+# pragma version ~=0.3.11
 """
 @title Batch Sending Both Native and ERC-20 Tokens
 @custom:contract-name BatchDistributor

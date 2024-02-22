@@ -1,4 +1,4 @@
-# pragma version ^0.3.11
+# pragma version ~=0.3.11
 """
 @title 2-Step Ownership Transfer Functions
 @custom:contract-name Ownable2Step

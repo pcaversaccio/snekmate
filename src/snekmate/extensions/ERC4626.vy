@@ -1,4 +1,4 @@
-# pragma version ^0.3.11
+# pragma version ~=0.3.11
 """
 @title Modern and Gas-Efficient ERC-4626 Tokenised Vault Implementation
 @custom:contract-name ERC4626

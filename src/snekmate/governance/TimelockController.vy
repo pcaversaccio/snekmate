@@ -1,4 +1,4 @@
-# pragma version ^0.3.11
+# pragma version ~=0.3.11
 """
 @title Multi-Role-Based Timelock Controller Reference Implementation
 @custom:contract-name TimelockController
