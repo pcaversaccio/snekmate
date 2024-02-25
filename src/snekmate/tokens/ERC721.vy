@@ -46,16 +46,16 @@
 """
 
 
-# @dev We import and implement the `ERC165` interface,
+# @dev We import and implement the `IERC165` interface,
 # which is a built-in interface of the Vyper compiler.
-from ethereum.ercs import ERC165
-implements: ERC165
+from ethereum.ercs import IERC165
+implements: IERC165
 
 
-# @dev We import and implement the `ERC721` interface,
+# @dev We import and implement the `IERC721` interface,
 # which is a built-in interface of the Vyper compiler.
-from ethereum.ercs import ERC721
-implements: ERC721
+from ethereum.ercs import IERC721
+implements: IERC721
 
 
 # @dev We import and implement the `IERC721Metadata`

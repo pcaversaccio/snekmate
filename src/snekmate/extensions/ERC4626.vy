@@ -50,16 +50,16 @@
 """
 
 
-# @dev We import and implement the `ERC20` interface,
+# @dev We import and implement the `IERC20` interface,
 # which is a built-in interface of the Vyper compiler.
-from ethereum.ercs import ERC20
-implements: ERC20
+from ethereum.ercs import IERC20
+implements: IERC20
 
 
-# @dev We import and implement the `ERC20Detailed` interface,
+# @dev We import and implement the `IERC20Detailed` interface,
 # which is a built-in interface of the Vyper compiler.
-from ethereum.ercs import ERC20Detailed
-implements: ERC20Detailed
+from ethereum.ercs import IERC20Detailed
+implements: IERC20Detailed
 
 
 # @dev We import and implement the `IERC20Permit`
@@ -69,10 +69,10 @@ from ..tokens.interfaces import IERC20Permit
 implements: IERC20Permit
 
 
-# @dev We import and implement the `ERC4626` interface,
+# @dev We import and implement the `IERC4626` interface,
 # which is a built-in interface of the Vyper compiler.
-from ethereum.ercs import ERC4626
-implements: ERC4626
+from ethereum.ercs import IERC4626
+implements: IERC4626
 
 
 # @dev We import and implement the `IERC5267` interface,
@@ -124,7 +124,7 @@ decimals: public(immutable(uint8))
 # the `immutable` variable `name`.
 # @notice Vyper returns the `address` type for interface
 # types by default.
-asset: public(immutable(ERC20))
+asset: public(immutable(IERC20))
 
 
 # @dev Caches the domain separator as an `immutable`
@@ -230,7 +230,7 @@ event EIP712DomainChanged:
 
 @deploy
 @payable
-def __init__(name_: String[25], symbol_: String[5], asset_: ERC20, decimals_offset_: uint8, name_eip712_: String[50], version_eip712_: String[20]):
+def __init__(name_: String[25], symbol_: String[5], asset_: IERC20, decimals_offset_: uint8, name_eip712_: String[50], version_eip712_: String[20]):
     """
     @dev To omit the opcodes for checking the `msg.value`
          in the creation-time EVM bytecode, the constructor
@@ -791,7 +791,7 @@ def _try_recover_vrs(hash: bytes32, v: uint256, r: uint256, s: uint256) -> addre
 
 @internal
 @view
-def _try_get_underlying_decimals(underlying: ERC20) -> (bool, uint8):
+def _try_get_underlying_decimals(underlying: IERC20) -> (bool, uint8):
     """
     @dev Attempts to fetch the underlying's decimals. A return
          value of `False` indicates that the attempt failed in

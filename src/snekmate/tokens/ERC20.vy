@@ -51,16 +51,16 @@
 """
 
 
-# @dev We import and implement the `ERC20` interface,
+# @dev We import and implement the `IERC20` interface,
 # which is a built-in interface of the Vyper compiler.
-from ethereum.ercs import ERC20
-implements: ERC20
+from ethereum.ercs import IERC20
+implements: IERC20
 
 
-# @dev We import and implement the `ERC20Detailed` interface,
+# @dev We import and implement the `IERC20Detailed` interface,
 # which is a built-in interface of the Vyper compiler.
-from ethereum.ercs import ERC20Detailed
-implements: ERC20Detailed
+from ethereum.ercs import IERC20Detailed
+implements: IERC20Detailed
 
 
 # @dev We import and implement the `IERC20Permit`

@@ -13,9 +13,9 @@
 """
 
 
-# @dev We import the `ERC20` interface, which is a
+# @dev We import the `IERC20` interface, which is a
 # built-in interface of the Vyper compiler.
-from ethereum.ercs import ERC20
+from ethereum.ercs import IERC20
 
 
 # @dev Transaction struct for the transaction payload.
@@ -72,7 +72,7 @@ def distribute_ether(data: Batch):
 
 
 @external
-def distribute_token(token: ERC20, data: Batch):
+def distribute_token(token: IERC20, data: Batch):
     """
     @dev Distributes ERC-20 tokens, denominated in their corresponding
          lowest unit, to a predefined batch of recipient addresses.
@@ -86,7 +86,8 @@ def distribute_token(token: ERC20, data: Batch):
             Note: Since we cast the token address into the official ERC-20 interface,
             the use of non-compliant ERC-20 tokens is prevented by design. Nevertheless,
             we keep this guardrail for security reasons.
-    @param token ERC-20 token contract address.
+    @param token The ERC-20 compatible (i.e. ERC-777 is also
+           viable) token contract address.
     @param data Nested struct object that contains an array
            of tuples that contain each a recipient address &
            token amount.
