@@ -1,4 +1,4 @@
-# pragma version ~=0.3.11
+# pragma version ~=0.4.0b2
 """
 @title AccessControl Interface Definition
 @custom:contract-name IAccessControl

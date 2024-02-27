@@ -1,4 +1,4 @@
-# pragma version ~=0.3.11
+# pragma version ~=0.4.0b2
 """
 @title `CREATE2` EVM Opcode Utility Functions for Address Calculations
 @custom:contract-name Create2Address
