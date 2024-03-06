@@ -1064,7 +1064,7 @@ def _check_on_erc721_received(owner: address, to: address, token_id: uint256, da
     """
     # Contract case.
     if (to.is_contract):
-        return_value: bytes4 = IERC721Receiver(to).onERC721Received(msg.sender, owner, token_id, data)
+        return_value: bytes4 = extcall IERC721Receiver(to).onERC721Received(msg.sender, owner, token_id, data)
         assert return_value == method_id("onERC721Received(address,address,uint256,bytes)", output_type=bytes4), "ERC721: transfer to non-ERC721Receiver implementer"
         return True
     # EOA case.

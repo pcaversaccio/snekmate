@@ -868,7 +868,7 @@ def _check_on_erc1155_received(owner: address, to: address, id: uint256, amount:
     """
     # Contract case.
     if (to.is_contract):
-        return_value: bytes4 = IERC1155Receiver(to).onERC1155Received(msg.sender, owner, id, amount, data)
+        return_value: bytes4 = extcall IERC1155Receiver(to).onERC1155Received(msg.sender, owner, id, amount, data)
         assert return_value == method_id("onERC1155Received(address,address,uint256,uint256,bytes)", output_type=bytes4),\
                                          "ERC1155: transfer to non-ERC1155Receiver implementer"
         return True
@@ -897,7 +897,7 @@ def _check_on_erc1155_batch_received(owner: address, to: address, ids: DynArray[
     """
     # Contract case.
     if (to.is_contract):
-        return_value: bytes4 = IERC1155Receiver(to).onERC1155BatchReceived(msg.sender, owner, ids, amounts, data)
+        return_value: bytes4 = extcall IERC1155Receiver(to).onERC1155BatchReceived(msg.sender, owner, ids, amounts, data)
         assert return_value == method_id("onERC1155BatchReceived(address,address,uint256[],uint256[],bytes)", output_type=bytes4),\
                                          "ERC1155: transfer to non-ERC1155Receiver implementer"
         return True

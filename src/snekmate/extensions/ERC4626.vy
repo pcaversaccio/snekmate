@@ -829,7 +829,7 @@ def _total_assets() -> uint256:
             https://eips.ethereum.org/EIPS/eip-4626#totalassets.
     @return uint256 The 32-byte total managed assets.
     """
-    return asset.balanceOf(self)
+    return staticcall asset.balanceOf(self)
 
 
 @internal
@@ -1010,7 +1010,7 @@ def _deposit(sender: address, receiver: address, assets: uint256, shares: uint25
     # always performs an external code size check on the target address unless
     # you add the kwarg `skip_contract_check=True`. If the check fails (i.e.
     # the target address is an EOA), the call reverts.
-    assert asset.transferFrom(sender, self, assets, default_return_value=True), "ERC4626: transferFrom operation did not succeed"
+    assert extcall asset.transferFrom(sender, self, assets, default_return_value=True), "ERC4626: transferFrom operation did not succeed"
     self._mint(receiver, shares)
     log Deposit(sender, receiver, assets, shares)
 
@@ -1050,7 +1050,7 @@ def _withdraw(sender: address, receiver: address, owner: address, assets: uint25
     # always performs an external code size check on the target address unless
     # you add the kwarg `skip_contract_check=True`. If the check fails (i.e.
     # the target address is an EOA), the call reverts.
-    assert asset.transfer(receiver, assets, default_return_value=True), "ERC4626: transfer operation did not succeed"
+    assert extcall asset.transfer(receiver, assets, default_return_value=True), "ERC4626: transfer operation did not succeed"
     log Withdraw(sender, receiver, owner, assets, shares)
 
 
