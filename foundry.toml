@@ -4,7 +4,6 @@ src = 'src'                                                 # the source directo
 test = 'test'                                               # the test directory
 out = 'out'                                                 # the output directory (for artifacts)
 libs = ['lib']                                              # a list of library directories
-remappings = []                                             # a list of remappings
 cache = true                                                # whether to cache builds or not
 cache_path = 'cache'                                        # where the cache is stored if enabled
 force = false                                               # whether to ignore the cache (clean build)
