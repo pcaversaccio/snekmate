@@ -9,6 +9,7 @@
 
 **State-of-the-art**, **highly opinionated**, **hyper-optimised**, and **secure** 🐍Vyper smart contract building blocks.
 
+> [!WARNING]
 > This is **experimental software** and is provided on an "as is" and "as available" basis. We **do not give any warranties** and **will not be liable for any losses** incurred through any use of this code base.
 
 ## 📜 Contracts
@@ -59,6 +60,9 @@ src
 ```
 
 ## 🎛 Installation
+
+> [!IMPORTANT]  
+> 🐍 snekmate uses a [ZeroVer](https://0ver.org)-based versioning scheme. This means 🐍 snekmate's major version will never exceed the first and most important number in computing: zero.
 
 We offer three convenient ways to install the 🐍 snekmate contracts:
 

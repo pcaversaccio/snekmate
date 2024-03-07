@@ -1,27 +1,27 @@
-[submodule "lib/forge-std"]
-	path = lib/forge-std
-	url = https://github.com/foundry-rs/forge-std.git
-[submodule "lib/create-util"]
-	path = lib/create-util
-	url = https://github.com/pcaversaccio/create-util.git
-[submodule "lib/solidity-bytes-utils"]
-	path = lib/solidity-bytes-utils
-	url = https://github.com/GNSPS/solidity-bytes-utils.git
-[submodule "lib/openzeppelin-contracts"]
-	path = lib/openzeppelin-contracts
-	url = https://github.com/OpenZeppelin/openzeppelin-contracts.git
-[submodule "lib/prb-test"]
-	path = lib/prb-test
-	url = https://github.com/paulrberg/prb-test.git
 [submodule "lib/murky"]
 	path = lib/murky
 	url = https://github.com/dmfxyz/murky.git
-[submodule "lib/erc4626-tests"]
-	path = lib/erc4626-tests
-	url = https://github.com/a16z/erc4626-tests.git
 [submodule "lib/solady"]
 	path = lib/solady
 	url = https://github.com/vectorized/solady.git
 [submodule "lib/solmate"]
 	path = lib/solmate
 	url = https://github.com/transmissions11/solmate.git
+[submodule "lib/prb-test"]
+	path = lib/prb-test
+	url = https://github.com/paulrberg/prb-test.git
+[submodule "lib/forge-std"]
+	path = lib/forge-std
+	url = https://github.com/foundry-rs/forge-std.git
+[submodule "lib/create-util"]
+	path = lib/create-util
+	url = https://github.com/pcaversaccio/create-util.git
+[submodule "lib/erc4626-tests"]
+	path = lib/erc4626-tests
+	url = https://github.com/a16z/erc4626-tests.git
+[submodule "lib/solidity-bytes-utils"]
+	path = lib/solidity-bytes-utils
+	url = https://github.com/GNSPS/solidity-bytes-utils.git
+[submodule "lib/openzeppelin-contracts"]
+	path = lib/openzeppelin-contracts
+	url = https://github.com/OpenZeppelin/openzeppelin-contracts.git
