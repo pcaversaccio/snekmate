@@ -838,7 +838,7 @@ packages:
       http-cache-semantics: 4.1.1
       keyv: 4.5.4
       mimic-response: 4.0.0
-      normalize-url: 8.0.0
+      normalize-url: 8.0.1
       responselike: 3.0.0
     dev: true
 
@@ -1891,10 +1891,10 @@ packages:
     hasBin: true
     dev: true
 
-  /normalize-url@8.0.0:
+  /normalize-url@8.0.1:
     resolution:
       {
-        integrity: sha512-uVFpKhj5MheNBJRTiMZ9pE/7hD1QTeEvugSJW/OmLzAp78PB5O6adfMNTvmfKhXBkvCzC+rqifWcVYpGFwTjnw==,
+        integrity: sha512-IO9QvjUMWxPQQhs60oOu10CRkWCiZzSUkzbXGGV9pviYl1fXYcvkzQ5jV9z8Y6un8ARoVRl4EtC6v6jNqbaJ/w==,
       }
     engines: { node: ">=14.16" }
     dev: true
