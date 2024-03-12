@@ -34,7 +34,7 @@ contract Ownable2StepTest is Test {
         assertEq(ownable2StepInitialEvent.pending_owner(), zeroAddress);
     }
 
-    function testHasOwner() public {
+    function testHasOwner() public view {
         assertEq(ownable2Step.owner(), deployer);
     }
 
@@ -295,11 +295,11 @@ contract Ownable2StepInvariants is Test {
         targetContract(address(owner2StepHandler));
     }
 
-    function invariantOwner() public {
+    function invariantOwner() public view {
         assertEq(ownable2Step.owner(), owner2StepHandler.owner());
     }
 
-    function invariantPendingOwner() public {
+    function invariantPendingOwner() public view {
         assertEq(
             ownable2Step.pending_owner(),
             owner2StepHandler.pending_owner()

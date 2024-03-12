@@ -61,7 +61,7 @@ contract ERC721Test is Test {
         address owner,
         uint256 tokenId,
         address receiver
-    ) internal {
+    ) internal view {
         assertEq(ERC721Extended.ownerOf(tokenId), receiver);
         assertEq(ERC721Extended.getApproved(tokenId), zeroAddress);
         assertEq(ERC721Extended.balanceOf(owner), 1);
@@ -536,7 +536,7 @@ contract ERC721Test is Test {
         assertTrue(ERC721ExtendedInitialEvent.is_minter(deployer));
     }
 
-    function testSupportsInterfaceSuccess() public {
+    function testSupportsInterfaceSuccess() public view {
         assertTrue(ERC721Extended.supportsInterface(type(IERC165).interfaceId));
         assertTrue(ERC721Extended.supportsInterface(type(IERC721).interfaceId));
         assertTrue(
@@ -553,7 +553,7 @@ contract ERC721Test is Test {
         assertTrue(ERC721Extended.supportsInterface(0x49064906));
     }
 
-    function testSupportsInterfaceSuccessGasCost() public {
+    function testSupportsInterfaceSuccessGasCost() public view {
         uint256 startGas = gasleft();
         ERC721Extended.supportsInterface(type(IERC165).interfaceId);
         uint256 gasUsed = startGas - gasleft();
@@ -563,11 +563,11 @@ contract ERC721Test is Test {
         );
     }
 
-    function testSupportsInterfaceInvalidInterfaceId() public {
+    function testSupportsInterfaceInvalidInterfaceId() public view {
         assertTrue(!ERC721Extended.supportsInterface(0x0011bbff));
     }
 
-    function testSupportsInterfaceInvalidInterfaceIdGasCost() public {
+    function testSupportsInterfaceInvalidInterfaceIdGasCost() public view {
         uint256 startGas = gasleft();
         ERC721Extended.supportsInterface(0x0011bbff);
         uint256 gasUsed = startGas - gasleft();
@@ -1837,7 +1837,7 @@ contract ERC721Test is Test {
         ERC721Extended.permit(spender, tokenId, deadline, v, r, s);
     }
 
-    function testCachedDomainSeparator() public {
+    function testCachedDomainSeparator() public view {
         assertEq(ERC721Extended.DOMAIN_SEPARATOR(), _CACHED_DOMAIN_SEPARATOR);
     }
 
@@ -1855,7 +1855,7 @@ contract ERC721Test is Test {
         assertEq(ERC721Extended.DOMAIN_SEPARATOR(), digest);
     }
 
-    function testEIP712Domain() public {
+    function testEIP712Domain() public view {
         (
             bytes1 fields,
             string memory name,
@@ -1885,7 +1885,7 @@ contract ERC721Test is Test {
         assertEq(ERC721Extended.DOMAIN_SEPARATOR(), digest);
     }
 
-    function testHasOwner() public {
+    function testHasOwner() public view {
         assertEq(ERC721Extended.owner(), deployer);
     }
 
@@ -2586,11 +2586,11 @@ contract ERC721Invariants is Test {
         targetSender(deployer);
     }
 
-    function invariantTotalSupply() public {
+    function invariantTotalSupply() public view {
         assertEq(ERC721Extended.totalSupply(), erc721Handler.totalSupply());
     }
 
-    function invariantOwner() public {
+    function invariantOwner() public view {
         assertEq(ERC721Extended.owner(), erc721Handler.owner());
     }
 }

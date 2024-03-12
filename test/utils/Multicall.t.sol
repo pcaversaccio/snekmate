@@ -302,7 +302,7 @@ contract MulticallTest is Test {
         multicall.multicall_self(batchSelf);
     }
 
-    function testMultistaticcallSuccess() public {
+    function testMultistaticcallSuccess() public view {
         IMulticall.Batch[] memory batch = new IMulticall.Batch[](2);
         batch[0] = IMulticall.Batch(
             mockCalleeAddr,

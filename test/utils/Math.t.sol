@@ -115,7 +115,7 @@ contract MathTest is Test {
         );
     }
 
-    function testUint256Average() public {
+    function testUint256Average() public view {
         assertEq(math.uint256_average(83_219, 219_713), 151_466);
         assertEq(math.uint256_average(73_220, 419_712), 246_466);
         assertEq(math.uint256_average(83_219, 419_712), 251_465);
@@ -126,7 +126,7 @@ contract MathTest is Test {
         );
     }
 
-    function testInt256Average() public {
+    function testInt256Average() public view {
         assertEq(math.int256_average(83_219, 219_713), 151_466);
         assertEq(math.int256_average(-83_219, -219_713), -151_466);
 
@@ -156,7 +156,7 @@ contract MathTest is Test {
         math.ceil_div(1, 0);
     }
 
-    function testSignum() public {
+    function testSignum() public view {
         assertEq(math.signum(0), 0);
         assertEq(math.signum(-1), -1);
         assertEq(math.signum(-1 * -1), 1);
@@ -182,13 +182,13 @@ contract MathTest is Test {
         math.mul_div(type(uint256).max, type(uint256).max, 1, true);
     }
 
-    function testMulDivRoundDownSmallValues() public {
+    function testMulDivRoundDownSmallValues() public view {
         assertEq(math.mul_div(3, 4, 5, false), 2);
         assertEq(math.mul_div(5, 7, 6, false), 5);
         assertEq(math.mul_div(7, 9, 8, false), 7);
     }
 
-    function testMulDivRoundDownLargeValues() public {
+    function testMulDivRoundDownLargeValues() public view {
         uint256 maxUint256 = type(uint256).max;
         uint256 maxUint256Sub1 = maxUint256 - 1;
         uint256 maxUint256Sub2 = maxUint256 - 2;
@@ -208,13 +208,13 @@ contract MathTest is Test {
         );
     }
 
-    function testMulDivRoundUpSmallValues() public {
+    function testMulDivRoundUpSmallValues() public view {
         assertEq(math.mul_div(3, 4, 5, true), 3);
         assertEq(math.mul_div(5, 7, 6, true), 6);
         assertEq(math.mul_div(7, 9, 8, true), 8);
     }
 
-    function testMulDivRoundUpLargeValues() public {
+    function testMulDivRoundUpLargeValues() public view {
         uint256 maxUint256 = type(uint256).max;
         uint256 maxUint256Sub1 = maxUint256 - 1;
         assertEq(math.mul_div(42, maxUint256Sub1, maxUint256, true), 42);
@@ -233,7 +233,7 @@ contract MathTest is Test {
         );
     }
 
-    function testLog2RoundDown() public {
+    function testLog2RoundDown() public view {
         assertEq(math.log_2(0, false), 0);
         assertEq(math.log_2(1, false), 0);
         assertEq(math.log_2(2, false), 1);
@@ -247,7 +247,7 @@ contract MathTest is Test {
         assertEq(math.log_2(type(uint256).max, false), 255);
     }
 
-    function testLog2RoundUp() public {
+    function testLog2RoundUp() public view {
         assertEq(math.log_2(0, true), 0);
         assertEq(math.log_2(1, true), 0);
         assertEq(math.log_2(2, true), 1);
@@ -261,7 +261,7 @@ contract MathTest is Test {
         assertEq(math.log_2(type(uint256).max, true), 256);
     }
 
-    function testLog10RoundDown() public {
+    function testLog10RoundDown() public view {
         assertEq(math.log_10(0, false), 0);
         assertEq(math.log_10(1, false), 0);
         assertEq(math.log_10(2, false), 0);
@@ -277,7 +277,7 @@ contract MathTest is Test {
         assertEq(math.log_10(type(uint256).max, false), 77);
     }
 
-    function testLog10RoundUp() public {
+    function testLog10RoundUp() public view {
         assertEq(math.log_10(0, true), 0);
         assertEq(math.log_10(1, true), 0);
         assertEq(math.log_10(2, true), 1);
@@ -293,7 +293,7 @@ contract MathTest is Test {
         assertEq(math.log_10(type(uint256).max, true), 78);
     }
 
-    function testLog256RoundDown() public {
+    function testLog256RoundDown() public view {
         assertEq(math.log_256(0, false), 0);
         assertEq(math.log_256(1, false), 0);
         assertEq(math.log_256(2, false), 0);
@@ -306,7 +306,7 @@ contract MathTest is Test {
         assertEq(math.log_256(type(uint256).max, false), 31);
     }
 
-    function testLog256RoundUp() public {
+    function testLog256RoundUp() public view {
         assertEq(math.log_256(0, true), 0);
         assertEq(math.log_256(1, true), 0);
         assertEq(math.log_256(2, true), 1);
@@ -319,7 +319,7 @@ contract MathTest is Test {
         assertEq(math.log_256(type(uint256).max, true), 32);
     }
 
-    function testWadLn() public {
+    function testWadLn() public view {
         assertEq(math.wad_ln(0), 0);
         assertEq(math.wad_ln(10 ** 18), 0);
         assertEq(math.wad_ln(1), -41_446_531_673_892_822_313);
@@ -346,7 +346,7 @@ contract MathTest is Test {
         math.wad_ln(type(int256).min);
     }
 
-    function testWadExp() public {
+    function testWadExp() public view {
         assertEq(math.wad_exp(-41_446_531_673_892_822_313), 0);
         assertEq(math.wad_exp(-41_446_531_673_892_822_312), 1);
         assertEq(math.wad_exp(-3 * 10 ** 18), 49_787_068_367_863_942);
@@ -382,7 +382,7 @@ contract MathTest is Test {
         math.wad_exp(type(int256).max);
     }
 
-    function testCbrtRoundDown() public {
+    function testCbrtRoundDown() public view {
         assertEq(math.cbrt(0, false), 0);
         assertEq(math.cbrt(1, false), 1);
         assertEq(math.cbrt(2, false), 1);
@@ -405,7 +405,7 @@ contract MathTest is Test {
         );
     }
 
-    function testCbrtRoundUp() public {
+    function testCbrtRoundUp() public view {
         assertEq(math.cbrt(0, true), 0);
         assertEq(math.cbrt(1, true), 1);
         assertEq(math.cbrt(2, true), 2);
@@ -428,7 +428,7 @@ contract MathTest is Test {
         );
     }
 
-    function testWadCbrt() public {
+    function testWadCbrt() public view {
         assertEq(math.wad_cbrt(0), 0);
         assertEq(math.wad_cbrt(1), 10 ** 12);
         assertEq(math.wad_cbrt(2), 1_259_921_049_894);
@@ -458,7 +458,7 @@ contract MathTest is Test {
      * @notice We use the `average` function of OpenZeppelin as a benchmark:
      * https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/math/Math.sol.
      */
-    function testFuzzUint256Average(uint256 x, uint256 y) public {
+    function testFuzzUint256Average(uint256 x, uint256 y) public view {
         assertEq(math.uint256_average(x, y), Math.average(x, y));
     }
 
@@ -466,7 +466,7 @@ contract MathTest is Test {
      * @notice We use the `avg` function of solady as a benchmark:
      * https://github.com/Vectorized/solady/blob/main/src/utils/FixedPointMathLib.sol.
      */
-    function testFuzzInt256Average(int256 x, int256 y) public {
+    function testFuzzInt256Average(int256 x, int256 y) public view {
         assertEq(math.int256_average(x, y), FixedPointMathLib.avg(x, y));
     }
 
@@ -474,7 +474,7 @@ contract MathTest is Test {
      * @notice Forked and adjusted accordingly from here:
      * https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/test/utils/math/Math.t.sol.
      */
-    function testFuzzCeilDiv(uint256 x, uint256 y) public {
+    function testFuzzCeilDiv(uint256 x, uint256 y) public view {
         vm.assume(y > 0);
         uint256 result = math.ceil_div(x, y);
         if (result == 0) {
@@ -487,7 +487,7 @@ contract MathTest is Test {
         }
     }
 
-    function testFuzzSignum(int256 x) public {
+    function testFuzzSignum(int256 x) public view {
         if (x > 0) {
             assertEq(math.signum(x), 1);
         } else if (x < 0) {
@@ -501,7 +501,7 @@ contract MathTest is Test {
      * @notice Forked and adjusted accordingly from here:
      * https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/test/utils/math/Math.t.sol.
      */
-    function testFuzzMulDiv(uint256 x, uint256 y, uint256 d) public {
+    function testFuzzMulDiv(uint256 x, uint256 y, uint256 d) public view {
         /**
          * @dev Full precision for "x * y".
          */
@@ -564,7 +564,7 @@ contract MathTest is Test {
      * @notice Forked and adjusted accordingly from here:
      * https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/test/utils/math/Math.t.sol.
      */
-    function testFuzzLog2(uint256 x, bool roundup) public {
+    function testFuzzLog2(uint256 x, bool roundup) public view {
         uint256 result = math.log_2(x, roundup);
         if (x == 0) {
             assertEq(result, 0);
@@ -583,7 +583,7 @@ contract MathTest is Test {
      * @notice Forked and adjusted accordingly from here:
      * https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/test/utils/math/Math.t.sol.
      */
-    function testFuzzLog10(uint256 x, bool roundup) public {
+    function testFuzzLog10(uint256 x, bool roundup) public view {
         uint256 result = math.log_10(x, roundup);
         if (x == 0) {
             assertEq(result, 0);
@@ -602,7 +602,7 @@ contract MathTest is Test {
      * @notice Forked and adjusted accordingly from here:
      * https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/test/utils/math/Math.t.sol.
      */
-    function testFuzzLog256(uint256 x, bool roundup) public {
+    function testFuzzLog256(uint256 x, bool roundup) public view {
         uint256 result = math.log_256(x, roundup);
         if (x == 0) {
             assertEq(result, 0);
@@ -623,7 +623,7 @@ contract MathTest is Test {
      * as well as the function `wadLn` of solmate:
      * https://github.com/transmissions11/solmate/blob/main/src/utils/SignedWadMath.sol.
      */
-    function testFuzzWadLn(int256 x) public {
+    function testFuzzWadLn(int256 x) public view {
         x = bound(x, 1, type(int256).max);
         int256 result = math.wad_ln(x);
         assertEq(result, FixedPointMathLib.lnWad(x));
@@ -636,14 +636,14 @@ contract MathTest is Test {
      * as well as the function `wadExp` of solmate:
      * https://github.com/transmissions11/solmate/blob/main/src/utils/SignedWadMath.sol.
      */
-    function testFuzzWadExp(int256 x) public {
+    function testFuzzWadExp(int256 x) public view {
         x = bound(x, type(int256).min, 135_305_999_368_893_231_588);
         int256 result = math.wad_exp(x);
         assertEq(result, FixedPointMathLib.expWad(x));
         assertEq(result, wadExp(x));
     }
 
-    function testFuzzCbrt(uint256 x, bool roundup) public {
+    function testFuzzCbrt(uint256 x, bool roundup) public view {
         uint256 result = math.cbrt(x, roundup);
         uint256 floor = floorCbrt(x);
         uint256 ceil = (floor ** 3 == x ? floor : floor + 1);
@@ -654,7 +654,7 @@ contract MathTest is Test {
         }
     }
 
-    function testFuzzWadCbrt(uint256 x) public {
+    function testFuzzWadCbrt(uint256 x) public view {
         uint256 result = math.wad_cbrt(x);
         uint256 floor = floorCbrt(x);
         assertTrue(

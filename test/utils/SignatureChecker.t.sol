@@ -29,7 +29,7 @@ contract SignatureCheckerTest is Test {
         );
     }
 
-    function testInitialSetup() public {
+    function testInitialSetup() public view {
         assertEq(
             bytes32(signatureChecker.IERC1271_ISVALIDSIGNATURE_SELECTOR()),
             bytes32(ERC1271WalletMock.isValidSignature.selector)
@@ -354,7 +354,7 @@ contract SignatureCheckerTest is Test {
     function testEIP1271WithInvalidSignature(
         bytes calldata signature,
         string calldata message
-    ) public {
+    ) public view {
         vm.assume(signature.length < 64);
         bytes32 hash = keccak256(abi.encode(message));
         assertTrue(
