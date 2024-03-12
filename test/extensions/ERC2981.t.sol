@@ -51,7 +51,7 @@ contract ERC2981Test is Test {
         assertEq(royaltyAmountInitialSetup, 0);
     }
 
-    function testSupportsInterfaceSuccess() public {
+    function testSupportsInterfaceSuccess() public view {
         assertTrue(
             ERC2981Extended.supportsInterface(type(IERC165).interfaceId)
         );
@@ -60,7 +60,7 @@ contract ERC2981Test is Test {
         );
     }
 
-    function testSupportsInterfaceSuccessGasCost() public {
+    function testSupportsInterfaceSuccessGasCost() public view {
         uint256 startGas = gasleft();
         ERC2981Extended.supportsInterface(type(IERC165).interfaceId);
         uint256 gasUsed = startGas - gasleft();
@@ -70,11 +70,11 @@ contract ERC2981Test is Test {
         );
     }
 
-    function testSupportsInterfaceInvalidInterfaceId() public {
+    function testSupportsInterfaceInvalidInterfaceId() public view {
         assertTrue(!ERC2981Extended.supportsInterface(0x0011bbff));
     }
 
-    function testSupportsInterfaceInvalidInterfaceIdGasCost() public {
+    function testSupportsInterfaceInvalidInterfaceIdGasCost() public view {
         uint256 startGas = gasleft();
         ERC2981Extended.supportsInterface(0x0011bbff);
         uint256 gasUsed = startGas - gasleft();
@@ -355,7 +355,7 @@ contract ERC2981Test is Test {
         ERC2981Extended.reset_token_royalty(1);
     }
 
-    function testHasOwner() public {
+    function testHasOwner() public view {
         assertEq(ERC2981Extended.owner(), deployer);
     }
 
@@ -782,7 +782,7 @@ contract ERC2981Invariants is Test {
         targetSender(deployer);
     }
 
-    function invariantOwner() public {
+    function invariantOwner() public view {
         assertEq(ERC2981Extended.owner(), erc2981Handler.owner());
     }
 }

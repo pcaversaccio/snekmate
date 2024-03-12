@@ -75,7 +75,7 @@ contract ERC1155Test is Test {
         );
     }
 
-    function testSupportsInterfaceSuccess() public {
+    function testSupportsInterfaceSuccess() public view {
         assertTrue(
             ERC1155Extended.supportsInterface(type(IERC165).interfaceId)
         );
@@ -89,7 +89,7 @@ contract ERC1155Test is Test {
         );
     }
 
-    function testSupportsInterfaceSuccessGasCost() public {
+    function testSupportsInterfaceSuccessGasCost() public view {
         uint256 startGas = gasleft();
         ERC1155Extended.supportsInterface(type(IERC165).interfaceId);
         uint256 gasUsed = startGas - gasleft();
@@ -99,11 +99,11 @@ contract ERC1155Test is Test {
         );
     }
 
-    function testSupportsInterfaceInvalidInterfaceId() public {
+    function testSupportsInterfaceInvalidInterfaceId() public view {
         assertTrue(!ERC1155Extended.supportsInterface(0x0011bbff));
     }
 
-    function testSupportsInterfaceInvalidInterfaceIdGasCost() public {
+    function testSupportsInterfaceInvalidInterfaceIdGasCost() public view {
         uint256 startGas = gasleft();
         ERC1155Extended.supportsInterface(0x0011bbff);
         uint256 gasUsed = startGas - gasleft();
@@ -1191,7 +1191,7 @@ contract ERC1155Test is Test {
         vm.stopPrank();
     }
 
-    function testUriNoTokenUri() public {
+    function testUriNoTokenUri() public view {
         assertEq(
             ERC1155Extended.uri(0),
             string.concat(_BASE_URI, Strings.toString(uint256(0)))
@@ -1271,7 +1271,7 @@ contract ERC1155Test is Test {
         ERC1155Extended.set_uri(1, "my_awesome_uri");
     }
 
-    function testTotalSupplyBeforeMint() public {
+    function testTotalSupplyBeforeMint() public view {
         assertEq(ERC1155Extended.total_supply(0), 0);
     }
 
@@ -1351,7 +1351,7 @@ contract ERC1155Test is Test {
         vm.stopPrank();
     }
 
-    function testExistsBeforeMint() public {
+    function testExistsBeforeMint() public view {
         assertTrue(!ERC1155Extended.exists(0));
     }
 
@@ -2381,7 +2381,7 @@ contract ERC1155Test is Test {
         ERC1155Extended.set_minter(deployer, false);
     }
 
-    function testHasOwner() public {
+    function testHasOwner() public view {
         assertEq(ERC1155Extended.owner(), deployer);
     }
 
@@ -3596,7 +3596,7 @@ contract ERC1155Invariants is Test {
         targetSender(deployer);
     }
 
-    function invariantOwner() public {
+    function invariantOwner() public view {
         assertEq(ERC1155Extended.owner(), erc1155Handler.owner());
     }
 }

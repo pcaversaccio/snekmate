@@ -464,11 +464,11 @@ contract BatchDistributorInvariants is Test {
         targetSender(msgSender);
     }
 
-    function invariantNoEtherBalance() public {
+    function invariantNoEtherBalance() public view {
         assertEq(batchDistributorAddr.balance, 0);
     }
 
-    function invariantNoTokenBalance() public {
+    function invariantNoTokenBalance() public view {
         /**
          * @dev This invariant breaks when tokens are sent directly to `batchDistributor`
          * as part of `distribute_token`. However, this behaviour is acceptable.
