@@ -91,14 +91,14 @@ contract AccessControlTest is Test {
         );
     }
 
-    function testSupportsInterfaceSuccess() public {
+    function testSupportsInterfaceSuccess() public view {
         assertTrue(accessControl.supportsInterface(type(IERC165).interfaceId));
         assertTrue(
             accessControl.supportsInterface(type(IAccessControl).interfaceId)
         );
     }
 
-    function testSupportsInterfaceSuccessGasCost() public {
+    function testSupportsInterfaceSuccessGasCost() public view {
         uint256 startGas = gasleft();
         accessControl.supportsInterface(type(IERC165).interfaceId);
         uint256 gasUsed = startGas - gasleft();
@@ -108,11 +108,11 @@ contract AccessControlTest is Test {
         );
     }
 
-    function testSupportsInterfaceInvalidInterfaceId() public {
+    function testSupportsInterfaceInvalidInterfaceId() public view {
         assertTrue(!accessControl.supportsInterface(0x0011bbff));
     }
 
-    function testSupportsInterfaceInvalidInterfaceIdGasCost() public {
+    function testSupportsInterfaceInvalidInterfaceIdGasCost() public view {
         uint256 startGas = gasleft();
         accessControl.supportsInterface(0x0011bbff);
         uint256 gasUsed = startGas - gasleft();
@@ -657,7 +657,7 @@ contract AccessControlInvariants is Test {
         targetContract(address(accessControlHandler));
     }
 
-    function invariantHasRole() public {
+    function invariantHasRole() public view {
         assertEq(
             accessControl.hasRole(DEFAULT_ADMIN_ROLE, deployer),
             accessControlHandler.hasRole(DEFAULT_ADMIN_ROLE, deployer)
@@ -672,7 +672,7 @@ contract AccessControlInvariants is Test {
         );
     }
 
-    function invariantGetRoleAdmin() public {
+    function invariantGetRoleAdmin() public view {
         assertEq(
             accessControl.getRoleAdmin(DEFAULT_ADMIN_ROLE),
             accessControlHandler.getRoleAdmin(DEFAULT_ADMIN_ROLE)

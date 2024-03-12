@@ -547,7 +547,7 @@ contract MerkleProofVerificationTest is Test {
         );
     }
 
-    function testMultiProofEdgeCase1() public {
+    function testMultiProofEdgeCase1() public view {
         bytes32[] memory leaves = new bytes32[](1);
         bytes32[] memory multiProof = new bytes32[](0);
         bool[] memory proofFlags = new bool[](0);
@@ -567,7 +567,7 @@ contract MerkleProofVerificationTest is Test {
         );
     }
 
-    function testMultiProofEdgeCase2() public {
+    function testMultiProofEdgeCase2() public view {
         bytes32[] memory leaves = new bytes32[](0);
         bytes32[] memory multiProof = new bytes32[](1);
         bool[] memory proofFlags = new bool[](0);
@@ -597,7 +597,7 @@ contract MerkleProofVerificationTest is Test {
     function testFuzzVerify(
         bytes32[] calldata data,
         uint256 randomness
-    ) public {
+    ) public view {
         vm.assume(data.length > 1);
         uint256 nodeIndex = randomness % data.length;
         bytes32 root = merkleGenerator.getRoot(data);
@@ -630,7 +630,7 @@ contract MerkleProofVerificationTest is Test {
     function testFuzzMultiProofVerifySingleLeaf(
         bytes32[] calldata data,
         uint256 randomness
-    ) public {
+    ) public view {
         vm.assume(data.length > 1);
         uint256 nodeIndex = randomness % data.length;
         bytes32 root = merkleGenerator.getRoot(data);
@@ -682,7 +682,7 @@ contract MerkleProofVerificationTest is Test {
         bool damageProof,
         bool damageRoot,
         bool damageLeaves
-    ) public {
+    ) public view {
         bool noDamage = true;
 
         bytes32 root = merkleGenerator.hashLeafPairs(

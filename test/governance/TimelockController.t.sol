@@ -84,7 +84,7 @@ contract TimelockControllerTest is Test {
         IAccessControl accessControl,
         bytes32 role,
         address[2] storage addresses
-    ) internal {
+    ) internal view {
         assertTrue(
             !accessControl.hasRole(role, addresses[0]) &&
                 !accessControl.hasRole(role, addresses[1])
@@ -616,7 +616,7 @@ contract TimelockControllerTest is Test {
         assertEq(timelockControllerAddr.balance, 0.5 ether);
     }
 
-    function testSupportsInterfaceSuccess() public {
+    function testSupportsInterfaceSuccess() public view {
         assertTrue(
             timelockController.supportsInterface(type(IERC165).interfaceId)
         );
@@ -632,7 +632,7 @@ contract TimelockControllerTest is Test {
         );
     }
 
-    function testSupportsInterfaceSuccessGasCost() public {
+    function testSupportsInterfaceSuccessGasCost() public view {
         uint256 startGas = gasleft();
         timelockController.supportsInterface(type(IERC165).interfaceId);
         uint256 gasUsed = startGas - gasleft();
@@ -642,11 +642,11 @@ contract TimelockControllerTest is Test {
         );
     }
 
-    function testSupportsInterfaceInvalidInterfaceId() public {
+    function testSupportsInterfaceInvalidInterfaceId() public view {
         assertTrue(!timelockController.supportsInterface(0x0011bbff));
     }
 
-    function testSupportsInterfaceInvalidInterfaceIdGasCost() public {
+    function testSupportsInterfaceInvalidInterfaceIdGasCost() public view {
         uint256 startGas = gasleft();
         timelockController.supportsInterface(0x0011bbff);
         uint256 gasUsed = startGas - gasleft();
@@ -656,7 +656,7 @@ contract TimelockControllerTest is Test {
         );
     }
 
-    function testHashOperation() public {
+    function testHashOperation() public view {
         uint256 amount = 0;
         bytes32 slot = bytes32(uint256(1337));
         bytes32 value = bytes32(uint256(6699));
@@ -1899,7 +1899,7 @@ contract TimelockControllerTest is Test {
         vm.stopPrank();
     }
 
-    function testHashOperationBatch() public {
+    function testHashOperationBatch() public view {
         address[] memory targets = new address[](1);
         targets[0] = target;
         uint256[] memory amounts = new uint256[](1);
@@ -3308,7 +3308,7 @@ contract TimelockControllerTest is Test {
         assertEq(timelockController.get_minimum_delay(), newMinDelay);
     }
 
-    function testInvalidOperation() public {
+    function testInvalidOperation() public view {
         assertTrue(!timelockController.is_operation(keccak256("Invalid")));
     }
 
@@ -4033,7 +4033,7 @@ contract TimelockControllerTest is Test {
         bytes memory payload,
         bytes32 predecessor,
         bytes32 salt
-    ) public {
+    ) public view {
         bytes32 operationId = timelockController.hash_operation(
             target_,
             amount,
@@ -4114,7 +4114,7 @@ contract TimelockControllerTest is Test {
         bytes[] memory payloads,
         bytes32 predecessor,
         bytes32 salt
-    ) public {
+    ) public view {
         bytes32 batchedOperationId = timelockController.hash_operation_batch(
             targets_,
             amounts,
@@ -4253,7 +4253,7 @@ contract TimelockControllerInvariants is Test {
      * @dev The number of scheduled transactions cannot exceed the number of
      * executed transactions.
      */
-    function invariantExecutedLessThanOrEqualToScheduled() public {
+    function invariantExecutedLessThanOrEqualToScheduled() public view {
         assertTrue(
             timelockControllerHandler.executeCount() <=
                 timelockControllerHandler.scheduleCount()
@@ -4263,7 +4263,7 @@ contract TimelockControllerInvariants is Test {
     /**
      * @dev The number of proposals executed must match the count number.
      */
-    function invariantProposalsExecutedMatchCount() public {
+    function invariantProposalsExecutedMatchCount() public view {
         assertEq(
             timelockControllerHandler.executeCount(),
             timelockControllerHandler.counter()
@@ -4294,7 +4294,7 @@ contract TimelockControllerInvariants is Test {
      * @dev The sum of the executed proposals and the cancelled proposals must
      * be less than or equal to the number of scheduled proposals.
      */
-    function invariantSumOfProposals() public {
+    function invariantSumOfProposals() public view {
         assertTrue(
             (timelockControllerHandler.cancelCount() +
                 timelockControllerHandler.executeCount()) <=

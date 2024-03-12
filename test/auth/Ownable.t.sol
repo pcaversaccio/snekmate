@@ -32,7 +32,7 @@ contract OwnableTest is Test {
         assertEq(ownableInitialEvent.owner(), deployer);
     }
 
-    function testHasOwner() public {
+    function testHasOwner() public view {
         assertEq(ownable.owner(), deployer);
     }
 
@@ -148,7 +148,7 @@ contract OwnableInvariants is Test {
         targetContract(address(ownerHandler));
     }
 
-    function invariantOwner() public {
+    function invariantOwner() public view {
         assertEq(ownable.owner(), ownerHandler.owner());
     }
 }

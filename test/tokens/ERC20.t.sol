@@ -112,7 +112,7 @@ contract ERC20Test is Test {
         assertTrue(ERC20ExtendedInitialEvent.is_minter(deployer));
     }
 
-    function testTotalSupply() public {
+    function testTotalSupply() public view {
         uint256 multiplier = 10 ** uint256(ERC20Extended.decimals());
         assertEq(ERC20Extended.totalSupply(), _INITIAL_SUPPLY * multiplier);
     }
@@ -764,7 +764,7 @@ contract ERC20Test is Test {
         ERC20Extended.permit(owner, spender, amount, deadline, v, r, s);
     }
 
-    function testCachedDomainSeparator() public {
+    function testCachedDomainSeparator() public view {
         assertEq(ERC20Extended.DOMAIN_SEPARATOR(), _CACHED_DOMAIN_SEPARATOR);
     }
 
@@ -782,7 +782,7 @@ contract ERC20Test is Test {
         assertEq(ERC20Extended.DOMAIN_SEPARATOR(), digest);
     }
 
-    function testEIP712Domain() public {
+    function testEIP712Domain() public view {
         (
             bytes1 fields,
             string memory name,
@@ -812,7 +812,7 @@ contract ERC20Test is Test {
         assertEq(ERC20Extended.DOMAIN_SEPARATOR(), digest);
     }
 
-    function testHasOwner() public {
+    function testHasOwner() public view {
         assertEq(ERC20Extended.owner(), deployer);
     }
 
@@ -1310,11 +1310,11 @@ contract ERC20Invariants is Test {
         targetSender(deployer);
     }
 
-    function invariantTotalSupply() public {
+    function invariantTotalSupply() public view {
         assertEq(ERC20Extended.totalSupply(), erc20Handler.totalSupply());
     }
 
-    function invariantOwner() public {
+    function invariantOwner() public view {
         assertEq(ERC20Extended.owner(), erc20Handler.owner());
     }
 }

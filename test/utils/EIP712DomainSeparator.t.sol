@@ -53,7 +53,7 @@ contract EIP712DomainSeparatorTest is Test {
         );
     }
 
-    function testCachedDomainSeparatorV4() public {
+    function testCachedDomainSeparatorV4() public view {
         assertEq(
             EIP712domainSeparator.domain_separator_v4(),
             _CACHED_DOMAIN_SEPARATOR
@@ -105,7 +105,7 @@ contract EIP712DomainSeparatorTest is Test {
         assertEq(digest1, digest2);
     }
 
-    function testEIP712Domain() public {
+    function testEIP712Domain() public view {
         (
             bytes1 fields,
             string memory name,
@@ -159,7 +159,7 @@ contract EIP712DomainSeparatorTest is Test {
         uint256 value,
         uint256 nonce,
         uint64 increment
-    ) public {
+    ) public view {
         uint256 deadline = block.timestamp + increment;
         bytes32 structHash = keccak256(
             abi.encode(

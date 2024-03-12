@@ -1849,7 +1849,7 @@ contract ERC4626VaultTest is ERC4626Test {
         );
     }
 
-    function testCachedDomainSeparator() public {
+    function testCachedDomainSeparator() public view {
         assertEq(
             ERC4626ExtendedDecimalsOffset0.DOMAIN_SEPARATOR(),
             _CACHED_DOMAIN_SEPARATOR
@@ -1870,7 +1870,7 @@ contract ERC4626VaultTest is ERC4626Test {
         assertEq(ERC4626ExtendedDecimalsOffset0.DOMAIN_SEPARATOR(), digest);
     }
 
-    function testEIP712Domain() public {
+    function testEIP712Domain() public view {
         (
             bytes1 fields,
             string memory name,
@@ -2100,14 +2100,14 @@ contract ERC4626VaultInvariants is Test {
         targetSender(deployer);
     }
 
-    function invariantTotalSupply() public {
+    function invariantTotalSupply() public view {
         assertEq(
             ERC4626Extended.totalSupply(),
             erc4626VaultHandler.totalSupply()
         );
     }
 
-    function invariantTotalAssets() public {
+    function invariantTotalAssets() public view {
         assertEq(
             ERC4626Extended.totalAssets(),
             erc4626VaultHandler.totalAssets()
