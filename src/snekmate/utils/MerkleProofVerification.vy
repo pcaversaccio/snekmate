@@ -1,4 +1,4 @@
-# pragma version ~=0.4.0b2
+# pragma version ~=0.4.0b5
 """
 @title Merkle Tree Proof Verification Functions
 @custom:contract-name MerkleProofVerification

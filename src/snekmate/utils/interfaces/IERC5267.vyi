@@ -1,4 +1,4 @@
-# pragma version ~=0.4.0b2
+# pragma version ~=0.4.0b5
 """
 @title EIP-5267 Interface Definition
 @custom:contract-name IERC5267

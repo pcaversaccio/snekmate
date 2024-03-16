@@ -1,4 +1,4 @@
-# pragma version ~=0.4.0b2
+# pragma version ~=0.4.0b5
 """
 @title ECDSA and EIP-1271 Signature Verification Functions
 @custom:contract-name SignatureChecker
