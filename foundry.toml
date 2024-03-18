@@ -12,7 +12,7 @@ invariant = { runs = 256 }                                  # the number of runs
 ffi = true                                                  # whether to enable foreign function interface (ffi) cheatcodes or not
 verbosity = 3                                               # the verbosity of tests
 fs_permissions = [{ access = "read-write", path = "./"}]    # set read-write access to project root
-solc_version = '0.8.24'                                     # override for the solc version
+solc_version = '0.8.25'                                     # override for the solc version
 evm_version = 'shanghai'                                    # set the EVM target version
 
 ## default overrides for the CI runs
