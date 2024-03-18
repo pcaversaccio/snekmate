@@ -33,8 +33,8 @@ devDependencies:
     specifier: ^1.3.1
     version: 1.3.1(prettier@3.2.5)
   solhint:
-    specifier: ^4.1.1
-    version: 4.1.1
+    specifier: ^4.5.2
+    version: 4.5.2
 
 packages:
   /@aashutoshrathi/word-wrap@1.2.6:
@@ -570,19 +570,17 @@ packages:
     engines: { node: ">=14.16" }
     dev: true
 
-  /@solidity-parser/parser@0.16.2:
-    resolution:
-      {
-        integrity: sha512-PI9NfoA3P8XK2VBkK5oIfRgKDsicwDZfkVq9ZTBCQYGOP1N2owgY2dyLGyU5/J/hQs8KRk55kdmvTLjy3Mu3vg==,
-      }
-    dependencies:
-      antlr4ts: 0.5.0-alpha.4
-    dev: true
-
   /@solidity-parser/parser@0.17.0:
     resolution:
       {
         integrity: sha512-Nko8R0/kUo391jsEHHxrGM07QFdnPGvlmox4rmH0kNiNAashItAilhy4Mv4pK5gQmW5f4sXAF58fwJbmlkGcVw==,
+      }
+    dev: true
+
+  /@solidity-parser/parser@0.18.0:
+    resolution:
+      {
+        integrity: sha512-yfORGUIPgLck41qyN7nbwJRAx17/jAIXCTanHOJZhB6PJ1iAk/84b/xlsVKFSyNyLXIj0dhppoE0+CRws7wlzA==,
       }
     dev: true
 
@@ -696,19 +694,12 @@ packages:
       color-convert: 2.0.1
     dev: true
 
-  /antlr4@4.13.1:
+  /antlr4@4.13.1-patch-1:
     resolution:
       {
-        integrity: sha512-kiXTspaRYvnIArgE97z5YVVf/cDVQABr3abFRR6mE7yesLMkgu4ujuyV/sgxafQ8wgve0DJQUJ38Z8tkgA2izA==,
+        integrity: sha512-OjFLWWLzDMV9rdFhpvroCWR4ooktNg9/nvVYSA5z28wuVpU36QUNuioR1XLnQtcjVlf8npjyz593PxnU/f/Cow==,
       }
     engines: { node: ">=16" }
-    dev: true
-
-  /antlr4ts@0.5.0-alpha.4:
-    resolution:
-      {
-        integrity: sha512-WPQDt1B74OfPv/IMS2ekXAKkTZIHl88uMetg6q3OTqgFxZ/dxDXI0EWLyZid/1Pe6hTftyg5N7gel5wNAGxXyQ==,
-      }
     dev: true
 
   /argparse@2.0.1:
@@ -2273,16 +2264,16 @@ packages:
       is-fullwidth-code-point: 3.0.0
     dev: true
 
-  /solhint@4.1.1:
+  /solhint@4.5.2:
     resolution:
       {
-        integrity: sha512-7G4iF8H5hKHc0tR+/uyZesSKtfppFIMvPSW+Ku6MSL25oVRuyFeqNhOsXHfkex64wYJyXs4fe+pvhB069I19Tw==,
+        integrity: sha512-o7MNYS5QPgE6l+PTGOTAUtCzo0ZLnffQsv586hntSHBe2JbSDfkoxfhAOcjZjN4OesTgaX4UEEjCjH9y/4BP5w==,
       }
     hasBin: true
     dependencies:
-      "@solidity-parser/parser": 0.16.2
+      "@solidity-parser/parser": 0.18.0
       ajv: 6.12.6
-      antlr4: 4.13.1
+      antlr4: 4.13.1-patch-1
       ast-parents: 0.0.1
       chalk: 4.1.2
       commander: 10.0.1
