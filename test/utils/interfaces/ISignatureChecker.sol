@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: WTFPL
-pragma solidity ^0.8.24;
+pragma solidity ^0.8.25;
 
 interface ISignatureChecker {
     function IERC1271_ISVALIDSIGNATURE_SELECTOR()
