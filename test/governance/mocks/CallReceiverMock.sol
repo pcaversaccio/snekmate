@@ -70,7 +70,7 @@ contract CallReceiverMock {
      * @dev Reverts with an empty reason.
      */
     function mockFunctionRevertsWithEmptyReason() public payable {
-        // solhint-disable-next-line reason-string, custom-errors
+        // solhint-disable-next-line reason-string, gas-custom-errors
         revert();
     }
 
@@ -78,7 +78,7 @@ contract CallReceiverMock {
      * @dev Reverts with a non-empty reason.
      */
     function mockFunctionRevertsWithReason() public payable {
-        // solhint-disable-next-line custom-errors
+        // solhint-disable-next-line gas-custom-errors
         revert("CallReceiverMock: reverting");
     }
 
