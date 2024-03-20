@@ -23,7 +23,7 @@ contract AccessControlTest is Test {
 
     function setUp() public {
         accessControl = IAccessControlExtended(
-            vyperDeployer.deployContract("src/snekmate/auth/", "AccessControl")
+            vyperDeployer.deployContract("src/snekmate/auth/mocks/", "AccessControlMock")
         );
     }
 
@@ -54,7 +54,7 @@ contract AccessControlTest is Test {
         vm.expectEmit(true, true, true, false);
         emit IAccessControl.RoleGranted(ADDITIONAL_ROLE_2, deployer, deployer);
         accessControlInitialEvent = IAccessControlExtended(
-            vyperDeployer.deployContract("src/snekmate/auth/", "AccessControl")
+            vyperDeployer.deployContract("src/snekmate/auth/mocks/", "AccessControlMock")
         );
         assertEq(
             accessControlInitialEvent.DEFAULT_ADMIN_ROLE(),

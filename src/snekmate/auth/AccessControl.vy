@@ -69,22 +69,6 @@ implements: IAccessControl
 DEFAULT_ADMIN_ROLE: public(constant(bytes32)) = empty(bytes32)
 
 
-# @dev An additional 32-byte access role.
-# @notice Please adjust the naming of the variable
-# according to your specific requirement,
-# e.g. `MINTER_ROLE`.
-ADDITIONAL_ROLE_1: public(constant(bytes32)) = keccak256("ADDITIONAL_ROLE_1")
-
-
-# @dev An additional 32-byte access role.
-# @notice Please adjust the naming of the variable
-# according to your specific requirement,
-# e.g. `PAUSER_ROLE`. Also, feel free to add more
-# roles if necessary. In this case, it is important
-# to extend the constructor accordingly.
-ADDITIONAL_ROLE_2: public(constant(bytes32)) = keccak256("ADDITIONAL_ROLE_2")
-
-
 # @dev Stores the ERC-165 interface identifier for each
 # imported interface. The ERC-165 interface identifier
 # is defined as the XOR of all function selectors in the
@@ -147,8 +131,6 @@ def __init__():
             the `msg.sender`.
     """
     self._grant_role(DEFAULT_ADMIN_ROLE, msg.sender)
-    self._grant_role(ADDITIONAL_ROLE_1, msg.sender)
-    self._grant_role(ADDITIONAL_ROLE_2, msg.sender)
 
 
 @external
