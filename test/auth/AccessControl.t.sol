@@ -651,7 +651,10 @@ contract AccessControlInvariants is Test {
 
     function setUp() public {
         accessControl = IAccessControlExtended(
-            vyperDeployer.deployContract("src/snekmate/auth/", "AccessControl")
+            vyperDeployer.deployContract(
+                "src/snekmate/auth/mocks/",
+                "AccessControlMock"
+            )
         );
         accessControlHandler = new AccessControlHandler(
             accessControl,
@@ -663,7 +666,7 @@ contract AccessControlInvariants is Test {
         targetContract(address(accessControlHandler));
     }
 
-    function invariantHasRole() public view {
+    function statefulFuzzHasRole() public view {
         assertEq(
             accessControl.hasRole(DEFAULT_ADMIN_ROLE, deployer),
             accessControlHandler.hasRole(DEFAULT_ADMIN_ROLE, deployer)
@@ -678,7 +681,7 @@ contract AccessControlInvariants is Test {
         );
     }
 
-    function invariantGetRoleAdmin() public view {
+    function statefulFuzzGetRoleAdmin() public view {
         assertEq(
             accessControl.getRoleAdmin(DEFAULT_ADMIN_ROLE),
             accessControlHandler.getRoleAdmin(DEFAULT_ADMIN_ROLE)

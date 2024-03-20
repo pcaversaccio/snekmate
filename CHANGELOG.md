@@ -2,6 +2,11 @@
 
 ## [`0.1.0`](https://github.com/pcaversaccio/snekmate/releases/tag/v0.0.1) (Unreleased)
 
+### ♻️ Refactoring
+
+- **Authentication**
+  - [`AccessControl`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/auth/AccessControl.vy): Make `AccessControl` module-compliant. ([#216](https://github.com/pcaversaccio/snekmate/pull/216))
+
 ### 👀 Full Changelog
 
 - [`v0.0.5...v0.1.0`](https://github.com/pcaversaccio/snekmate/compare/v0.0.5...v0.1.0)

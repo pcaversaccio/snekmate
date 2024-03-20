@@ -1,15 +1,10 @@
 # pragma version ~=0.4.0b5
 """
-@title Wrapper Contract for Multi-Role-Based Access Control Functions
+@title AccessControl Module Reference Implementation
 @custom:contract-name AccessControlMock
 @license GNU Affero General Public License v3.0 only
 @author pcaversaccio
 """
-
-
-# @dev We import and initialise the `AccessControl` module.
-from .. import AccessControl as ac
-initializes: ac
 
 
 # @dev We import and implement the `IERC165` interface,
@@ -25,6 +20,11 @@ from ..interfaces import IAccessControl
 implements: IAccessControl
 
 
+# @dev We import and initialise the `AccessControl` module.
+from .. import AccessControl as ac
+initializes: ac
+
+
 # @dev An additional 32-byte access role.
 ADDITIONAL_ROLE_1: public(constant(bytes32)) = keccak256("ADDITIONAL_ROLE_1")
 
@@ -33,9 +33,14 @@ ADDITIONAL_ROLE_1: public(constant(bytes32)) = keccak256("ADDITIONAL_ROLE_1")
 ADDITIONAL_ROLE_2: public(constant(bytes32)) = keccak256("ADDITIONAL_ROLE_2")
 
 
-# @dev We export all public functions from the `AccessControl` module.
-# @notice It's important to also export public `immutable` and state
-# variables.
+# @dev We export (i.e. the runtime bytecode exposes these
+# functions externally, allowing them to be called using
+# the ABI encoding specification) all `external` functions
+# from the `AccessControl` module.
+# @notice Please note that you must always also export (if
+# required by the contract logic) `public` declared `constant`,
+# `immutable`, and state variables, for which Vyper automatically
+# generates an `external` getter function for the variable.
 exports: (
     ac.supportsInterface,
     ac.DEFAULT_ADMIN_ROLE,
@@ -44,7 +49,7 @@ exports: (
     ac.grantRole,
     ac.revokeRole,
     ac.renounceRole,
-    ac.set_role_admin
+    ac.set_role_admin,
 )
 
 
@@ -58,6 +63,8 @@ def __init__():
     @notice All predefined roles will be assigned to
             the `msg.sender`.
     """
-    ac.__init__() # Assigns the `DEFAULT_ADMIN_ROLE` to the `msg.sender`.
+    # The following line assigns the `DEFAULT_ADMIN_ROLE`
+    # to the `msg.sender`.
+    ac.__init__()
     ac._grant_role(ADDITIONAL_ROLE_1, msg.sender)
     ac._grant_role(ADDITIONAL_ROLE_2, msg.sender)

@@ -14,7 +14,7 @@ Any addition or change to the code must be accompanied by relevant and comprehen
 
 The test suite should run automatically for each change in the repository, and for pull requests, the tests must succeed before merging.
 
-Please consider writing [Foundry](https://github.com/foundry-rs/foundry)-based unit tests, property-based tests (i.e. fuzzing), and invariant tests for all contracts, if applicable.
+Please consider writing [Foundry](https://github.com/foundry-rs/foundry)-based unit tests, property-based tests (i.e. stateless fuzzing), and invariant tests (i.e. stateful fuzzing) for all contracts, if applicable.
 
 ## 🪅 Code Style
 
@@ -71,7 +71,9 @@ def _as_singleton_array(element: uint256) -> DynArray[uint256, 1]:
 - All functions should be provided with full [NatSpec](https://docs.vyperlang.org/en/latest/natspec.html) comments containing the tags `@dev`, `@notice` (if applicable), `@param` for each function parameter, and `@return` if a return statement is present.
 - Please note the following order of layout:
   - Version pragma statement
-  - Interface imports
+  - Vyper built-in interface imports
+  - Custom interface imports
+  - Module imports
   - `public` constants
   - `internal` constants
   - `public` immutables
