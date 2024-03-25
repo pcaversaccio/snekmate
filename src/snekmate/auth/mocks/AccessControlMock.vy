@@ -26,11 +26,11 @@ initializes: ac
 
 
 # @dev An additional 32-byte access role.
-ADDITIONAL_ROLE_1: public(constant(bytes32)) = keccak256("ADDITIONAL_ROLE_1")
+MINTER_ROLE: public(constant(bytes32)) = keccak256("MINTER_ROLE")
 
 
 # @dev An additional 32-byte access role.
-ADDITIONAL_ROLE_2: public(constant(bytes32)) = keccak256("ADDITIONAL_ROLE_2")
+PAUSER_ROLE: public(constant(bytes32)) = keccak256("PAUSER_ROLE")
 
 
 # @dev We export (i.e. the runtime bytecode exposes these
@@ -66,5 +66,5 @@ def __init__():
     # The following line assigns the `DEFAULT_ADMIN_ROLE`
     # to the `msg.sender`.
     ac.__init__()
-    ac._grant_role(ADDITIONAL_ROLE_1, msg.sender)
-    ac._grant_role(ADDITIONAL_ROLE_2, msg.sender)
+    ac._grant_role(MINTER_ROLE, msg.sender)
+    ac._grant_role(PAUSER_ROLE, msg.sender)

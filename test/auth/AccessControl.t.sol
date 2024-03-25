@@ -11,8 +11,8 @@ import {IAccessControlExtended} from "./interfaces/IAccessControlExtended.sol";
 
 contract AccessControlTest is Test {
     bytes32 private constant DEFAULT_ADMIN_ROLE = bytes32(0);
-    bytes32 private constant ADDITIONAL_ROLE_1 = keccak256("ADDITIONAL_ROLE_1");
-    bytes32 private constant ADDITIONAL_ROLE_2 = keccak256("ADDITIONAL_ROLE_2");
+    bytes32 private constant MINTER_ROLE = keccak256("MINTER_ROLE");
+    bytes32 private constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
 
     VyperDeployer private vyperDeployer = new VyperDeployer();
 
@@ -32,30 +32,24 @@ contract AccessControlTest is Test {
 
     function testInitialSetup() public {
         assertEq(accessControl.DEFAULT_ADMIN_ROLE(), DEFAULT_ADMIN_ROLE);
-        assertEq(accessControl.ADDITIONAL_ROLE_1(), ADDITIONAL_ROLE_1);
-        assertEq(accessControl.ADDITIONAL_ROLE_2(), ADDITIONAL_ROLE_2);
+        assertEq(accessControl.MINTER_ROLE(), MINTER_ROLE);
+        assertEq(accessControl.PAUSER_ROLE(), PAUSER_ROLE);
         assertTrue(accessControl.hasRole(DEFAULT_ADMIN_ROLE, deployer));
-        assertTrue(accessControl.hasRole(ADDITIONAL_ROLE_1, deployer));
-        assertTrue(accessControl.hasRole(ADDITIONAL_ROLE_2, deployer));
+        assertTrue(accessControl.hasRole(MINTER_ROLE, deployer));
+        assertTrue(accessControl.hasRole(PAUSER_ROLE, deployer));
         assertEq(
             accessControl.getRoleAdmin(DEFAULT_ADMIN_ROLE),
             DEFAULT_ADMIN_ROLE
         );
-        assertEq(
-            accessControl.getRoleAdmin(ADDITIONAL_ROLE_1),
-            DEFAULT_ADMIN_ROLE
-        );
-        assertEq(
-            accessControl.getRoleAdmin(ADDITIONAL_ROLE_2),
-            DEFAULT_ADMIN_ROLE
-        );
+        assertEq(accessControl.getRoleAdmin(MINTER_ROLE), DEFAULT_ADMIN_ROLE);
+        assertEq(accessControl.getRoleAdmin(PAUSER_ROLE), DEFAULT_ADMIN_ROLE);
 
         vm.expectEmit(true, true, true, false);
         emit IAccessControl.RoleGranted(DEFAULT_ADMIN_ROLE, deployer, deployer);
         vm.expectEmit(true, true, true, false);
-        emit IAccessControl.RoleGranted(ADDITIONAL_ROLE_1, deployer, deployer);
+        emit IAccessControl.RoleGranted(MINTER_ROLE, deployer, deployer);
         vm.expectEmit(true, true, true, false);
-        emit IAccessControl.RoleGranted(ADDITIONAL_ROLE_2, deployer, deployer);
+        emit IAccessControl.RoleGranted(PAUSER_ROLE, deployer, deployer);
         accessControlInitialEvent = IAccessControlExtended(
             vyperDeployer.deployContract(
                 "src/snekmate/auth/mocks/",
@@ -66,33 +60,23 @@ contract AccessControlTest is Test {
             accessControlInitialEvent.DEFAULT_ADMIN_ROLE(),
             DEFAULT_ADMIN_ROLE
         );
-        assertEq(
-            accessControlInitialEvent.ADDITIONAL_ROLE_1(),
-            ADDITIONAL_ROLE_1
-        );
-        assertEq(
-            accessControlInitialEvent.ADDITIONAL_ROLE_2(),
-            ADDITIONAL_ROLE_2
-        );
+        assertEq(accessControlInitialEvent.MINTER_ROLE(), MINTER_ROLE);
+        assertEq(accessControlInitialEvent.PAUSER_ROLE(), PAUSER_ROLE);
         assertTrue(
             accessControlInitialEvent.hasRole(DEFAULT_ADMIN_ROLE, deployer)
         );
-        assertTrue(
-            accessControlInitialEvent.hasRole(ADDITIONAL_ROLE_1, deployer)
-        );
-        assertTrue(
-            accessControlInitialEvent.hasRole(ADDITIONAL_ROLE_2, deployer)
-        );
+        assertTrue(accessControlInitialEvent.hasRole(MINTER_ROLE, deployer));
+        assertTrue(accessControlInitialEvent.hasRole(PAUSER_ROLE, deployer));
         assertEq(
             accessControlInitialEvent.getRoleAdmin(DEFAULT_ADMIN_ROLE),
             DEFAULT_ADMIN_ROLE
         );
         assertEq(
-            accessControlInitialEvent.getRoleAdmin(ADDITIONAL_ROLE_1),
+            accessControlInitialEvent.getRoleAdmin(MINTER_ROLE),
             DEFAULT_ADMIN_ROLE
         );
         assertEq(
-            accessControlInitialEvent.getRoleAdmin(ADDITIONAL_ROLE_2),
+            accessControlInitialEvent.getRoleAdmin(PAUSER_ROLE),
             DEFAULT_ADMIN_ROLE
         );
     }
@@ -132,9 +116,9 @@ contract AccessControlTest is Test {
         address account = makeAddr("account");
         vm.startPrank(admin);
         vm.expectEmit(true, true, true, false);
-        emit IAccessControl.RoleGranted(ADDITIONAL_ROLE_1, account, admin);
-        accessControl.grantRole(ADDITIONAL_ROLE_1, account);
-        assertTrue(accessControl.hasRole(ADDITIONAL_ROLE_1, account));
+        emit IAccessControl.RoleGranted(MINTER_ROLE, account, admin);
+        accessControl.grantRole(MINTER_ROLE, account);
+        assertTrue(accessControl.hasRole(MINTER_ROLE, account));
         vm.stopPrank();
     }
 
@@ -154,40 +138,40 @@ contract AccessControlTest is Test {
         address account = makeAddr("account");
         vm.startPrank(admin);
         vm.expectEmit(true, true, true, false);
-        emit IAccessControl.RoleGranted(ADDITIONAL_ROLE_1, account, admin);
-        accessControl.grantRole(ADDITIONAL_ROLE_1, account);
-        assertTrue(accessControl.hasRole(ADDITIONAL_ROLE_1, account));
+        emit IAccessControl.RoleGranted(MINTER_ROLE, account, admin);
+        accessControl.grantRole(MINTER_ROLE, account);
+        assertTrue(accessControl.hasRole(MINTER_ROLE, account));
 
-        accessControl.grantRole(ADDITIONAL_ROLE_1, account);
-        assertTrue(accessControl.hasRole(ADDITIONAL_ROLE_1, account));
+        accessControl.grantRole(MINTER_ROLE, account);
+        assertTrue(accessControl.hasRole(MINTER_ROLE, account));
 
-        accessControl.grantRole(ADDITIONAL_ROLE_1, account);
-        assertTrue(accessControl.hasRole(ADDITIONAL_ROLE_1, account));
+        accessControl.grantRole(MINTER_ROLE, account);
+        assertTrue(accessControl.hasRole(MINTER_ROLE, account));
         vm.stopPrank();
     }
 
     function testGrantRoleNonAdmin() public {
         vm.expectRevert(bytes("AccessControl: account is missing role"));
-        accessControl.grantRole(ADDITIONAL_ROLE_1, makeAddr("account"));
+        accessControl.grantRole(MINTER_ROLE, makeAddr("account"));
     }
 
     function testRevokeRoleSuccess() public {
         address admin = deployer;
         address account = makeAddr("account");
         vm.startPrank(admin);
-        assertTrue(!accessControl.hasRole(ADDITIONAL_ROLE_1, account));
-        accessControl.revokeRole(ADDITIONAL_ROLE_1, account);
-        assertTrue(!accessControl.hasRole(ADDITIONAL_ROLE_1, account));
+        assertTrue(!accessControl.hasRole(MINTER_ROLE, account));
+        accessControl.revokeRole(MINTER_ROLE, account);
+        assertTrue(!accessControl.hasRole(MINTER_ROLE, account));
 
         vm.expectEmit(true, true, true, false);
-        emit IAccessControl.RoleGranted(ADDITIONAL_ROLE_1, account, admin);
-        accessControl.grantRole(ADDITIONAL_ROLE_1, account);
-        assertTrue(accessControl.hasRole(ADDITIONAL_ROLE_1, account));
+        emit IAccessControl.RoleGranted(MINTER_ROLE, account, admin);
+        accessControl.grantRole(MINTER_ROLE, account);
+        assertTrue(accessControl.hasRole(MINTER_ROLE, account));
 
         vm.expectEmit(true, true, true, false);
-        emit IAccessControl.RoleRevoked(ADDITIONAL_ROLE_1, account, admin);
-        accessControl.revokeRole(ADDITIONAL_ROLE_1, account);
-        assertTrue(!accessControl.hasRole(ADDITIONAL_ROLE_1, account));
+        emit IAccessControl.RoleRevoked(MINTER_ROLE, account, admin);
+        accessControl.revokeRole(MINTER_ROLE, account);
+        assertTrue(!accessControl.hasRole(MINTER_ROLE, account));
         vm.stopPrank();
     }
 
@@ -196,20 +180,20 @@ contract AccessControlTest is Test {
         address account = makeAddr("account");
         vm.startPrank(admin);
         vm.expectEmit(true, true, true, false);
-        emit IAccessControl.RoleGranted(ADDITIONAL_ROLE_1, account, admin);
-        accessControl.grantRole(ADDITIONAL_ROLE_1, account);
-        assertTrue(accessControl.hasRole(ADDITIONAL_ROLE_1, account));
+        emit IAccessControl.RoleGranted(MINTER_ROLE, account, admin);
+        accessControl.grantRole(MINTER_ROLE, account);
+        assertTrue(accessControl.hasRole(MINTER_ROLE, account));
 
         vm.expectEmit(true, true, true, false);
-        emit IAccessControl.RoleRevoked(ADDITIONAL_ROLE_1, account, admin);
-        accessControl.revokeRole(ADDITIONAL_ROLE_1, account);
-        assertTrue(!accessControl.hasRole(ADDITIONAL_ROLE_1, account));
+        emit IAccessControl.RoleRevoked(MINTER_ROLE, account, admin);
+        accessControl.revokeRole(MINTER_ROLE, account);
+        assertTrue(!accessControl.hasRole(MINTER_ROLE, account));
 
-        accessControl.revokeRole(ADDITIONAL_ROLE_1, account);
-        assertTrue(!accessControl.hasRole(ADDITIONAL_ROLE_1, account));
+        accessControl.revokeRole(MINTER_ROLE, account);
+        assertTrue(!accessControl.hasRole(MINTER_ROLE, account));
 
-        accessControl.revokeRole(ADDITIONAL_ROLE_1, account);
-        assertTrue(!accessControl.hasRole(ADDITIONAL_ROLE_1, account));
+        accessControl.revokeRole(MINTER_ROLE, account);
+        assertTrue(!accessControl.hasRole(MINTER_ROLE, account));
         vm.stopPrank();
     }
 
@@ -223,13 +207,13 @@ contract AccessControlTest is Test {
         assertTrue(!accessControl.hasRole(DEFAULT_ADMIN_ROLE, admin));
 
         vm.expectRevert(bytes("AccessControl: account is missing role"));
-        accessControl.revokeRole(ADDITIONAL_ROLE_1, admin);
+        accessControl.revokeRole(MINTER_ROLE, admin);
         vm.stopPrank();
     }
 
     function testRevokeRoleNonAdmin() public {
         vm.expectRevert(bytes("AccessControl: account is missing role"));
-        accessControl.revokeRole(ADDITIONAL_ROLE_1, makeAddr("account"));
+        accessControl.revokeRole(MINTER_ROLE, makeAddr("account"));
     }
 
     function testRenounceRoleSuccess() public {
@@ -237,9 +221,9 @@ contract AccessControlTest is Test {
         address account = makeAddr("account");
         vm.startPrank(admin);
         vm.expectEmit(true, true, true, false);
-        emit IAccessControl.RoleGranted(ADDITIONAL_ROLE_1, account, admin);
-        accessControl.grantRole(ADDITIONAL_ROLE_1, account);
-        assertTrue(accessControl.hasRole(ADDITIONAL_ROLE_1, account));
+        emit IAccessControl.RoleGranted(MINTER_ROLE, account, admin);
+        accessControl.grantRole(MINTER_ROLE, account);
+        assertTrue(accessControl.hasRole(MINTER_ROLE, account));
         vm.stopPrank();
 
         vm.startPrank(account);
@@ -248,9 +232,9 @@ contract AccessControlTest is Test {
         assertTrue(!accessControl.hasRole(DEFAULT_ADMIN_ROLE, account));
 
         vm.expectEmit(true, true, true, false);
-        emit IAccessControl.RoleRevoked(ADDITIONAL_ROLE_1, account, account);
-        accessControl.renounceRole(ADDITIONAL_ROLE_1, account);
-        assertTrue(!accessControl.hasRole(ADDITIONAL_ROLE_1, account));
+        emit IAccessControl.RoleRevoked(MINTER_ROLE, account, account);
+        accessControl.renounceRole(MINTER_ROLE, account);
+        assertTrue(!accessControl.hasRole(MINTER_ROLE, account));
         vm.stopPrank();
     }
 
@@ -259,9 +243,9 @@ contract AccessControlTest is Test {
         address account = makeAddr("account");
         vm.startPrank(admin);
         vm.expectEmit(true, true, true, false);
-        emit IAccessControl.RoleGranted(ADDITIONAL_ROLE_1, account, admin);
-        accessControl.grantRole(ADDITIONAL_ROLE_1, account);
-        assertTrue(accessControl.hasRole(ADDITIONAL_ROLE_1, account));
+        emit IAccessControl.RoleGranted(MINTER_ROLE, account, admin);
+        accessControl.grantRole(MINTER_ROLE, account);
+        assertTrue(accessControl.hasRole(MINTER_ROLE, account));
         vm.stopPrank();
 
         vm.startPrank(account);
@@ -270,15 +254,15 @@ contract AccessControlTest is Test {
         assertTrue(!accessControl.hasRole(DEFAULT_ADMIN_ROLE, account));
 
         vm.expectEmit(true, true, true, false);
-        emit IAccessControl.RoleRevoked(ADDITIONAL_ROLE_1, account, account);
-        accessControl.renounceRole(ADDITIONAL_ROLE_1, account);
-        assertTrue(!accessControl.hasRole(ADDITIONAL_ROLE_1, account));
+        emit IAccessControl.RoleRevoked(MINTER_ROLE, account, account);
+        accessControl.renounceRole(MINTER_ROLE, account);
+        assertTrue(!accessControl.hasRole(MINTER_ROLE, account));
 
-        accessControl.renounceRole(ADDITIONAL_ROLE_1, account);
-        assertTrue(!accessControl.hasRole(ADDITIONAL_ROLE_1, account));
+        accessControl.renounceRole(MINTER_ROLE, account);
+        assertTrue(!accessControl.hasRole(MINTER_ROLE, account));
 
-        accessControl.renounceRole(ADDITIONAL_ROLE_1, account);
-        assertTrue(!accessControl.hasRole(ADDITIONAL_ROLE_1, account));
+        accessControl.renounceRole(MINTER_ROLE, account);
+        assertTrue(!accessControl.hasRole(MINTER_ROLE, account));
         vm.stopPrank();
     }
 
@@ -300,7 +284,7 @@ contract AccessControlTest is Test {
         vm.expectRevert(
             bytes("AccessControl: can only renounce roles for itself")
         );
-        accessControl.renounceRole(ADDITIONAL_ROLE_1, makeAddr("account"));
+        accessControl.renounceRole(MINTER_ROLE, makeAddr("account"));
     }
 
     function testSetRoleAdminSuccess() public {
@@ -311,11 +295,11 @@ contract AccessControlTest is Test {
         vm.startPrank(admin);
         vm.expectEmit(true, true, true, false);
         emit IAccessControl.RoleAdminChanged(
-            ADDITIONAL_ROLE_1,
+            MINTER_ROLE,
             DEFAULT_ADMIN_ROLE,
             otherAdminRole
         );
-        accessControl.set_role_admin(ADDITIONAL_ROLE_1, otherAdminRole);
+        accessControl.set_role_admin(MINTER_ROLE, otherAdminRole);
 
         vm.expectEmit(true, true, true, false);
         emit IAccessControl.RoleGranted(otherAdminRole, otherAdmin, admin);
@@ -324,16 +308,16 @@ contract AccessControlTest is Test {
         vm.stopPrank();
 
         vm.startPrank(otherAdmin);
-        assertEq(accessControl.getRoleAdmin(ADDITIONAL_ROLE_1), otherAdminRole);
+        assertEq(accessControl.getRoleAdmin(MINTER_ROLE), otherAdminRole);
         vm.expectEmit(true, true, true, false);
-        emit IAccessControl.RoleGranted(ADDITIONAL_ROLE_1, account, otherAdmin);
-        accessControl.grantRole(ADDITIONAL_ROLE_1, account);
-        assertTrue(accessControl.hasRole(ADDITIONAL_ROLE_1, account));
+        emit IAccessControl.RoleGranted(MINTER_ROLE, account, otherAdmin);
+        accessControl.grantRole(MINTER_ROLE, account);
+        assertTrue(accessControl.hasRole(MINTER_ROLE, account));
 
         vm.expectEmit(true, true, true, false);
-        emit IAccessControl.RoleRevoked(ADDITIONAL_ROLE_1, account, otherAdmin);
-        accessControl.revokeRole(ADDITIONAL_ROLE_1, account);
-        assertTrue(!accessControl.hasRole(ADDITIONAL_ROLE_1, account));
+        emit IAccessControl.RoleRevoked(MINTER_ROLE, account, otherAdmin);
+        accessControl.revokeRole(MINTER_ROLE, account);
+        assertTrue(!accessControl.hasRole(MINTER_ROLE, account));
         vm.stopPrank();
     }
 
@@ -345,11 +329,11 @@ contract AccessControlTest is Test {
         vm.startPrank(admin);
         vm.expectEmit(true, true, true, false);
         emit IAccessControl.RoleAdminChanged(
-            ADDITIONAL_ROLE_1,
+            MINTER_ROLE,
             DEFAULT_ADMIN_ROLE,
             otherAdminRole
         );
-        accessControl.set_role_admin(ADDITIONAL_ROLE_1, otherAdminRole);
+        accessControl.set_role_admin(MINTER_ROLE, otherAdminRole);
 
         vm.expectEmit(true, true, true, false);
         emit IAccessControl.RoleGranted(otherAdminRole, otherAdmin, admin);
@@ -357,7 +341,7 @@ contract AccessControlTest is Test {
         assertTrue(accessControl.hasRole(otherAdminRole, otherAdmin));
 
         vm.expectRevert(bytes("AccessControl: account is missing role"));
-        accessControl.grantRole(ADDITIONAL_ROLE_1, account);
+        accessControl.grantRole(MINTER_ROLE, account);
         vm.stopPrank();
     }
 
@@ -367,15 +351,15 @@ contract AccessControlTest is Test {
         address account = makeAddr("account");
         bytes32 otherAdminRole = keccak256("OTHER_ADMIN_ROLE");
         vm.startPrank(admin);
-        accessControl.grantRole(ADDITIONAL_ROLE_1, account);
+        accessControl.grantRole(MINTER_ROLE, account);
 
         vm.expectEmit(true, true, true, false);
         emit IAccessControl.RoleAdminChanged(
-            ADDITIONAL_ROLE_1,
+            MINTER_ROLE,
             DEFAULT_ADMIN_ROLE,
             otherAdminRole
         );
-        accessControl.set_role_admin(ADDITIONAL_ROLE_1, otherAdminRole);
+        accessControl.set_role_admin(MINTER_ROLE, otherAdminRole);
 
         vm.expectEmit(true, true, true, false);
         emit IAccessControl.RoleGranted(otherAdminRole, otherAdmin, admin);
@@ -383,7 +367,7 @@ contract AccessControlTest is Test {
         assertTrue(accessControl.hasRole(otherAdminRole, otherAdmin));
 
         vm.expectRevert(bytes("AccessControl: account is missing role"));
-        accessControl.revokeRole(ADDITIONAL_ROLE_1, account);
+        accessControl.revokeRole(MINTER_ROLE, account);
         vm.stopPrank();
     }
 
@@ -392,9 +376,9 @@ contract AccessControlTest is Test {
         address admin = deployer;
         vm.startPrank(admin);
         vm.expectEmit(true, true, true, false);
-        emit IAccessControl.RoleGranted(ADDITIONAL_ROLE_1, account, admin);
-        accessControl.grantRole(ADDITIONAL_ROLE_1, account);
-        assertTrue(accessControl.hasRole(ADDITIONAL_ROLE_1, account));
+        emit IAccessControl.RoleGranted(MINTER_ROLE, account, admin);
+        accessControl.grantRole(MINTER_ROLE, account);
+        assertTrue(accessControl.hasRole(MINTER_ROLE, account));
         vm.stopPrank();
     }
 
@@ -414,15 +398,15 @@ contract AccessControlTest is Test {
         address admin = deployer;
         vm.startPrank(admin);
         vm.expectEmit(true, true, true, false);
-        emit IAccessControl.RoleGranted(ADDITIONAL_ROLE_1, account, admin);
-        accessControl.grantRole(ADDITIONAL_ROLE_1, account);
-        assertTrue(accessControl.hasRole(ADDITIONAL_ROLE_1, account));
+        emit IAccessControl.RoleGranted(MINTER_ROLE, account, admin);
+        accessControl.grantRole(MINTER_ROLE, account);
+        assertTrue(accessControl.hasRole(MINTER_ROLE, account));
 
-        accessControl.grantRole(ADDITIONAL_ROLE_1, account);
-        assertTrue(accessControl.hasRole(ADDITIONAL_ROLE_1, account));
+        accessControl.grantRole(MINTER_ROLE, account);
+        assertTrue(accessControl.hasRole(MINTER_ROLE, account));
 
-        accessControl.grantRole(ADDITIONAL_ROLE_1, account);
-        assertTrue(accessControl.hasRole(ADDITIONAL_ROLE_1, account));
+        accessControl.grantRole(MINTER_ROLE, account);
+        assertTrue(accessControl.hasRole(MINTER_ROLE, account));
         vm.stopPrank();
     }
 
@@ -433,26 +417,26 @@ contract AccessControlTest is Test {
         vm.assume(nonAdmin != deployer);
         vm.prank(nonAdmin);
         vm.expectRevert(bytes("AccessControl: account is missing role"));
-        accessControl.grantRole(ADDITIONAL_ROLE_1, account);
+        accessControl.grantRole(MINTER_ROLE, account);
     }
 
     function testFuzzRevokeRoleSuccess(address account) public {
         vm.assume(account != deployer);
         address admin = deployer;
         vm.startPrank(admin);
-        assertTrue(!accessControl.hasRole(ADDITIONAL_ROLE_1, account));
-        accessControl.revokeRole(ADDITIONAL_ROLE_1, account);
-        assertTrue(!accessControl.hasRole(ADDITIONAL_ROLE_1, account));
+        assertTrue(!accessControl.hasRole(MINTER_ROLE, account));
+        accessControl.revokeRole(MINTER_ROLE, account);
+        assertTrue(!accessControl.hasRole(MINTER_ROLE, account));
 
         vm.expectEmit(true, true, true, false);
-        emit IAccessControl.RoleGranted(ADDITIONAL_ROLE_1, account, admin);
-        accessControl.grantRole(ADDITIONAL_ROLE_1, account);
-        assertTrue(accessControl.hasRole(ADDITIONAL_ROLE_1, account));
+        emit IAccessControl.RoleGranted(MINTER_ROLE, account, admin);
+        accessControl.grantRole(MINTER_ROLE, account);
+        assertTrue(accessControl.hasRole(MINTER_ROLE, account));
 
         vm.expectEmit(true, true, true, false);
-        emit IAccessControl.RoleRevoked(ADDITIONAL_ROLE_1, account, admin);
-        accessControl.revokeRole(ADDITIONAL_ROLE_1, account);
-        assertTrue(!accessControl.hasRole(ADDITIONAL_ROLE_1, account));
+        emit IAccessControl.RoleRevoked(MINTER_ROLE, account, admin);
+        accessControl.revokeRole(MINTER_ROLE, account);
+        assertTrue(!accessControl.hasRole(MINTER_ROLE, account));
         vm.stopPrank();
     }
 
@@ -461,20 +445,20 @@ contract AccessControlTest is Test {
         address admin = deployer;
         vm.startPrank(admin);
         vm.expectEmit(true, true, true, false);
-        emit IAccessControl.RoleGranted(ADDITIONAL_ROLE_1, account, admin);
-        accessControl.grantRole(ADDITIONAL_ROLE_1, account);
-        assertTrue(accessControl.hasRole(ADDITIONAL_ROLE_1, account));
+        emit IAccessControl.RoleGranted(MINTER_ROLE, account, admin);
+        accessControl.grantRole(MINTER_ROLE, account);
+        assertTrue(accessControl.hasRole(MINTER_ROLE, account));
 
         vm.expectEmit(true, true, true, false);
-        emit IAccessControl.RoleRevoked(ADDITIONAL_ROLE_1, account, admin);
-        accessControl.revokeRole(ADDITIONAL_ROLE_1, account);
-        assertTrue(!accessControl.hasRole(ADDITIONAL_ROLE_1, account));
+        emit IAccessControl.RoleRevoked(MINTER_ROLE, account, admin);
+        accessControl.revokeRole(MINTER_ROLE, account);
+        assertTrue(!accessControl.hasRole(MINTER_ROLE, account));
 
-        accessControl.revokeRole(ADDITIONAL_ROLE_1, account);
-        assertTrue(!accessControl.hasRole(ADDITIONAL_ROLE_1, account));
+        accessControl.revokeRole(MINTER_ROLE, account);
+        assertTrue(!accessControl.hasRole(MINTER_ROLE, account));
 
-        accessControl.revokeRole(ADDITIONAL_ROLE_1, account);
-        assertTrue(!accessControl.hasRole(ADDITIONAL_ROLE_1, account));
+        accessControl.revokeRole(MINTER_ROLE, account);
+        assertTrue(!accessControl.hasRole(MINTER_ROLE, account));
         vm.stopPrank();
     }
 
@@ -485,7 +469,7 @@ contract AccessControlTest is Test {
         vm.assume(nonAdmin != deployer);
         vm.prank(nonAdmin);
         vm.expectRevert(bytes("AccessControl: account is missing role"));
-        accessControl.revokeRole(ADDITIONAL_ROLE_1, account);
+        accessControl.revokeRole(MINTER_ROLE, account);
     }
 
     function testFuzzRenounceRoleSuccess(address account) public {
@@ -493,9 +477,9 @@ contract AccessControlTest is Test {
         address admin = deployer;
         vm.startPrank(admin);
         vm.expectEmit(true, true, true, false);
-        emit IAccessControl.RoleGranted(ADDITIONAL_ROLE_1, account, admin);
-        accessControl.grantRole(ADDITIONAL_ROLE_1, account);
-        assertTrue(accessControl.hasRole(ADDITIONAL_ROLE_1, account));
+        emit IAccessControl.RoleGranted(MINTER_ROLE, account, admin);
+        accessControl.grantRole(MINTER_ROLE, account);
+        assertTrue(accessControl.hasRole(MINTER_ROLE, account));
         vm.stopPrank();
 
         vm.startPrank(account);
@@ -504,9 +488,9 @@ contract AccessControlTest is Test {
         assertTrue(!accessControl.hasRole(DEFAULT_ADMIN_ROLE, account));
 
         vm.expectEmit(true, true, true, false);
-        emit IAccessControl.RoleRevoked(ADDITIONAL_ROLE_1, account, account);
-        accessControl.renounceRole(ADDITIONAL_ROLE_1, account);
-        assertTrue(!accessControl.hasRole(ADDITIONAL_ROLE_1, account));
+        emit IAccessControl.RoleRevoked(MINTER_ROLE, account, account);
+        accessControl.renounceRole(MINTER_ROLE, account);
+        assertTrue(!accessControl.hasRole(MINTER_ROLE, account));
         vm.stopPrank();
     }
 
@@ -515,9 +499,9 @@ contract AccessControlTest is Test {
         address admin = deployer;
         vm.startPrank(admin);
         vm.expectEmit(true, true, true, false);
-        emit IAccessControl.RoleGranted(ADDITIONAL_ROLE_1, account, admin);
-        accessControl.grantRole(ADDITIONAL_ROLE_1, account);
-        assertTrue(accessControl.hasRole(ADDITIONAL_ROLE_1, account));
+        emit IAccessControl.RoleGranted(MINTER_ROLE, account, admin);
+        accessControl.grantRole(MINTER_ROLE, account);
+        assertTrue(accessControl.hasRole(MINTER_ROLE, account));
         vm.stopPrank();
 
         vm.startPrank(account);
@@ -526,15 +510,15 @@ contract AccessControlTest is Test {
         assertTrue(!accessControl.hasRole(DEFAULT_ADMIN_ROLE, account));
 
         vm.expectEmit(true, true, true, false);
-        emit IAccessControl.RoleRevoked(ADDITIONAL_ROLE_1, account, account);
-        accessControl.renounceRole(ADDITIONAL_ROLE_1, account);
-        assertTrue(!accessControl.hasRole(ADDITIONAL_ROLE_1, account));
+        emit IAccessControl.RoleRevoked(MINTER_ROLE, account, account);
+        accessControl.renounceRole(MINTER_ROLE, account);
+        assertTrue(!accessControl.hasRole(MINTER_ROLE, account));
 
-        accessControl.renounceRole(ADDITIONAL_ROLE_1, account);
-        assertTrue(!accessControl.hasRole(ADDITIONAL_ROLE_1, account));
+        accessControl.renounceRole(MINTER_ROLE, account);
+        assertTrue(!accessControl.hasRole(MINTER_ROLE, account));
 
-        accessControl.renounceRole(ADDITIONAL_ROLE_1, account);
-        assertTrue(!accessControl.hasRole(ADDITIONAL_ROLE_1, account));
+        accessControl.renounceRole(MINTER_ROLE, account);
+        assertTrue(!accessControl.hasRole(MINTER_ROLE, account));
         vm.stopPrank();
     }
 
@@ -543,7 +527,7 @@ contract AccessControlTest is Test {
         vm.expectRevert(
             bytes("AccessControl: can only renounce roles for itself")
         );
-        accessControl.renounceRole(ADDITIONAL_ROLE_1, account);
+        accessControl.renounceRole(MINTER_ROLE, account);
     }
 
     function testFuzzSetRoleAdminSuccess(
@@ -556,11 +540,11 @@ contract AccessControlTest is Test {
         vm.startPrank(admin);
         vm.expectEmit(true, true, true, false);
         emit IAccessControl.RoleAdminChanged(
-            ADDITIONAL_ROLE_1,
+            MINTER_ROLE,
             DEFAULT_ADMIN_ROLE,
             otherAdminRole
         );
-        accessControl.set_role_admin(ADDITIONAL_ROLE_1, otherAdminRole);
+        accessControl.set_role_admin(MINTER_ROLE, otherAdminRole);
 
         vm.expectEmit(true, true, true, false);
         emit IAccessControl.RoleGranted(otherAdminRole, otherAdmin, admin);
@@ -569,16 +553,16 @@ contract AccessControlTest is Test {
         vm.stopPrank();
 
         vm.startPrank(otherAdmin);
-        assertEq(accessControl.getRoleAdmin(ADDITIONAL_ROLE_1), otherAdminRole);
+        assertEq(accessControl.getRoleAdmin(MINTER_ROLE), otherAdminRole);
         vm.expectEmit(true, true, true, false);
-        emit IAccessControl.RoleGranted(ADDITIONAL_ROLE_1, account, otherAdmin);
-        accessControl.grantRole(ADDITIONAL_ROLE_1, account);
-        assertTrue(accessControl.hasRole(ADDITIONAL_ROLE_1, account));
+        emit IAccessControl.RoleGranted(MINTER_ROLE, account, otherAdmin);
+        accessControl.grantRole(MINTER_ROLE, account);
+        assertTrue(accessControl.hasRole(MINTER_ROLE, account));
 
         vm.expectEmit(true, true, true, false);
-        emit IAccessControl.RoleRevoked(ADDITIONAL_ROLE_1, account, otherAdmin);
-        accessControl.revokeRole(ADDITIONAL_ROLE_1, account);
-        assertTrue(!accessControl.hasRole(ADDITIONAL_ROLE_1, account));
+        emit IAccessControl.RoleRevoked(MINTER_ROLE, account, otherAdmin);
+        accessControl.revokeRole(MINTER_ROLE, account);
+        assertTrue(!accessControl.hasRole(MINTER_ROLE, account));
         vm.stopPrank();
     }
 
@@ -592,11 +576,11 @@ contract AccessControlTest is Test {
         vm.startPrank(admin);
         vm.expectEmit(true, true, true, false);
         emit IAccessControl.RoleAdminChanged(
-            ADDITIONAL_ROLE_1,
+            MINTER_ROLE,
             DEFAULT_ADMIN_ROLE,
             otherAdminRole
         );
-        accessControl.set_role_admin(ADDITIONAL_ROLE_1, otherAdminRole);
+        accessControl.set_role_admin(MINTER_ROLE, otherAdminRole);
 
         vm.expectEmit(true, true, true, false);
         emit IAccessControl.RoleGranted(otherAdminRole, otherAdmin, admin);
@@ -604,7 +588,7 @@ contract AccessControlTest is Test {
         assertTrue(accessControl.hasRole(otherAdminRole, otherAdmin));
 
         vm.expectRevert(bytes("AccessControl: account is missing role"));
-        accessControl.grantRole(ADDITIONAL_ROLE_1, account);
+        accessControl.grantRole(MINTER_ROLE, account);
         vm.stopPrank();
     }
 
@@ -616,15 +600,15 @@ contract AccessControlTest is Test {
         address admin = deployer;
         bytes32 otherAdminRole = keccak256("OTHER_ADMIN_ROLE");
         vm.startPrank(admin);
-        accessControl.grantRole(ADDITIONAL_ROLE_1, account);
+        accessControl.grantRole(MINTER_ROLE, account);
 
         vm.expectEmit(true, true, true, false);
         emit IAccessControl.RoleAdminChanged(
-            ADDITIONAL_ROLE_1,
+            MINTER_ROLE,
             DEFAULT_ADMIN_ROLE,
             otherAdminRole
         );
-        accessControl.set_role_admin(ADDITIONAL_ROLE_1, otherAdminRole);
+        accessControl.set_role_admin(MINTER_ROLE, otherAdminRole);
 
         vm.expectEmit(true, true, true, false);
         emit IAccessControl.RoleGranted(otherAdminRole, otherAdmin, admin);
@@ -632,15 +616,15 @@ contract AccessControlTest is Test {
         assertTrue(accessControl.hasRole(otherAdminRole, otherAdmin));
 
         vm.expectRevert(bytes("AccessControl: account is missing role"));
-        accessControl.revokeRole(ADDITIONAL_ROLE_1, account);
+        accessControl.revokeRole(MINTER_ROLE, account);
         vm.stopPrank();
     }
 }
 
 contract AccessControlInvariants is Test {
     bytes32 private constant DEFAULT_ADMIN_ROLE = bytes32(0);
-    bytes32 private constant ADDITIONAL_ROLE_1 = keccak256("ADDITIONAL_ROLE_1");
-    bytes32 private constant ADDITIONAL_ROLE_2 = keccak256("ADDITIONAL_ROLE_2");
+    bytes32 private constant MINTER_ROLE = keccak256("MINTER_ROLE");
+    bytes32 private constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
 
     VyperDeployer private vyperDeployer = new VyperDeployer();
 
@@ -660,8 +644,8 @@ contract AccessControlInvariants is Test {
             accessControl,
             deployer,
             DEFAULT_ADMIN_ROLE,
-            ADDITIONAL_ROLE_1,
-            ADDITIONAL_ROLE_2
+            MINTER_ROLE,
+            PAUSER_ROLE
         );
         targetContract(address(accessControlHandler));
     }
@@ -672,12 +656,12 @@ contract AccessControlInvariants is Test {
             accessControlHandler.hasRole(DEFAULT_ADMIN_ROLE, deployer)
         );
         assertEq(
-            accessControl.hasRole(ADDITIONAL_ROLE_1, deployer),
-            accessControlHandler.hasRole(ADDITIONAL_ROLE_1, deployer)
+            accessControl.hasRole(MINTER_ROLE, deployer),
+            accessControlHandler.hasRole(MINTER_ROLE, deployer)
         );
         assertEq(
-            accessControl.hasRole(ADDITIONAL_ROLE_2, deployer),
-            accessControlHandler.hasRole(ADDITIONAL_ROLE_2, deployer)
+            accessControl.hasRole(PAUSER_ROLE, deployer),
+            accessControlHandler.hasRole(PAUSER_ROLE, deployer)
         );
     }
 
@@ -687,12 +671,12 @@ contract AccessControlInvariants is Test {
             accessControlHandler.getRoleAdmin(DEFAULT_ADMIN_ROLE)
         );
         assertEq(
-            accessControl.getRoleAdmin(ADDITIONAL_ROLE_1),
-            accessControlHandler.getRoleAdmin(ADDITIONAL_ROLE_1)
+            accessControl.getRoleAdmin(MINTER_ROLE),
+            accessControlHandler.getRoleAdmin(MINTER_ROLE)
         );
         assertEq(
-            accessControl.getRoleAdmin(ADDITIONAL_ROLE_2),
-            accessControlHandler.getRoleAdmin(ADDITIONAL_ROLE_2)
+            accessControl.getRoleAdmin(PAUSER_ROLE),
+            accessControlHandler.getRoleAdmin(PAUSER_ROLE)
         );
     }
 }
@@ -700,8 +684,8 @@ contract AccessControlInvariants is Test {
 contract AccessControlHandler {
     /* solhint-disable var-name-mixedcase */
     bytes32 private immutable DEFAULT_ADMIN_ROLE;
-    bytes32 private immutable ADDITIONAL_ROLE_1;
-    bytes32 private immutable ADDITIONAL_ROLE_2;
+    bytes32 private immutable MINTER_ROLE;
+    bytes32 private immutable PAUSER_ROLE;
     /* solhint-enable var-name-mixedcase */
 
     mapping(bytes32 => mapping(address => bool)) public hasRole;
@@ -713,16 +697,16 @@ contract AccessControlHandler {
         IAccessControlExtended accessControl_,
         address defaultAdmin_,
         bytes32 adminRole_,
-        bytes32 additionalRole1_,
-        bytes32 additionalRole2_
+        bytes32 minterRole_,
+        bytes32 pauserRole_
     ) {
         accessControl = accessControl_;
         DEFAULT_ADMIN_ROLE = adminRole_;
-        ADDITIONAL_ROLE_1 = additionalRole1_;
-        ADDITIONAL_ROLE_2 = additionalRole2_;
+        MINTER_ROLE = minterRole_;
+        PAUSER_ROLE = pauserRole_;
         hasRole[DEFAULT_ADMIN_ROLE][defaultAdmin_] = true;
-        hasRole[ADDITIONAL_ROLE_1][defaultAdmin_] = true;
-        hasRole[ADDITIONAL_ROLE_2][defaultAdmin_] = true;
+        hasRole[MINTER_ROLE][defaultAdmin_] = true;
+        hasRole[PAUSER_ROLE][defaultAdmin_] = true;
     }
 
     function grantRole(bytes32 role, address account) public {
