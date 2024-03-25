@@ -7,8 +7,8 @@
 @notice These functions can be used to implement role-based access
         control mechanisms. Roles are referred to by their `bytes32`
         identifier. These should be exposed in the external API and
-        be unique. The best way to achieve this is by using `public
-        constant` hash digests:
+        be unique. The best way to achieve this is by using `public`
+        `constant` hash digests:
         ```vy
         MY_ROLE: public(constant(bytes32)) = keccak256("MY_ROLE");
         ```
