@@ -127,8 +127,8 @@ def __init__():
     @dev To omit the opcodes for checking the `msg.value`
          in the creation-time EVM bytecode, the constructor
          is declared as `payable`.
-    @notice All predefined roles will be assigned to
-            the `msg.sender`.
+    @notice The `DEFAULT_ADMIN_ROLE` role will be assigned
+            to the `msg.sender`.
     """
     self._grant_role(DEFAULT_ADMIN_ROLE, msg.sender)
 
