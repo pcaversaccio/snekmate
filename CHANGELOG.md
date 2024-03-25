@@ -6,6 +6,7 @@
 
 - **Authentication**
   - [`AccessControl`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/auth/AccessControl.vy): Make `AccessControl` module-friendly. ([#216](https://github.com/pcaversaccio/snekmate/pull/216))
+  - [`Ownable`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/auth/Ownable.vy): Make `Ownable` module-friendly. ([#217](https://github.com/pcaversaccio/snekmate/pull/217))
 
 ### 👀 Full Changelog
 
