@@ -25,11 +25,11 @@ from .. import AccessControl as ac
 initializes: ac
 
 
-# @dev An additional 32-byte access role.
+# @dev The 32-byte minter role.
 MINTER_ROLE: public(constant(bytes32)) = keccak256("MINTER_ROLE")
 
 
-# @dev An additional 32-byte access role.
+# @dev The 32-byte pauser role.
 PAUSER_ROLE: public(constant(bytes32)) = keccak256("PAUSER_ROLE")
 
 
