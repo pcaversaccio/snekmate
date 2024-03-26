@@ -52,6 +52,10 @@ def __init__():
     @dev To omit the opcodes for checking the `msg.value`
          in the creation-time EVM bytecode, the constructor
          is declared as `payable`.
+    @notice At initialisation time, the `owner` role will
+            be assigned to the `msg.sender` since we `uses`
+            the `Ownable` module, which implements the
+            aforementioned logic at contract creation time.
     """
     pass
 

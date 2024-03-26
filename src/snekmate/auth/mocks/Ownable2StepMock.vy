@@ -26,7 +26,7 @@ initializes: o2[ownable := ow]
 # `immutable`, and state variables, for which Vyper automatically
 # generates an `external` getter function for the variable.
 exports: (
-    ow.owner,
+    o2.owner,
     o2.pending_owner,
     o2.transfer_ownership,
     o2.accept_ownership,
