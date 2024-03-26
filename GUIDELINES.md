@@ -74,6 +74,7 @@ def _as_singleton_array(element: uint256) -> DynArray[uint256, 1]:
   - Vyper built-in interface imports
   - Custom interface imports
   - Module imports
+  - Module exports
   - `public` constants
   - `internal` constants
   - `public` immutables

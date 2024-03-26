@@ -15,27 +15,32 @@
 """
 
 
-# @dev Returns the address of the current owner.
-# @notice If you declare a variable as `public`,
-# Vyper automatically generates an `external`
-# getter function for the variable.
-owner: public(address)
+# @dev We import and use the `Ownable` module.
+from . import Ownable as ownable
+uses: ownable
+
+
+# @dev We export (i.e. the runtime bytecode exposes these
+# functions externally, allowing them to be called using
+# the ABI encoding specification) the `external` getter
+# function `owner` from the `Ownable` module.
+# @notice Please note that you must always also export (if
+# required by the contract logic) `public` declared `constant`,
+# `immutable`, and state variables, for which Vyper automatically
+# generates an `external` getter function for the variable.
+exports: ownable.owner
 
 
 # @dev Returns the address of the pending owner.
+# @notice If you declare a variable as `public`,
+# Vyper automatically generates an `external`
+# getter function for the variable.
 pending_owner: public(address)
 
 
 # @dev Emitted when the ownership transfer from
 # `previous_owner` to `new_owner` is initiated.
 event OwnershipTransferStarted:
-    previous_owner: indexed(address)
-    new_owner: indexed(address)
-
-
-# @dev Emitted when the ownership is transferred
-# from `previous_owner` to `new_owner`.
-event OwnershipTransferred:
     previous_owner: indexed(address)
     new_owner: indexed(address)
 
@@ -47,10 +52,8 @@ def __init__():
     @dev To omit the opcodes for checking the `msg.value`
          in the creation-time EVM bytecode, the constructor
          is declared as `payable`.
-    @notice The `owner` role will be assigned to
-            the `msg.sender`.
     """
-    self._transfer_ownership(msg.sender)
+    pass
 
 
 @external
@@ -68,9 +71,9 @@ def transfer_ownership(new_owner: address):
             there is one.
     @param new_owner The 20-byte address of the new owner.
     """
-    self._check_owner()
+    ownable._check_owner()
     self.pending_owner = new_owner
-    log OwnershipTransferStarted(self.owner, new_owner)
+    log OwnershipTransferStarted(ownable.owner, new_owner)
 
 
 @external
@@ -87,20 +90,14 @@ def accept_ownership():
 @external
 def renounce_ownership():
     """
-    @dev Sourced from {Ownable-renounce_ownership}.
-    @notice See {Ownable-renounce_ownership} for
-            the function docstring.
+    @dev Leaves the contract without an owner.
+    @notice Renouncing ownership will leave the
+            contract without an owner, thereby
+            removing any functionality that is
+            only available to the owner.
     """
-    self._check_owner()
+    ownable._check_owner()
     self._transfer_ownership(empty(address))
-
-
-@internal
-def _check_owner():
-    """
-    @dev Throws if the sender is not the owner.
-    """
-    assert msg.sender == self.owner, "Ownable2Step: caller is not the owner"
 
 
 @internal
@@ -114,6 +111,4 @@ def _transfer_ownership(new_owner: address):
     @param new_owner The 20-byte address of the new owner.
     """
     self.pending_owner = empty(address)
-    old_owner: address = self.owner
-    self.owner = new_owner
-    log OwnershipTransferred(old_owner, new_owner)
+    ownable._transfer_ownership(new_owner)
