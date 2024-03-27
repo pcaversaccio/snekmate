@@ -24,9 +24,9 @@ src
     │   ├── interfaces
     │   │   └── IAccessControl — "AccessControl Interface Definition"
     │   └── mocks
-    |       ├── OwnableMock — "Ownable Module Reference Implementation"
-    |       ├── Ownable2StepMock — "Ownable2Step Module Reference Implementation"
-    |       └── AccessControlMock — "AccessControl Module Reference Implementation"
+    │       ├── OwnableMock — "Ownable Module Reference Implementation"
+    │       ├── Ownable2StepMock — "Ownable2Step Module Reference Implementation"
+    │       └── AccessControlMock — "AccessControl Module Reference Implementation"
     ├── extensions
     │   ├── ERC2981 — "ERC-721 and ERC-1155 Compatible ERC-2981 Reference Implementation"
     │   ├── ERC4626 — "Modern and Gas-Efficient ERC-4626 Tokenised Vault Implementation"
