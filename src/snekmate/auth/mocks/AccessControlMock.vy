@@ -25,14 +25,6 @@ from .. import AccessControl as ac
 initializes: ac
 
 
-# @dev The 32-byte minter role.
-MINTER_ROLE: public(constant(bytes32)) = keccak256("MINTER_ROLE")
-
-
-# @dev The 32-byte pauser role.
-PAUSER_ROLE: public(constant(bytes32)) = keccak256("PAUSER_ROLE")
-
-
 # @dev We export (i.e. the runtime bytecode exposes these
 # functions externally, allowing them to be called using
 # the ABI encoding specification) all `external` functions
@@ -42,8 +34,8 @@ PAUSER_ROLE: public(constant(bytes32)) = keccak256("PAUSER_ROLE")
 # `immutable`, and state variables, for which Vyper automatically
 # generates an `external` getter function for the variable.
 exports: (
-    ac.supportsInterface,
     ac.DEFAULT_ADMIN_ROLE,
+    ac.supportsInterface,
     ac.hasRole,
     ac.getRoleAdmin,
     ac.grantRole,
@@ -51,6 +43,14 @@ exports: (
     ac.renounceRole,
     ac.set_role_admin,
 )
+
+
+# @dev The 32-byte minter role.
+MINTER_ROLE: public(constant(bytes32)) = keccak256("MINTER_ROLE")
+
+
+# @dev The 32-byte pauser role.
+PAUSER_ROLE: public(constant(bytes32)) = keccak256("PAUSER_ROLE")
 
 
 @deploy

@@ -102,8 +102,8 @@ contract TimelockControllerTest is Test {
         bytes memory args = abi.encode(MIN_DELAY, proposers_, executors_, self);
         timelockController = ITimelockController(
             vyperDeployer.deployContract(
-                "src/snekmate/governance/",
-                "TimelockController",
+                "src/snekmate/governance/mocks/",
+                "TimelockControllerMock",
                 args
             )
         );
@@ -272,8 +272,8 @@ contract TimelockControllerTest is Test {
         emit ITimelockController.MinimumDelayChange(0, MIN_DELAY);
         timelockControllerInitialEventEmptyAdmin = ITimelockController(
             vyperDeployer.deployContract(
-                "src/snekmate/governance/",
-                "TimelockController",
+                "src/snekmate/governance/mocks/",
+                "TimelockControllerMock",
                 argsEmptyAdmin
             )
         );
@@ -455,8 +455,8 @@ contract TimelockControllerTest is Test {
         emit ITimelockController.MinimumDelayChange(0, MIN_DELAY);
         timelockControllerInitialEventNonEmptyAdmin = ITimelockController(
             vyperDeployer.deployContract(
-                "src/snekmate/governance/",
-                "TimelockController",
+                "src/snekmate/governance/mocks/",
+                "TimelockControllerMock",
                 argsNonEmptyAdmin
             )
         );
@@ -4222,8 +4222,8 @@ contract TimelockControllerInvariants is Test {
         bytes memory args = abi.encode(minDelay, proposers, executors, self);
         timelockController = ITimelockController(
             vyperDeployer.deployContract(
-                "src/snekmate/governance/",
-                "TimelockController",
+                "src/snekmate/governance/mocks/",
+                "TimelockControllerMock",
                 args
             )
         );
@@ -4253,7 +4253,7 @@ contract TimelockControllerInvariants is Test {
      * @dev The number of scheduled transactions cannot exceed the number of
      * executed transactions.
      */
-    function invariantExecutedLessThanOrEqualToScheduled() public view {
+    function statefulFuzzExecutedLessThanOrEqualToScheduled() public view {
         assertTrue(
             timelockControllerHandler.executeCount() <=
                 timelockControllerHandler.scheduleCount()
@@ -4263,7 +4263,7 @@ contract TimelockControllerInvariants is Test {
     /**
      * @dev The number of proposals executed must match the count number.
      */
-    function invariantProposalsExecutedMatchCount() public view {
+    function statefulFuzzProposalsExecutedMatchCount() public view {
         assertEq(
             timelockControllerHandler.executeCount(),
             timelockControllerHandler.counter()
@@ -4273,7 +4273,7 @@ contract TimelockControllerInvariants is Test {
     /**
      * @dev Proposals can only be scheduled and executed once.
      */
-    function invariantOnceProposalExecution() public {
+    function statefulFuzzOnceProposalExecution() public {
         uint256[] memory executed = timelockControllerHandler.getExecuted();
         for (uint256 i = 0; i < executed.length; ++i) {
             // Ensure that the executed proposal cannot be executed again.
@@ -4294,7 +4294,7 @@ contract TimelockControllerInvariants is Test {
      * @dev The sum of the executed proposals and the cancelled proposals must
      * be less than or equal to the number of scheduled proposals.
      */
-    function invariantSumOfProposals() public view {
+    function statefulFuzzSumOfProposals() public view {
         assertTrue(
             (timelockControllerHandler.cancelCount() +
                 timelockControllerHandler.executeCount()) <=
@@ -4305,7 +4305,7 @@ contract TimelockControllerInvariants is Test {
     /**
      * @dev The executed proposals cannot be cancelled.
      */
-    function invariantExecutedProposalCancellation() public {
+    function statefulFuzzExecutedProposalCancellation() public {
         bytes32 operationId;
         uint256[] memory executed = timelockControllerHandler.getExecuted();
         for (uint256 i = 0; i < executed.length; ++i) {
@@ -4329,7 +4329,7 @@ contract TimelockControllerInvariants is Test {
     /**
      * @dev The execution of a proposal that has been cancelled is not possible.
      */
-    function invariantExecutingCancelledProposal() public {
+    function statefulFuzzExecutingCancelledProposal() public {
         uint256[] memory cancelled = timelockControllerHandler.getCancelled();
         for (uint256 i = 0; i < cancelled.length; ++i) {
             // Ensure that the cancelled proposal cannot be executed.
@@ -4349,7 +4349,7 @@ contract TimelockControllerInvariants is Test {
     /**
      * @dev The execution of a proposal that is not ready is not possible.
      */
-    function invariantExecutingNotReadyProposal() public {
+    function statefulFuzzExecutingNotReadyProposal() public {
         uint256[] memory pending = timelockControllerHandler.getPending();
         for (uint256 i = 0; i < pending.length; ++i) {
             // Ensure that the pending proposal cannot be executed.
