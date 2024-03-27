@@ -21,15 +21,21 @@ src
     │   ├── Ownable — "Owner-Based Access Control Functions"
     │   ├── Ownable2Step — "2-Step Ownership Transfer Functions"
     │   ├── AccessControl — "Multi-Role-Based Access Control Functions"
-    │   └── interfaces
-    │       └── IAccessControl — "AccessControl Interface Definition"
+    │   ├── interfaces
+    │   │   └── IAccessControl — "AccessControl Interface Definition"
+    │   └── mocks
+    |       ├── OwnableMock — "Ownable Module Reference Implementation"
+    |       ├── Ownable2StepMock — "Ownable2Step Module Reference Implementation"
+    |       └── AccessControlMock — "AccessControl Module Reference Implementation"
     ├── extensions
     │   ├── ERC2981 — "ERC-721 and ERC-1155 Compatible ERC-2981 Reference Implementation"
     │   ├── ERC4626 — "Modern and Gas-Efficient ERC-4626 Tokenised Vault Implementation"
     │   └── interfaces
     │       └── IERC2981 — "EIP-2981 Interface Definition"
     ├── governance
-    │   └── TimelockController — "Multi-Role-Based Timelock Controller Reference Implementation"
+    │   ├── TimelockController — "Multi-Role-Based Timelock Controller Reference Implementation"
+    │   └── mocks
+    │       └── TimelockControllerMock — "TimelockController Module Reference Implementation"
     ├── tokens
     │   ├── ERC20 — "Modern and Gas-Efficient ERC-20 + EIP-2612 Implementation"
     │   ├── ERC721 — "Modern and Gas-Efficient ERC-721 + EIP-4494 Implementation"
