@@ -8,6 +8,8 @@
   - [`AccessControl`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/auth/AccessControl.vy): Make `AccessControl` module-friendly. ([#216](https://github.com/pcaversaccio/snekmate/pull/216))
   - [`Ownable`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/auth/Ownable.vy): Make `Ownable` module-friendly. ([#218](https://github.com/pcaversaccio/snekmate/pull/218))
   - [`Ownable2Step`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/auth/Ownable2Step.vy): Make `Ownable2Step` module-friendly. ([#219](https://github.com/pcaversaccio/snekmate/pull/219))
+- **Vyper Contract Deployer**
+  - [`VyperDeployer`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/lib/utils/VyperDeployer.sol): Improve error message in the event of a Vyper compilation error. ([#219](https://github.com/pcaversaccio/snekmate/pull/219))
 
 ### 👀 Full Changelog
 
