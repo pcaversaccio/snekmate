@@ -1,4 +1,4 @@
-# pragma version ^0.3.10
+# pragma version ~=0.4.0b5
 """
 @title Modern and Gas-Efficient ERC-1155 Implementation
 @custom:contract-name ERC1155
@@ -32,10 +32,10 @@
 """
 
 
-# @dev We import and implement the `ERC165` interface,
+# @dev We import and implement the `IERC165` interface,
 # which is a built-in interface of the Vyper compiler.
-from vyper.interfaces import ERC165
-implements: ERC165
+from ethereum.ercs import IERC165
+implements: IERC165
 
 
 # @dev We import and implement the `IERC1155` interface,
@@ -165,7 +165,7 @@ event RoleMinterChanged:
     status: bool
 
 
-@external
+@deploy
 @payable
 def __init__(base_uri_: String[80]):
     """
@@ -291,7 +291,7 @@ def balanceOfBatch(owners: DynArray[address, _BATCH_SIZE], ids: DynArray[uint256
     assert len(owners) == len(ids), "ERC1155: owners and ids length mismatch"
     batch_balances: DynArray[uint256, _BATCH_SIZE] = []
     idx: uint256 = empty(uint256)
-    for owner in owners:
+    for owner: address in owners:
         batch_balances.append(self._balance_of(owner, ids[idx]))
         # The following line cannot overflow because we have
         # limited the dynamic array `owners` by the `constant`
@@ -602,7 +602,7 @@ def _safe_batch_transfer_from(owner: address, to: address, ids: DynArray[uint256
     self._before_token_transfer(owner, to, ids, amounts, data)
 
     idx: uint256 = empty(uint256)
-    for id in ids:
+    for id: uint256 in ids:
         amount: uint256 = amounts[idx]
         owner_balance: uint256 = self._balances[id][owner]
         assert owner_balance >= amount, "ERC1155: insufficient balance for transfer"
@@ -712,7 +712,7 @@ def _safe_mint_batch(owner: address, ids: DynArray[uint256, _BATCH_SIZE], amount
     self._before_token_transfer(empty(address), owner, ids, amounts, data)
 
     idx: uint256 = empty(uint256)
-    for id in ids:
+    for id: uint256 in ids:
         # In the next line, an overflow is not possible
         # due to an arithmetic check of the entire token
         # supply in the function `_before_token_transfer`.
@@ -833,7 +833,7 @@ def _burn_batch(owner: address, ids: DynArray[uint256, _BATCH_SIZE], amounts: Dy
     self._before_token_transfer(owner, empty(address), ids, amounts, b"")
 
     idx: uint256 = empty(uint256)
-    for id in ids:
+    for id: uint256 in ids:
         amount: uint256 = amounts[idx]
         owner_balance: uint256 = self._balances[id][owner]
         assert owner_balance >= amount, "ERC1155: burn amount exceeds balance"
@@ -868,7 +868,7 @@ def _check_on_erc1155_received(owner: address, to: address, id: uint256, amount:
     """
     # Contract case.
     if (to.is_contract):
-        return_value: bytes4 = IERC1155Receiver(to).onERC1155Received(msg.sender, owner, id, amount, data)
+        return_value: bytes4 = extcall IERC1155Receiver(to).onERC1155Received(msg.sender, owner, id, amount, data)
         assert return_value == method_id("onERC1155Received(address,address,uint256,uint256,bytes)", output_type=bytes4),\
                                          "ERC1155: transfer to non-ERC1155Receiver implementer"
         return True
@@ -897,7 +897,7 @@ def _check_on_erc1155_batch_received(owner: address, to: address, ids: DynArray[
     """
     # Contract case.
     if (to.is_contract):
-        return_value: bytes4 = IERC1155Receiver(to).onERC1155BatchReceived(msg.sender, owner, ids, amounts, data)
+        return_value: bytes4 = extcall IERC1155Receiver(to).onERC1155BatchReceived(msg.sender, owner, ids, amounts, data)
         assert return_value == method_id("onERC1155BatchReceived(address,address,uint256[],uint256[],bytes)", output_type=bytes4),\
                                          "ERC1155: transfer to non-ERC1155Receiver implementer"
         return True
@@ -941,7 +941,7 @@ def _before_token_transfer(owner: address, to: address, ids: DynArray[uint256, _
     """
     if (owner == empty(address)):
         idx: uint256 = empty(uint256)
-        for id in ids:
+        for id: uint256 in ids:
             # The following line uses intentionally checked arithmetic
             # to ensure that the total supply for each token type `id`
             # never overflows.
@@ -954,7 +954,7 @@ def _before_token_transfer(owner: address, to: address, ids: DynArray[uint256, _
 
     if (to == empty(address)):
         idx: uint256 = empty(uint256)
-        for id in ids:
+        for id: uint256 in ids:
             amount: uint256 = amounts[idx]
             supply: uint256 = self.total_supply[id]
             assert supply >= amount, "ERC1155: burn amount exceeds total_supply"

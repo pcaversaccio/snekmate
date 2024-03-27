@@ -1,4 +1,4 @@
-# pragma version ^0.3.10
+# pragma version ~=0.4.0b5
 """
 @title Modern and Gas-Efficient ERC-721 + EIP-4494 Implementation
 @custom:contract-name ERC721
@@ -46,16 +46,16 @@
 """
 
 
-# @dev We import and implement the `ERC165` interface,
+# @dev We import and implement the `IERC165` interface,
 # which is a built-in interface of the Vyper compiler.
-from vyper.interfaces import ERC165
-implements: ERC165
+from ethereum.ercs import IERC165
+implements: IERC165
 
 
-# @dev We import and implement the `ERC721` interface,
+# @dev We import and implement the `IERC721` interface,
 # which is a built-in interface of the Vyper compiler.
-from vyper.interfaces import ERC721
-implements: ERC721
+from ethereum.ercs import IERC721
+implements: IERC721
 
 
 # @dev We import and implement the `IERC721Metadata`
@@ -288,7 +288,7 @@ event RoleMinterChanged:
     status: bool
 
 
-@external
+@deploy
 @payable
 def __init__(name_: String[25], symbol_: String[5], base_uri_: String[80], name_eip712_: String[50], version_eip712_: String[20]):
     """
@@ -1064,7 +1064,7 @@ def _check_on_erc721_received(owner: address, to: address, token_id: uint256, da
     """
     # Contract case.
     if (to.is_contract):
-        return_value: bytes4 = IERC721Receiver(to).onERC721Received(msg.sender, owner, token_id, data)
+        return_value: bytes4 = extcall IERC721Receiver(to).onERC721Received(msg.sender, owner, token_id, data)
         assert return_value == method_id("onERC721Received(address,address,uint256,bytes)", output_type=bytes4), "ERC721: transfer to non-ERC721Receiver implementer"
         return True
     # EOA case.

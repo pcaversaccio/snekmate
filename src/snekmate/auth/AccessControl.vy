@@ -1,4 +1,4 @@
-# pragma version ^0.3.10
+# pragma version ~=0.4.0b5
 """
 @title Multi-Role-Based Access Control Functions
 @custom:contract-name AccessControl
@@ -7,8 +7,8 @@
 @notice These functions can be used to implement role-based access
         control mechanisms. Roles are referred to by their `bytes32`
         identifier. These should be exposed in the external API and
-        be unique. The best way to achieve this is by using `public
-        constant` hash digests:
+        be unique. The best way to achieve this is by using `public`
+        `constant` hash digests:
         ```vy
         MY_ROLE: public(constant(bytes32)) = keccak256("MY_ROLE");
         ```
@@ -49,10 +49,10 @@
 """
 
 
-# @dev We import and implement the `ERC165` interface,
+# @dev We import and implement the `IERC165` interface,
 # which is a built-in interface of the Vyper compiler.
-from vyper.interfaces import ERC165
-implements: ERC165
+from ethereum.ercs import IERC165
+implements: IERC165
 
 
 # @dev We import and implement the `IAccessControl`
@@ -67,22 +67,6 @@ implements: IAccessControl
 # Vyper automatically generates an `external`
 # getter function for the variable.
 DEFAULT_ADMIN_ROLE: public(constant(bytes32)) = empty(bytes32)
-
-
-# @dev An additional 32-byte access role.
-# @notice Please adjust the naming of the variable
-# according to your specific requirement,
-# e.g. `MINTER_ROLE`.
-ADDITIONAL_ROLE_1: public(constant(bytes32)) = keccak256("ADDITIONAL_ROLE_1")
-
-
-# @dev An additional 32-byte access role.
-# @notice Please adjust the naming of the variable
-# according to your specific requirement,
-# e.g. `PAUSER_ROLE`. Also, feel free to add more
-# roles if necessary. In this case, it is important
-# to extend the constructor accordingly.
-ADDITIONAL_ROLE_2: public(constant(bytes32)) = keccak256("ADDITIONAL_ROLE_2")
 
 
 # @dev Stores the ERC-165 interface identifier for each
@@ -136,19 +120,17 @@ event RoleRevoked:
     sender: indexed(address)
 
 
-@external
+@deploy
 @payable
 def __init__():
     """
     @dev To omit the opcodes for checking the `msg.value`
          in the creation-time EVM bytecode, the constructor
          is declared as `payable`.
-    @notice All predefined roles will be assigned to
-            the `msg.sender`.
+    @notice The `DEFAULT_ADMIN_ROLE` role will be assigned
+            to the `msg.sender`.
     """
     self._grant_role(DEFAULT_ADMIN_ROLE, msg.sender)
-    self._grant_role(ADDITIONAL_ROLE_1, msg.sender)
-    self._grant_role(ADDITIONAL_ROLE_2, msg.sender)
 
 
 @external

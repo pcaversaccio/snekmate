@@ -7,9 +7,9 @@ import {IAccessControl} from "openzeppelin/access/IAccessControl.sol";
 interface IAccessControlExtended is IERC165, IAccessControl {
     function DEFAULT_ADMIN_ROLE() external pure returns (bytes32);
 
-    function ADDITIONAL_ROLE_1() external pure returns (bytes32);
+    function MINTER_ROLE() external pure returns (bytes32);
 
-    function ADDITIONAL_ROLE_2() external pure returns (bytes32);
+    function PAUSER_ROLE() external pure returns (bytes32);
 
     function set_role_admin(bytes32 role, bytes32 adminRole) external;
 }

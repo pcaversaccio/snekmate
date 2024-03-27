@@ -1,4 +1,4 @@
-# pragma version ^0.3.10
+# pragma version ~=0.4.0b5
 """
 @title `CREATE` EVM Opcode Utility Functions for Address Calculations
 @custom:contract-name CreateAddress
@@ -12,7 +12,7 @@
 """
 
 
-@external
+@deploy
 @payable
 def __init__():
     """
@@ -44,7 +44,7 @@ def compute_address_rlp(deployer: address, nonce: uint256) -> address:
          For the specification of the Recursive Length Prefix (RLP)
          encoding scheme, please refer to p. 19 of the Ethereum
          Yellow Paper (https://ethereum.github.io/yellowpaper/paper.pdf)
-         and the Ethereum Wiki (https://eth.wiki/fundamentals/rlp).
+         and the Ethereum Wiki (https://ethereum.org/en/developers/docs/data-structures-and-encoding/rlp).
          For further insights also, see the following issue:
          https://github.com/transmissions11/solmate/issues/207.
 

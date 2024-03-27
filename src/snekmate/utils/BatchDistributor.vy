@@ -1,4 +1,4 @@
-# pragma version ^0.3.10
+# pragma version ~=0.4.0b5
 """
 @title Batch Sending Both Native and ERC-20 Tokens
 @custom:contract-name BatchDistributor
@@ -13,9 +13,9 @@
 """
 
 
-# @dev We import the `ERC20` interface, which is a
+# @dev We import the `IERC20` interface, which is a
 # built-in interface of the Vyper compiler.
-from vyper.interfaces import ERC20
+from ethereum.ercs import IERC20
 
 
 # @dev Transaction struct for the transaction payload.
@@ -29,7 +29,7 @@ struct Batch:
      txns: DynArray[Transaction, max_value(uint8)]
 
 
-@external
+@deploy
 @payable
 def __init__():
     """
@@ -42,7 +42,7 @@ def __init__():
 
 @external
 @payable
-@nonreentrant("lock")
+@nonreentrant
 def distribute_ether(data: Batch):
     """
     @dev Distributes ether, denominated in wei, to a
@@ -58,7 +58,7 @@ def distribute_ether(data: Batch):
            of tuples that contain each a recipient address &
            ether amount in wei.
     """
-    for txn in data.txns:
+    for txn: Transaction in data.txns:
         # A low-level call is used to guarantee compatibility
         # with smart contract wallets. As a general pre-emptive
         # safety measure, a reentrancy guard is used.
@@ -72,7 +72,7 @@ def distribute_ether(data: Batch):
 
 
 @external
-def distribute_token(token: ERC20, data: Batch):
+def distribute_token(token: IERC20, data: Batch):
     """
     @dev Distributes ERC-20 tokens, denominated in their corresponding
          lowest unit, to a predefined batch of recipient addresses.
@@ -86,20 +86,21 @@ def distribute_token(token: ERC20, data: Batch):
             Note: Since we cast the token address into the official ERC-20 interface,
             the use of non-compliant ERC-20 tokens is prevented by design. Nevertheless,
             we keep this guardrail for security reasons.
-    @param token ERC-20 token contract address.
+    @param token The ERC-20 compatible (i.e. ERC-777 is also
+           viable) token contract address.
     @param data Nested struct object that contains an array
            of tuples that contain each a recipient address &
            token amount.
     """
     total: uint256 = empty(uint256)
-    for txn in data.txns:
+    for txn: Transaction in data.txns:
         total += txn.amount
 
     # It is important to note that an external call via interface casting
     # always performs an external code size check on the target address unless
     # you add the kwarg `skip_contract_check=True`. If the check fails (i.e.
     # the target address is an EOA), the call reverts.
-    assert token.transferFrom(msg.sender, self, total, default_return_value=True), "BatchDistributor: transferFrom operation did not succeed"
+    assert extcall token.transferFrom(msg.sender, self, total, default_return_value=True), "BatchDistributor: transferFrom operation did not succeed"
 
-    for txn in data.txns:
-        assert token.transfer(txn.recipient, txn.amount, default_return_value=True), "BatchDistributor: transfer operation did not succeed"
+    for txn: Transaction in data.txns:
+        assert extcall token.transfer(txn.recipient, txn.amount, default_return_value=True), "BatchDistributor: transfer operation did not succeed"

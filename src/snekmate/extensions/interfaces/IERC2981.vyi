@@ -1,4 +1,4 @@
-# pragma version ^0.3.10
+# pragma version ~=0.4.0b5
 """
 @title EIP-2981 Interface Definition
 @custom:contract-name IERC2981
@@ -17,10 +17,10 @@
 """
 
 
-# @dev We import and implement the `ERC165` interface,
+# @dev We import and implement the `IERC165` interface,
 # which is a built-in interface of the Vyper compiler.
-from vyper.interfaces import ERC165
-implements: ERC165
+from ethereum.ercs import IERC165
+implements: IERC165
 
 
 @external
@@ -36,7 +36,7 @@ def supportsInterface(interfaceId: bytes4) -> bool:
     @return bool The verification whether the contract
             implements the interface or not.
     """
-    return empty(bool)
+    return ...
 
 
 @external
@@ -55,4 +55,4 @@ def royaltyInfo(_tokenId: uint256, _salePrice: uint256) -> (address, uint256):
     @return uint256 The 32-byte royalty payment amount for
             `_salePrice`.
     """
-    return (empty(address), empty(uint256))
+    return ...

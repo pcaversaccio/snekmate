@@ -1,4 +1,4 @@
-# pragma version ^0.3.10
+# pragma version ~=0.4.0b5
 """
 @title ERC-721 and ERC-1155 Compatible ERC-2981 Reference Implementation
 @custom:contract-name ERC2981
@@ -41,10 +41,10 @@
 """
 
 
-# @dev We import and implement the `ERC165` interface,
+# @dev We import and implement the `IERC165` interface,
 # which is a built-in interface of the Vyper compiler.
-from vyper.interfaces import ERC165
-implements: ERC165
+from ethereum.ercs import IERC165
+implements: IERC165
 
 
 # @dev We import and implement the `IERC2981` interface,
@@ -103,7 +103,7 @@ event OwnershipTransferred:
     new_owner: indexed(address)
 
 
-@external
+@deploy
 @payable
 def __init__():
     """
@@ -161,7 +161,7 @@ def royaltyInfo(token_id: uint256, sale_price: uint256) -> (address, uint256):
 
     # The following line uses intentionally checked arithmetic to
     # prevent a theoretically possible overflow.
-    royalty_amount: uint256 = (sale_price * convert(royalty.royalty_fraction, uint256)) / self._fee_denominator
+    royalty_amount: uint256 = (sale_price * convert(royalty.royalty_fraction, uint256)) // self._fee_denominator
 
     return (royalty.receiver, royalty_amount)
 
@@ -277,7 +277,7 @@ def _set_default_royalty(receiver: address, fee_numerator: uint96):
     denominator: uint256 = self._fee_denominator
     assert convert(fee_numerator, uint256) <= denominator, "ERC2981: royalty fee will exceed sale_price"
     assert receiver != empty(address), "ERC2981: invalid receiver"
-    self._default_royalty_info = RoyaltyInfo({receiver: receiver, royalty_fraction: fee_numerator})
+    self._default_royalty_info = RoyaltyInfo(receiver=receiver, royalty_fraction=fee_numerator)
 
 
 @internal
@@ -286,7 +286,7 @@ def _delete_default_royalty():
     @dev Removes the default royalty information.
     @notice This is an `internal` function without access restriction.
     """
-    self._default_royalty_info = RoyaltyInfo({receiver: empty(address), royalty_fraction: empty(uint96)})
+    self._default_royalty_info = RoyaltyInfo(receiver=empty(address), royalty_fraction=empty(uint96))
 
 
 @internal
@@ -307,7 +307,7 @@ def _set_token_royalty(token_id: uint256, receiver: address, fee_numerator: uint
     denominator: uint256 = self._fee_denominator
     assert convert(fee_numerator, uint256) <= denominator, "ERC2981: royalty fee will exceed sale_price"
     assert receiver != empty(address), "ERC2981: invalid receiver"
-    self._token_royalty_info[token_id] = RoyaltyInfo({receiver: receiver, royalty_fraction: fee_numerator})
+    self._token_royalty_info[token_id] = RoyaltyInfo(receiver=receiver, royalty_fraction=fee_numerator)
 
 
 @internal
@@ -318,7 +318,7 @@ def _reset_token_royalty(token_id: uint256):
     @notice This is an `internal` function without access restriction.
     @param token_id The 32-byte identifier of the token.
     """
-    self._token_royalty_info[token_id] = RoyaltyInfo({receiver: empty(address), royalty_fraction: empty(uint96)})
+    self._token_royalty_info[token_id] = RoyaltyInfo(receiver=empty(address), royalty_fraction=empty(uint96))
 
 
 @internal

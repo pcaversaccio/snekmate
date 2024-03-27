@@ -2,6 +2,13 @@
 pragma solidity ^0.8.25;
 
 import {Create} from "create-util/Create.sol";
+import {console, StdStyle} from "forge-std/Test.sol";
+
+/**
+ * @dev Error that occurs when compiling a contract has failed.
+ * @param emitter The contract that emits the error.
+ */
+error CompilationFailed(address emitter);
 
 /**
  * @dev Error that occurs when deploying a contract has failed.
@@ -68,6 +75,20 @@ contract VyperDeployer is Create {
         bytes memory bytecode = cheatCodes.ffi(cmds);
 
         /**
+         * @dev Revert if the Vyper compilation failed or is a zero-length
+         * contract creation bytecode.
+         */
+        if (bytecode.length == 0) {
+            // solhint-disable-next-line no-console
+            console.log(
+                StdStyle.red(
+                    "Vyper compilation failed! Please ensure that you have a valid Vyper version installed."
+                )
+            );
+            revert CompilationFailed({emitter: self});
+        }
+
+        /**
          * @dev Deploy the bytecode with the `CREATE` instruction.
          */
         deployedAddress = deploy({amount: 0, bytecode: bytecode});
@@ -109,6 +130,20 @@ contract VyperDeployer is Create {
          * @dev Compile the Vyper contract and return the bytecode.
          */
         bytes memory bytecode = cheatCodes.ffi(cmds);
+
+        /**
+         * @dev Revert if the Vyper compilation failed or is a zero-length
+         * contract creation bytecode.
+         */
+        if (bytecode.length == 0) {
+            // solhint-disable-next-line no-console
+            console.log(
+                StdStyle.red(
+                    "Vyper compilation failed! Please ensure that you have a valid Vyper version installed."
+                )
+            );
+            revert CompilationFailed({emitter: self});
+        }
 
         /**
          * @dev Add the ABI-encoded constructor arguments to the
@@ -164,6 +199,20 @@ contract VyperDeployer is Create {
         bytes memory bytecode = cheatCodes.ffi(cmds);
 
         /**
+         * @dev Revert if the Vyper compilation failed or is a zero-length
+         * contract creation bytecode.
+         */
+        if (bytecode.length == 0) {
+            // solhint-disable-next-line no-console
+            console.log(
+                StdStyle.red(
+                    "Vyper compilation failed! Please ensure that you have a valid Vyper version installed."
+                )
+            );
+            revert CompilationFailed({emitter: self});
+        }
+
+        /**
          * @dev Deploy the bytecode with the `CREATE` instruction.
          */
         deployedAddress = deploy({amount: 0, bytecode: bytecode});
@@ -213,6 +262,20 @@ contract VyperDeployer is Create {
          * @dev Compile the Vyper contract and return the bytecode.
          */
         bytes memory bytecode = cheatCodes.ffi(cmds);
+
+        /**
+         * @dev Revert if the Vyper compilation failed or is a zero-length
+         * contract creation bytecode.
+         */
+        if (bytecode.length == 0) {
+            // solhint-disable-next-line no-console
+            console.log(
+                StdStyle.red(
+                    "Vyper compilation failed! Please ensure that you have a valid Vyper version installed."
+                )
+            );
+            revert CompilationFailed({emitter: self});
+        }
 
         /**
          * @dev Add the ABI-encoded constructor arguments to the

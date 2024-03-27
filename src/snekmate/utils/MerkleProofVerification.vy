@@ -1,4 +1,4 @@
-# pragma version ^0.3.10
+# pragma version ~=0.4.0b5
 """
 @title Merkle Tree Proof Verification Functions
 @custom:contract-name MerkleProofVerification
@@ -33,7 +33,7 @@
 """
 
 
-@external
+@deploy
 @payable
 def __init__():
     """
@@ -104,8 +104,8 @@ def _process_proof(proof: DynArray[bytes32, max_value(uint16)], leaf: bytes32) -
             and `proof`.
     """
     computed_hash: bytes32 = leaf
-    for i in proof:
-        computed_hash = self._hash_pair(computed_hash, i)
+    for proof_element: bytes32 in proof:
+        computed_hash = self._hash_pair(computed_hash, proof_element)
     return computed_hash
 
 
@@ -167,7 +167,7 @@ def _process_multi_proof(proof: DynArray[bytes32, max_value(uint16)], proof_flag
     #   the next leaf is picked up, otherwise the next hash.
     # - depending on the flag, either another value from the "main queue"
     #   (merging branches) or an element from the `proof` array.
-    for flag in proof_flags:
+    for flag: bool in proof_flags:
         if (leaf_pos < leaves_length):
             a = leaves[leaf_pos]
             leaf_pos = unsafe_add(leaf_pos, 1)

@@ -1,4 +1,4 @@
-# pragma version ^0.3.10
+# pragma version ~=0.4.0b5
 """
 @title EIP-721 Optional Metadata Interface Definition
 @custom:contract-name IERC721Metadata
@@ -23,22 +23,22 @@
 """
 
 
-# @dev We import and implement the `ERC165` interface,
+# @dev We import and implement the `IERC165` interface,
 # which is a built-in interface of the Vyper compiler.
-from vyper.interfaces import ERC165
-implements: ERC165
+from ethereum.ercs import IERC165
+implements: IERC165
 
 
-# @dev We import the `ERC721` interface, which is a built-in
+# @dev We import the `IERC721` interface, which is a built-in
 # interface of the Vyper compiler, to highlight the association
 # of the custom `IERC721Metadata` interface with the built-in
-# `ERC721` interface.
+# `IERC721` interface.
 # @notice The interface `IERC721Metadata` must be used in conjunction
-# with the built-in interface `ERC721` to be EIP-721 compatible.
+# with the built-in interface `IERC721` to be EIP-721 compatible.
 # If you want to use this interface as a stand-alone interface,
-# you must add `implements: ERC721` to this interface and implement
+# you must add `implements: IERC721` to this interface and implement
 # all required events and functions accordingly.
-from vyper.interfaces import ERC721
+from ethereum.ercs import IERC721
 
 
 @external
@@ -54,7 +54,7 @@ def supportsInterface(interfaceId: bytes4) -> bool:
     @return bool The verification whether the contract
             implements the interface or not.
     """
-    return empty(bool)
+    return ...
 
 
 @external
@@ -66,7 +66,7 @@ def name() -> String[25]:
             user-readable string name of the
             token collection.
     """
-    return empty(String[25])
+    return ...
 
 
 @external
@@ -78,7 +78,7 @@ def symbol() -> String[5]:
             user-readable string symbol of the
             token collection.
     """
-    return empty(String[5])
+    return ...
 
 
 @external
@@ -92,4 +92,4 @@ def tokenURI(_tokenId: uint256) -> String[512]:
     @return String The maximum 512-character user-readable
             string token URI of the `_tokenId` token.
     """
-    return empty(String[512])
+    return ...

@@ -1,4 +1,4 @@
-# pragma version ^0.3.10
+# pragma version ~=0.4.0b5
 """
 @title Modern and Gas-Efficient ERC-20 + EIP-2612 Implementation
 @custom:contract-name ERC20
@@ -51,16 +51,16 @@
 """
 
 
-# @dev We import and implement the `ERC20` interface,
+# @dev We import and implement the `IERC20` interface,
 # which is a built-in interface of the Vyper compiler.
-from vyper.interfaces import ERC20
-implements: ERC20
+from ethereum.ercs import IERC20
+implements: IERC20
 
 
-# @dev We import and implement the `ERC20Detailed` interface,
+# @dev We import and implement the `IERC20Detailed` interface,
 # which is a built-in interface of the Vyper compiler.
-from vyper.interfaces import ERC20Detailed
-implements: ERC20Detailed
+from ethereum.ercs import IERC20Detailed
+implements: IERC20Detailed
 
 
 # @dev We import and implement the `IERC20Permit`
@@ -203,7 +203,7 @@ event RoleMinterChanged:
     status: bool
 
 
-@external
+@deploy
 @payable
 def __init__(name_: String[25], symbol_: String[5], initial_supply_: uint256, name_eip712_: String[50], version_eip712_: String[20]):
     """

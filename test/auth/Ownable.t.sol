@@ -17,7 +17,10 @@ contract OwnableTest is Test {
 
     function setUp() public {
         ownable = IOwnable(
-            vyperDeployer.deployContract("src/snekmate/auth/", "Ownable")
+            vyperDeployer.deployContract(
+                "src/snekmate/auth/mocks/",
+                "OwnableMock"
+            )
         );
     }
 
@@ -27,7 +30,10 @@ contract OwnableTest is Test {
         vm.expectEmit(true, true, false, false);
         emit IOwnable.OwnershipTransferred(zeroAddress, deployer);
         ownableInitialEvent = IOwnable(
-            vyperDeployer.deployContract("src/snekmate/auth/", "Ownable")
+            vyperDeployer.deployContract(
+                "src/snekmate/auth/mocks/",
+                "OwnableMock"
+            )
         );
         assertEq(ownableInitialEvent.owner(), deployer);
     }
@@ -142,13 +148,16 @@ contract OwnableInvariants is Test {
 
     function setUp() public {
         ownable = IOwnable(
-            vyperDeployer.deployContract("src/snekmate/auth/", "Ownable")
+            vyperDeployer.deployContract(
+                "src/snekmate/auth/mocks/",
+                "OwnableMock"
+            )
         );
         ownerHandler = new OwnerHandler(ownable, deployer);
         targetContract(address(ownerHandler));
     }
 
-    function invariantOwner() public view {
+    function statefulFuzzOwner() public view {
         assertEq(ownable.owner(), ownerHandler.owner());
     }
 }
