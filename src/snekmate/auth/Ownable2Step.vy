@@ -7,9 +7,14 @@
 @notice These functions can be used to implement a basic access
         control mechanism, where there is an account (an owner)
         that can be granted exclusive access to specific functions.
-        By default, the owner account will be the one that deploys
-        the contract. This can later be changed with `transfer_ownership`
-        and `accept_ownership`.
+        This extension to the {Ownable} contract includes a two-step
+        ownership transfer mechanism where the new owner must call
+        `accept_ownership` to replace the old one. This can help
+        avoid common mistakes, such as ownership transfers to incorrect
+        accounts or to contracts that are unable to interact with
+        the permission system. By default, the owner account will
+        be the one that deploys the contract. This can later be
+        changed with `transfer_ownership` and `accept_ownership`.
         The implementation is inspired by OpenZeppelin's implementation here:
         https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/Ownable2Step.sol.
 """
