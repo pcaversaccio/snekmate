@@ -18,9 +18,9 @@ import {ITimelockController} from "./interfaces/ITimelockController.sol";
 
 /**
  * @dev The standard access control functionalities are not tested as they
- * were taken 1:1 from `AccessControl.vy`. See `AccessControl.t.sol` for the
- * corresponding tests. However, please integrate these tests into your own
- * test suite before deploying `TimelockController` into production!
+ * are imported via the `AccessControl` module. See `AccessControl.t.sol`
+ * for the corresponding tests. However, please integrate these tests into
+ * your own test suite before deploying `TimelockController` into production!
  */
 contract TimelockControllerTest is Test {
     bytes32 private constant DEFAULT_ADMIN_ROLE = bytes32(0);
