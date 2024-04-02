@@ -39,7 +39,7 @@ from ...auth import AccessControl as ac
 initializes: ac
 
 
-# @dev We import and initialise the `Ownable` module.
+# @dev We import and initialise the `TimelockController` module.
 from .. import TimelockController as tc
 initializes: tc[access_control := ac]
 
