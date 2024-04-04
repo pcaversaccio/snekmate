@@ -64,7 +64,8 @@ src
         ├── interfaces
         │   └── IERC5267 — "EIP-5267 Interface Definition"
         └── mocks
-            └── Base64Mock — "Base64 Module Reference Implementation"
+            ├── Base64Mock — "Base64 Module Reference Implementation"
+            └── BatchDistributorMock — "BatchDistributor Module Reference Implementation"
 ```
 
 ## 🎛 Installation

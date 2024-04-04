@@ -40,10 +40,10 @@ def __init__():
     pass
 
 
-@external
+@internal
 @payable
 @nonreentrant
-def distribute_ether(data: Batch):
+def _distribute_ether(data: Batch):
     """
     @dev Distributes ether, denominated in wei, to a
          predefined batch of recipient addresses.
@@ -71,8 +71,8 @@ def distribute_ether(data: Batch):
         raw_call(msg.sender, b"", value=self.balance)
 
 
-@external
-def distribute_token(token: IERC20, data: Batch):
+@internal
+def _distribute_token(token: IERC20, data: Batch):
     """
     @dev Distributes ERC-20 tokens, denominated in their corresponding
          lowest unit, to a predefined batch of recipient addresses.

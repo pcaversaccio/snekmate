@@ -21,8 +21,8 @@ contract BatchDistributorTest is Test {
     function setUp() public {
         batchDistributor = IBatchDistributor(
             vyperDeployer.deployContract(
-                "src/snekmate/utils/",
-                "BatchDistributor"
+                "src/snekmate/utils/mocks/",
+                "BatchDistributorMock"
             )
         );
         batchDistributorAddr = address(batchDistributor);
@@ -444,8 +444,8 @@ contract BatchDistributorInvariants is Test {
     function setUp() public {
         batchDistributor = IBatchDistributor(
             vyperDeployer.deployContract(
-                "src/snekmate/utils/",
-                "BatchDistributor"
+                "src/snekmate/utils/mocks/",
+                "BatchDistributorMock"
             )
         );
         batchDistributorAddr = address(batchDistributor);
@@ -464,11 +464,11 @@ contract BatchDistributorInvariants is Test {
         targetSender(msgSender);
     }
 
-    function invariantNoEtherBalance() public view {
+    function statefulFuzzNoEtherBalance() public view {
         assertEq(batchDistributorAddr.balance, 0);
     }
 
-    function invariantNoTokenBalance() public view {
+    function statefulFuzzNoTokenBalance() public view {
         /**
          * @dev This invariant breaks when tokens are sent directly to `batchDistributor`
          * as part of `distribute_token`. However, this behaviour is acceptable.
