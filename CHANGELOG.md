@@ -10,6 +10,8 @@
   - [`Ownable2Step`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/auth/Ownable2Step.vy): Make `Ownable2Step` module-friendly. ([#219](https://github.com/pcaversaccio/snekmate/pull/219))
 - **Governance**
   - [`TimelockController`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/governance/TimelockController.vy): Make `TimelockController` module-friendly. ([#220](https://github.com/pcaversaccio/snekmate/pull/220))
+- **Utility Functions**
+  - [`Base64`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/utils/Base64.vy): Make `Base64` module-friendly. ([#222](https://github.com/pcaversaccio/snekmate/pull/222))
 - **Vyper Contract Deployer**
   - [`VyperDeployer`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/lib/utils/VyperDeployer.sol): Improve error message in the event of a Vyper compilation error. ([#219](https://github.com/pcaversaccio/snekmate/pull/219))
 

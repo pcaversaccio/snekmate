@@ -40,9 +40,9 @@ def __init__():
     pass
 
 
-@external
+@internal
 @pure
-def encode(data: Bytes[_DATA_INPUT_BOUND], base64_url: bool) -> DynArray[String[4], _DATA_OUTPUT_BOUND]:
+def _encode(data: Bytes[_DATA_INPUT_BOUND], base64_url: bool) -> DynArray[String[4], _DATA_OUTPUT_BOUND]:
     """
     @dev Encodes a `Bytes` array using the Base64
          binary-to-text encoding scheme.
@@ -144,9 +144,9 @@ def encode(data: Bytes[_DATA_INPUT_BOUND], base64_url: bool) -> DynArray[String[
     return char_chunks
 
 
-@external
+@internal
 @pure
-def decode(data: String[_DATA_OUTPUT_BOUND], base64_url: bool) -> DynArray[Bytes[3], _DATA_INPUT_BOUND]:
+def _decode(data: String[_DATA_OUTPUT_BOUND], base64_url: bool) -> DynArray[Bytes[3], _DATA_INPUT_BOUND]:
     """
     @dev Decodes a `String` input using the Base64
          binary-to-text encoding scheme.
