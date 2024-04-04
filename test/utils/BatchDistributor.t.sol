@@ -7,6 +7,7 @@ import {VyperDeployer} from "utils/VyperDeployer.sol";
 import {IERC20Errors} from "openzeppelin/interfaces/draft-IERC6093.sol";
 
 import {ERC20Mock} from "./mocks/ERC20Mock.sol";
+import {DistributeEtherReentrancyMock, DistributeTokenReentrancyMock} from "./mocks/ReentrancyMock.sol";
 
 import {IBatchDistributor} from "./interfaces/IBatchDistributor.sol";
 
@@ -205,6 +206,42 @@ contract BatchDistributorTest is Test {
         vm.expectRevert();
         batchDistributor.distribute_ether{value: 1 wei}(batch);
         assertEq(batchDistributorAddr.balance, 0);
+    }
+
+    function testDistributeEtherReentrancy() public {
+        DistributeEtherReentrancyMock distributeEtherReentrancyMock = new DistributeEtherReentrancyMock();
+        address alice = address(distributeEtherReentrancyMock);
+        IBatchDistributor.Transaction[]
+            memory transaction1 = new IBatchDistributor.Transaction[](1);
+        transaction1[0] = IBatchDistributor.Transaction({
+            recipient: alice,
+            amount: 2 wei
+        });
+        IBatchDistributor.Batch memory batch1 = IBatchDistributor.Batch({
+            txns: transaction1
+        });
+
+        vm.expectRevert(
+            bytes("DistributeEtherReentrancyMock: reentrancy unsuccessful")
+        );
+        batchDistributor.distribute_ether{value: 2 wei}(batch1);
+
+        DistributeTokenReentrancyMock distributeTokenReentrancyMock = new DistributeTokenReentrancyMock();
+        address bob = address(distributeTokenReentrancyMock);
+        IBatchDistributor.Transaction[]
+            memory transaction2 = new IBatchDistributor.Transaction[](1);
+        transaction2[0] = IBatchDistributor.Transaction({
+            recipient: bob,
+            amount: 2 wei
+        });
+        IBatchDistributor.Batch memory batch2 = IBatchDistributor.Batch({
+            txns: transaction2
+        });
+
+        vm.expectRevert(
+            bytes("DistributeTokenReentrancyMock: reentrancy unsuccessful")
+        );
+        batchDistributor.distribute_ether{value: 2 wei}(batch2);
     }
 
     function testDistributeTokenOneAddressSuccess() public {
