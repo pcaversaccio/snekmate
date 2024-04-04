@@ -72,6 +72,7 @@ def _distribute_ether(data: Batch):
 
 
 @internal
+@nonreentrant
 def _distribute_token(token: IERC20, data: Batch):
     """
     @dev Distributes ERC-20 tokens, denominated in their corresponding
@@ -91,6 +92,9 @@ def _distribute_token(token: IERC20, data: Batch):
     @param data Nested struct object that contains an array
            of tuples that contain each a recipient address &
            token amount.
+    @custom:security To prevent a potential cross-function reentrancy via
+                     `_distribute_ether`, as pre-emptive safety measure,
+                     a reentrancy guard is used.
     """
     total: uint256 = empty(uint256)
     for txn: Transaction in data.txns:
