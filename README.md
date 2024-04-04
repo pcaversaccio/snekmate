@@ -63,8 +63,8 @@ src
         ├── Multicall — "Multicall Functions"
         ├── interfaces
         │   └── IERC5267 — "EIP-5267 Interface Definition"
-    │   └── mocks
-    │       └── Base64Mock — "Base64 Module Reference Implementation"
+        └── mocks
+            └── Base64Mock — "Base64 Module Reference Implementation"
 ```
 
 ## 🎛 Installation
