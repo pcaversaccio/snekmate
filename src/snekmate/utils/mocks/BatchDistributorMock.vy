@@ -53,7 +53,7 @@ def distribute_token(token: bd.IERC20, data: bd.Batch):
          lowest unit, to a predefined batch of recipient addresses.
     @notice To deal with (potentially) non-compliant ERC-20 tokens that do have
             no return value, we use the kwarg `default_return_value` for external
-            calls. This function was introduced in Vyper version 0.3.4. For more
+            calls. This function was introduced in Vyper version `0.3.4`. For more
             details see:
             - https://github.com/vyperlang/vyper/pull/2839,
             - https://github.com/vyperlang/vyper/issues/2812,

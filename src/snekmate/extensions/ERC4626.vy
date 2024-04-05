@@ -1000,7 +1000,7 @@ def _deposit(sender: address, receiver: address, assets: uint256, shares: uint25
 
     # To deal with (potentially) non-compliant ERC-20 tokens that do have
     # no return value, we use the kwarg `default_return_value` for external
-    # calls. This function was introduced in Vyper version 0.3.4. For more
+    # calls. This function was introduced in Vyper version `0.3.4`. For more
     # details see:
     # - https://github.com/vyperlang/vyper/pull/2839,
     # - https://github.com/vyperlang/vyper/issues/2812,
@@ -1040,7 +1040,7 @@ def _withdraw(sender: address, receiver: address, owner: address, assets: uint25
 
     # To deal with (potentially) non-compliant ERC-20 tokens that do have
     # no return value, we use the kwarg `default_return_value` for external
-    # calls. This function was introduced in Vyper version 0.3.4. For more
+    # calls. This function was introduced in Vyper version `0.3.4`. For more
     # details see:
     # - https://github.com/vyperlang/vyper/pull/2839,
     # - https://github.com/vyperlang/vyper/issues/2812,
