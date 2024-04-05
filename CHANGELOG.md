@@ -13,6 +13,7 @@
 - **Utility Functions**
   - [`Base64`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/utils/Base64.vy): Make `Base64` module-friendly. ([#222](https://github.com/pcaversaccio/snekmate/pull/222))
   - [`BatchDistributor`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/utils/BatchDistributor.vy): Make `BatchDistributor` module-friendly. ([#223](https://github.com/pcaversaccio/snekmate/pull/223))
+  - [`CreateAddress`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/utils/CreateAddress.vy): Make `CreateAddress` module-friendly. ([#224](https://github.com/pcaversaccio/snekmate/pull/224))
 - **Vyper Contract Deployer**
   - [`VyperDeployer`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/lib/utils/VyperDeployer.sol): Improve error message in the event of a Vyper compilation error. ([#219](https://github.com/pcaversaccio/snekmate/pull/219))
 
