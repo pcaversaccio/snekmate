@@ -159,8 +159,8 @@ This repository is inspired by or directly modified from many sources, primarily
 - [Disperse Research](https://github.com/banteg/disperse-research)
 - [Multicall](https://github.com/mds1/multicall)
 - [OpenZeppelin Contracts](https://github.com/OpenZeppelin/openzeppelin-contracts)
-- [solady](https://github.com/Vectorized/solady)
-- [solmate](https://github.com/transmissions11/solmate)
+- [Solady](https://github.com/Vectorized/solady)
+- [Solmate](https://github.com/transmissions11/solmate)
 
 ## 🫡 Contributing
 
