@@ -40,16 +40,18 @@ def __init__():
     pass
 
 
-@external
-@payable
+@internal
 @nonreentrant
-def distribute_ether(data: Batch):
+def _distribute_ether(data: Batch):
     """
     @dev Distributes ether, denominated in wei, to a
          predefined batch of recipient addresses.
     @notice In the event that excessive ether is sent,
             the residual amount is returned back to the
-            `msg.sender`.
+            `msg.sender`. Please note that you must add the
+            `payable` decorator to any `external` function
+            that calls the `internal` function `_distribute_ether`
+            to enable the handling of ether.
 
             Furthermore, it is important to note that an
             external call via `raw_call` does not perform
@@ -71,14 +73,15 @@ def distribute_ether(data: Batch):
         raw_call(msg.sender, b"", value=self.balance)
 
 
-@external
-def distribute_token(token: IERC20, data: Batch):
+@internal
+@nonreentrant
+def _distribute_token(token: IERC20, data: Batch):
     """
     @dev Distributes ERC-20 tokens, denominated in their corresponding
          lowest unit, to a predefined batch of recipient addresses.
     @notice To deal with (potentially) non-compliant ERC-20 tokens that do have
             no return value, we use the kwarg `default_return_value` for external
-            calls. This function was introduced in Vyper version 0.3.4. For more
+            calls. This function was introduced in Vyper version `0.3.4`. For more
             details see:
             - https://github.com/vyperlang/vyper/pull/2839,
             - https://github.com/vyperlang/vyper/issues/2812,
@@ -91,6 +94,9 @@ def distribute_token(token: IERC20, data: Batch):
     @param data Nested struct object that contains an array
            of tuples that contain each a recipient address &
            token amount.
+    @custom:security To prevent a potential cross-function reentrancy via
+                     `_distribute_ether`, as pre-emptive safety measure,
+                     a reentrancy guard is used.
     """
     total: uint256 = empty(uint256)
     for txn: Transaction in data.txns:

@@ -4,8 +4,8 @@
 @custom:contract-name Multicall
 @license GNU Affero General Public License v3.0 only
 @author pcaversaccio
-@notice These functions can be used to batch together multiple external
-        function calls into one single external function call. Please note
+@notice These functions can be used to batch together multiple `external`
+        function calls into one single `external` function call. Please note
         that this contract is written in the most agnostic way possible and
         users should adjust statically allocatable memory to their specific
         needs before deploying it:
