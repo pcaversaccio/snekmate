@@ -31,7 +31,10 @@ def distribute_ether(data: bd.Batch):
          predefined batch of recipient addresses.
     @notice In the event that excessive ether is sent,
             the residual amount is returned back to the
-            `msg.sender`.
+            `msg.sender`. Please note that you must add the
+            `payable` decorator to any `external` function
+            that calls the `internal` function `_distribute_ether`
+            to enable the handling of ether.
 
             Furthermore, it is important to note that an
             external call via `raw_call` does not perform
