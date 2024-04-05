@@ -7,7 +7,7 @@ import {VyperDeployer} from "utils/VyperDeployer.sol";
 import {IERC20Errors} from "openzeppelin/interfaces/draft-IERC6093.sol";
 
 import {ERC20Mock} from "./mocks/ERC20Mock.sol";
-import {DistributeEtherReentrancyMock, DistributeTokenReentrancyMock} from "./mocks/ReentrancyMock.sol";
+import {DistributeEtherReentrancyMock, DistributeTokenReentrancyMock} from "./mocks/ReentrancyMocks.sol";
 
 import {IBatchDistributor} from "./interfaces/IBatchDistributor.sol";
 
@@ -209,6 +209,9 @@ contract BatchDistributorTest is Test {
     }
 
     function testDistributeEtherReentrancy() public {
+        /**
+         * @dev Single-function reentrancy case.
+         */
         DistributeEtherReentrancyMock distributeEtherReentrancyMock = new DistributeEtherReentrancyMock();
         address alice = address(distributeEtherReentrancyMock);
         IBatchDistributor.Transaction[]
@@ -226,6 +229,9 @@ contract BatchDistributorTest is Test {
         );
         batchDistributor.distribute_ether{value: 2 wei}(batch1);
 
+        /**
+         * @dev Cross-function reentrancy case.
+         */
         DistributeTokenReentrancyMock distributeTokenReentrancyMock = new DistributeTokenReentrancyMock();
         address bob = address(distributeTokenReentrancyMock);
         IBatchDistributor.Transaction[]
