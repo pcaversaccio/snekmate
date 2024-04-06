@@ -29,9 +29,9 @@ def __init__():
     pass
 
 
-@external
+@internal
 @view
-def compute_address_self(salt: bytes32, bytecode_hash: bytes32) -> address:
+def _compute_address_self(salt: bytes32, bytecode_hash: bytes32) -> address:
     """
     @dev Returns the address where a contract will be stored if
          deployed via this contract using the `CREATE2` opcode.
@@ -46,32 +46,14 @@ def compute_address_self(salt: bytes32, bytecode_hash: bytes32) -> address:
     return self._compute_address(salt, bytecode_hash, self)
 
 
-@external
+@internal
 @pure
-def compute_address(salt: bytes32, bytecode_hash: bytes32, deployer: address) -> address:
+def _compute_address(salt: bytes32, bytecode_hash: bytes32, deployer: address) -> address:
     """
     @dev Returns the address where a contract will be stored if
          deployed via `deployer` using the `CREATE2` opcode.
          Any change in the `bytecode_hash` or `salt` values will
          result in a new destination address.
-    @param salt The 32-byte random value used to create the contract
-           address.
-    @param bytecode_hash The 32-byte bytecode digest of the contract
-           creation bytecode.
-    @param deployer The 20-byte deployer address.
-    @return address The 20-byte address where a contract will be stored.
-    """
-    return self._compute_address(salt, bytecode_hash, deployer)
-
-
-@internal
-@pure
-def _compute_address(salt: bytes32, bytecode_hash: bytes32, deployer: address) -> address:
-    """
-    @dev An `internal` helper function that returns the address
-         where a contract will be stored if deployed via `deployer`
-         using the `CREATE2` opcode. Any change in the `bytecode_hash`
-         or `salt` values will result in a new destination address.
     @param salt The 32-byte random value used to create the contract
            address.
     @param bytecode_hash The 32-byte bytecode digest of the contract
