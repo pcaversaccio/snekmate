@@ -66,7 +66,8 @@ src
         └── mocks
             ├── Base64Mock — "Base64 Module Reference Implementation"
             ├── BatchDistributorMock — "BatchDistributor Module Reference Implementation"
-            └── CreateAddressMock — "CreateAddress Module Reference Implementation"
+            ├── CreateAddressMock — "CreateAddress Module Reference Implementation"
+            └── Create2AddressMock — "Create2Address Module Reference Implementation"
 ```
 
 ## 🎛 Installation
