@@ -1,6 +1,6 @@
 # pragma version ~=0.4.0b5
 """
-@title CreateAddress Module Reference Implementation
+@title Create2Address Module Reference Implementation
 @custom:contract-name Create2AddressMock
 @license GNU Affero General Public License v3.0 only
 @author pcaversaccio
