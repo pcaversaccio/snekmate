@@ -23,21 +23,21 @@ def __init__():
     pass
 
 
-@external
+@internal
 @view
-def compute_address_rlp_self(nonce: uint256) -> address:
+def _compute_address_rlp_self(nonce: uint256) -> address:
     """
     @dev Returns the address where a contract will be stored if
          deployed via this contract using the `CREATE` opcode.
-    @param nonce The next 32-byte nonce of this contract.
+    @param nonce The 32-byte account nonce of this contract.
     @return address The 20-byte address where a contract will be stored.
     """
     return self._compute_address_rlp(self, nonce)
 
 
-@external
+@internal
 @pure
-def compute_address_rlp(deployer: address, nonce: uint256) -> address:
+def _compute_address_rlp(deployer: address, nonce: uint256) -> address:
     """
     @dev Returns the address where a contract will be stored
          if deployed via `deployer` using the `CREATE` opcode.
@@ -53,38 +53,14 @@ def compute_address_rlp(deployer: address, nonce: uint256) -> address:
          are initiated with `nonce = 1`. Thus, the first contract address
          created by another contract is calculated with a non-zero nonce.
     @param deployer The 20-byte deployer address.
-    @param nonce The next 32-byte nonce of the deployer address.
-    @return address The 20-byte address where a contract will be stored.
-    """
-    return self._compute_address_rlp(deployer, nonce)
-
-
-@internal
-@pure
-def _compute_address_rlp(deployer: address, nonce: uint256) -> address:
-    """
-    @dev An `internal` helper function that returns the address where a
-         contract will be stored if deployed via `deployer` using the
-         `CREATE` opcode. For the specification of the Recursive Length
-         Prefix (RLP) encoding scheme, please refer to p. 19 of the Ethereum
-         Yellow Paper (https://ethereum.github.io/yellowpaper/paper.pdf)
-         and the Ethereum Wiki (https://ethereum.org/en/developers/docs/data-structures-and-encoding/rlp).
-         For further insights also, see the following issue:
-         https://github.com/transmissions11/solmate/issues/207.
-
-         Based on the EIP-161 (https://github.com/ethereum/EIPs/blob/master/EIPS/eip-161.md)
-         specification, all contract accounts on the Ethereum mainnet
-         are initiated with `nonce = 1`. Thus, the first contract address
-         created by another contract is calculated with a non-zero nonce.
-    @param deployer The 20-byte deployer address.
-    @param nonce The next 32-byte nonce of the deployer address.
+    @param nonce The 32-byte account nonce of the deployer address.
     @return address The 20-byte address where a contract will be stored.
     """
     length: bytes1 = 0x94
 
     # The theoretical allowed limit, based on EIP-2681, for an
     # account nonce is 2**64-2: https://eips.ethereum.org/EIPS/eip-2681.
-    assert nonce < convert(max_value(uint64), uint256), "RLP: invalid nonce value"
+    assert nonce < convert(max_value(uint64), uint256), "CreateAddress: invalid nonce value"
 
     # The integer zero is treated as an empty byte string and
     # therefore has only one length prefix, 0x80, which is
