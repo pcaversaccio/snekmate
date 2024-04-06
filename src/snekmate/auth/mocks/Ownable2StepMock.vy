@@ -1,4 +1,4 @@
-# pragma version ~=0.4.0b5
+# pragma version ~=0.4.0b6
 """
 @title Ownable2Step Module Reference Implementation
 @custom:contract-name Ownable2StepMock

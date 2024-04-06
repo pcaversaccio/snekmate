@@ -1,4 +1,4 @@
-# pragma version ~=0.4.0b5
+# pragma version ~=0.4.0b6
 """
 @title AccessControl Module Reference Implementation
 @custom:contract-name AccessControlMock

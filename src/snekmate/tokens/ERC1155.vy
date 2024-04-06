@@ -1,4 +1,4 @@
-# pragma version ~=0.4.0b5
+# pragma version ~=0.4.0b6
 """
 @title Modern and Gas-Efficient ERC-1155 Implementation
 @custom:contract-name ERC1155

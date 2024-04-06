@@ -1,4 +1,4 @@
-# pragma version ~=0.4.0b5
+# pragma version ~=0.4.0b6
 """
 @title Modern and Gas-Efficient ERC-20 + EIP-2612 Implementation
 @custom:contract-name ERC20
