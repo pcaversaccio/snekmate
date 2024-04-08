@@ -15,8 +15,8 @@
   - [`BatchDistributor`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/utils/BatchDistributor.vy): Make `BatchDistributor` module-friendly. ([#223](https://github.com/pcaversaccio/snekmate/pull/223))
   - [`CreateAddress`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/utils/CreateAddress.vy): Make `CreateAddress` module-friendly. ([#224](https://github.com/pcaversaccio/snekmate/pull/224))
   - [`Create2Address`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/utils/Create2Address.vy): Make `Create2Address` module-friendly. ([#225](https://github.com/pcaversaccio/snekmate/pull/225))
-  - [`ECDSA`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/utils/ECDSA.vy): Make `ECDSA` module-friendly. ([#226](https://github.com/pcaversaccio/snekmate/pull/226))
-  - [`MessageHashUtils`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/utils/MessageHashUtils.vy): Move the `ECDSA` message hash methods to a separate `MessageHashUtils` library module. ([#226](https://github.com/pcaversaccio/snekmate/pull/226))
+  - [`ECDSA`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/utils/ECDSA.vy): Make `ECDSA` module-friendly. ([#227](https://github.com/pcaversaccio/snekmate/pull/227))
+  - [`MessageHashUtils`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/utils/MessageHashUtils.vy): Move the `ECDSA` message hash methods to a separate `MessageHashUtils` library module. ([#227](https://github.com/pcaversaccio/snekmate/pull/227))
 - **Vyper Contract Deployer**
   - [`VyperDeployer`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/lib/utils/VyperDeployer.sol): Improve error message in the event of a Vyper compilation error. ([#219](https://github.com/pcaversaccio/snekmate/pull/219))
 
