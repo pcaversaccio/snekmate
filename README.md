@@ -58,9 +58,9 @@ src
         ├── ECDSA — "Elliptic Curve Digital Signature Algorithm (ECDSA) Functions"
         ├── SignatureChecker — "ECDSA and EIP-1271 Signature Verification Functions"
         ├── EIP712DomainSeparator — "EIP-712 Domain Separator"
+        ├── MessageHashUtils — "Merkle Tree Proof Verification Functions"
         ├── Math — "Standard Mathematical Utility Functions"
         ├── MerkleProofVerification — "Merkle Tree Proof Verification Functions"
-        ├── MessageHashUtils — "Merkle Tree Proof Verification Functions"
         ├── Multicall — "Multicall Functions"
         ├── interfaces
         │   └── IERC5267 — "EIP-5267 Interface Definition"
@@ -68,7 +68,9 @@ src
             ├── Base64Mock — "Base64 Module Reference Implementation"
             ├── BatchDistributorMock — "BatchDistributor Module Reference Implementation"
             ├── CreateAddressMock — "CreateAddress Module Reference Implementation"
-            └── Create2AddressMock — "Create2Address Module Reference Implementation"
+            ├── Create2AddressMock — "Create2Address Module Reference Implementation"
+            ├── ECDSAMock — "ECDSA Module Reference Implementation"
+            └── MessageHashUtilsMocks — "MessageHashUtils Module Reference Implementation"
 ```
 
 ## 🎛 Installation
@@ -146,9 +148,9 @@ This repository contains [Foundry](https://github.com/foundry-rs/foundry)-based 
 | `ECDSA`                   |       ✅       |            ✅            |         ❌          |
 | `SignatureChecker`        |       ✅       |            ✅            |         ❌          |
 | `EIP712DomainSeparator`   |       ✅       |            ✅            |         ❌          |
+| `MessageHashUtils`        |       ✅       |            ✅            |         ❌          |
 | `Math`                    |       ✅       |            ✅            |         ❌          |
 | `MerkleProofVerification` |       ✅       |            ✅            |         ❌          |
-| `MessageHashUtils`        |       ✅       |            ✅            |         ❌          |
 | `Multicall`               |       ✅       |            ❌            |         ❌          |
 
 ✅ Test Type Implemented &emsp; ❌ Test Type Not Implemented
