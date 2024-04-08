@@ -60,6 +60,7 @@ src
         ├── EIP712DomainSeparator — "EIP-712 Domain Separator"
         ├── Math — "Standard Mathematical Utility Functions"
         ├── MerkleProofVerification — "Merkle Tree Proof Verification Functions"
+        ├── MessageHashUtils — "Merkle Tree Proof Verification Functions"
         ├── Multicall — "Multicall Functions"
         ├── interfaces
         │   └── IERC5267 — "EIP-5267 Interface Definition"
@@ -147,6 +148,7 @@ This repository contains [Foundry](https://github.com/foundry-rs/foundry)-based 
 | `EIP712DomainSeparator`   |       ✅       |            ✅            |         ❌          |
 | `Math`                    |       ✅       |            ✅            |         ❌          |
 | `MerkleProofVerification` |       ✅       |            ✅            |         ❌          |
+| `MessageHashUtils`        |       ✅       |            ✅            |         ❌          |
 | `Multicall`               |       ✅       |            ❌            |         ❌          |
 
 ✅ Test Type Implemented &emsp; ❌ Test Type Not Implemented
