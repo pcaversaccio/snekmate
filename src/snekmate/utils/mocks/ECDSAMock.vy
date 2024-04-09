@@ -1,7 +1,7 @@
 # pragma version ~=0.4.0b6
 """
 @title ECDSA Module Reference Implementation
-@custom:contract-name ECDSAMocks
+@custom:contract-name ECDSAMock
 @license GNU Affero General Public License v3.0 only
 @author pcaversaccio
 """
