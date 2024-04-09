@@ -56,9 +56,9 @@ src
         ├── CreateAddress — "`CREATE` EVM Opcode Utility Function for Address Calculation"
         ├── Create2Address — "`CREATE2` EVM Opcode Utility Functions for Address Calculations"
         ├── ECDSA — "Elliptic Curve Digital Signature Algorithm (ECDSA) Functions"
+        ├── MessageHashUtils — "Signature Message Hash Utility Functions"
         ├── SignatureChecker — "ECDSA and EIP-1271 Signature Verification Functions"
         ├── EIP712DomainSeparator — "EIP-712 Domain Separator"
-        ├── MessageHashUtils — "Merkle Tree Proof Verification Functions"
         ├── Math — "Standard Mathematical Utility Functions"
         ├── MerkleProofVerification — "Merkle Tree Proof Verification Functions"
         ├── Multicall — "Multicall Functions"
@@ -146,9 +146,9 @@ This repository contains [Foundry](https://github.com/foundry-rs/foundry)-based 
 | `CreateAddress`           |       ✅       |            ✅            |         ❌          |
 | `Create2Address`          |       ✅       |            ✅            |         ❌          |
 | `ECDSA`                   |       ✅       |            ✅            |         ❌          |
+| `MessageHashUtils`        |       ✅       |            ✅            |         ❌          |
 | `SignatureChecker`        |       ✅       |            ✅            |         ❌          |
 | `EIP712DomainSeparator`   |       ✅       |            ✅            |         ❌          |
-| `MessageHashUtils`        |       ✅       |            ✅            |         ❌          |
 | `Math`                    |       ✅       |            ✅            |         ❌          |
 | `MerkleProofVerification` |       ✅       |            ✅            |         ❌          |
 | `Multicall`               |       ✅       |            ❌            |         ❌          |
