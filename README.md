@@ -56,6 +56,7 @@ src
         ├── CreateAddress — "`CREATE` EVM Opcode Utility Function for Address Calculation"
         ├── Create2Address — "`CREATE2` EVM Opcode Utility Functions for Address Calculations"
         ├── ECDSA — "Elliptic Curve Digital Signature Algorithm (ECDSA) Functions"
+        ├── MessageHashUtils — "Signature Message Hash Utility Functions"
         ├── SignatureChecker — "ECDSA and EIP-1271 Signature Verification Functions"
         ├── EIP712DomainSeparator — "EIP-712 Domain Separator"
         ├── Math — "Standard Mathematical Utility Functions"
@@ -67,7 +68,9 @@ src
             ├── Base64Mock — "Base64 Module Reference Implementation"
             ├── BatchDistributorMock — "BatchDistributor Module Reference Implementation"
             ├── CreateAddressMock — "CreateAddress Module Reference Implementation"
-            └── Create2AddressMock — "Create2Address Module Reference Implementation"
+            ├── Create2AddressMock — "Create2Address Module Reference Implementation"
+            ├── ECDSAMock — "ECDSA Module Reference Implementation"
+            └── MessageHashUtilsMock — "MessageHashUtils Module Reference Implementation"
 ```
 
 ## 🎛 Installation
@@ -143,6 +146,7 @@ This repository contains [Foundry](https://github.com/foundry-rs/foundry)-based 
 | `CreateAddress`           |       ✅       |            ✅            |         ❌          |
 | `Create2Address`          |       ✅       |            ✅            |         ❌          |
 | `ECDSA`                   |       ✅       |            ✅            |         ❌          |
+| `MessageHashUtils`        |       ✅       |            ✅            |         ❌          |
 | `SignatureChecker`        |       ✅       |            ✅            |         ❌          |
 | `EIP712DomainSeparator`   |       ✅       |            ✅            |         ❌          |
 | `Math`                    |       ✅       |            ✅            |         ❌          |
