@@ -11,7 +11,6 @@ contract MessageHashUtilsTest is Test {
 
     IMessageHashUtils private messageHashUtils;
 
-    address private self = address(this);
     address private messageHashUtilsAddr;
 
     function setUp() public {
@@ -33,15 +32,12 @@ contract MessageHashUtilsTest is Test {
         assertEq(digest1, digest2);
     }
 
-    function testToTypedDataHash() public view {
-        bytes32 domainSeparator = keccak256("WAGMI");
-        bytes32 structHash = keccak256("GM");
-        bytes32 digest1 = messageHashUtils.to_typed_data_hash(
-            domainSeparator,
-            structHash
-        );
+    function testToDataWithIntendedValidatorHashSelf() public view {
+        bytes memory data = new bytes(42);
+        bytes32 digest1 = messageHashUtils
+            .to_data_with_intended_validator_hash_self(data);
         bytes32 digest2 = keccak256(
-            abi.encodePacked("\x19\x01", domainSeparator, structHash)
+            abi.encodePacked("\x19\x00", messageHashUtilsAddr, data)
         );
         assertEq(digest1, digest2);
     }
@@ -59,12 +55,15 @@ contract MessageHashUtilsTest is Test {
         assertEq(digest1, digest2);
     }
 
-    function testToDataWithIntendedValidatorHashSelf() public view {
-        bytes memory data = new bytes(42);
-        bytes32 digest1 = messageHashUtils
-            .to_data_with_intended_validator_hash_self(data);
+    function testToTypedDataHash() public view {
+        bytes32 domainSeparator = keccak256("WAGMI");
+        bytes32 structHash = keccak256("GM");
+        bytes32 digest1 = messageHashUtils.to_typed_data_hash(
+            domainSeparator,
+            structHash
+        );
         bytes32 digest2 = keccak256(
-            abi.encodePacked("\x19\x00", messageHashUtilsAddr, data)
+            abi.encodePacked("\x19\x01", domainSeparator, structHash)
         );
         assertEq(digest1, digest2);
     }
@@ -78,18 +77,13 @@ contract MessageHashUtilsTest is Test {
         assertEq(digest1, digest2);
     }
 
-    function testFuzzToTypedDataHash(
-        string calldata domainSeparatorPlain,
-        string calldata structPlain
+    function testFuzzToDataWithIntendedValidatorHashSelf(
+        bytes calldata data
     ) public view {
-        bytes32 domainSeparator = keccak256(abi.encode(domainSeparatorPlain));
-        bytes32 structHash = keccak256(abi.encode(structPlain));
-        bytes32 digest1 = messageHashUtils.to_typed_data_hash(
-            domainSeparator,
-            structHash
-        );
+        bytes32 digest1 = messageHashUtils
+            .to_data_with_intended_validator_hash_self(data);
         bytes32 digest2 = keccak256(
-            abi.encodePacked("\x19\x01", domainSeparator, structHash)
+            abi.encodePacked("\x19\x00", messageHashUtilsAddr, data)
         );
         assertEq(digest1, digest2);
     }
@@ -108,13 +102,18 @@ contract MessageHashUtilsTest is Test {
         assertEq(digest1, digest2);
     }
 
-    function testFuzzToDataWithIntendedValidatorHashSelf(
-        bytes calldata data
+    function testFuzzToTypedDataHash(
+        string calldata domainSeparatorPlain,
+        string calldata structPlain
     ) public view {
-        bytes32 digest1 = messageHashUtils
-            .to_data_with_intended_validator_hash_self(data);
+        bytes32 domainSeparator = keccak256(abi.encode(domainSeparatorPlain));
+        bytes32 structHash = keccak256(abi.encode(structPlain));
+        bytes32 digest1 = messageHashUtils.to_typed_data_hash(
+            domainSeparator,
+            structHash
+        );
         bytes32 digest2 = keccak256(
-            abi.encodePacked("\x19\x00", messageHashUtilsAddr, data)
+            abi.encodePacked("\x19\x01", domainSeparator, structHash)
         );
         assertEq(digest1, digest2);
     }
