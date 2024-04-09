@@ -70,7 +70,8 @@ src
             ├── CreateAddressMock — "CreateAddress Module Reference Implementation"
             ├── Create2AddressMock — "Create2Address Module Reference Implementation"
             ├── ECDSAMock — "ECDSA Module Reference Implementation"
-            └── MessageHashUtilsMock — "MessageHashUtils Module Reference Implementation"
+            ├── MessageHashUtilsMock — "MessageHashUtils Module Reference Implementation"
+            └── SignatureCheckerMock — "SignatureChecker Module Reference Implementation"
 ```
 
 ## 🎛 Installation
