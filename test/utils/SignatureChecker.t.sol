@@ -23,8 +23,8 @@ contract SignatureCheckerTest is Test {
     function setUp() public {
         signatureChecker = ISignatureChecker(
             vyperDeployer.deployContract(
-                "src/snekmate/utils/",
-                "SignatureChecker"
+                "src/snekmate/utils/mocks/",
+                "SignatureCheckerMock"
             )
         );
     }
@@ -195,11 +195,12 @@ contract SignatureCheckerTest is Test {
         bytes32 hash = keccak256("WAGMI");
         (, bytes32 r, bytes32 s) = vm.sign(key, hash);
         bytes memory signatureInvalid = abi.encodePacked(r, s, bytes1(0xa0));
-        vm.expectRevert(bytes("ECDSA: invalid signature"));
-        signatureChecker.is_valid_signature_now(
-            walletAddr,
-            hash,
-            signatureInvalid
+        assertTrue(
+            !signatureChecker.is_valid_signature_now(
+                walletAddr,
+                hash,
+                signatureInvalid
+            )
         );
         assertTrue(
             !signatureChecker.is_valid_ERC1271_signature_now(
