@@ -55,13 +55,13 @@ def _recover_sig(hash: bytes32, signature: Bytes[65]) -> address:
     @return address The recovered 20-byte signer address.
     """
     sig_length: uint256 = len(signature)
-    # 65-byte case: r,s,v standard signature.
+    # 65-byte case: `(r,s,v)` standard signature.
     if (sig_length == 65):
         r: uint256 = extract32(signature, empty(uint256), output_type=uint256)
         s: uint256 = extract32(signature, 32, output_type=uint256)
         v: uint256 = convert(slice(signature, 64, 1), uint256)
         return self._try_recover_vrs(hash, v, r, s)
-    # 64-byte case: r,vs signature; see: https://eips.ethereum.org/EIPS/eip-2098.
+    # 64-byte case: `(r,vs)` signature; see: https://eips.ethereum.org/EIPS/eip-2098.
     elif (sig_length == 64):
         r: uint256 = extract32(signature, empty(uint256), output_type=uint256)
         vs: uint256 = extract32(signature, 32, output_type=uint256)
@@ -113,8 +113,8 @@ def _try_recover_vrs(hash: bytes32, v: uint256, r: uint256, s: uint256) -> addre
     @dev Recovers the signer address from a message digest `hash`
          and the secp256k1 signature parameters `v`, `r`, and `s`.
     @notice All client implementations of the precompile `ecrecover`
-            check if the value of `v` is 27 or 28. The references for
-            the different client implementations can be found here:
+            check if the value of `v` is `27` or `28`. The references
+            for the different client implementations can be found here:
             https://github.com/ethereum/yellowpaper/pull/860. Thus,
             the signature check on the value of `v` is neglected.
     @param hash The 32-byte message digest that was signed.
