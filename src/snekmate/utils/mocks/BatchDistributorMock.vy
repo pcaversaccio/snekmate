@@ -7,11 +7,9 @@
 """
 
 
-# @dev We import the `BatchDistributor` module.
-# @notice Please note that the `BatchDistributor`
-# module is stateless and therefore does not require
-# the `initializes` keyword for initialisation.
+# @dev We import and initialise the `BatchDistributor` module.
 from .. import BatchDistributor as bd
+initializes: bd
 
 
 @deploy
@@ -22,7 +20,7 @@ def __init__():
          in the creation-time EVM bytecode, the constructor
          is declared as `payable`.
     """
-    pass
+    bd.__init__()
 
 
 @external
