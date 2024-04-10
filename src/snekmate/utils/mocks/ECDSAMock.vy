@@ -8,8 +8,8 @@
 
 
 # @dev We import the `ECDSA` module.
-# @notice Please note that the `ECDSA`
-# module is stateless and therefore does not require
+# @notice Please note that the `ECDSA` module
+# is stateless and therefore does not require
 # the `initializes` keyword for initialisation.
 from .. import ECDSA as ec
 
