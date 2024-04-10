@@ -18,7 +18,7 @@
         reinterpreted as a leaf value. OpenZeppelin's JavaScript library
         `merkle-tree` (https://github.com/OpenZeppelin/merkle-tree)
         generates Merkle trees that are safe against this attack out of
-        the box. You will find a quick start guide in the README.
+        the box. You will find a quick start guide in the `README`.
         OpenZeppelin provides some good examples of how to construct
         Merkle tree proofs correctly:
         https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/test/utils/cryptography/MerkleProof.test.js.
@@ -44,9 +44,9 @@ def __init__():
     pass
 
 
-@external
+@internal
 @pure
-def verify(proof: DynArray[bytes32, max_value(uint16)], root: bytes32, leaf: bytes32) -> bool:
+def _verify(proof: DynArray[bytes32, max_value(uint8)], root: bytes32, leaf: bytes32) -> bool:
     """
     @dev Returns `True` if it can be proved that a `leaf` is
          part of a Merkle tree defined by `root`.
@@ -63,10 +63,10 @@ def verify(proof: DynArray[bytes32, max_value(uint16)], root: bytes32, leaf: byt
     return self._process_proof(proof, leaf) == root
 
 
-@external
+@internal
 @pure
-def multi_proof_verify(proof: DynArray[bytes32, max_value(uint16)], proof_flags: DynArray[bool, max_value(uint16)],
-                       root: bytes32, leaves: DynArray[bytes32, max_value(uint16)]) -> bool:
+def _multi_proof_verify(proof: DynArray[bytes32, max_value(uint8)], proof_flags: DynArray[bool, max_value(uint8)],
+                        root: bytes32, leaves: DynArray[bytes32, max_value(uint8)]) -> bool:
     """
     @dev Returns `True` if it can be simultaneously proved that
          `leaves` are part of a Merkle tree defined by `root`
@@ -90,7 +90,7 @@ def multi_proof_verify(proof: DynArray[bytes32, max_value(uint16)], proof_flags:
 
 @internal
 @pure
-def _process_proof(proof: DynArray[bytes32, max_value(uint16)], leaf: bytes32) -> bytes32:
+def _process_proof(proof: DynArray[bytes32, max_value(uint8)], leaf: bytes32) -> bytes32:
     """
     @dev Returns the recovered hash obtained by traversing
          a Merkle tree from `leaf` using `proof`.
@@ -111,8 +111,8 @@ def _process_proof(proof: DynArray[bytes32, max_value(uint16)], leaf: bytes32) -
 
 @internal
 @pure
-def _process_multi_proof(proof: DynArray[bytes32, max_value(uint16)], proof_flags: DynArray[bool, max_value(uint16)],
-                         leaves: DynArray[bytes32, max_value(uint16)]) -> bytes32:
+def _process_multi_proof(proof: DynArray[bytes32, max_value(uint8)], proof_flags: DynArray[bool, max_value(uint8)],
+                         leaves: DynArray[bytes32, max_value(uint8)]) -> bytes32:
     """
     @dev Returns the recovered hash obtained by traversing
          a Merkle tree from `leaves` using `proof` and a
@@ -150,12 +150,12 @@ def _process_multi_proof(proof: DynArray[bytes32, max_value(uint16)], proof_flag
 
     # Checks the validity of the proof. We do not check for an
     # overflow (nor underflow) as `leaves_length`, `proof`, and
-    # `total_hashes` are bounded by the value `max_value(uint16)`
+    # `total_hashes` are bounded by the value `max_value(uint8)`
     # and therefore cannot overflow the `uint256` type when they
-    # are added together or incremented by 1.
+    # are added together or incremented by `1`.
     assert unsafe_add(leaves_length, len(proof)) == unsafe_add(total_hashes, 1), "MerkleProof: invalid multiproof"
 
-    hashes: DynArray[bytes32, max_value(uint16)] = []
+    hashes: DynArray[bytes32, max_value(uint8)] = []
     leaf_pos: uint256 = empty(uint256)
     hash_pos: uint256 = empty(uint256)
     proof_pos: uint256 = empty(uint256)
@@ -210,5 +210,5 @@ def _hash_pair(a: bytes32, b: bytes32) -> bytes32:
     """
     if (convert(a, uint256) < convert(b, uint256)):
         return keccak256(concat(a, b))
-    else:
-        return keccak256(concat(b, a))
+
+    return keccak256(concat(b, a))
