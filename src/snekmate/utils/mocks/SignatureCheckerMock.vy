@@ -7,9 +7,11 @@
 """
 
 
-# @dev We import and initialise the `SignatureChecker` module.
+# @dev We import the `SignatureChecker` module.
+# @notice Please note that the `SignatureChecker`
+# module is stateless and therefore does not require
+# the `initializes` keyword for initialisation.
 from .. import SignatureChecker as sc
-initializes: sc
 
 
 # @dev We export (i.e. the runtime bytecode exposes these
@@ -32,7 +34,7 @@ def __init__():
          in the creation-time EVM bytecode, the constructor
          is declared as `payable`.
     """
-    sc.__init__()
+    pass
 
 
 @external

@@ -7,9 +7,11 @@
 """
 
 
-# @dev We import and initialise the `MessageHashUtils` module.
+# @dev We import the `MessageHashUtils` module.
+# @notice Please note that the `MessageHashUtils`
+# module is stateless and therefore does not require
+# the `initializes` keyword for initialisation.
 from .. import MessageHashUtils as mu
-initializes: mu
 
 
 @deploy
@@ -20,7 +22,7 @@ def __init__():
          in the creation-time EVM bytecode, the constructor
          is declared as `payable`.
     """
-    mu.__init__()
+    pass
 
 
 @external

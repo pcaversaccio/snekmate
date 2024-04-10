@@ -10,19 +10,17 @@
         function is inspired by an existing implementation, it
         is properly referenced in the function docstring. The
         following functions have been added for convenience:
-        - `uint256_average` (`external` `pure` function),
-        - `int256_average` (`external` `pure` function),
-        - `ceil_div` (`external` `pure` function),
-        - `signum` (`external` `pure` function),
-        - `mul_div` (`external` `pure` function),
-        - `log_2` (`external` `pure` function),
-        - `log_10` (`external` `pure` function),
-        - `log_256` (`external` `pure` function),
-        - `wad_ln` (`external` `pure` function),
-        - `wad_exp` (`external` `pure` function),
-        - `cbrt` (`external` `pure` function),
-        - `wad_cbrt` (`external` `pure` function),
+        - `_uint256_average` (`internal` `pure` function),
+        - `_int256_average` (`internal` `pure` function),
+        - `_ceil_div` (`internal` `pure` function),
+        - `_signum` (`internal` `pure` function),
+        - `_mul_div` (`internal` `pure` function),
         - `_log_2` (`internal` `pure` function),
+        - `_log_10` (`internal` `pure` function),
+        - `_log_256` (`internal` `pure` function),
+        - `_wad_ln` (`internal` `pure` function),
+        - `_wad_exp` (`internal` `pure` function),
+        - `_cbrt` (`internal` `pure` function),
         - `_wad_cbrt` (`internal` `pure` function).
 """
 
@@ -38,9 +36,9 @@ def __init__():
     pass
 
 
-@external
+@internal
 @pure
-def uint256_average(x: uint256, y: uint256) -> uint256:
+def _uint256_average(x: uint256, y: uint256) -> uint256:
     """
     @dev Returns the average of two 32-byte unsigned integers.
     @notice Note that the result is rounded towards zero. For
@@ -55,9 +53,9 @@ def uint256_average(x: uint256, y: uint256) -> uint256:
     return unsafe_add(x & y, (x ^ y) >> 1)
 
 
-@external
+@internal
 @pure
-def int256_average(x: int256, y: int256) -> int256:
+def _int256_average(x: int256, y: int256) -> int256:
     """
     @dev Returns the average of two 32-byte signed integers.
     @notice Note that the result is rounded towards infinity.
@@ -72,9 +70,9 @@ def int256_average(x: int256, y: int256) -> int256:
     return unsafe_add(unsafe_add(x >> 1, y >> 1), x & y & 1)
 
 
-@external
+@internal
 @pure
-def ceil_div(x: uint256, y: uint256) -> uint256:
+def _ceil_div(x: uint256, y: uint256) -> uint256:
     """
     @dev Calculates "ceil(x / y)" for any strictly positive `y`.
     @notice The implementation is inspired by OpenZeppelin's
@@ -90,9 +88,9 @@ def ceil_div(x: uint256, y: uint256) -> uint256:
     return 0 if (x == empty(uint256)) else unsafe_add(unsafe_div(x - 1, y), 1)
 
 
-@external
+@internal
 @pure
-def signum(x: int256) -> int256:
+def _signum(x: int256) -> int256:
     """
     @dev Returns the indication of the sign of a 32-byte signed integer.
     @notice The function returns `-1` if `x < 0`, `0` if `x == 0`, and `1`
@@ -105,9 +103,9 @@ def signum(x: int256) -> int256:
     return unsafe_sub(convert((x > 0), int256), convert((x < 0), int256))
 
 
-@external
+@internal
 @pure
-def mul_div(x: uint256, y: uint256, denominator: uint256, roundup: bool) -> uint256:
+def _mul_div(x: uint256, y: uint256, denominator: uint256, roundup: bool) -> uint256:
     """
     @dev Calculates "(x * y) / denominator" in 512-bit precision,
          following the selected rounding direction.
@@ -151,8 +149,8 @@ def mul_div(x: uint256, y: uint256, denominator: uint256, roundup: bool) -> uint
             # "(x * y) % denominator != 0", which accordingly rules out
             # the possibility of "x * y = 2**256 - 1" and `denominator == 1`.
             return unsafe_add(unsafe_div(prod0, denominator), 1)
-        else:
-            return unsafe_div(prod0, denominator)
+
+        return unsafe_div(prod0, denominator)
 
     # Ensure that the result is less than 2**256. Also,
     # prevents that `denominator == 0`.
@@ -224,9 +222,9 @@ def mul_div(x: uint256, y: uint256, denominator: uint256, roundup: bool) -> uint
     return result
 
 
-@external
+@internal
 @pure
-def log_2(x: uint256, roundup: bool) -> uint256:
+def _log_2(x: uint256, roundup: bool) -> uint256:
     """
     @dev Returns the log in base 2 of `x`, following the selected
          rounding direction.
@@ -243,12 +241,44 @@ def log_2(x: uint256, roundup: bool) -> uint256:
     if (x == empty(uint256)):
         return empty(uint256)
 
-    return self._log_2(x, roundup)
+    value: uint256 = x
+    result: uint256 = empty(uint256)
+
+    # The following lines cannot overflow because we have the well-known
+    # decay behaviour of `log_2(max_value(uint256)) < max_value(uint256)`.
+    if (x >> 128 != empty(uint256)):
+        value = x >> 128
+        result = 128
+    if (value >> 64 != empty(uint256)):
+        value = value >> 64
+        result = unsafe_add(result, 64)
+    if (value >> 32 != empty(uint256)):
+        value = value >> 32
+        result = unsafe_add(result, 32)
+    if (value >> 16 != empty(uint256)):
+        value = value >> 16
+        result = unsafe_add(result, 16)
+    if (value >> 8 != empty(uint256)):
+        value = value >> 8
+        result = unsafe_add(result, 8)
+    if (value >> 4 != empty(uint256)):
+        value = value >> 4
+        result = unsafe_add(result, 4)
+    if (value >> 2 != empty(uint256)):
+        value = value >> 2
+        result = unsafe_add(result, 2)
+    if (value >> 1 != empty(uint256)):
+        result = unsafe_add(result, 1)
+
+    if (roundup and ((1 << result) < x)):
+        result = unsafe_add(result, 1)
+
+    return result
 
 
-@external
+@internal
 @pure
-def log_10(x: uint256, roundup: bool) -> uint256:
+def _log_10(x: uint256, roundup: bool) -> uint256:
     """
     @dev Returns the log in base 10 of `x`, following the selected
          rounding direction.
@@ -260,13 +290,13 @@ def log_10(x: uint256, roundup: bool) -> uint256:
            to round up or not. The default `False` is round down.
     @return uint256 The 32-byte calculation result.
     """
-    value: uint256 = x
-    result: uint256 = empty(uint256)
-
     # For the special case `x == 0` we already return 0 here in order
     # not to iterate through the remaining code.
     if (x == empty(uint256)):
         return empty(uint256)
+
+    value: uint256 = x
+    result: uint256 = empty(uint256)
 
     # The following lines cannot overflow because we have the well-known
     # decay behaviour of `log_10(max_value(uint256)) < max_value(uint256)`.
@@ -297,9 +327,9 @@ def log_10(x: uint256, roundup: bool) -> uint256:
     return result
 
 
-@external
+@internal
 @pure
-def log_256(x: uint256, roundup: bool) -> uint256:
+def _log_256(x: uint256, roundup: bool) -> uint256:
     """
     @dev Returns the log in base 256 of `x`, following the selected
          rounding direction.
@@ -313,13 +343,13 @@ def log_256(x: uint256, roundup: bool) -> uint256:
            to round up or not. The default `False` is round down.
     @return uint256 The 32-byte calculation result.
     """
-    value: uint256 = x
-    result: uint256 = empty(uint256)
-
     # For the special case `x == 0` we already return 0 here in order
     # not to iterate through the remaining code.
     if (x == empty(uint256)):
         return empty(uint256)
+
+    value: uint256 = x
+    result: uint256 = empty(uint256)
 
     # The following lines cannot overflow because we have the well-known
     # decay behaviour of `log_256(max_value(uint256)) < max_value(uint256)`.
@@ -344,9 +374,9 @@ def log_256(x: uint256, roundup: bool) -> uint256:
     return result
 
 
-@external
+@internal
 @pure
-def wad_ln(x: int256) -> int256:
+def _wad_ln(x: int256) -> int256:
     """
     @dev Calculates the natural logarithm of a signed integer with a
          precision of 1e18.
@@ -358,14 +388,14 @@ def wad_ln(x: int256) -> int256:
     @param x The 32-byte variable.
     @return int256 The 32-byte calculation result.
     """
-    value: int256 = x
-
     assert x >= empty(int256), "Math: wad_ln undefined"
 
     # For the special case `x == 0` we already return 0 here in order
     # not to iterate through the remaining code.
     if (x == empty(int256)):
         return empty(int256)
+
+    value: int256 = x
 
     # We want to convert `x` from "10 ** 18" fixed point to "2 ** 96"
     # fixed point. We do this by multiplying by "2 ** 96 / 10 ** 18".
@@ -417,9 +447,9 @@ def wad_ln(x: int256) -> int256:
            600_920_179_829_731_861_736_702_779_321_621_459_595_472_258_049_074_101_567_377_883_020_018_308) >> 174
 
 
-@external
+@internal
 @pure
-def wad_exp(x: int256) -> int256:
+def _wad_exp(x: int256) -> int256:
     """
     @dev Calculates the natural exponential function of a signed integer with
          a precision of 1e18.
@@ -485,9 +515,9 @@ def wad_exp(x: int256) -> int256:
            convert(unsafe_sub(195, k), uint256), int256)
 
 
-@external
+@internal
 @pure
-def cbrt(x: uint256, roundup: bool) -> uint256:
+def _cbrt(x: uint256, roundup: bool) -> uint256:
     """
     @dev Calculates the cube root of an unsigned integer.
     @notice Note that this function consumes about 1,600 to 1,800 gas units
@@ -512,9 +542,9 @@ def cbrt(x: uint256, roundup: bool) -> uint256:
     return y
 
 
-@external
+@internal
 @pure
-def wad_cbrt(x: uint256) -> uint256:
+def _wad_cbrt(x: uint256) -> uint256:
     """
     @dev Calculates the cube root of an unsigned integer with a precision
          of 1e18.
@@ -530,71 +560,6 @@ def wad_cbrt(x: uint256) -> uint256:
     if (x == empty(uint256)):
         return empty(uint256)
 
-    return self._wad_cbrt(x)
-
-
-@internal
-@pure
-def _log_2(x: uint256, roundup: bool) -> uint256:
-    """
-    @dev An `internal` helper function that returns the log in base 2
-         of `x`, following the selected rounding direction.
-    @notice Note that it returns 0 if given 0. The implementation is
-            inspired by OpenZeppelin's implementation here:
-            https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/math/Math.sol.
-    @param x The 32-byte variable.
-    @param roundup The Boolean variable that specifies whether
-           to round up or not. The default `False` is round down.
-    @return uint256 The 32-byte calculation result.
-    """
-    value: uint256 = x
-    result: uint256 = empty(uint256)
-
-    # The following lines cannot overflow because we have the well-known
-    # decay behaviour of `log_2(max_value(uint256)) < max_value(uint256)`.
-    if (x >> 128 != empty(uint256)):
-        value = x >> 128
-        result = 128
-    if (value >> 64 != empty(uint256)):
-        value = value >> 64
-        result = unsafe_add(result, 64)
-    if (value >> 32 != empty(uint256)):
-        value = value >> 32
-        result = unsafe_add(result, 32)
-    if (value >> 16 != empty(uint256)):
-        value = value >> 16
-        result = unsafe_add(result, 16)
-    if (value >> 8 != empty(uint256)):
-        value = value >> 8
-        result = unsafe_add(result, 8)
-    if (value >> 4 != empty(uint256)):
-        value = value >> 4
-        result = unsafe_add(result, 4)
-    if (value >> 2 != empty(uint256)):
-        value = value >> 2
-        result = unsafe_add(result, 2)
-    if (value >> 1 != empty(uint256)):
-        result = unsafe_add(result, 1)
-
-    if (roundup and ((1 << result) < x)):
-        result = unsafe_add(result, 1)
-
-    return result
-
-
-@internal
-@pure
-def _wad_cbrt(x: uint256) -> uint256:
-    """
-    @dev An `internal` helper function that calculates the cube root of an
-         unsigned integer with a precision of 1e18.
-    @notice Note that this function consumes about 1,450 to 1,650 gas units
-            depending on the value of `x`. The implementation is inspired
-            by Curve Finance's implementation under the MIT license here:
-            https://github.com/curvefi/tricrypto-ng/blob/main/contracts/main/CurveCryptoMathOptimized3.vy.
-    @param x The 32-byte variable from which the cube root is calculated.
-    @return The 32-byte cubic root of `x` with a precision of 1e18.
-    """
     # Since this cube root is for numbers with base 1e18, we have to scale
     # the input by 1e36 to increase the precision. This leads to an overflow
     # for very large numbers. So we conditionally sacrifice precision.

@@ -111,7 +111,10 @@ contract MathTest is Test {
 
     function setUp() public {
         math = IMath(
-            vyperDeployer.deployContract("src/snekmate/utils/", "Math")
+            vyperDeployer.deployContract(
+                "src/snekmate/utils/mocks/",
+                "MathMock"
+            )
         );
     }
 

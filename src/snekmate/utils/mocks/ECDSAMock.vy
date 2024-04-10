@@ -7,9 +7,11 @@
 """
 
 
-# @dev We import and initialise the `ECDSA` module.
+# @dev We import the `ECDSA` module.
+# @notice Please note that the `ECDSA` module
+# is stateless and therefore does not require
+# the `initializes` keyword for initialisation.
 from .. import ECDSA as ec
-initializes: ec
 
 
 @deploy
@@ -20,7 +22,7 @@ def __init__():
          in the creation-time EVM bytecode, the constructor
          is declared as `payable`.
     """
-    ec.__init__()
+    pass
 
 
 @external
