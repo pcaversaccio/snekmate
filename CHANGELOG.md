@@ -19,6 +19,7 @@
   - [`MessageHashUtils`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/utils/MessageHashUtils.vy): Move the `ECDSA` message hash methods to a separate `MessageHashUtils` library module. ([#227](https://github.com/pcaversaccio/snekmate/pull/227))
   - [`SignatureChecker`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/utils/SignatureChecker.vy): Make `SignatureChecker` module-friendly. ([#228](https://github.com/pcaversaccio/snekmate/pull/228))
   - [`EIP712DomainSeparator`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/utils/EIP712DomainSeparator.vy): Make `EIP712DomainSeparator` module-friendly. ([#229](https://github.com/pcaversaccio/snekmate/pull/229))
+  - [`Math`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/utils/Math.vy): Make `Math` module-friendly. ([#230](https://github.com/pcaversaccio/snekmate/pull/230))
 - **Vyper Contract Deployer**
   - [`VyperDeployer`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/lib/utils/VyperDeployer.sol): Improve error message in the event of a Vyper compilation error. ([#219](https://github.com/pcaversaccio/snekmate/pull/219))
 
