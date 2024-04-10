@@ -71,7 +71,8 @@ src
             ├── Create2AddressMock — "Create2Address Module Reference Implementation"
             ├── ECDSAMock — "ECDSA Module Reference Implementation"
             ├── MessageHashUtilsMock — "MessageHashUtils Module Reference Implementation"
-            └── SignatureCheckerMock — "SignatureChecker Module Reference Implementation"
+            ├── SignatureCheckerMock — "SignatureChecker Module Reference Implementation"
+            └── EIP712DomainSeparatorMock — "EIP712DomainSeparator Module Reference Implementation"
 ```
 
 ## 🎛 Installation

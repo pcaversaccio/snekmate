@@ -21,6 +21,13 @@ import interfaces.IERC5267 as IERC5267
 implements: IERC5267
 
 
+# @dev We import the `MessageHashUtils` module.
+# @notice Please note that the `MessageHashUtils`
+# module is stateless and therefore does not require
+# the `uses` keyword for usage.
+from . import MessageHashUtils as message_hash_utils
+
+
 # @dev The 32-byte type hash for the EIP-712 domain separator.
 _TYPE_HASH: constant(bytes32) = keccak256("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)")
 
@@ -83,31 +90,6 @@ def __init__(name_: String[50], version_: String[20]):
 
 @external
 @view
-def domain_separator_v4() -> bytes32:
-    """
-    @dev Returns the domain separator for the current chain.
-    @return bytes32 The 32-byte domain separator.
-    """
-    return self._domain_separator_v4()
-
-
-@external
-@view
-def hash_typed_data_v4(struct_hash: bytes32) -> bytes32:
-    """
-    @dev Returns the hash of the fully encoded EIP-712
-         message for this domain.
-    @notice The definition of the hashed struct can be found here:
-            https://eips.ethereum.org/EIPS/eip-712#definition-of-hashstruct.
-    @param struct_hash The 32-byte hashed struct.
-    @return bytes32 The 32-byte fully encoded EIP712
-            message hash for this domain.
-    """
-    return self._to_typed_data_hash(self._domain_separator_v4(), struct_hash)
-
-
-@external
-@view
 def eip712Domain() -> (bytes1, String[50], String[20], uint256, address, bytes32, DynArray[uint256, 128]):
     """
     @dev Returns the fields and values that describe the domain
@@ -136,8 +118,7 @@ def eip712Domain() -> (bytes1, String[50], String[20], uint256, address, bytes32
 @view
 def _domain_separator_v4() -> bytes32:
     """
-    @dev An `internal` helper function that returns the domain separator
-         for the current chain.
+    @dev Returns the domain separator for the current chain.
     @return bytes32 The 32-byte domain separator.
     """
     if (self == _CACHED_SELF and chain.id == _CACHED_CHAIN_ID):
@@ -157,11 +138,15 @@ def _build_domain_separator() -> bytes32:
 
 
 @internal
-@pure
-def _to_typed_data_hash(domain_separator: bytes32, struct_hash: bytes32) -> bytes32:
+@view
+def _hash_typed_data_v4(struct_hash: bytes32) -> bytes32:
     """
-    @dev Sourced from {ECDSA-to_typed_data_hash}.
-    @notice See {ECDSA-to_typed_data_hash} for the
-            function docstring.
+    @dev Returns the hash of the fully encoded EIP-712
+         message for this domain.
+    @notice The definition of the hashed struct can be found here:
+            https://eips.ethereum.org/EIPS/eip-712#definition-of-hashstruct.
+    @param struct_hash The 32-byte hashed struct.
+    @return bytes32 The 32-byte fully encoded EIP712
+            message hash for this domain.
     """
-    return keccak256(concat(b"\x19\x01", domain_separator, struct_hash))
+    return message_hash_utils._to_typed_data_hash(self._domain_separator_v4(), struct_hash)

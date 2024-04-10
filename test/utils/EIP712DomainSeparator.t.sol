@@ -36,8 +36,8 @@ contract EIP712DomainSeparatorTest is Test {
         bytes memory args = abi.encode(_NAME, _VERSION);
         EIP712domainSeparator = IEIP712DomainSeparator(
             vyperDeployer.deployContract(
-                "src/snekmate/utils/",
-                "EIP712DomainSeparator",
+                "src/snekmate/utils/mocks/",
+                "EIP712DomainSeparatorMock",
                 args
             )
         );
