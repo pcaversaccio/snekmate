@@ -63,6 +63,7 @@ src
         ├── MerkleProofVerification — "Merkle Tree Proof Verification Functions"
         ├── Multicall — "Multicall Functions"
         ├── interfaces
+        │   ├── IERC1271 — "EIP-1271 Interface Definition"
         │   └── IERC5267 — "EIP-5267 Interface Definition"
         └── mocks
             ├── Base64Mock — "Base64 Module Reference Implementation"
