@@ -74,7 +74,8 @@ src
             ├── SignatureCheckerMock — "SignatureChecker Module Reference Implementation"
             ├── EIP712DomainSeparatorMock — "EIP712DomainSeparator Module Reference Implementation"
             ├── MathMock — "Math Module Reference Implementation"
-            └── MerkleProofVerificationMock — "MerkleProofVerification Module Reference Implementation"
+            ├── MerkleProofVerificationMock — "MerkleProofVerification Module Reference Implementation"
+            └── MulticallMock — "Multicall Module Reference Implementation"
 ```
 
 ## 🎛 Installation
