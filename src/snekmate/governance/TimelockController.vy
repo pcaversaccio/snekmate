@@ -774,7 +774,7 @@ def _execute(target: address, amount: uint256, payload: Bytes[1_024]):
     success: bool = empty(bool)
     success, return_data = raw_call(target, payload, max_outsize=255, value=amount, revert_on_failure=False)
     if (not(success)):
-        if len(return_data) != empty(uint256):
+        if (len(return_data) != empty(uint256)):
             # Bubble up the revert reason.
             raw_revert(return_data)
         else:

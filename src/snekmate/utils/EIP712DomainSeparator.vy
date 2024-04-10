@@ -123,8 +123,8 @@ def _domain_separator_v4() -> bytes32:
     """
     if (self == _CACHED_SELF and chain.id == _CACHED_CHAIN_ID):
         return _CACHED_DOMAIN_SEPARATOR
-    else:
-        return self._build_domain_separator()
+
+    return self._build_domain_separator()
 
 
 @internal

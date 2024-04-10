@@ -1,7 +1,7 @@
 # pragma version ~=0.4.0b6
 """
 @title EIP712DomainSeparator Module Reference Implementation
-@custom:contract-name EIP712DomainSeparator
+@custom:contract-name EIP712DomainSeparatorMock
 @license GNU Affero General Public License v3.0 only
 @author pcaversaccio
 """
