@@ -26,7 +26,7 @@ def __init__():
 
 
 @external
-def multicall(data: DynArray[mc.Batch, max_value(uint8)]) -> DynArray[mc.Result, max_value(uint8)]:
+def multicall(data: DynArray[mc.Batch, mc._DYNARRAY_BOUND]) -> DynArray[mc.Result, mc._DYNARRAY_BOUND]:
     """
     @dev Aggregates function calls, ensuring that each
          function returns successfully if required.
@@ -43,7 +43,7 @@ def multicall(data: DynArray[mc.Batch, max_value(uint8)]) -> DynArray[mc.Result,
 
 @external
 @payable
-def multicall_value(data: DynArray[mc.BatchValue, max_value(uint8)]) -> DynArray[mc.Result, max_value(uint8)]:
+def multicall_value(data: DynArray[mc.BatchValue, mc._DYNARRAY_BOUND]) -> DynArray[mc.Result, mc._DYNARRAY_BOUND]:
     """
     @dev Aggregates function calls with a `msg.value`,
          ensuring that each function returns successfully
@@ -60,7 +60,7 @@ def multicall_value(data: DynArray[mc.BatchValue, max_value(uint8)]) -> DynArray
 
 
 @external
-def multicall_self(data: DynArray[mc.BatchSelf, max_value(uint8)]) -> DynArray[mc.Result, max_value(uint8)]:
+def multicall_self(data: DynArray[mc.BatchSelf, mc._DYNARRAY_BOUND]) -> DynArray[mc.Result, mc._DYNARRAY_BOUND]:
     """
     @dev Aggregates function calls using `DELEGATECALL`,
          ensuring that each function returns successfully
@@ -84,7 +84,7 @@ def multicall_self(data: DynArray[mc.BatchSelf, max_value(uint8)]) -> DynArray[m
 
 @external
 @view
-def multistaticcall(data: DynArray[mc.Batch, max_value(uint8)]) -> DynArray[mc.Result, max_value(uint8)]:
+def multistaticcall(data: DynArray[mc.Batch, mc._DYNARRAY_BOUND]) -> DynArray[mc.Result, mc._DYNARRAY_BOUND]:
     """
     @dev Aggregates static function calls, ensuring that each
          function returns successfully if required.

@@ -26,6 +26,10 @@
 """
 
 
+# @dev Stores the 1-byte upper bound for the dynamic arrays.
+_DYNARRAY_BOUND: constant(uint8) = max_value(uint8)
+
+
 # @dev Batch struct for ordinary (i.e. `nonpayable`) function calls.
 struct Batch:
     target: address
@@ -66,7 +70,7 @@ def __init__():
 
 
 @internal
-def _multicall(data: DynArray[Batch, max_value(uint8)]) -> DynArray[Result, max_value(uint8)]:
+def _multicall(data: DynArray[Batch, _DYNARRAY_BOUND]) -> DynArray[Result, _DYNARRAY_BOUND]:
     """
     @dev Aggregates function calls, ensuring that each
          function returns successfully if required.
@@ -78,7 +82,7 @@ def _multicall(data: DynArray[Batch, max_value(uint8)]) -> DynArray[Result, max_
     @param data The array of `Batch` structs.
     @return DynArray The array of `Result` structs.
     """
-    results: DynArray[Result, max_value(uint8)] = []
+    results: DynArray[Result, _DYNARRAY_BOUND] = []
     return_data: Bytes[max_value(uint8)] = b""
     success: bool = empty(bool)
     for batch: Batch in data:
@@ -95,7 +99,7 @@ def _multicall(data: DynArray[Batch, max_value(uint8)]) -> DynArray[Result, max_
 
 @internal
 @payable
-def _multicall_value(data: DynArray[BatchValue, max_value(uint8)]) -> DynArray[Result, max_value(uint8)]:
+def _multicall_value(data: DynArray[BatchValue, _DYNARRAY_BOUND]) -> DynArray[Result, _DYNARRAY_BOUND]:
     """
     @dev Aggregates function calls with a `msg.value`,
          ensuring that each function returns successfully
@@ -109,7 +113,7 @@ def _multicall_value(data: DynArray[BatchValue, max_value(uint8)]) -> DynArray[R
     @return DynArray The array of `Result` structs.
     """
     value_accumulator: uint256 = empty(uint256)
-    results: DynArray[Result, max_value(uint8)] = []
+    results: DynArray[Result, _DYNARRAY_BOUND] = []
     return_data: Bytes[max_value(uint8)] = b""
     success: bool = empty(bool)
     for batch: BatchValue in data:
@@ -133,7 +137,7 @@ def _multicall_value(data: DynArray[BatchValue, max_value(uint8)]) -> DynArray[R
 
 
 @internal
-def _multicall_self(data: DynArray[BatchSelf, max_value(uint8)]) -> DynArray[Result, max_value(uint8)]:
+def _multicall_self(data: DynArray[BatchSelf, _DYNARRAY_BOUND]) -> DynArray[Result, _DYNARRAY_BOUND]:
     """
     @dev Aggregates function calls using `DELEGATECALL`,
          ensuring that each function returns successfully
@@ -152,7 +156,7 @@ def _multicall_self(data: DynArray[BatchSelf, max_value(uint8)]) -> DynArray[Res
     @param data The array of `BatchSelf` structs.
     @return DynArray The array of `Result` structs.
     """
-    results: DynArray[Result, max_value(uint8)] = []
+    results: DynArray[Result, _DYNARRAY_BOUND] = []
     return_data: Bytes[max_value(uint8)] = b""
     success: bool = empty(bool)
     for batch: BatchSelf in data:
@@ -169,7 +173,7 @@ def _multicall_self(data: DynArray[BatchSelf, max_value(uint8)]) -> DynArray[Res
 
 @internal
 @view
-def _multistaticcall(data: DynArray[Batch, max_value(uint8)]) -> DynArray[Result, max_value(uint8)]:
+def _multistaticcall(data: DynArray[Batch, _DYNARRAY_BOUND]) -> DynArray[Result, _DYNARRAY_BOUND]:
     """
     @dev Aggregates static function calls, ensuring that each
          function returns successfully if required.
@@ -179,7 +183,7 @@ def _multistaticcall(data: DynArray[Batch, max_value(uint8)]) -> DynArray[Result
     @param data The array of `Batch` structs.
     @return DynArray The array of `Result` structs.
     """
-    results: DynArray[Result, max_value(uint8)] = []
+    results: DynArray[Result, _DYNARRAY_BOUND] = []
     return_data: Bytes[max_value(uint8)] = b""
     success: bool = empty(bool)
     for batch: Batch in data:
