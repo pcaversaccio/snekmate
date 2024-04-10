@@ -7,9 +7,11 @@
 """
 
 
-# @dev We import and initialise the `Math` module.
+# @dev We import the `Math` module.
+# @notice Please note that the `Math` module
+# is stateless and therefore does not require
+# the `initializes` keyword for initialisation.
 from .. import Math as ma
-initializes: ma
 
 
 @deploy
@@ -20,7 +22,7 @@ def __init__():
          in the creation-time EVM bytecode, the constructor
          is declared as `payable`.
     """
-    ma.__init__()
+    pass
 
 
 @external

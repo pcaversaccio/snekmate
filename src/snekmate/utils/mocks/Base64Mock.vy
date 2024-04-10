@@ -7,9 +7,11 @@
 """
 
 
-# @dev We import and initialise the `Base64` module.
+# @dev We import the `Base64` module.
+# @notice Please note that the `Base64` module
+# is stateless and therefore does not require
+# the `initializes` keyword for initialisation.
 from .. import Base64 as b64
-initializes: b64
 
 
 @deploy
@@ -20,7 +22,7 @@ def __init__():
          in the creation-time EVM bytecode, the constructor
          is declared as `payable`.
     """
-    b64.__init__()
+    pass
 
 
 @external

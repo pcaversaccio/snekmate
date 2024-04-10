@@ -7,9 +7,11 @@
 """
 
 
-# @dev We import and initialise the `Create2Address` module.
+# @dev We import the `Create2Address` module.
+# @notice Please note that the `Create2Address`
+# module is stateless and therefore does not require
+# the `initializes` keyword for initialisation.
 from .. import Create2Address as c2a
-initializes: c2a
 
 
 @deploy
@@ -20,7 +22,7 @@ def __init__():
          in the creation-time EVM bytecode, the constructor
          is declared as `payable`.
     """
-    c2a.__init__()
+    pass
 
 
 @external

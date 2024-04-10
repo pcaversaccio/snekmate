@@ -7,9 +7,11 @@
 """
 
 
-# @dev We import and initialise the `CreateAddress` module.
+# @dev We import the `CreateAddress` module.
+# @notice Please note that the `CreateAddress`
+# module is stateless and therefore does not require
+# the `initializes` keyword for initialisation.
 from .. import CreateAddress as ca
-initializes: ca
 
 
 @deploy
@@ -20,7 +22,7 @@ def __init__():
          in the creation-time EVM bytecode, the constructor
          is declared as `payable`.
     """
-    ca.__init__()
+    pass
 
 
 @external
