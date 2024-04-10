@@ -30,7 +30,7 @@
 struct Batch:
     target: address
     allow_failure: bool
-    call_data: Bytes[max_value(uint16)]
+    calldata: Bytes[1_024]
 
 
 # @dev Batch struct for `payable` function calls.
@@ -38,14 +38,14 @@ struct BatchValue:
     target: address
     allow_failure: bool
     value: uint256
-    call_data: Bytes[max_value(uint16)]
+    calldata: Bytes[1_024]
 
 
 # @dev Batch struct for ordinary (i.e. `nonpayable`) function calls
 # using this contract as destination address.
 struct BatchSelf:
     allow_failure: bool
-    call_data: Bytes[max_value(uint16)]
+    calldata: Bytes[1_024]
 
 
 # @dev Result struct for function call results.
@@ -65,8 +65,8 @@ def __init__():
     pass
 
 
-@external
-def multicall(data: DynArray[Batch, max_value(uint8)]) -> DynArray[Result, max_value(uint8)]:
+@internal
+def _multicall(data: DynArray[Batch, max_value(uint8)]) -> DynArray[Result, max_value(uint8)]:
     """
     @dev Aggregates function calls, ensuring that each
          function returns successfully if required.
@@ -83,19 +83,19 @@ def multicall(data: DynArray[Batch, max_value(uint8)]) -> DynArray[Result, max_v
     success: bool = empty(bool)
     for batch: Batch in data:
         if (batch.allow_failure == False):
-            return_data = raw_call(batch.target, batch.call_data, max_outsize=255)
+            return_data = raw_call(batch.target, batch.calldata, max_outsize=255)
             success = True
             results.append(Result(success=success, return_data=return_data))
         else:
             success, return_data = \
-                raw_call(batch.target, batch.call_data, max_outsize=255, revert_on_failure=False)
+                raw_call(batch.target, batch.calldata, max_outsize=255, revert_on_failure=False)
             results.append(Result(success=success, return_data=return_data))
     return results
 
 
-@external
+@internal
 @payable
-def multicall_value(data: DynArray[BatchValue, max_value(uint8)]) -> DynArray[Result, max_value(uint8)]:
+def _multicall_value(data: DynArray[BatchValue, max_value(uint8)]) -> DynArray[Result, max_value(uint8)]:
     """
     @dev Aggregates function calls with a `msg.value`,
          ensuring that each function returns successfully
@@ -121,19 +121,19 @@ def multicall_value(data: DynArray[BatchValue, max_value(uint8)]) -> DynArray[Re
         # https://twitter.com/Guhu95/status/1736983530343981307.
         value_accumulator = unsafe_add(value_accumulator, msg_value)
         if (batch.allow_failure == False):
-            return_data = raw_call(batch.target, batch.call_data, max_outsize=255, value=msg_value)
+            return_data = raw_call(batch.target, batch.calldata, max_outsize=255, value=msg_value)
             success = True
             results.append(Result(success=success, return_data=return_data))
         else:
             success, return_data = \
-                raw_call(batch.target, batch.call_data, max_outsize=255, value=msg_value, revert_on_failure=False)
+                raw_call(batch.target, batch.calldata, max_outsize=255, value=msg_value, revert_on_failure=False)
             results.append(Result(success=success, return_data=return_data))
     assert msg.value == value_accumulator, "Multicall: value mismatch"
     return results
 
 
-@external
-def multicall_self(data: DynArray[BatchSelf, max_value(uint8)]) -> DynArray[Result, max_value(uint8)]:
+@internal
+def _multicall_self(data: DynArray[BatchSelf, max_value(uint8)]) -> DynArray[Result, max_value(uint8)]:
     """
     @dev Aggregates function calls using `DELEGATECALL`,
          ensuring that each function returns successfully
@@ -157,19 +157,19 @@ def multicall_self(data: DynArray[BatchSelf, max_value(uint8)]) -> DynArray[Resu
     success: bool = empty(bool)
     for batch: BatchSelf in data:
         if (batch.allow_failure == False):
-            return_data = raw_call(self, batch.call_data, max_outsize=255, is_delegate_call=True)
+            return_data = raw_call(self, batch.calldata, max_outsize=255, is_delegate_call=True)
             success = True
             results.append(Result(success=success, return_data=return_data))
         else:
             success, return_data = \
-                raw_call(self, batch.call_data, max_outsize=255, is_delegate_call=True, revert_on_failure=False)
+                raw_call(self, batch.calldata, max_outsize=255, is_delegate_call=True, revert_on_failure=False)
             results.append(Result(success=success, return_data=return_data))
     return results
 
 
-@external
+@internal
 @view
-def multistaticcall(data: DynArray[Batch, max_value(uint8)]) -> DynArray[Result, max_value(uint8)]:
+def _multistaticcall(data: DynArray[Batch, max_value(uint8)]) -> DynArray[Result, max_value(uint8)]:
     """
     @dev Aggregates static function calls, ensuring that each
          function returns successfully if required.
@@ -184,11 +184,11 @@ def multistaticcall(data: DynArray[Batch, max_value(uint8)]) -> DynArray[Result,
     success: bool = empty(bool)
     for batch: Batch in data:
         if (batch.allow_failure == False):
-            return_data = raw_call(batch.target, batch.call_data, max_outsize=255, is_static_call=True)
+            return_data = raw_call(batch.target, batch.calldata, max_outsize=255, is_static_call=True)
             success = True
             results.append(Result(success=success, return_data=return_data))
         else:
             success, return_data = \
-                raw_call(batch.target, batch.call_data, max_outsize=255, is_static_call=True, revert_on_failure=False)
+                raw_call(batch.target, batch.calldata, max_outsize=255, is_static_call=True, revert_on_failure=False)
             results.append(Result(success=success, return_data=return_data))
     return results
