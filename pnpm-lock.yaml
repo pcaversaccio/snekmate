@@ -33,8 +33,8 @@ devDependencies:
     specifier: ^1.3.1
     version: 1.3.1(prettier@3.2.5)
   solhint:
-    specifier: ^4.5.2
-    version: 4.5.2
+    specifier: ^4.5.4
+    version: 4.5.4
 
 packages:
   /@aashutoshrathi/word-wrap@1.2.6:
@@ -433,6 +433,14 @@ packages:
     resolution:
       {
         integrity: sha512-V7/fPHgl+jsVPXqqeOzT8egNj2iBIVt+ECeMMG8TdcnTikP3oaBtUVqpT/gYCR68aEBJSF+XbYUxStjbFMqIIA==,
+      }
+    engines: { node: ">= 16" }
+    dev: true
+
+  /@noble/hashes@1.4.0:
+    resolution:
+      {
+        integrity: sha512-V1JJ1WTRUqHHrOSh597hURcMqVKVGL/ea3kv0gSnEdsEZ0/+VyPghM1lMNGc00z7CIQorSvbKpuJkxvuHbvdbg==,
       }
     engines: { node: ">= 16" }
     dev: true
@@ -1181,13 +1189,13 @@ packages:
     engines: { node: ">=0.10.0" }
     dev: true
 
-  /ethereum-bloom-filters@1.0.10:
+  /ethereum-bloom-filters@1.1.0:
     resolution:
       {
-        integrity: sha512-rxJ5OFN3RwjQxDcFP2Z5+Q9ho4eIdEmSc2ht0fCu8Se9nbXjZ7/031uXoUYJ87KHCOdVeiUuwSnoS7hmYAGVHA==,
+        integrity: sha512-J1gDRkLpuGNvWYzWslBQR9cDV4nd4kfvVTE/Wy4Kkm4yb3EYRSlyi0eB/inTsSTTVyA0+HyzHgbr95Fn/Z1fSw==,
       }
     dependencies:
-      js-sha3: 0.8.0
+      "@noble/hashes": 1.4.0
     dev: true
 
   /ethereum-cryptography@1.2.0:
@@ -2224,10 +2232,10 @@ packages:
       is-fullwidth-code-point: 3.0.0
     dev: true
 
-  /solhint@4.5.2:
+  /solhint@4.5.4:
     resolution:
       {
-        integrity: sha512-o7MNYS5QPgE6l+PTGOTAUtCzo0ZLnffQsv586hntSHBe2JbSDfkoxfhAOcjZjN4OesTgaX4UEEjCjH9y/4BP5w==,
+        integrity: sha512-Cu1XiJXub2q1eCr9kkJ9VPv1sGcmj3V7Zb76B0CoezDOB9bu3DxKIFFH7ggCl9fWpEPD6xBmRLfZrYijkVmujQ==,
       }
     hasBin: true
     dependencies:
@@ -2417,7 +2425,7 @@ packages:
     dependencies:
       "@ethereumjs/util": 8.1.0
       bn.js: 5.2.1
-      ethereum-bloom-filters: 1.0.10
+      ethereum-bloom-filters: 1.1.0
       ethereum-cryptography: 2.1.3
       ethjs-unit: 0.1.6
       number-to-bn: 1.7.0
