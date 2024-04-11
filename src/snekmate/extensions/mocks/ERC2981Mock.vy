@@ -80,10 +80,14 @@ def __init__():
     @dev To omit the opcodes for checking the `msg.value`
          in the creation-time EVM bytecode, the constructor
          is declared as `payable`.
-    @notice The `owner` role will be assigned to
-            the `msg.sender`.
+    @notice The `owner` role will be assigned to the
+            `msg.sender`. Furthermore, the default value
+            of `_fee_denominator` is set to `10_000`.
     """
     # The following line assigns the `owner`
     # to the `msg.sender`.
     ow.__init__()
+    # The following line sets the default value
+    # of `_fee_denominator` to `10_000` so that
+    # the fee is in basis points by default.
     erc2981.__init__()
