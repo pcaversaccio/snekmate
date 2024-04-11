@@ -63,7 +63,7 @@ exports: (
     # into an ERC-721 or ERC-1155 contract that implements an
     # `is_minter` role, ensure that the previous owner's minter
     # role as well as all non-owner minter addresses are also
-    # removed before calling `renounce_ownership`
+    # removed before calling `renounce_ownership`.
     erc2981.renounce_ownership,
     erc2981.royaltyInfo,
     erc2981.set_default_royalty,
