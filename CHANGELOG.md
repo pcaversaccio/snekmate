@@ -8,6 +8,8 @@
   - [`AccessControl`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/auth/AccessControl.vy): Make `AccessControl` module-friendly. ([#216](https://github.com/pcaversaccio/snekmate/pull/216))
   - [`Ownable`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/auth/Ownable.vy): Make `Ownable` module-friendly. ([#218](https://github.com/pcaversaccio/snekmate/pull/218))
   - [`Ownable2Step`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/auth/Ownable2Step.vy): Make `Ownable2Step` module-friendly. ([#219](https://github.com/pcaversaccio/snekmate/pull/219))
+- **Extensions**
+  - [`ERC2981`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/extensions/ERC2981.vy): Make `ERC2981` module-friendly. ([#233](https://github.com/pcaversaccio/snekmate/pull/233))
 - **Governance**
   - [`TimelockController`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/governance/TimelockController.vy): Make `TimelockController` module-friendly. ([#220](https://github.com/pcaversaccio/snekmate/pull/220))
 - **Utility Functions**

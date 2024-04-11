@@ -19,16 +19,29 @@
         parsing error, no `@` character is added to the visibility decorator
         `@external` in the following examples; please add them accordingly):
         ```vy
+        from snekmate.auth import AccessControl as access_control
+
+        exports: (
+            ac.DEFAULT_ADMIN_ROLE,
+            ac.supportsInterface,
+            ac.hasRole,
+            ac.getRoleAdmin,
+            ac.grantRole,
+            ac.revokeRole,
+            ac.renounceRole,
+            ac.set_role_admin,
+        )
+
         external
         def foo():
-            assert self.hasRole[MY_ROLE][msg.sender], "AccessControl: account is missing role"
+            assert access_control.hasRole[MY_ROLE][msg.sender], "AccessControl: account is missing role"
             ...
 
         OR
 
         external
         def foo():
-            self._check_role(MY_ROLE, msg.sender)
+            access_control._check_role(MY_ROLE, msg.sender)
             ...
         ```
 
