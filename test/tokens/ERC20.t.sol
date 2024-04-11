@@ -50,7 +50,11 @@ contract ERC20Test is Test {
             _VERSION_EIP712
         );
         ERC20Extended = IERC20Extended(
-            vyperDeployer.deployContract("src/snekmate/tokens/", "ERC20", args)
+            vyperDeployer.deployContract(
+                "src/snekmate/tokens/mocks/",
+                "ERC20Mock",
+                args
+            )
         );
         ERC20ExtendedAddr = address(ERC20Extended);
         _CACHED_DOMAIN_SEPARATOR = keccak256(
@@ -95,7 +99,11 @@ contract ERC20Test is Test {
             _VERSION_EIP712
         );
         ERC20ExtendedInitialEvent = IERC20Extended(
-            vyperDeployer.deployContract("src/snekmate/tokens/", "ERC20", args)
+            vyperDeployer.deployContract(
+                "src/snekmate/tokens/mocks/",
+                "ERC20Mock",
+                args
+            )
         );
         assertEq(ERC20ExtendedInitialEvent.decimals(), 18);
         assertEq(ERC20ExtendedInitialEvent.name(), _NAME);
@@ -1299,7 +1307,11 @@ contract ERC20Invariants is Test {
             _VERSION_EIP712
         );
         ERC20Extended = IERC20Extended(
-            vyperDeployer.deployContract("src/snekmate/tokens/", "ERC20", args)
+            vyperDeployer.deployContract(
+                "src/snekmate/tokens/mocks/",
+                "ERC20Mock",
+                args
+            )
         );
         erc20Handler = new ERC20Handler(
             ERC20Extended,
@@ -1310,11 +1322,11 @@ contract ERC20Invariants is Test {
         targetSender(deployer);
     }
 
-    function invariantTotalSupply() public view {
+    function statefulFuzzTotalSupply() public view {
         assertEq(ERC20Extended.totalSupply(), erc20Handler.totalSupply());
     }
 
-    function invariantOwner() public view {
+    function statefulFuzzOwner() public view {
         assertEq(ERC20Extended.owner(), erc20Handler.owner());
     }
 }
