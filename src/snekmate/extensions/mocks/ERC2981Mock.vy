@@ -53,7 +53,17 @@ exports: (
     # ```
     erc2981.supportsInterface,
     erc2981.owner,
+    # @notice If you integrate the function `transfer_ownership`
+    # into an ERC-721 or ERC-1155 contract that implements an
+    # `is_minter` role, ensure that the previous owner's minter
+    # role is also removed and the minter role is assigned to the
+    # `new_owner` accordingly.
     erc2981.transfer_ownership,
+    # @notice If you integrate the function `renounce_ownership`
+    # into an ERC-721 or ERC-1155 contract that implements an
+    # `is_minter` role, ensure that the previous owner's minter
+    # role as well as all non-owner minter addresses are also
+    # removed before calling `renounce_ownership`
     erc2981.renounce_ownership,
     erc2981.royaltyInfo,
     erc2981.set_default_royalty,
