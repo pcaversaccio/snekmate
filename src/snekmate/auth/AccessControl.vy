@@ -19,7 +19,14 @@
         parsing error, no `@` character is added to the visibility decorator
         `@external` in the following examples; please add them accordingly):
         ```vy
+        from ethereum.ercs import IERC165
+        implements: IERC165
+
+        from snekmate.auth.interfaces import IAccessControl
+        implements: IAccessControl
+
         from snekmate.auth import AccessControl as access_control
+        initializes: access_control
 
         exports: (
             access_control.DEFAULT_ADMIN_ROLE,
@@ -31,6 +38,8 @@
             access_control.renounceRole,
             access_control.set_role_admin,
         )
+
+        ...
 
         external
         def foo():

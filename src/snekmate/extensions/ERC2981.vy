@@ -32,8 +32,8 @@
                  ```vy
                  from ethereum.ercs import IERC721
                  implements: IERC721
-
-                 import interfaces.IERC2981 as IERC2981
+                 
+                 from snekmate.extensions.interfaces import IERC2981
                  implements: IERC2981
 
                  from snekmate.tokens import ERC721 as erc721
