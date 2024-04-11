@@ -82,7 +82,7 @@ def __init__():
          is declared as `payable`.
     @notice The `owner` role will be assigned to the
             `msg.sender`. Furthermore, the default value
-            of `_fee_denominator` is set to `10_000`.
+            of {ERC2981-_fee_denominator} is set to `10_000`.
     """
     # The following line assigns the `owner`
     # to the `msg.sender`.
