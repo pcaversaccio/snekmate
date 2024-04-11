@@ -22,7 +22,10 @@ contract ERC2981Test is Test {
 
     function setUp() public {
         ERC2981Extended = IERC2981Extended(
-            vyperDeployer.deployContract("src/snekmate/extensions/", "ERC2981")
+            vyperDeployer.deployContract(
+                "src/snekmate/extensions/mocks/",
+                "ERC2981Mock"
+            )
         );
     }
 
@@ -40,7 +43,10 @@ contract ERC2981Test is Test {
         vm.expectEmit(true, true, false, false);
         emit IERC2981Extended.OwnershipTransferred(zeroAddress, deployer);
         ERC2981ExtendedInitialEvent = IERC2981Extended(
-            vyperDeployer.deployContract("src/snekmate/extensions/", "ERC2981")
+            vyperDeployer.deployContract(
+                "src/snekmate/extensions/mocks/",
+                "ERC2981Mock"
+            )
         );
         (
             address receiverInitialSetup,
@@ -775,14 +781,17 @@ contract ERC2981Invariants is Test {
 
     function setUp() public {
         ERC2981Extended = IERC2981Extended(
-            vyperDeployer.deployContract("src/snekmate/extensions/", "ERC2981")
+            vyperDeployer.deployContract(
+                "src/snekmate/extensions/mocks/",
+                "ERC2981Mock"
+            )
         );
         erc2981Handler = new ERC2981Handler(ERC2981Extended, deployer);
         targetContract(address(erc2981Handler));
         targetSender(deployer);
     }
 
-    function invariantOwner() public view {
+    function statefulFuzzOwner() public view {
         assertEq(ERC2981Extended.owner(), erc2981Handler.owner());
     }
 }

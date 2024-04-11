@@ -24,16 +24,34 @@
 
         The implementation is inspired by OpenZeppelin's implementation here:
         https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/common/ERC2981.sol.
-@custom:security If you integrate this contract with an ERC-721 contract, please
-                 consider clearing the royalty information from storage on calling
-                 `burn` (to avoid any NatSpec parsing error, no `@` character is added
-                 to the visibility decorator `@internal` in the following example;
-                 please add it accordingly):
+@custom:security If you integrate this contract with an ERC-721 contract, you may
+                 want to consider clearing the royalty information from storage on
+                 calling `burn` (to avoid any NatSpec parsing error, no `@` character
+                 is added to the visibility decorators `@external` and `@internal` in
+                 the following example; please add them accordingly):
                  ```vy
+                 from ethereum.ercs import IERC721
+                 implements: IERC721
+
+                 from snekmate.extensions.interfaces import IERC2981
+                 implements: IERC2981
+
+                 from snekmate.tokens import ERC721 as erc721
+                 from snekmate.extensions import ERC2981 as erc2981
+
+                 exports: ...
+
+                 ...
+
+                 external
+                 def burn(token_id: uint256):
+                     assert erc721._is_approved_or_owner(msg.sender, token_id), "ERC721: caller is not token owner or approved"
+                     self._burn(token_id)
+
                  internal
                  def _burn(token_id: uint256):
                      ...
-                     self._reset_token_royalty(token_id)
+                     erc2981._reset_token_royalty(token_id)
                  ```
 
                  Due to the fungibility of ERC-1155 tokens, the implementation of
@@ -53,6 +71,36 @@ import interfaces.IERC2981 as IERC2981
 implements: IERC2981
 
 
+# @dev We import and use the `Ownable` module.
+from ..auth import Ownable as ownable
+uses: ownable
+
+
+# @dev We export (i.e. the runtime bytecode exposes these
+# functions externally, allowing them to be called using
+# the ABI encoding specification) all `external` functions
+# from the `Ownable` module.
+# @notice Please note that you must always also export (if
+# required by the contract logic) `public` declared `constant`,
+# `immutable`, and state variables, for which Vyper automatically
+# generates an `external` getter function for the variable.
+exports: (
+    ownable.owner,
+    # @notice If you integrate the function `transfer_ownership`
+    # into an ERC-721 or ERC-1155 contract that implements an
+    # `is_minter` role, ensure that the previous owner's minter
+    # role is also removed and the minter role is assigned to the
+    # `new_owner` accordingly.
+    ownable.transfer_ownership,
+    # @notice If you integrate the function `renounce_ownership`
+    # into an ERC-721 or ERC-1155 contract that implements an
+    # `is_minter` role, ensure that the previous owner's minter
+    # role as well as all non-owner minter addresses are also
+    # removed before calling `renounce_ownership`.
+    ownable.renounce_ownership,
+)
+
+
 # @dev Stores the ERC-165 interface identifier for each
 # imported interface. The ERC-165 interface identifier
 # is defined as the XOR of all function selectors in the
@@ -64,13 +112,6 @@ _SUPPORTED_INTERFACES: constant(bytes4[2]) = [
     0x01FFC9A7, # The ERC-165 identifier for ERC-165.
     0x2A55205A, # The ERC-165 identifier for ERC-2981.
 ]
-
-
-# @dev Returns the address of the current owner.
-# @notice If you declare a variable as `public`,
-# Vyper automatically generates an `external`
-# getter function for the variable.
-owner: public(address)
 
 
 # @dev Tightly packed royalty information struct. Note that
@@ -96,13 +137,6 @@ _token_royalty_info: HashMap[uint256, RoyaltyInfo]
 _fee_denominator: uint256
 
 
-# @dev Emitted when the ownership is transferred
-# from `previous_owner` to `new_owner`.
-event OwnershipTransferred:
-    previous_owner: indexed(address)
-    new_owner: indexed(address)
-
-
 @deploy
 @payable
 def __init__():
@@ -112,18 +146,19 @@ def __init__():
          is declared as `payable`.
     @notice We set the default value of `_fee_denominator`
             to `10_000` so that the fee is in basis points by
-            default. Also, the `owner` role will be assigned
-            to the `msg.sender`.
+            default. At initialisation time, the `owner` role
+            will be assigned to the `msg.sender` since we `uses`
+            the `Ownable` module, which implements the
+            aforementioned logic at contract creation time.
 
             IMPORTANT: The `_default_royalty_info` is set to
             the EVM default values `receiver = empty(address)`
             and `royalty_fraction = empty(uint96)`. If you want
             to set your own default values during contract creation,
-            you can call `self._default_royalty(receiver, fee_numerator)`
+            you can call `erc2981._default_royalty(receiver, fee_numerator)`
             in the constructor.
     """
     self._fee_denominator = 10_000
-    self._transfer_ownership(msg.sender)
 
 
 @external
@@ -180,7 +215,7 @@ def set_default_royalty(receiver: address, fee_numerator: uint96):
     @param fee_numerator The 12-byte fee numerator used to calculate
            the royalty fraction.
     """
-    self._check_owner()
+    ownable._check_owner()
     self._set_default_royalty(receiver, fee_numerator)
 
 
@@ -190,7 +225,7 @@ def delete_default_royalty():
     @dev Removes the default royalty information. This function can only
          be called by the current `owner`.
     """
-    self._check_owner()
+    ownable._check_owner()
     self._delete_default_royalty()
 
 
@@ -209,7 +244,7 @@ def set_token_royalty(token_id: uint256, receiver: address, fee_numerator: uint9
     @param fee_numerator The 12-byte fee numerator used to calculate
            the royalty fraction.
     """
-    self._check_owner()
+    ownable._check_owner()
     self._set_token_royalty(token_id, receiver, fee_numerator)
 
 
@@ -221,43 +256,8 @@ def reset_token_royalty(token_id: uint256):
          the current `owner`.
     @param token_id The 32-byte identifier of the token.
     """
-    self._check_owner()
+    ownable._check_owner()
     self._reset_token_royalty(token_id)
-
-
-@external
-def transfer_ownership(new_owner: address):
-    """
-    @dev Sourced from {Ownable-transfer_ownership}.
-    @notice See {Ownable-transfer_ownership} for
-            the function docstring.
-    @custom:security If you integrate this implementation into an
-                     ERC-721 or ERC-1155 contract that implements
-                     an `is_minter` role, ensure that the previous
-                     owner's minter role is also removed and the
-                     minter role is assigned to the `new_owner`
-                     accordingly.
-    """
-    self._check_owner()
-    assert new_owner != empty(address), "Ownable: new owner is the zero address"
-    self._transfer_ownership(new_owner)
-
-
-@external
-def renounce_ownership():
-    """
-    @dev Sourced from {Ownable-renounce_ownership}.
-    @notice See {Ownable-renounce_ownership} for
-            the function docstring.
-    @custom:security If you integrate this implementation into an
-                     ERC-721 or ERC-1155 contract that implements
-                     an `is_minter` role, ensure that the previous
-                     owner's minter role as well as all non-owner
-                     minter addresses are also removed before calling
-                     `renounce_ownership`.
-    """
-    self._check_owner()
-    self._transfer_ownership(empty(address))
 
 
 @internal
@@ -319,25 +319,3 @@ def _reset_token_royalty(token_id: uint256):
     @param token_id The 32-byte identifier of the token.
     """
     self._token_royalty_info[token_id] = RoyaltyInfo(receiver=empty(address), royalty_fraction=empty(uint96))
-
-
-@internal
-def _check_owner():
-    """
-    @dev Sourced from {Ownable-_check_owner}.
-    @notice See {Ownable-_check_owner} for
-            the function docstring.
-    """
-    assert msg.sender == self.owner, "Ownable: caller is not the owner"
-
-
-@internal
-def _transfer_ownership(new_owner: address):
-    """
-    @dev Sourced from {Ownable-_transfer_ownership}.
-    @notice See {Ownable-_transfer_ownership} for
-            the function docstring.
-    """
-    old_owner: address = self.owner
-    self.owner = new_owner
-    log OwnershipTransferred(old_owner, new_owner)

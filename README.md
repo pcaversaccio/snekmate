@@ -30,8 +30,10 @@ src
     ├── extensions
     │   ├── ERC2981 — "ERC-721 and ERC-1155 Compatible ERC-2981 Reference Implementation"
     │   ├── ERC4626 — "Modern and Gas-Efficient ERC-4626 Tokenised Vault Implementation"
-    │   └── interfaces
-    │       └── IERC2981 — "EIP-2981 Interface Definition"
+    │   ├── interfaces
+    │   │   └── IERC2981 — "EIP-2981 Interface Definition"
+    │   └── mocks
+    │       └── ERC2981Mock — "ERC2981 Module Reference Implementation"
     ├── governance
     │   ├── TimelockController — "Multi-Role-Based Timelock Controller Reference Implementation"
     │   └── mocks
