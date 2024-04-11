@@ -43,7 +43,7 @@ exports: (
     # the additional ERC-165 interface identifiers into the
     # function `supportsInterface`. One way to achieve this
     # would be to not export the `supportsInterface` function
-    # from `erc2981` in the main contract and implement the
+    # from {ERC2981} in the main contract and implement the
     # following function in the main contract instead:
     # ```vy
     # @external
@@ -88,6 +88,6 @@ def __init__():
     # to the `msg.sender`.
     ow.__init__()
     # The following line sets the default value
-    # of `_fee_denominator` to `10_000` so that
-    # the fee is in basis points by default.
+    # of {ERC2981-_fee_denominator} to `10_000`
+    # so that the fee is in basis points by default.
     erc2981.__init__()
