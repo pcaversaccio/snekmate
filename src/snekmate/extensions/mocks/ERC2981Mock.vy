@@ -44,7 +44,7 @@ exports: (
     # function `supportsInterface`. One way to achieve this
     # would be to not export the `supportsInterface` function
     # from `erc2981` in the main contract and implement the
-    # following function instead:
+    # following function in the main contract instead:
     # ```vy
     # @external
     # @view
