@@ -50,7 +50,7 @@
 
                  internal
                  def _burn(token_id: uint256):
-                     ...
+                     erc721._burn(token_id)
                      erc2981._reset_token_royalty(token_id)
                  ```
 
