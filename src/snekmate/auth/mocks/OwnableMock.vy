@@ -20,11 +20,7 @@ initializes: ow
 # required by the contract logic) `public` declared `constant`,
 # `immutable`, and state variables, for which Vyper automatically
 # generates an `external` getter function for the variable.
-exports: (
-    ow.owner,
-    ow.transfer_ownership,
-    ow.renounce_ownership,
-)
+exports: ow.__interface__
 
 
 @deploy

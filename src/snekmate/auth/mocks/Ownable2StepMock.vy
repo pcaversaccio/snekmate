@@ -25,13 +25,7 @@ initializes: o2[ownable := ow]
 # required by the contract logic) `public` declared `constant`,
 # `immutable`, and state variables, for which Vyper automatically
 # generates an `external` getter function for the variable.
-exports: (
-    o2.owner,
-    o2.pending_owner,
-    o2.transfer_ownership,
-    o2.accept_ownership,
-    o2.renounce_ownership,
-)
+exports: o2.__interface__
 
 
 @deploy

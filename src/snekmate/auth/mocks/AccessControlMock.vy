@@ -33,16 +33,7 @@ initializes: ac
 # required by the contract logic) `public` declared `constant`,
 # `immutable`, and state variables, for which Vyper automatically
 # generates an `external` getter function for the variable.
-exports: (
-    ac.DEFAULT_ADMIN_ROLE,
-    ac.supportsInterface,
-    ac.hasRole,
-    ac.getRoleAdmin,
-    ac.grantRole,
-    ac.revokeRole,
-    ac.renounceRole,
-    ac.set_role_admin,
-)
+exports: ac.__interface__
 
 
 # @dev The 32-byte minter role.

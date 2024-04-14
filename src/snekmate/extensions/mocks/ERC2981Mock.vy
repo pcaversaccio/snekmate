@@ -37,40 +37,30 @@ initializes: erc2981[ownable := ow]
 # required by the contract logic) `public` declared `constant`,
 # `immutable`, and state variables, for which Vyper automatically
 # generates an `external` getter function for the variable.
-exports: (
-    # @notice If you are integrating this contract with an
-    # ERC-721 or ERC-1155 contract, please ensure you include
-    # the additional ERC-165 interface identifiers into the
-    # function `supportsInterface`. One way to achieve this
-    # would be to not export the `supportsInterface` function
-    # from {ERC2981} in the main contract and implement the
-    # following function in the main contract instead:
-    # ```vy
-    # @external
-    # @view
-    # def supportsInterface(interface_id: bytes4) -> bool:
-    #     return (interface_id in erc2981._SUPPORTED_INTERFACES) or (interface_id in [0x..., ...])
-    # ```
-    erc2981.supportsInterface,
-    erc2981.owner,
-    # @notice If you integrate the function `transfer_ownership`
-    # into an ERC-721 or ERC-1155 contract that implements an
-    # `is_minter` role, ensure that the previous owner's minter
-    # role is also removed and the minter role is assigned to the
-    # `new_owner` accordingly.
-    erc2981.transfer_ownership,
-    # @notice If you integrate the function `renounce_ownership`
-    # into an ERC-721 or ERC-1155 contract that implements an
-    # `is_minter` role, ensure that the previous owner's minter
-    # role as well as all non-owner minter addresses are also
-    # removed before calling `renounce_ownership`.
-    erc2981.renounce_ownership,
-    erc2981.royaltyInfo,
-    erc2981.set_default_royalty,
-    erc2981.delete_default_royalty,
-    erc2981.set_token_royalty,
-    erc2981.reset_token_royalty,
-)
+# @notice If you are integrating this contract with an
+# ERC-721 or ERC-1155 contract, please ensure you include
+# the additional ERC-165 interface identifiers into the
+# function `supportsInterface`. One way to achieve this
+# would be to not export the `supportsInterface` function
+# from {ERC2981} in the main contract and implement the
+# following function in the main contract instead:
+# ```vy
+# @external
+# @view
+# def supportsInterface(interface_id: bytes4) -> bool:
+#     return (interface_id in erc2981._SUPPORTED_INTERFACES) or (interface_id in [0x..., ...])
+# ```
+# @notice If you integrate the function `transfer_ownership`
+# into an ERC-721 or ERC-1155 contract that implements an
+# `is_minter` role, ensure that the previous owner's minter
+# role is also removed and the minter role is assigned to the
+# `new_owner` accordingly.
+# @notice If you integrate the function `renounce_ownership`
+# into an ERC-721 or ERC-1155 contract that implements an
+# `is_minter` role, ensure that the previous owner's minter
+# role as well as all non-owner minter addresses are also
+# removed before calling `renounce_ownership`.
+exports: erc2981.__interface__
 
 
 @deploy

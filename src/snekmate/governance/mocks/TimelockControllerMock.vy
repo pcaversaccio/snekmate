@@ -52,41 +52,7 @@ initializes: tc[access_control := ac]
 # required by the contract logic) `public` declared `constant`,
 # `immutable`, and state variables, for which Vyper automatically
 # generates an `external` getter function for the variable.
-exports: (
-    tc.DEFAULT_ADMIN_ROLE,
-    tc.PROPOSER_ROLE,
-    tc.EXECUTOR_ROLE,
-    tc.CANCELLER_ROLE,
-    tc.IERC721_TOKENRECEIVER_SELECTOR,
-    tc.IERC1155_TOKENRECEIVER_SINGLE_SELECTOR,
-    tc.IERC1155_TOKENRECEIVER_BATCH_SELECTOR,
-    tc.__default__,
-    tc.supportsInterface,
-    tc.onERC721Received,
-    tc.onERC1155Received,
-    tc.onERC1155BatchReceived,
-    tc.hasRole,
-    tc.getRoleAdmin,
-    tc.grantRole,
-    tc.revokeRole,
-    tc.renounceRole,
-    tc.set_role_admin,
-    tc.get_timestamp,
-    tc.get_minimum_delay,
-    tc.is_operation,
-    tc.is_operation_pending,
-    tc.is_operation_ready,
-    tc.is_operation_done,
-    tc.get_operation_state,
-    tc.hash_operation,
-    tc.hash_operation_batch,
-    tc.schedule,
-    tc.schedule_batch,
-    tc.cancel,
-    tc.execute,
-    tc.execute_batch,
-    tc.update_delay,
-)
+exports: tc.__interface__
 
 
 @deploy

@@ -84,21 +84,17 @@ uses: ownable
 # required by the contract logic) `public` declared `constant`,
 # `immutable`, and state variables, for which Vyper automatically
 # generates an `external` getter function for the variable.
-exports: (
-    ownable.owner,
-    # @notice If you integrate the function `transfer_ownership`
-    # into an ERC-721 or ERC-1155 contract that implements an
-    # `is_minter` role, ensure that the previous owner's minter
-    # role is also removed and the minter role is assigned to the
-    # `new_owner` accordingly.
-    ownable.transfer_ownership,
-    # @notice If you integrate the function `renounce_ownership`
-    # into an ERC-721 or ERC-1155 contract that implements an
-    # `is_minter` role, ensure that the previous owner's minter
-    # role as well as all non-owner minter addresses are also
-    # removed before calling `renounce_ownership`.
-    ownable.renounce_ownership,
-)
+# @notice If you integrate the function `transfer_ownership`
+# into an ERC-721 or ERC-1155 contract that implements an
+# `is_minter` role, ensure that the previous owner's minter
+# role is also removed and the minter role is assigned to the
+# `new_owner` accordingly.
+# @notice If you integrate the function `renounce_ownership`
+# into an ERC-721 or ERC-1155 contract that implements an
+# `is_minter` role, ensure that the previous owner's minter
+# role as well as all non-owner minter addresses are also
+# removed before calling `renounce_ownership`.
+exports: ownable.__interface__
 
 
 # @dev Stores the ERC-165 interface identifier for each
