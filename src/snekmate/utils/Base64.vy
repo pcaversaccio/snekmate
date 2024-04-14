@@ -1,4 +1,4 @@
-# pragma version ~=0.4.0rc1
+# pragma version ~=0.4.0rc2
 """
 @title Base64 Encoding and Decoding Functions
 @custom:contract-name Base64

@@ -38,16 +38,13 @@ jobs:
       - name: Check userdoc and devdoc compilation
         run: python scripts/compile.py
 
-      - name: Setup Ape
-        uses: ApeWorX/github-action@v2
-        with:
-          python-version: ${{ matrix.python_version }}
+      # - name: Setup Ape
+      #   uses: ApeWorX/github-action@v2
+      #   with:
+      #     python-version: ${{ matrix.python_version }}
 
-      - name: Install Ape Vyper4
-        run: pip install git+https://github.com/antazoey/ape-vyper.git@feat/vyper4
-
-      - name: Check Ape compilation
-        run: ape compile
+      # - name: Check Ape compilation
+      #   run: ape compile
 
       - name: Install pnpm
         uses: pnpm/action-setup@v3

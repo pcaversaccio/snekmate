@@ -1,4 +1,4 @@
-# pragma version ~=0.4.0rc1
+# pragma version ~=0.4.0rc2
 """
 @title Base64 Module Reference Implementation
 @custom:contract-name Base64Mock
