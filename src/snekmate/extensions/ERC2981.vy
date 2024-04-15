@@ -1,4 +1,4 @@
-# pragma version ~=0.4.0rc1
+# pragma version ~=0.4.0rc2
 """
 @title ERC-721 and ERC-1155 Compatible ERC-2981 Reference Implementation
 @custom:contract-name ERC2981
@@ -50,7 +50,7 @@
 
                  internal
                  def _burn(token_id: uint256):
-                     ...
+                     erc721._burn(token_id)
                      erc2981._reset_token_royalty(token_id)
                  ```
 

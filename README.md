@@ -42,16 +42,18 @@ src
     │   ├── ERC20 — "Modern and Gas-Efficient ERC-20 + EIP-2612 Implementation"
     │   ├── ERC721 — "Modern and Gas-Efficient ERC-721 + EIP-4494 Implementation"
     │   ├── ERC1155 — "Modern and Gas-Efficient ERC-1155 Implementation"
-    │   └── interfaces
-    │       ├── IERC20Permit — "EIP-2612 Interface Definition"
-    │       ├── IERC721Enumerable — "EIP-721 Optional Enumeration Interface Definition"
-    │       ├── IERC721Metadata — "EIP-721 Optional Metadata Interface Definition"
-    │       ├── IERC721Permit — "EIP-4494 Interface Definition"
-    │       ├── IERC721Receiver — "EIP-721 Token Receiver Interface Definition"
-    │       ├── IERC1155 — "EIP-1155 Interface Definition"
-    │       ├── IERC1155MetadataURI — "EIP-1155 Optional Metadata Interface Definition"
-    │       ├── IERC1155Receiver — "EIP-1155 Token Receiver Interface Definition"
-    │       └── IERC4906 — "EIP-4906 Interface Definition"
+    │   ├── interfaces
+    │   │   ├── IERC20Permit — "EIP-2612 Interface Definition"
+    │   │   ├── IERC721Enumerable — "EIP-721 Optional Enumeration Interface Definition"
+    │   │   ├── IERC721Metadata — "EIP-721 Optional Metadata Interface Definition"
+    │   │   ├── IERC721Permit — "EIP-4494 Interface Definition"
+    │   │   ├── IERC721Receiver — "EIP-721 Token Receiver Interface Definition"
+    │   │   ├── IERC1155 — "EIP-1155 Interface Definition"
+    │   │   ├── IERC1155MetadataURI — "EIP-1155 Optional Metadata Interface Definition"
+    │   │   ├── IERC1155Receiver — "EIP-1155 Token Receiver Interface Definition"
+    │   │   └── IERC4906 — "EIP-4906 Interface Definition"
+    │   └── mocks
+    │       └── ERC20Mock — "ERC20 Module Reference Implementation"
     └── utils
         ├── Base64 — "Base64 Encoding and Decoding Functions"
         ├── BatchDistributor — "Batch Sending Both Native and ERC-20 Tokens"
