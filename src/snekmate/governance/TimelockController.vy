@@ -81,7 +81,15 @@ uses: access_control
 # required by the contract logic) `public` declared `constant`,
 # `immutable`, and state variables, for which Vyper automatically
 # generates an `external` getter function for the variable.
-exports: access_control.__interface__
+exports: (
+    access_control.DEFAULT_ADMIN_ROLE,
+    access_control.hasRole,
+    access_control.getRoleAdmin,
+    access_control.grantRole,
+    access_control.revokeRole,
+    access_control.renounceRole,
+    access_control.set_role_admin,
+)
 
 
 # @dev The 32-byte proposer role.
