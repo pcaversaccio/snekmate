@@ -1,7 +1,7 @@
 # pragma version ~=0.4.0rc2
 """
 @title ERC20 Module Reference Implementation
-@custom:contract-name TimelockControllerMock
+@custom:contract-name ERC20Mock
 @license GNU Affero General Public License v3.0 only
 @author pcaversaccio
 """
