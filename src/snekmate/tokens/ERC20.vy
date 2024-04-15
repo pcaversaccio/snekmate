@@ -113,33 +113,32 @@ exports: (
 )
 
 
-# @dev Returns the decimals places of the token.
-# The default value is 18.
+# @dev The 32-byte type hash of the `permit` function.
+_PERMIT_TYPE_HASH: constant(bytes32) = keccak256("Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)")
+
+
+# @dev Returns the name of the token.
 # @notice If you declare a variable as `public`,
 # Vyper automatically generates an `external`
 # getter function for the variable. Furthermore,
 # to preserve consistency with the interface for
 # the optional metadata functions of the ERC-20
 # standard, we use lower case letters for the
-# `immutable` and `constant` variables `name`,
-# `symbol`, and `decimals`.
-decimals: public(constant(uint8)) = 18
-
-
-# @dev The 32-byte type hash of the `permit` function.
-_PERMIT_TYPE_HASH: constant(bytes32) = keccak256("Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)")
-
-
-# @dev Returns the name of the token.
-# @notice See comment on lower case letters
-# above at `decimals`.
+# `immutable` variables `name`, `symbol`, and
+# `decimals`.
 name: public(immutable(String[25]))
 
 
 # @dev Returns the symbol of the token.
 # @notice See comment on lower case letters
-# above at `decimals`.
+# above at `name`.
 symbol: public(immutable(String[5]))
+
+
+# @dev Returns the decimal places of the token.
+# @notice See comment on lower case letters
+# above at `name`.
+decimals: public(immutable(uint8))
 
 
 # @dev Returns the amount of tokens owned by an `address`.
@@ -195,7 +194,7 @@ event RoleMinterChanged:
 
 @deploy
 @payable
-def __init__(name_: String[25], symbol_: String[5], initial_supply_: uint256, name_eip712_: String[50], version_eip712_: String[20]):
+def __init__(name_: String[25], symbol_: String[5], decimals_: uint8, name_eip712_: String[50], version_eip712_: String[20]):
     """
     @dev To omit the opcodes for checking the `msg.value`
          in the creation-time EVM bytecode, the constructor
@@ -203,14 +202,12 @@ def __init__(name_: String[25], symbol_: String[5], initial_supply_: uint256, na
     @notice At initialisation time, the `owner` role will be
             assigned to the `msg.sender` since we `uses` the
             `Ownable` module, which implements the aforementioned
-            logic at contract creation time. Furthermore, the
-            initial supply of the token will be assigned to the
-            `msg.sender`.
+            logic at contract creation time.
     @param name_ The maximum 25-character user-readable
            string name of the token.
     @param symbol_ The maximum 5-character user-readable
            string symbol of the token.
-    @param initial_supply_ The initial supply of the token.
+    @param decimals_ The 1-byte decimal places of the token.
     @param name_eip712_ The maximum 50-character user-readable
            string name of the signing domain, i.e. the name
            of the dApp or protocol.
@@ -218,20 +215,13 @@ def __init__(name_: String[25], symbol_: String[5], initial_supply_: uint256, na
            main version of the signing domain. Signatures
            from different versions are not compatible.
     """
-    initial_supply: uint256 = initial_supply_ * 10 ** convert(decimals, uint256)
     name = name_
     symbol = symbol_
+    decimals = decimals_
 
     ownable._transfer_ownership(msg.sender)
     self.is_minter[msg.sender] = True
     log RoleMinterChanged(msg.sender, True)
-
-    if (initial_supply != empty(uint256)):
-        self._before_token_transfer(empty(address), msg.sender, initial_supply)
-        self.totalSupply = initial_supply
-        self.balanceOf[msg.sender] = initial_supply
-        log Transfer(empty(address), msg.sender, initial_supply)
-        self._after_token_transfer(empty(address), msg.sender, initial_supply)
 
     eip712_domain_separator.__init__(name_eip712_, version_eip712_)
 
