@@ -11,6 +11,7 @@ import {IERC20Extended} from "./interfaces/IERC20Extended.sol";
 contract ERC20Test is Test {
     string private constant _NAME = "MyToken";
     string private constant _SYMBOL = "WAGMI";
+    uint8 private constant _DECIMALS = 18;
     string private constant _NAME_EIP712 = "MyToken";
     string private constant _VERSION_EIP712 = "1";
     uint256 private constant _INITIAL_SUPPLY = type(uint8).max;
@@ -45,12 +46,17 @@ contract ERC20Test is Test {
         bytes memory args = abi.encode(
             _NAME,
             _SYMBOL,
+            _DECIMALS,
             _INITIAL_SUPPLY,
             _NAME_EIP712,
             _VERSION_EIP712
         );
         ERC20Extended = IERC20Extended(
-            vyperDeployer.deployContract("src/snekmate/tokens/", "ERC20", args)
+            vyperDeployer.deployContract(
+                "src/snekmate/tokens/mocks/",
+                "ERC20Mock",
+                args
+            )
         );
         ERC20ExtendedAddr = address(ERC20Extended);
         _CACHED_DOMAIN_SEPARATOR = keccak256(
@@ -66,9 +72,9 @@ contract ERC20Test is Test {
 
     function testInitialSetup() public {
         uint256 multiplier = 10 ** uint256(ERC20Extended.decimals());
-        assertEq(ERC20Extended.decimals(), 18);
         assertEq(ERC20Extended.name(), _NAME);
         assertEq(ERC20Extended.symbol(), _SYMBOL);
+        assertEq(ERC20Extended.decimals(), _DECIMALS);
         assertEq(ERC20Extended.totalSupply(), _INITIAL_SUPPLY * multiplier);
         assertEq(
             ERC20Extended.balanceOf(deployer),
@@ -90,16 +96,21 @@ contract ERC20Test is Test {
         bytes memory args = abi.encode(
             _NAME,
             _SYMBOL,
+            _DECIMALS,
             _INITIAL_SUPPLY,
             _NAME_EIP712,
             _VERSION_EIP712
         );
         ERC20ExtendedInitialEvent = IERC20Extended(
-            vyperDeployer.deployContract("src/snekmate/tokens/", "ERC20", args)
+            vyperDeployer.deployContract(
+                "src/snekmate/tokens/mocks/",
+                "ERC20Mock",
+                args
+            )
         );
-        assertEq(ERC20ExtendedInitialEvent.decimals(), 18);
         assertEq(ERC20ExtendedInitialEvent.name(), _NAME);
         assertEq(ERC20ExtendedInitialEvent.symbol(), _SYMBOL);
+        assertEq(ERC20ExtendedInitialEvent.decimals(), _DECIMALS);
         assertEq(
             ERC20ExtendedInitialEvent.totalSupply(),
             _INITIAL_SUPPLY * multiplier
@@ -1278,6 +1289,7 @@ contract ERC20Test is Test {
 contract ERC20Invariants is Test {
     string private constant _NAME = "MyToken";
     string private constant _SYMBOL = "WAGMI";
+    uint8 private constant _DECIMALS = 18;
     string private constant _NAME_EIP712 = "MyToken";
     string private constant _VERSION_EIP712 = "1";
     uint256 private constant _INITIAL_SUPPLY = type(uint8).max;
@@ -1294,12 +1306,17 @@ contract ERC20Invariants is Test {
         bytes memory args = abi.encode(
             _NAME,
             _SYMBOL,
+            _DECIMALS,
             _INITIAL_SUPPLY,
             _NAME_EIP712,
             _VERSION_EIP712
         );
         ERC20Extended = IERC20Extended(
-            vyperDeployer.deployContract("src/snekmate/tokens/", "ERC20", args)
+            vyperDeployer.deployContract(
+                "src/snekmate/tokens/mocks/",
+                "ERC20Mock",
+                args
+            )
         );
         erc20Handler = new ERC20Handler(
             ERC20Extended,
@@ -1310,11 +1327,11 @@ contract ERC20Invariants is Test {
         targetSender(deployer);
     }
 
-    function invariantTotalSupply() public view {
+    function statefulFuzzTotalSupply() public view {
         assertEq(ERC20Extended.totalSupply(), erc20Handler.totalSupply());
     }
 
-    function invariantOwner() public view {
+    function statefulFuzzOwner() public view {
         assertEq(ERC20Extended.owner(), erc20Handler.owner());
     }
 }

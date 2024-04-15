@@ -1,4 +1,4 @@
-# pragma version ~=0.4.0rc1
+# pragma version ~=0.4.0rc2
 """
 @title Create2Address Module Reference Implementation
 @custom:contract-name Create2AddressMock

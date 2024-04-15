@@ -1,4 +1,4 @@
-# pragma version ~=0.4.0rc1
+# pragma version ~=0.4.0rc2
 """
 @title Elliptic Curve Digital Signature Algorithm (ECDSA) Functions
 @custom:contract-name ECDSA
