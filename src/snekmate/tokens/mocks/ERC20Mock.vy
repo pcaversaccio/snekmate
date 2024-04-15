@@ -75,7 +75,8 @@ def __init__(name_: String[25], symbol_: String[5], decimals_: uint8, initial_su
     @param symbol_ The maximum 5-character user-readable
            string symbol of the token.
     @param decimals_ The 1-byte decimal places of the token.
-    @param initial_supply_ The initial supply of the token.
+    @param initial_supply_ The 32-byte non-decimalised initial
+           supply of the token.
     @param name_eip712_ The maximum 50-character user-readable
            string name of the signing domain, i.e. the name
            of the dApp or protocol.
