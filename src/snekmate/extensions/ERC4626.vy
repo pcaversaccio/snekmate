@@ -82,13 +82,15 @@ implements: IERC5267
 
 
 # @dev We import the `Math` module.
-# @notice Please note that the `Math` module
-# is stateless and therefore does not require
-# the `uses` keyword for usage.
+# @notice Please note that the `Math` module is stateless
+# and therefore does not require the `uses` keyword for usage.
 from ..utils import Math as math
 
 
 # @dev We import and initialise the `Ownable` module.
+# @notice The `Ownable` module is merely used to initialise
+# the `ERC20` module, but none of the associated functions
+# are exported.
 from ..auth import Ownable as ownable
 initializes: ownable
 
@@ -194,8 +196,6 @@ def __init__(name_: String[25], symbol_: String[5], asset_: IERC20, decimals_off
            main version of the signing domain. Signatures
            from different versions are not compatible.
     """
-    ownable.__init__()
-
     asset = asset_
 
     success: bool = empty(bool)
@@ -204,9 +204,13 @@ def __init__(name_: String[25], symbol_: String[5], asset_: IERC20, decimals_off
     # value of `False` indicates that the attempt failed in
     # some way.
     success, decoded_decimals = self._try_get_underlying_decimals(asset_)
-
     _UNDERLYING_DECIMALS = decoded_decimals if success else 18
     _DECIMALS_OFFSET = decimals_offset_
+
+    # Please note that the `Ownable` module is merely used to
+    # initialise the `ERC20` module, but none of the associated
+    # functions are exported.
+    ownable.__init__()
     # The following line uses intentionally checked arithmetic
     # to prevent a theoretically possible overflow.
     decimals_: uint8 = _UNDERLYING_DECIMALS + _DECIMALS_OFFSET
