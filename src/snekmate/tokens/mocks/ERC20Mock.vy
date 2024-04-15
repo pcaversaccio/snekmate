@@ -45,34 +45,19 @@ initializes: erc20[ownable := ow]
 # @dev We export (i.e. the runtime bytecode exposes these
 # functions externally, allowing them to be called using
 # the ABI encoding specification) all `external` functions
-# from the `ERC20` module.
+# from the `ERC20` module. The built-in dunder method
+# `__interface__` allows you to export all functions of a
+# module without specifying the individual functions (see
+# https://github.com/vyperlang/vyper/pull/3919). Please take
+# note that if you do not know the full interface of a module
+# contract, you can get the `.vyi` interface in Vyper by using
+# `vyper -f interface yourFileName.vy` or the external interface
+# by using `vyper -f external_interface yourFileName.vy`.
 # @notice Please note that you must always also export (if
 # required by the contract logic) `public` declared `constant`,
 # `immutable`, and state variables, for which Vyper automatically
 # generates an `external` getter function for the variable.
-exports: (
-    erc20.owner,
-    erc20.transfer_ownership,
-    erc20.renounce_ownership,
-    erc20.totalSupply,
-    erc20.balanceOf,
-    erc20.transfer,
-    erc20.allowance,
-    erc20.approve,
-    erc20.transferFrom,
-    erc20.name,
-    erc20.symbol,
-    erc20.decimals,
-    erc20.permit,
-    erc20.nonces,
-    erc20.DOMAIN_SEPARATOR,
-    erc20.eip712Domain,
-    erc20.burn,
-    erc20.burn_from,
-    erc20.is_minter,
-    erc20.mint,
-    erc20.set_minter,
-)
+exports: erc20.__interface__
 
 
 @deploy

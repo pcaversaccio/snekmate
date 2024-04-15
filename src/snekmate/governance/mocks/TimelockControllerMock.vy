@@ -47,46 +47,19 @@ initializes: tc[access_control := ac]
 # @dev We export (i.e. the runtime bytecode exposes these
 # functions externally, allowing them to be called using
 # the ABI encoding specification) all `external` functions
-# from the `TimelockController` module.
+# from the `TimelockController` module. The built-in dunder
+# method `__interface__` allows you to export all functions
+# of a module without specifying the individual functions (see
+# https://github.com/vyperlang/vyper/pull/3919). Please take
+# note that if you do not know the full interface of a module
+# contract, you can get the `.vyi` interface in Vyper by using
+# `vyper -f interface yourFileName.vy` or the external interface
+# by using `vyper -f external_interface yourFileName.vy`.
 # @notice Please note that you must always also export (if
 # required by the contract logic) `public` declared `constant`,
 # `immutable`, and state variables, for which Vyper automatically
 # generates an `external` getter function for the variable.
-exports: (
-    tc.DEFAULT_ADMIN_ROLE,
-    tc.PROPOSER_ROLE,
-    tc.EXECUTOR_ROLE,
-    tc.CANCELLER_ROLE,
-    tc.IERC721_TOKENRECEIVER_SELECTOR,
-    tc.IERC1155_TOKENRECEIVER_SINGLE_SELECTOR,
-    tc.IERC1155_TOKENRECEIVER_BATCH_SELECTOR,
-    tc.__default__,
-    tc.supportsInterface,
-    tc.onERC721Received,
-    tc.onERC1155Received,
-    tc.onERC1155BatchReceived,
-    tc.hasRole,
-    tc.getRoleAdmin,
-    tc.grantRole,
-    tc.revokeRole,
-    tc.renounceRole,
-    tc.set_role_admin,
-    tc.get_timestamp,
-    tc.get_minimum_delay,
-    tc.is_operation,
-    tc.is_operation_pending,
-    tc.is_operation_ready,
-    tc.is_operation_done,
-    tc.get_operation_state,
-    tc.hash_operation,
-    tc.hash_operation_batch,
-    tc.schedule,
-    tc.schedule_batch,
-    tc.cancel,
-    tc.execute,
-    tc.execute_batch,
-    tc.update_delay,
-)
+exports: tc.__interface__
 
 
 @deploy

@@ -17,7 +17,6 @@ jobs:
           - ubuntu-latest
         language:
           - javascript-typescript
-          - python
 
     steps:
       - name: Checkout

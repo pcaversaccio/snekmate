@@ -28,16 +28,7 @@
         from snekmate.auth import AccessControl as access_control
         initializes: access_control
 
-        exports: (
-            access_control.DEFAULT_ADMIN_ROLE,
-            access_control.supportsInterface,
-            access_control.hasRole,
-            access_control.getRoleAdmin,
-            access_control.grantRole,
-            access_control.revokeRole,
-            access_control.renounceRole,
-            access_control.set_role_admin,
-        )
+        exports: access_control.__interface__
 
         ...
 
