@@ -15,8 +15,6 @@ jobs:
           - ubuntu-latest
         architecture:
           - x64
-        python_version:
-          - 3.11
         node_version:
           - 20
 
@@ -53,18 +51,6 @@ jobs:
 
       - name: Prettier and lint
         run: pnpm lint:check
-
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.python_version }}
-          architecture: ${{ matrix.architecture }}
-
-      - name: Check formatting with Black
-        uses: psf/black@stable
-        with:
-          options: "--check --verbose"
-          src: "./scripts"
 
   codespell:
     runs-on: ${{ matrix.os }}
