@@ -13,7 +13,7 @@
 - **Governance**
   - [`TimelockController`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/governance/TimelockController.vy): Make `TimelockController` module-friendly. ([#220](https://github.com/pcaversaccio/snekmate/pull/220))
 - **Tokens**
-  - [`ERC20`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/tokens/ERC20.vy): Make `ERC20` module-friendly. ([#233](https://github.com/pcaversaccio/snekmate/pull/233))
+  - [`ERC20`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/tokens/ERC20.vy): Make `ERC20` module-friendly. ([#234](https://github.com/pcaversaccio/snekmate/pull/234))
 - **Utility Functions**
   - [`Base64`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/utils/Base64.vy): Make `Base64` module-friendly. ([#222](https://github.com/pcaversaccio/snekmate/pull/222))
   - [`BatchDistributor`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/utils/BatchDistributor.vy): Make `BatchDistributor` module-friendly. ([#223](https://github.com/pcaversaccio/snekmate/pull/223))
