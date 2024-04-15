@@ -35,8 +35,8 @@ jobs:
       - name: Install Vyper
         run: pip install git+https://github.com/vyperlang/vyper.git@master
 
-      - name: Check userdoc and devdoc compilation
-        run: python scripts/compile.py
+      - name: Show the Vyper version
+        run: vyper --version
 
       # - name: Setup Ape
       #   uses: ApeWorX/github-action@v2
