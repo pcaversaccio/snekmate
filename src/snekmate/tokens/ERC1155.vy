@@ -224,7 +224,7 @@ def safeTransferFrom(owner: address, to: address, id: uint256, amount: uint256, 
     @param data The maximum 1,024-byte additional data
            with no specified format.
     """
-    assert owner == msg.sender or self.isApprovedForAll[owner][msg.sender], "ERC1155: caller is not token owner or approved"
+    assert ((owner == msg.sender) or (self.isApprovedForAll[owner][msg.sender])), "ERC1155: caller is not token owner or approved"
     self._safe_transfer_from(owner, to, id, amount, data)
 
 
@@ -256,7 +256,7 @@ def safeBatchTransferFrom(owner: address, to: address, ids: DynArray[uint256, _B
     @param data The maximum 1,024-byte additional data
            with no specified format.
     """
-    assert owner == msg.sender or self.isApprovedForAll[owner][msg.sender], "ERC1155: caller is not token owner or approved"
+    assert ((owner == msg.sender) or (self.isApprovedForAll[owner][msg.sender])), "ERC1155: caller is not token owner or approved"
     self._safe_batch_transfer_from(owner, to, ids, amounts, data)
 
 
@@ -376,7 +376,7 @@ def burn(owner: address, id: uint256, amount: uint256):
     @param id The 32-byte identifier of the token.
     @param amount The 32-byte token amount to be destroyed.
     """
-    assert owner == msg.sender or self.isApprovedForAll[owner][msg.sender], "ERC1155: caller is not token owner or approved"
+    assert ((owner == msg.sender) or (self.isApprovedForAll[owner][msg.sender])), "ERC1155: caller is not token owner or approved"
     self._burn(owner, id, amount)
 
 
@@ -394,7 +394,7 @@ def burn_batch(owner: address, ids: DynArray[uint256, _BATCH_SIZE], amounts: Dyn
            being destroyed. Note that the order and length must
            match the 32-byte `ids` array.
     """
-    assert owner == msg.sender or self.isApprovedForAll[owner][msg.sender], "ERC1155: caller is not token owner or approved"
+    assert ((owner == msg.sender) or (self.isApprovedForAll[owner][msg.sender])), "ERC1155: caller is not token owner or approved"
     self._burn_batch(owner, ids, amounts)
 
 
@@ -768,8 +768,8 @@ def _uri(id: uint256) -> String[512]:
         # concatenation and simply return `_BASE_URI`
         # for easier off-chain handling.
         return concat(_BASE_URI, uint2str(id))
-    else:
-        return ""
+
+    return ""
 
 
 @internal
@@ -872,9 +872,9 @@ def _check_on_erc1155_received(owner: address, to: address, id: uint256, amount:
         assert return_value == method_id("onERC1155Received(address,address,uint256,uint256,bytes)", output_type=bytes4),\
                                          "ERC1155: transfer to non-ERC1155Receiver implementer"
         return True
+
     # EOA case.
-    else:
-        return True
+    return True
 
 
 @internal
@@ -901,9 +901,9 @@ def _check_on_erc1155_batch_received(owner: address, to: address, ids: DynArray[
         assert return_value == method_id("onERC1155BatchReceived(address,address,uint256[],uint256[],bytes)", output_type=bytes4),\
                                          "ERC1155: transfer to non-ERC1155Receiver implementer"
         return True
+
     # EOA case.
-    else:
-        return True
+    return True
 
 
 @internal

@@ -96,6 +96,43 @@ implements: IERC5267
 import interfaces.IERC721Receiver as IERC721Receiver
 
 
+# @dev We import and use the `Ownable` module.
+from ..auth import Ownable as ownable
+uses: ownable
+
+
+# @dev We import the `ECDSA` module.
+# @notice Please note that the `ECDSA` module
+# is stateless and therefore does not require
+# the `uses` keyword for usage.
+from ..utils import ECDSA as ecdsa
+
+
+# @dev We import and use the `EIP712DomainSeparator` module.
+from ..utils import EIP712DomainSeparator as eip712_domain_separator
+initializes: eip712_domain_separator
+
+
+# @dev We export (i.e. the runtime bytecode exposes these
+# functions externally, allowing them to be called using
+# the ABI encoding specification) the `external` getter
+# function `owner` from the `Ownable` module as well as the
+# function `eip712Domain` from the `EIP712DomainSeparator`
+# module.
+# @notice Please note that you must always also export (if
+# required by the contract logic) `public` declared `constant`,
+# `immutable`, and state variables, for which Vyper automatically
+# generates an `external` getter function for the variable.
+exports: (
+    # @notice This ERC-721 implementation includes the `transfer_ownership`
+    # and `renounce_ownership` functions, which incorporate
+    # the additional built-in `is_minter` role logic and are
+    # therefore not exported from the `Ownable` module.
+    ownable.owner,
+    eip712_domain_separator.eip712Domain,
+)
+
+
 # @dev Stores the ERC-165 interface identifier for each
 # imported interface. The ERC-165 interface identifier
 # is defined as the XOR of all function selectors in the
@@ -108,14 +145,6 @@ _SUPPORTED_INTERFACES: constant(bytes4[6]) = [
     0x589C5CE2, # The ERC-165 identifier for ERC-4494.
     0x49064906, # The ERC-165 identifier for ERC-4906.
 ]
-
-
-# @dev Constant used as part of the ECDSA recovery function.
-_MALLEABILITY_THRESHOLD: constant(bytes32) = 0x7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF5D576E7357A4501DDFE92F46681B20A0
-
-
-# @dev The 32-byte type hash for the EIP-712 domain separator.
-_TYPE_HASH: constant(bytes32) = keccak256("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)")
 
 
 # @dev The 32-byte type hash of the `permit` function.
@@ -143,34 +172,8 @@ symbol: public(immutable(String[5]))
 _BASE_URI: immutable(String[80])
 
 
-# @dev Caches the domain separator as an `immutable`
-# value, but also stores the corresponding chain ID
-# to invalidate the cached domain separator if the
-# chain ID changes.
-_CACHED_DOMAIN_SEPARATOR: immutable(bytes32)
-_CACHED_CHAIN_ID: immutable(uint256)
-
-
-# @dev Caches `self` to `immutable` storage to avoid
-# potential issues if a vanilla contract is used in
-# a `delegatecall` context.
-_CACHED_SELF: immutable(address)
-
-
-# @dev `immutable` variables to store the (hashed)
-# name and (hashed) version during contract creation.
-_NAME: immutable(String[50])
-_HASHED_NAME: immutable(bytes32)
-_VERSION: immutable(String[20])
-_HASHED_VERSION: immutable(bytes32)
-
-
 # @dev Mapping from owner to operator approvals.
 isApprovedForAll: public(HashMap[address, HashMap[address, bool]])
-
-
-# @dev Returns the address of the current owner.
-owner: public(address)
 
 
 # @dev Returns `True` if an `address` has been
@@ -268,19 +271,6 @@ event BatchMetadataUpdate:
     token_id: uint256
 
 
-# @dev May be emitted to signal that the domain could
-# have changed.
-event EIP712DomainChanged:
-    pass
-
-
-# @dev Emitted when the ownership is transferred
-# from `previous_owner` to `new_owner`.
-event OwnershipTransferred:
-    previous_owner: indexed(address)
-    new_owner: indexed(address)
-
-
 # @dev Emitted when the status of a `minter`
 # address is changed.
 event RoleMinterChanged:
@@ -295,8 +285,10 @@ def __init__(name_: String[25], symbol_: String[5], base_uri_: String[80], name_
     @dev To omit the opcodes for checking the `msg.value`
          in the creation-time EVM bytecode, the constructor
          is declared as `payable`.
-    @notice The `owner` role will be assigned to
-            the `msg.sender`.
+    @notice At initialisation time, the `owner` role will be
+            assigned to the `msg.sender` since we `uses` the
+            `Ownable` module, which implements the aforementioned
+            logic at contract creation time.
     @param name_ The maximum 25-character user-readable string
            name of the token collection.
     @param symbol_ The maximum 5-character user-readable string
@@ -316,17 +308,11 @@ def __init__(name_: String[25], symbol_: String[5], base_uri_: String[80], name_
     symbol = symbol_
     _BASE_URI = base_uri_
 
-    self._transfer_ownership(msg.sender)
+    ownable._transfer_ownership(msg.sender)
     self.is_minter[msg.sender] = True
     log RoleMinterChanged(msg.sender, True)
 
-    _NAME = name_eip712_
-    _VERSION = version_eip712_
-    _HASHED_NAME = keccak256(name_eip712_)
-    _HASHED_VERSION = keccak256(version_eip712_)
-    _CACHED_DOMAIN_SEPARATOR = self._build_domain_separator()
-    _CACHED_CHAIN_ID = chain.id
-    _CACHED_SELF = self
+    eip712_domain_separator.__init__(name_eip712_, version_eip712_)
 
 
 @external
@@ -391,7 +377,7 @@ def approve(to: address, token_id: uint256):
     """
     owner: address = self._owner_of(token_id)
     assert to != owner, "ERC721: approval to current owner"
-    assert msg.sender == owner or self.isApprovedForAll[owner][msg.sender], "ERC721: approve caller is not token owner or approved for all"
+    assert ((msg.sender == owner) or (self.isApprovedForAll[owner][msg.sender])), "ERC721: approve caller is not token owner or approved for all"
     self._approve(to, token_id)
 
 
@@ -527,8 +513,8 @@ def tokenURI(token_id: uint256) -> String[512]:
     # concatenate the base URI and token ID.
     if (base_uri_length != empty(uint256)):
         return concat(_BASE_URI, uint2str(token_id))
-    else:
-        return ""
+
+    return ""
 
 
 @external
@@ -627,7 +613,7 @@ def set_minter(minter: address, status: bool):
     @param minter The 20-byte minter address.
     @param status The Boolean variable that sets the status.
     """
-    self._check_owner()
+    ownable._check_owner()
     assert minter != empty(address), "AccessControl: minter is the zero address"
     # We ensured in the previous step `self._check_owner()`
     # that `msg.sender` is the `owner`.
@@ -663,9 +649,9 @@ def permit(spender: address, token_id: uint256, deadline: uint256, v: uint8, r: 
     self.nonces[token_id] = unsafe_add(current_nonce, 1)
 
     struct_hash: bytes32 = keccak256(_abi_encode(_PERMIT_TYPE_HASH, spender, token_id, current_nonce, deadline))
-    hash: bytes32  = self._hash_typed_data_v4(struct_hash)
+    hash: bytes32  = eip712_domain_separator._hash_typed_data_v4(struct_hash)
 
-    signer: address = self._recover_vrs(hash, convert(v, uint256), convert(r, uint256), convert(s, uint256))
+    signer: address = ecdsa._recover_vrs(hash, convert(v, uint256), convert(r, uint256), convert(s, uint256))
     assert signer == owner, "ERC721Permit: invalid signature"
 
     self._approve(spender, token_id)
@@ -678,33 +664,7 @@ def DOMAIN_SEPARATOR() -> bytes32:
     @dev Returns the domain separator for the current chain.
     @return bytes32 The 32-byte domain separator.
     """
-    return self._domain_separator_v4()
-
-
-@external
-@view
-def eip712Domain() -> (bytes1, String[50], String[20], uint256, address, bytes32, DynArray[uint256, 128]):
-    """
-    @dev Returns the fields and values that describe the domain
-         separator used by this contract for EIP-712 signatures.
-    @notice The bits in the 1-byte bit map are read from the least
-            significant to the most significant, and fields are indexed
-            in the order that is specified by EIP-712, identical to the
-            order in which they are listed in the function type.
-    @return bytes1 The 1-byte bit map where bit `i` is set to 1
-            if and only if domain field `i` is present (`0 ≤ i ≤ 4`).
-    @return String The maximum 50-character user-readable string name
-            of the signing domain, i.e. the name of the dApp or protocol.
-    @return String The maximum 20-character current main version of
-            the signing domain. Signatures from different versions are
-            not compatible.
-    @return uint256 The 32-byte EIP-155 chain ID.
-    @return address The 20-byte address of the verifying contract.
-    @return bytes32 The 32-byte disambiguation salt for the protocol.
-    @return DynArray The 32-byte array of EIP-712 extensions.
-    """
-    # Note that `\x0f` equals `01111`.
-    return (convert(b"\x0f", bytes1), _NAME, _VERSION, chain.id, self, empty(bytes32), empty(DynArray[uint256, 128]))
+    return eip712_domain_separator._domain_separator_v4()
 
 
 @external
@@ -721,13 +681,13 @@ def transfer_ownership(new_owner: address):
             the minter role to `new_owner` accordingly.
     @param new_owner The 20-byte address of the new owner.
     """
-    self._check_owner()
+    ownable._check_owner()
     assert new_owner != empty(address), "Ownable: new owner is the zero address"
 
     self.is_minter[msg.sender] = False
     log RoleMinterChanged(msg.sender, False)
 
-    self._transfer_ownership(new_owner)
+    ownable._transfer_ownership(new_owner)
     self.is_minter[new_owner] = True
     log RoleMinterChanged(new_owner, True)
 
@@ -749,10 +709,10 @@ def renounce_ownership():
             minter addresses first via `set_minter`
             before calling `renounce_ownership`.
     """
-    self._check_owner()
+    ownable._check_owner()
     self.is_minter[msg.sender] = False
     log RoleMinterChanged(msg.sender, False)
-    self._transfer_ownership(empty(address))
+    ownable._transfer_ownership(empty(address))
 
 
 @internal
@@ -860,7 +820,7 @@ def _is_approved_or_owner(spender: address, token_id: uint256) -> bool:
     @param token_id The 32-byte identifier of the token.
     """
     owner: address = self._owner_of(token_id)
-    return (spender == owner or self.isApprovedForAll[owner][spender] or self._get_approved(token_id) == spender)
+    return ((spender == owner) or (self.isApprovedForAll[owner][spender]) or (self._get_approved(token_id) == spender))
 
 
 @internal
@@ -972,12 +932,12 @@ def _transfer(owner: address, to: address, token_id: uint256):
     """
     assert self._owner_of(token_id) == owner, "ERC721: transfer from incorrect owner"
     assert to != empty(address), "ERC721: transfer to the zero address"
-    
+
     self._before_token_transfer(owner, to, token_id)
     # Checks that the `token_id` was not transferred by the
     # `_before_token_transfer` hook.
     assert self._owner_of(token_id) == owner, "ERC721: transfer from incorrect owner"
-    
+
     self._token_approvals[token_id] = empty(address)
     # See comment why an overflow is not possible in the
     # following two lines above at `_mint`.
@@ -1067,9 +1027,9 @@ def _check_on_erc721_received(owner: address, to: address, token_id: uint256, da
         return_value: bytes4 = extcall IERC721Receiver(to).onERC721Received(msg.sender, owner, token_id, data)
         assert return_value == method_id("onERC721Received(address,address,uint256,bytes)", output_type=bytes4), "ERC721: transfer to non-ERC721Receiver implementer"
         return True
+
     # EOA case.
-    else:
-        return True
+    return True
 
 
 @internal
@@ -1173,7 +1133,7 @@ def _remove_token_from_owner_enumeration(owner: address, token_id:uint256):
         self._owned_tokens[owner][token_index] = last_token_id
         # Updates the moved token's index.
         self._owned_tokens_index[last_token_id] = token_index
-    
+
     # This also deletes the contents at the
     # last position of the array.
     self._owned_tokens_index[token_id] = empty(uint256)
@@ -1195,7 +1155,7 @@ def _remove_token_from_all_tokens_enumeration(token_id: uint256):
     # the last slot.
     last_token_index: uint256 = len(self._all_tokens) - 1
     token_index: uint256 = self._all_tokens_index[token_id]
-    
+
     # When the token to delete is the last token,
     # the swap operation is unnecessary. However,
     # since this occurs so rarely (when the last
@@ -1213,99 +1173,3 @@ def _remove_token_from_all_tokens_enumeration(token_id: uint256):
     # last position of the array.
     self._all_tokens_index[token_id] = empty(uint256)
     self._all_tokens.pop()
-
-
-@internal
-def _check_owner():
-    """
-    @dev Sourced from {Ownable-_check_owner}.
-    @notice See {Ownable-_check_owner} for
-            the function docstring.
-    """
-    assert msg.sender == self.owner, "Ownable: caller is not the owner"
-
-
-@internal
-def _transfer_ownership(new_owner: address):
-    """
-    @dev Sourced from {Ownable-_transfer_ownership}.
-    @notice See {Ownable-_transfer_ownership} for
-            the function docstring.
-    """
-    old_owner: address = self.owner
-    self.owner = new_owner
-    log OwnershipTransferred(old_owner, new_owner)
-
-
-@internal
-@view
-def _domain_separator_v4() -> bytes32:
-    """
-    @dev Sourced from {EIP712DomainSeparator-domain_separator_v4}.
-    @notice See {EIP712DomainSeparator-domain_separator_v4}
-            for the function docstring.
-    """
-    if (self == _CACHED_SELF and chain.id == _CACHED_CHAIN_ID):
-        return _CACHED_DOMAIN_SEPARATOR
-    else:
-        return self._build_domain_separator()
-
-
-@internal
-@view
-def _build_domain_separator() -> bytes32:
-    """
-    @dev Sourced from {EIP712DomainSeparator-_build_domain_separator}.
-    @notice See {EIP712DomainSeparator-_build_domain_separator}
-            for the function docstring.
-    """
-    return keccak256(_abi_encode(_TYPE_HASH, _HASHED_NAME, _HASHED_VERSION, chain.id, self))
-
-
-@internal
-@view
-def _hash_typed_data_v4(struct_hash: bytes32) -> bytes32:
-    """
-    @dev Sourced from {EIP712DomainSeparator-hash_typed_data_v4}.
-    @notice See {EIP712DomainSeparator-hash_typed_data_v4}
-            for the function docstring.
-    """
-    return self._to_typed_data_hash(self._domain_separator_v4(), struct_hash)
-
-
-@internal
-@pure
-def _to_typed_data_hash(domain_separator: bytes32, struct_hash: bytes32) -> bytes32:
-    """
-    @dev Sourced from {ECDSA-to_typed_data_hash}.
-    @notice See {ECDSA-to_typed_data_hash} for the
-            function docstring.
-    """
-    return keccak256(concat(b"\x19\x01", domain_separator, struct_hash))
-
-
-@internal
-@pure
-def _recover_vrs(hash: bytes32, v: uint256, r: uint256, s: uint256) -> address:
-    """
-    @dev Sourced from {ECDSA-_recover_vrs}.
-    @notice See {ECDSA-_recover_vrs} for the
-            function docstring.
-    """
-    return self._try_recover_vrs(hash, v, r, s)
-
-
-@internal
-@pure
-def _try_recover_vrs(hash: bytes32, v: uint256, r: uint256, s: uint256) -> address:
-    """
-    @dev Sourced from {ECDSA-_try_recover_vrs}.
-    @notice See {ECDSA-_try_recover_vrs} for the
-            function docstring.
-    """
-    assert s <= convert(_MALLEABILITY_THRESHOLD, uint256), "ECDSA: invalid signature `s` value"
-
-    signer: address = ecrecover(hash, v, r, s)
-    assert signer != empty(address), "ECDSA: invalid signature"
-
-    return signer
