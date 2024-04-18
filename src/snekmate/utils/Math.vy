@@ -143,7 +143,7 @@ def _mul_div(x: uint256, y: uint256, denominator: uint256, roundup: bool) -> uin
 
     # Handling of non-overflow cases, 256 by 256 division.
     if (prod1 == empty(uint256)):
-        if (roundup and uint256_mulmod(x, y, denominator) != empty(uint256)):
+        if ((roundup) and (uint256_mulmod(x, y, denominator) != empty(uint256))):
             # Calculate "ceil((x * y) / denominator)". The following
             # line cannot overflow because we have the previous check
             # "(x * y) % denominator != 0", which accordingly rules out
@@ -213,7 +213,7 @@ def _mul_div(x: uint256, y: uint256, denominator: uint256, roundup: bool) -> uin
     # `prod1` is no longer necessary.
     result: uint256 = unsafe_mul(prod0, inverse)
 
-    if (roundup and uint256_mulmod(x, y, denominator) != empty(uint256)):
+    if ((roundup) and (uint256_mulmod(x, y, denominator) != empty(uint256))):
         # Calculate "ceil((x * y) / denominator)". The following
         # line uses intentionally checked arithmetic to prevent
         # a theoretically possible overflow.
@@ -270,7 +270,7 @@ def _log_2(x: uint256, roundup: bool) -> uint256:
     if (value >> 1 != empty(uint256)):
         result = unsafe_add(result, 1)
 
-    if (roundup and ((1 << result) < x)):
+    if ((roundup) and ((1 << result) < x)):
         result = unsafe_add(result, 1)
 
     return result
@@ -321,7 +321,7 @@ def _log_10(x: uint256, roundup: bool) -> uint256:
     if (value >= 10):
         result = unsafe_add(result, 1)
 
-    if (roundup and (10 ** result < x)):
+    if ((roundup) and (10 ** result < x)):
         result = unsafe_add(result, 1)
 
     return result
@@ -368,7 +368,7 @@ def _log_256(x: uint256, roundup: bool) -> uint256:
     if (value >> 8 != empty(uint256)):
         result = unsafe_add(result, 1)
 
-    if (roundup and ((1 << (result << 3)) < x)):
+    if ((roundup) and ((1 << (result << 3)) < x)):
         result = unsafe_add(result, 1)
 
     return result
@@ -536,7 +536,7 @@ def _cbrt(x: uint256, roundup: bool) -> uint256:
 
     y: uint256 = unsafe_div(self._wad_cbrt(x), 10 ** 12)
 
-    if (roundup and (unsafe_mul(unsafe_mul(y, y), y) != x)):
+    if ((roundup) and (unsafe_mul(unsafe_mul(y, y), y) != x)):
         y = unsafe_add(y, 1)
 
     return y
@@ -605,5 +605,5 @@ def _wad_cbrt(x: uint256) -> uint256:
         return unsafe_mul(y, 10 ** 12)
     elif (x >= unsafe_div(max_value(uint256), 10 ** 36)):
         return unsafe_mul(y, 10 ** 6)
-    else:
-        return y
+
+    return y

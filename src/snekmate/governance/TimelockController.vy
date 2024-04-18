@@ -443,7 +443,7 @@ def schedule_batch(targets: DynArray[address, _DYNARRAY_BOUND], amounts: DynArra
            Must be greater than or equal to the minimum delay.
     """
     access_control._check_role(PROPOSER_ROLE, msg.sender)
-    assert len(targets) == len(amounts) and len(targets) == len(payloads), "TimelockController: length mismatch"
+    assert ((len(targets) == len(amounts)) and (len(targets) == len(payloads))), "TimelockController: length mismatch"
     id: bytes32 = self._hash_operation_batch(targets, amounts, payloads, predecessor, salt)
 
     self._schedule(id, delay)
@@ -522,7 +522,7 @@ def execute_batch(targets: DynArray[address, _DYNARRAY_BOUND], amounts: DynArray
                      the operation during reentrancy are caught.
     """
     self._only_role_or_open_role(EXECUTOR_ROLE)
-    assert len(targets) == len(amounts) and len(targets) == len(payloads), "TimelockController: length mismatch"
+    assert ((len(targets) == len(amounts)) and (len(targets) == len(payloads))), "TimelockController: length mismatch"
     id: bytes32 = self._hash_operation_batch(targets, amounts, payloads, predecessor, salt)
 
     self._before_call(id, predecessor)
@@ -655,7 +655,7 @@ def _is_operation_pending(id: bytes32) -> bool:
             is pending or not.
     """
     state: OperationState = self._get_operation_state(id)
-    return state == OperationState.WAITING or state == OperationState.READY
+    return ((state == OperationState.WAITING) or (state == OperationState.READY))
 
 
 @internal
@@ -700,8 +700,8 @@ def _get_operation_state(id: bytes32) -> OperationState:
         return OperationState.DONE
     elif (timestamp > block.timestamp):
         return OperationState.WAITING
-    else:
-        return OperationState.READY
+
+    return OperationState.READY
 
 
 @internal
@@ -777,8 +777,8 @@ def _execute(target: address, amount: uint256, payload: Bytes[1_024]):
         if (len(return_data) != empty(uint256)):
             # Bubble up the revert reason.
             raw_revert(return_data)
-        else:
-            raise "TimelockController: underlying transaction reverted"
+
+        raise "TimelockController: underlying transaction reverted"
 
 
 @internal
@@ -792,7 +792,7 @@ def _before_call(id: bytes32, predecessor: bytes32):
            operation.
     """
     assert self._is_operation_ready(id), "TimelockController: operation is not ready"
-    assert predecessor == empty(bytes32) or self._is_operation_done(predecessor), "TimelockController: missing dependency"
+    assert ((predecessor == empty(bytes32)) or (self._is_operation_done(predecessor))), "TimelockController: missing dependency"
 
 
 @internal

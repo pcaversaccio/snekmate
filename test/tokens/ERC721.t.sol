@@ -494,7 +494,11 @@ contract ERC721Test is Test {
             _VERSION_EIP712
         );
         ERC721Extended = IERC721Extended(
-            vyperDeployer.deployContract("src/snekmate/tokens/", "ERC721", args)
+            vyperDeployer.deployContract(
+                "src/snekmate/tokens/mocks/",
+                "ERC721Mock",
+                args
+            )
         );
         ERC721ExtendedAddr = address(ERC721Extended);
         _CACHED_DOMAIN_SEPARATOR = keccak256(
@@ -527,7 +531,11 @@ contract ERC721Test is Test {
             _VERSION_EIP712
         );
         ERC721ExtendedInitialEvent = IERC721Extended(
-            vyperDeployer.deployContract("src/snekmate/tokens/", "ERC721", args)
+            vyperDeployer.deployContract(
+                "src/snekmate/tokens/mocks/",
+                "ERC721Mock",
+                args
+            )
         );
         assertEq(ERC721ExtendedInitialEvent.name(), _NAME);
         assertEq(ERC721ExtendedInitialEvent.symbol(), _SYMBOL);
@@ -1154,7 +1162,11 @@ contract ERC721Test is Test {
             _VERSION_EIP712
         );
         ERC721ExtendedNoBaseURI = IERC721Extended(
-            vyperDeployer.deployContract("src/snekmate/tokens/", "ERC721", args)
+            vyperDeployer.deployContract(
+                "src/snekmate/tokens/mocks/",
+                "ERC721Mock",
+                args
+            )
         );
         address owner = makeAddr("owner");
         string memory uri = "my_awesome_nft_uri";
@@ -2579,18 +2591,22 @@ contract ERC721Invariants is Test {
             _VERSION_EIP712
         );
         ERC721Extended = IERC721Extended(
-            vyperDeployer.deployContract("src/snekmate/tokens/", "ERC721", args)
+            vyperDeployer.deployContract(
+                "src/snekmate/tokens/mocks/",
+                "ERC721Mock",
+                args
+            )
         );
         erc721Handler = new ERC721Handler(ERC721Extended, deployer);
         targetContract(address(erc721Handler));
         targetSender(deployer);
     }
 
-    function invariantTotalSupply() public view {
+    function statefulFuzzTotalSupply() public view {
         assertEq(ERC721Extended.totalSupply(), erc721Handler.totalSupply());
     }
 
-    function invariantOwner() public view {
+    function statefulFuzzOwner() public view {
         assertEq(ERC721Extended.owner(), erc721Handler.owner());
     }
 }
