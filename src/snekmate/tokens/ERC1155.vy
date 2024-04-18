@@ -56,10 +56,35 @@ implements: IERC1155MetadataURI
 import interfaces.IERC1155Receiver as IERC1155Receiver
 
 
+# @dev We import and use the `Ownable` module.
+from ..auth import Ownable as ownable
+uses: ownable
+
+
+# @dev We export (i.e. the runtime bytecode exposes these
+# functions externally, allowing them to be called using
+# the ABI encoding specification) the `external` getter
+# function `owner` from the `Ownable` module.
+# @notice Please note that you must always also export (if
+# required by the contract logic) `public` declared `constant`,
+# `immutable`, and state variables, for which Vyper automatically
+# generates an `external` getter function for the variable.
+exports: (
+    # @notice This ERC-1155 implementation includes the `transfer_ownership`
+    # and `renounce_ownership` functions, which incorporate
+    # the additional built-in `is_minter` role logic and are
+    # therefore not exported from the `Ownable` module.
+    ownable.owner,
+)
+
+
 # @dev Stores the ERC-165 interface identifier for each
 # imported interface. The ERC-165 interface identifier
 # is defined as the XOR of all function selectors in the
 # interface.
+# @notice If you are not using the full feature set of
+# this contract, please ensure you exclude the unused
+# ERC-165 interface identifiers in the main contract.
 _SUPPORTED_INTERFACES: constant(bytes4[3]) = [
     0x01FFC9A7, # The ERC-165 identifier for ERC-165.
     0xD9B67A26, # The ERC-165 identifier for ERC-1155.
@@ -75,10 +100,15 @@ _BATCH_SIZE: constant(uint16) = 255
 _BASE_URI: immutable(String[80])
 
 
-# @dev Mapping from owner to operator approvals.
+# @dev Returns the amount of tokens of token type
+# `id` owned by an `address`.
 # @notice If you declare a variable as `public`,
 # Vyper automatically generates an `external`
 # getter function for the variable.
+balanceOf: public(HashMap[address, HashMap[uint256, uint256]])
+
+
+# @dev Mapping from owner to operator approvals.
 isApprovedForAll: public(HashMap[address, HashMap[address, bool]])
 
 
@@ -89,14 +119,6 @@ total_supply: public(HashMap[uint256, uint256])
 # @dev Returns `True` if an `address` has been
 # granted the minter role.
 is_minter: public(HashMap[address, bool])
-
-
-# @dev Returns address of the current owner.
-owner: public(address)
-
-
-# @dev Mapping from token ID to owner balance.
-_balances: HashMap[uint256, HashMap[address, uint256]]
 
 
 # @dev Mapping from token ID to token URI.
@@ -151,13 +173,6 @@ event URI:
     id: indexed(uint256)
 
 
-# @dev Emitted when the ownership is transferred
-# from `previous_owner` to `new_owner`.
-event OwnershipTransferred:
-    previous_owner: indexed(address)
-    new_owner: indexed(address)
-
-
 # @dev Emitted when the status of a `minter`
 # address is changed.
 event RoleMinterChanged:
@@ -172,12 +187,16 @@ def __init__(base_uri_: String[80]):
     @dev To omit the opcodes for checking the `msg.value`
          in the creation-time EVM bytecode, the constructor
          is declared as `payable`.
+    @notice At initialisation time, the `owner` role will be
+            assigned to the `msg.sender` since we `uses` the
+            `Ownable` module, which implements the aforementioned
+            logic at contract creation time.
     @param base_uri_ The maximum 80-character user-readable
            string base URI for computing `uri`.
     """
     _BASE_URI = base_uri_
 
-    self._transfer_ownership(msg.sender)
+    ownable._transfer_ownership(msg.sender)
     self.is_minter[msg.sender] = True
     log RoleMinterChanged(msg.sender, True)
 
@@ -262,22 +281,6 @@ def safeBatchTransferFrom(owner: address, to: address, ids: DynArray[uint256, _B
 
 @external
 @view
-def balanceOf(owner: address, id: uint256) -> uint256:
-    """
-    @dev Returns the amount of tokens of token type
-         `id` owned by `owner`.
-    @notice Note that `owner` cannot be the zero
-            address.
-    @param owner The 20-byte owner address.
-    @param id The 32-byte identifier of the token.
-    @return uint256 The 32-byte token amount owned
-            by `owner`.
-    """
-    return self._balance_of(owner, id)
-
-
-@external
-@view
 def balanceOfBatch(owners: DynArray[address, _BATCH_SIZE], ids: DynArray[uint256, _BATCH_SIZE]) -> DynArray[uint256, _BATCH_SIZE]:
     """
     @dev Batched version of `balanceOf`.
@@ -292,7 +295,7 @@ def balanceOfBatch(owners: DynArray[address, _BATCH_SIZE], ids: DynArray[uint256
     batch_balances: DynArray[uint256, _BATCH_SIZE] = []
     idx: uint256 = empty(uint256)
     for owner: address in owners:
-        batch_balances.append(self._balance_of(owner, ids[idx]))
+        batch_balances.append(self.balanceOf[owner][ids[idx]])
         # The following line cannot overflow because we have
         # limited the dynamic array `owners` by the `constant`
         # parameter `_BATCH_SIZE`, which is bounded by the
@@ -347,7 +350,7 @@ def set_uri(id: uint256, token_uri: String[432]):
     @param token_uri The maximum 432-character user-readable
            string URI for computing `uri`.
     """
-    assert self.is_minter[msg.sender], "AccessControl: access is denied"
+    assert self.is_minter[msg.sender], "ERC1155: access is denied"
     self._set_uri(id, token_uri)
 
 
@@ -414,7 +417,7 @@ def safe_mint(owner: address, id: uint256, amount: uint256, data: Bytes[1_024]):
     @param data The maximum 1,024-byte additional data
            with no specified format.
     """
-    assert self.is_minter[msg.sender], "AccessControl: access is denied"
+    assert self.is_minter[msg.sender], "ERC1155: access is denied"
     self._safe_mint(owner, id, amount, data)
 
 
@@ -436,7 +439,7 @@ def safe_mint_batch(owner: address, ids: DynArray[uint256, _BATCH_SIZE], amounts
     @param data The maximum 1,024-byte additional data
            with no specified format.
     """
-    assert self.is_minter[msg.sender], "AccessControl: access is denied"
+    assert self.is_minter[msg.sender], "ERC1155: access is denied"
     self._safe_mint_batch(owner, ids, amounts, data)
 
 
@@ -452,11 +455,11 @@ def set_minter(minter: address, status: bool):
     @param minter The 20-byte minter address.
     @param status The Boolean variable that sets the status.
     """
-    self._check_owner()
-    assert minter != empty(address), "AccessControl: minter is the zero address"
-    # We ensured in the previous step `self._check_owner()`
+    ownable._check_owner()
+    assert minter != empty(address), "ERC1155: minter is the zero address"
+    # We ensured in the previous step `ownable._check_owner`
     # that `msg.sender` is the `owner`.
-    assert minter != msg.sender, "AccessControl: minter is owner address"
+    assert minter != msg.sender, "ERC1155: minter is owner address"
     self.is_minter[minter] = status
     log RoleMinterChanged(minter, status)
 
@@ -475,13 +478,13 @@ def transfer_ownership(new_owner: address):
             the minter role to `new_owner` accordingly.
     @param new_owner The 20-byte address of the new owner.
     """
-    self._check_owner()
-    assert new_owner != empty(address), "Ownable: new owner is the zero address"
+    ownable._check_owner()
+    assert new_owner != empty(address), "ERC1155: new owner is the zero address"
 
     self.is_minter[msg.sender] = False
     log RoleMinterChanged(msg.sender, False)
 
-    self._transfer_ownership(new_owner)
+    ownable._transfer_ownership(new_owner)
     self.is_minter[new_owner] = True
     log RoleMinterChanged(new_owner, True)
 
@@ -503,10 +506,10 @@ def renounce_ownership():
             minter addresses first via `set_minter`
             before calling `renounce_ownership`.
     """
-    self._check_owner()
+    ownable._check_owner()
     self.is_minter[msg.sender] = False
     log RoleMinterChanged(msg.sender, False)
-    self._transfer_ownership(empty(address))
+    ownable._transfer_ownership(empty(address))
 
 
 @internal
@@ -554,13 +557,13 @@ def _safe_transfer_from(owner: address, to: address, id: uint256, amount: uint25
 
     self._before_token_transfer(owner, to, self._as_singleton_array(id), self._as_singleton_array(amount), data)
 
-    owner_balance: uint256 = self._balances[id][owner]
+    owner_balance: uint256 = self.balanceOf[owner][id]
     assert owner_balance >= amount, "ERC1155: insufficient balance for transfer"
-    self._balances[id][owner] = unsafe_sub(owner_balance, amount)
+    self.balanceOf[owner][id] = unsafe_sub(owner_balance, amount)
     # In the next line, an overflow is not possible
     # due to an arithmetic check of the entire token
     # supply in the functions `_safe_mint` and `_safe_mint_batch`.
-    self._balances[id][to] = unsafe_add(self._balances[id][to], amount)
+    self.balanceOf[to][id] = unsafe_add(self.balanceOf[to][id], amount)
     log TransferSingle(msg.sender, owner, to, id, amount)
 
     self._after_token_transfer(owner, to, self._as_singleton_array(id), self._as_singleton_array(amount), data)
@@ -604,13 +607,13 @@ def _safe_batch_transfer_from(owner: address, to: address, ids: DynArray[uint256
     idx: uint256 = empty(uint256)
     for id: uint256 in ids:
         amount: uint256 = amounts[idx]
-        owner_balance: uint256 = self._balances[id][owner]
+        owner_balance: uint256 = self.balanceOf[owner][id]
         assert owner_balance >= amount, "ERC1155: insufficient balance for transfer"
-        self._balances[id][owner] = unsafe_sub(owner_balance, amount)
+        self.balanceOf[owner][id] = unsafe_sub(owner_balance, amount)
         # In the next line, an overflow is not possible
         # due to an arithmetic check of the entire token
         # supply in the functions `_safe_mint` and `_safe_mint_batch`.
-        self._balances[id][to] = unsafe_add(self._balances[id][to], amount)
+        self.balanceOf[to][id] = unsafe_add(self.balanceOf[to][id], amount)
         # The following line cannot overflow because we have
         # limited the dynamic array `ids` by the `constant`
         # parameter `_BATCH_SIZE`, which is bounded by the
@@ -622,23 +625,6 @@ def _safe_batch_transfer_from(owner: address, to: address, ids: DynArray[uint256
     self._after_token_transfer(owner, to, ids, amounts, data)
 
     assert self._check_on_erc1155_batch_received(owner, to, ids, amounts, data), "ERC1155: transfer to non-ERC1155Receiver implementer"
-
-
-@internal
-@view
-def _balance_of(owner: address, id: uint256) -> uint256:
-    """
-    @dev An `internal` helper function that returns the
-         amount of tokens of token type `id` owned by `owner`.
-    @notice Note that `owner` cannot be the zero
-            address.
-    @param owner The 20-byte owner address.
-    @param id The 32-byte identifier of the token.
-    @return uint256 The 32-byte token amount owned
-            by `owner`.
-    """
-    assert owner != empty(address), "ERC1155: address zero is not a valid owner"
-    return self._balances[id][owner]
 
 
 @internal
@@ -672,7 +658,7 @@ def _safe_mint(owner: address, id: uint256, amount: uint256, data: Bytes[1_024])
     # In the next line, an overflow is not possible
     # due to an arithmetic check of the entire token
     # supply in the function `_before_token_transfer`.
-    self._balances[id][owner] = unsafe_add(self._balances[id][owner], amount)
+    self.balanceOf[owner][id] = unsafe_add(self.balanceOf[owner][id], amount)
     log TransferSingle(msg.sender, empty(address), owner, id, amount)
 
     self._after_token_transfer(empty(address), owner, self._as_singleton_array(id), self._as_singleton_array(amount), data)
@@ -716,7 +702,7 @@ def _safe_mint_batch(owner: address, ids: DynArray[uint256, _BATCH_SIZE], amount
         # In the next line, an overflow is not possible
         # due to an arithmetic check of the entire token
         # supply in the function `_before_token_transfer`.
-        self._balances[id][owner] = unsafe_add(self._balances[id][owner], amounts[idx])
+        self.balanceOf[owner][id] = unsafe_add(self.balanceOf[owner][id], amounts[idx])
         # The following line cannot overflow because we have
         # limited the dynamic array `ids` by the `constant`
         # parameter `_BATCH_SIZE`, which is bounded by the
@@ -752,15 +738,13 @@ def _uri(id: uint256) -> String[512]:
     # If there is no base URI, return the token URI.
     if (base_uri_length == empty(uint256)):
         return token_uri
-
     # If both are set, concatenate the base URI
     # and token URI.
-    if (len(token_uri) != empty(uint256)):
+    elif (len(token_uri) != empty(uint256)):
         return concat(_BASE_URI, token_uri)
-
     # If there is no token URI but a base URI,
     # concatenate the base URI and token ID.
-    if (base_uri_length != empty(uint256)):
+    elif (base_uri_length != empty(uint256)):
         # Please note that for projects where the
         # substring `{id}` is present in the URI
         # and this URI is to be set as `_BASE_URI`,
@@ -805,9 +789,9 @@ def _burn(owner: address, id: uint256, amount: uint256):
 
     self._before_token_transfer(owner, empty(address), self._as_singleton_array(id), self._as_singleton_array(amount), b"")
 
-    owner_balance: uint256 = self._balances[id][owner]
+    owner_balance: uint256 = self.balanceOf[owner][id]
     assert owner_balance >= amount, "ERC1155: burn amount exceeds balance"
-    self._balances[id][owner] = unsafe_sub(owner_balance, amount)
+    self.balanceOf[owner][id] = unsafe_sub(owner_balance, amount)
     log TransferSingle(msg.sender, owner, empty(address), id, amount)
 
     self._after_token_transfer(owner, empty(address), self._as_singleton_array(id), self._as_singleton_array(amount), b"")
@@ -835,9 +819,9 @@ def _burn_batch(owner: address, ids: DynArray[uint256, _BATCH_SIZE], amounts: Dy
     idx: uint256 = empty(uint256)
     for id: uint256 in ids:
         amount: uint256 = amounts[idx]
-        owner_balance: uint256 = self._balances[id][owner]
+        owner_balance: uint256 = self.balanceOf[owner][id]
         assert owner_balance >= amount, "ERC1155: burn amount exceeds balance"
-        self._balances[id][owner] = unsafe_sub(owner_balance, amount)
+        self.balanceOf[owner][id] = unsafe_sub(owner_balance, amount)
         # The following line cannot overflow because we have
         # limited the dynamic array `ids` by the `constant`
         # parameter `_BATCH_SIZE`, which is bounded by the
@@ -1012,25 +996,3 @@ def _as_singleton_array(element: uint256) -> DynArray[uint256, 1]:
     @return DynArray The array of length 1 containing `element`.
     """
     return [element]
-
-
-@internal
-def _check_owner():
-    """
-    @dev Sourced from {Ownable-_check_owner}.
-    @notice See {Ownable-_check_owner} for
-            the function docstring.
-    """
-    assert msg.sender == self.owner, "Ownable: caller is not the owner"
-
-
-@internal
-def _transfer_ownership(new_owner: address):
-    """
-    @dev Sourced from {Ownable-_transfer_ownership}.
-    @notice See {Ownable-_transfer_ownership} for
-            the function docstring.
-    """
-    old_owner: address = self.owner
-    self.owner = new_owner
-    log OwnershipTransferred(old_owner, new_owner)

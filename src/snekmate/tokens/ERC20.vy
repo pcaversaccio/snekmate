@@ -335,7 +335,7 @@ def mint(owner: address, amount: uint256):
             Note that `owner` cannot be the zero address.
     @param amount The 32-byte token amount to be created.
     """
-    assert self.is_minter[msg.sender], "AccessControl: access is denied"
+    assert self.is_minter[msg.sender], "ERC20: access is denied"
     self._mint(owner, amount)
 
 
@@ -352,10 +352,10 @@ def set_minter(minter: address, status: bool):
     @param status The Boolean variable that sets the status.
     """
     ownable._check_owner()
-    assert minter != empty(address), "AccessControl: minter is the zero address"
-    # We ensured in the previous step `self._check_owner()`
+    assert minter != empty(address), "ERC20: minter is the zero address"
+    # We ensured in the previous step `ownable._check_owner`
     # that `msg.sender` is the `owner`.
-    assert minter != msg.sender, "AccessControl: minter is owner address"
+    assert minter != msg.sender, "ERC20: minter is owner address"
     self.is_minter[minter] = status
     log RoleMinterChanged(minter, status)
 
@@ -382,7 +382,7 @@ def permit(owner: address, spender: address, amount: uint256, deadline: uint256,
     @param r The secp256k1 32-byte signature parameter `r`.
     @param s The secp256k1 32-byte signature parameter `s`.
     """
-    assert block.timestamp <= deadline, "ERC20Permit: expired deadline"
+    assert block.timestamp <= deadline, "ERC20: expired deadline"
 
     current_nonce: uint256 = self.nonces[owner]
     self.nonces[owner] = unsafe_add(current_nonce, 1)
@@ -391,7 +391,7 @@ def permit(owner: address, spender: address, amount: uint256, deadline: uint256,
     hash: bytes32  = eip712_domain_separator._hash_typed_data_v4(struct_hash)
 
     signer: address = ecdsa._recover_vrs(hash, convert(v, uint256), convert(r, uint256), convert(s, uint256))
-    assert signer == owner, "ERC20Permit: invalid signature"
+    assert signer == owner, "ERC20: invalid signature"
 
     self._approve(owner, spender, amount)
 
@@ -421,7 +421,7 @@ def transfer_ownership(new_owner: address):
     @param new_owner The 20-byte address of the new owner.
     """
     ownable._check_owner()
-    assert new_owner != empty(address), "Ownable: new owner is the zero address"
+    assert new_owner != empty(address), "ERC20: new owner is the zero address"
 
     self.is_minter[msg.sender] = False
     log RoleMinterChanged(msg.sender, False)
