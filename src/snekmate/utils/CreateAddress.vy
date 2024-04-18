@@ -93,8 +93,8 @@ def _compute_address_rlp(deployer: address, nonce: uint256) -> address:
         return self._convert_keccak256_2_address(keccak256(concat(0xdc, length, convert(deployer, bytes20), 0x86, convert(convert(nonce, uint48), bytes6))))
     elif (nonce <= convert(max_value(uint56), uint256)):
         return self._convert_keccak256_2_address(keccak256(concat(0xdd, length, convert(deployer, bytes20), 0x87, convert(convert(nonce, uint56), bytes7))))
-    else:
-        return self._convert_keccak256_2_address(keccak256(concat(0xde, length, convert(deployer, bytes20), 0x88, convert(convert(nonce, uint64), bytes8))))
+
+    return self._convert_keccak256_2_address(keccak256(concat(0xde, length, convert(deployer, bytes20), 0x88, convert(convert(nonce, uint64), bytes8))))
 
 
 @internal

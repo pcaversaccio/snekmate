@@ -66,8 +66,8 @@ def _recover_sig(hash: bytes32, signature: Bytes[65]) -> address:
         r: uint256 = extract32(signature, empty(uint256), output_type=uint256)
         vs: uint256 = extract32(signature, 32, output_type=uint256)
         return self._try_recover_r_vs(hash, r, vs)
-    else:
-        return empty(address)
+
+    return empty(address)
 
 
 @internal

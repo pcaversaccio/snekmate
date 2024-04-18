@@ -3858,7 +3858,11 @@ contract TimelockControllerTest is Test {
             "1"
         );
         erc721Mock = IERC721Extended(
-            vyperDeployer.deployContract("src/snekmate/tokens/", "ERC721", args)
+            vyperDeployer.deployContract(
+                "src/snekmate/tokens/mocks/",
+                "ERC721Mock",
+                args
+            )
         );
         vm.startPrank(deployer);
         erc721Mock.safe_mint(timelockControllerAddr, "my_awesome_nft_uri_1");

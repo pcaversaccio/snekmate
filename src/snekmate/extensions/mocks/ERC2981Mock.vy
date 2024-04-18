@@ -49,7 +49,7 @@ exports: (
     # @external
     # @view
     # def supportsInterface(interface_id: bytes4) -> bool:
-    #     return (interface_id in erc2981._SUPPORTED_INTERFACES) or (interface_id in [0x..., ...])
+    #     return ((interface_id in erc2981._SUPPORTED_INTERFACES) or (interface_id in [0x..., ...]))
     # ```
     erc2981.supportsInterface,
     erc2981.owner,

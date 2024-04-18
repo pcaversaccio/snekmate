@@ -121,7 +121,7 @@ def _domain_separator_v4() -> bytes32:
     @dev Returns the domain separator for the current chain.
     @return bytes32 The 32-byte domain separator.
     """
-    if (self == _CACHED_SELF and chain.id == _CACHED_CHAIN_ID):
+    if ((self == _CACHED_SELF) and (chain.id == _CACHED_CHAIN_ID)):
         return _CACHED_DOMAIN_SEPARATOR
 
     return self._build_domain_separator()

@@ -193,8 +193,8 @@ def _process_multi_proof(proof: DynArray[bytes32, max_value(uint8)], proof_flags
         return hashes[unsafe_sub(total_hashes, 1)]
     elif (leaves_length != empty(uint256)):
         return leaves[empty(uint256)]
-    else:
-        return proof[empty(uint256)]
+
+    return proof[empty(uint256)]
 
 
 @internal
