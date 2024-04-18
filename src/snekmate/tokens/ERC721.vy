@@ -137,6 +137,9 @@ exports: (
 # imported interface. The ERC-165 interface identifier
 # is defined as the XOR of all function selectors in the
 # interface.
+# @notice If you are not using the full feature set of
+# this contract, please ensure you exclude the unused
+# ERC-165 interface identifiers in the main contract.
 _SUPPORTED_INTERFACES: constant(bytes4[6]) = [
     0x01FFC9A7, # The ERC-165 identifier for ERC-165.
     0x80AC58CD, # The ERC-165 identifier for ERC-721.
@@ -503,15 +506,13 @@ def tokenURI(token_id: uint256) -> String[512]:
     # If there is no base URI, return the token URI.
     if (base_uri_length == empty(uint256)):
         return token_uri
-
     # If both are set, concatenate the base URI
     # and token URI.
-    if (len(token_uri) != empty(uint256)):
+    elif (len(token_uri) != empty(uint256)):
         return concat(_BASE_URI, token_uri)
-
     # If there is no token URI but a base URI,
     # concatenate the base URI and token ID.
-    if (base_uri_length != empty(uint256)):
+    elif (base_uri_length != empty(uint256)):
         return concat(_BASE_URI, uint2str(token_id))
 
     return ""
@@ -536,7 +537,7 @@ def tokenByIndex(index: uint256) -> uint256:
     @notice Use along with `totalSupply` to enumerate
             all tokens.
     @param index The 32-byte counter (must be less
-           than `totalSupply()`).
+           than `totalSupply`).
     @return uint256 The 32-byte token ID at index
             `index`.
     """
@@ -615,7 +616,7 @@ def set_minter(minter: address, status: bool):
     """
     ownable._check_owner()
     assert minter != empty(address), "AccessControl: minter is the zero address"
-    # We ensured in the previous step `self._check_owner()`
+    # We ensured in the previous step `ownable._check_owner`
     # that `msg.sender` is the `owner`.
     assert minter != msg.sender, "AccessControl: minter is owner address"
     self.is_minter[minter] = status
@@ -644,7 +645,6 @@ def permit(spender: address, token_id: uint256, deadline: uint256, v: uint8, r: 
     """
     assert block.timestamp <= deadline, "ERC721Permit: expired deadline"
 
-    owner: address = self._owner_of(token_id)
     current_nonce: uint256 = self.nonces[token_id]
     self.nonces[token_id] = unsafe_add(current_nonce, 1)
 
@@ -652,7 +652,7 @@ def permit(spender: address, token_id: uint256, deadline: uint256, v: uint8, r: 
     hash: bytes32  = eip712_domain_separator._hash_typed_data_v4(struct_hash)
 
     signer: address = ecdsa._recover_vrs(hash, convert(v, uint256), convert(r, uint256), convert(s, uint256))
-    assert signer == owner, "ERC721Permit: invalid signature"
+    assert signer == self._owner_of(token_id), "ERC721Permit: invalid signature"
 
     self._approve(spender, token_id)
 

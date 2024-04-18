@@ -65,7 +65,7 @@ initializes: erc721[ownable := ow]
 # @dev We export (i.e. the runtime bytecode exposes these
 # functions externally, allowing them to be called using
 # the ABI encoding specification) all `external` functions
-# from the `ERC20` module. The built-in dunder method
+# from the `ERC721` module. The built-in dunder method
 # `__interface__` allows you to export all functions of a
 # module without specifying the individual functions (see
 # https://github.com/vyperlang/vyper/pull/3919). Please take
@@ -77,6 +77,25 @@ initializes: erc721[ownable := ow]
 # required by the contract logic) `public` declared `constant`,
 # `immutable`, and state variables, for which Vyper automatically
 # generates an `external` getter function for the variable.
+# Furthermore, if you are not using the full feature set of
+# the {ERC721} contract, please ensure you exclude the unused
+# ERC-165 interface identifiers in the main contract. One way
+# to achieve this would be to not export the `supportsInterface`
+# function from {ERC721} in the main contract and implement the
+# following function in the main contract instead:
+# ```vy
+# _SUPPORTED_INTERFACES: constant(bytes4[...]) = [
+#     erc721._SUPPORTED_INTERFACES[0], # The ERC-165 identifier for ERC-165.
+#     erc721._SUPPORTED_INTERFACES[1], # The ERC-165 identifier for ERC-721.
+#     ...                              # Any further ERC-165 identifiers you require.
+# ]
+#
+#
+# @external
+# @view
+# def supportsInterface(interface_id: bytes4) -> bool:
+#     return interface_id in _SUPPORTED_INTERFACES
+# ```
 exports: erc721.__interface__
 
 
