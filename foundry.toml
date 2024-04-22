@@ -7,6 +7,7 @@ libs = ['lib']                                              # a list of library 
 cache = true                                                # whether to cache builds or not
 cache_path = 'cache'                                        # where the cache is stored if enabled
 force = false                                               # whether to ignore the cache (clean build)
+solc_version = '0.8.25'                                     # override for the solc version
 fuzz = { runs = 256 }                                       # the number of fuzz runs for tests
 invariant = { runs = 256 }                                  # the number of runs that must execute for each invariant test group
 ffi = true                                                  # whether to enable foreign function interface (ffi) cheatcodes or not
