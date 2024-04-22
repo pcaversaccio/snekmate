@@ -97,3 +97,12 @@ jobs:
         run: NO_COLOR=1 forge snapshot >> $GITHUB_STEP_SUMMARY
         env:
           FOUNDRY_PROFILE: default
+
+      - name: Run Echidna ERC-20 property tests
+        uses: crytic/echidna-action@v2
+        with:
+          echidna-workdir: ./tests/tokens/echidna
+          files: ./tests/tokens/echidna/ERC20Properties.sol
+          contract: CryticERC20ExternalHarness
+          config: ./tests/tokens/echidna/echidna-config.yaml
+          crytic-args: --ignore-compile

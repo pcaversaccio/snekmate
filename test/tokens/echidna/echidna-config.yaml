@@ -1,0 +1,7 @@
+coverage: true # Enable coverage.
+corpusDir: "echidna-corpus" # Set the coverage report directory.
+testMode: assertion # Enable `isAssertionMode`.
+testLimit: 10000 # Set the maximum number of function calls to execute while fuzzing.
+deployer: "0x10000" # Set the contract deployer address to use.
+sender: ["0x10000", "0x20000", "0x30000"] # Set the sender addresses to use.
+allContracts: true # Enabe fuzzing of all contracts.

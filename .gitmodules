@@ -13,6 +13,9 @@
 [submodule "lib/forge-std"]
 	path = lib/forge-std
 	url = https://github.com/foundry-rs/forge-std.git
+[submodule "lib/properties"]
+	path = lib/properties
+	url = https://github.com/crytic/properties.git
 [submodule "lib/create-util"]
 	path = lib/create-util
 	url = https://github.com/pcaversaccio/create-util.git
@@ -25,6 +28,3 @@
 [submodule "lib/openzeppelin-contracts"]
 	path = lib/openzeppelin-contracts
 	url = https://github.com/OpenZeppelin/openzeppelin-contracts.git
-[submodule "lib/properties"]
-	path = lib/properties
-	url = https://github.com/crytic/properties

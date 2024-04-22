@@ -60,6 +60,12 @@ initializes: erc20[ownable := ow]
 exports: erc20.__interface__
 
 
+# @dev The following two parameters are required for the Echidna
+# fuzzing test integrations: https://github.com/crytic/properties.
+isMintableOrBurnable: public(constant(bool)) = True
+initialSupply: public(uint256)
+
+
 @deploy
 @payable
 def __init__(name_: String[25], symbol_: String[5], decimals_: uint8, initial_supply_: uint256, name_eip712_: String[50], version_eip712_: String[20]):
@@ -92,3 +98,26 @@ def __init__(name_: String[25], symbol_: String[5], decimals_: uint8, initial_su
     # supply to the `msg.sender`, which takes the
     # underlying `decimals` value into account.
     erc20._mint(msg.sender, initial_supply_ * 10 ** convert(decimals_, uint256))
+
+    # We assign the initial token supply required by
+    # the Echidna external harness contract.
+    self.initialSupply = erc20.totalSupply()
+
+
+# @dev Duplicate implementation of the `external` function
+# `burn_from` to enable the Echidna tests for the external
+# burnable properties.
+@external
+def burnFrom(owner: address, amount: uint256):
+    """
+    @dev Destroys `amount` tokens from `owner`,
+         deducting from the caller's allowance.
+    @notice Note that `owner` cannot be the
+            zero address. Also, the caller must
+            have an allowance for `owner`'s tokens
+            of at least `amount`.
+    @param owner The 20-byte owner address.
+    @param amount The 32-byte token amount to be destroyed.
+    """
+    erc20._spend_allowance(owner, msg.sender, amount)
+    erc20._burn(owner, amount)
