@@ -155,8 +155,6 @@ def balanceOf(_owner: address, _id: uint256) -> uint256:
     """
     @dev Returns the amount of tokens of token type
          `_id` owned by `_owner`.
-    @notice Note that `_owner` cannot be the zero
-            address.
     @param _owner The 20-byte owner address.
     @param _id The 32-byte identifier of the token.
     @return uint256 The 32-byte token amount owned

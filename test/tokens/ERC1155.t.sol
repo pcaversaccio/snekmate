@@ -32,8 +32,8 @@ contract ERC1155Test is Test {
         bytes memory args = abi.encode(_BASE_URI);
         ERC1155Extended = IERC1155Extended(
             vyperDeployer.deployContract(
-                "src/snekmate/tokens/",
-                "ERC1155",
+                "src/snekmate/tokens/mocks/",
+                "ERC1155Mock",
                 args
             )
         );
@@ -58,8 +58,8 @@ contract ERC1155Test is Test {
         bytes memory args = abi.encode(_BASE_URI);
         ERC1155ExtendedInitialEvent = IERC1155Extended(
             vyperDeployer.deployContract(
-                "src/snekmate/tokens/",
-                "ERC1155",
+                "src/snekmate/tokens/mocks/",
+                "ERC1155Mock",
                 args
             )
         );
@@ -136,11 +136,6 @@ contract ERC1155Test is Test {
         assertEq(ERC1155Extended.balanceOf(makeAddr("firstOwner"), 0), 0);
         assertEq(ERC1155Extended.balanceOf(makeAddr("secondOwner"), 1), 0);
         assertEq(ERC1155Extended.balanceOf(makeAddr("thirdOwner"), 2), 0);
-    }
-
-    function testBalanceOfZeroAddress() public {
-        vm.expectRevert(bytes("ERC1155: address zero is not a valid owner"));
-        ERC1155Extended.balanceOf(zeroAddress, 0);
     }
 
     function testBalanceOfBatchCase1() public {
@@ -265,15 +260,6 @@ contract ERC1155Test is Test {
         ids2[1] = 1;
         vm.expectRevert(bytes("ERC1155: owners and ids length mismatch"));
         ERC1155Extended.balanceOfBatch(owners2, ids2);
-    }
-
-    function testBalanceOfBatchZeroAddress() public {
-        address[] memory owners = new address[](1);
-        uint256[] memory ids = new uint256[](1);
-        owners[0] = zeroAddress;
-        ids[0] = 0;
-        vm.expectRevert(bytes("ERC1155: address zero is not a valid owner"));
-        ERC1155Extended.balanceOfBatch(owners, ids);
     }
 
     function testSetApprovalForAllSuccess() public {
@@ -1206,8 +1192,8 @@ contract ERC1155Test is Test {
         bytes memory args = abi.encode("");
         ERC1155ExtendedNoBaseURI = IERC1155Extended(
             vyperDeployer.deployContract(
-                "src/snekmate/tokens/",
-                "ERC1155",
+                "src/snekmate/tokens/mocks/",
+                "ERC1155Mock",
                 args
             )
         );
@@ -1230,8 +1216,8 @@ contract ERC1155Test is Test {
         bytes memory args = abi.encode("");
         ERC1155ExtendedNoBaseURI = IERC1155Extended(
             vyperDeployer.deployContract(
-                "src/snekmate/tokens/",
-                "ERC1155",
+                "src/snekmate/tokens/mocks/",
+                "ERC1155Mock",
                 args
             )
         );
@@ -1266,7 +1252,7 @@ contract ERC1155Test is Test {
     }
 
     function testSetUriNonMinter() public {
-        vm.expectRevert(bytes("AccessControl: access is denied"));
+        vm.expectRevert(bytes("ERC1155: access is denied"));
         vm.prank(makeAddr("nonOwner"));
         ERC1155Extended.set_uri(1, "my_awesome_uri");
     }
@@ -1967,10 +1953,10 @@ contract ERC1155Test is Test {
         uint256 amount2 = 15;
         bytes memory data = new bytes(0);
         vm.startPrank(makeAddr("nonOwner"));
-        vm.expectRevert(bytes("AccessControl: access is denied"));
+        vm.expectRevert(bytes("ERC1155: access is denied"));
         ERC1155Extended.safe_mint(receiver, id1, amount1, data);
 
-        vm.expectRevert(bytes("AccessControl: access is denied"));
+        vm.expectRevert(bytes("ERC1155: access is denied"));
         ERC1155Extended.safe_mint(receiver, id2, amount2, data);
         vm.stopPrank();
     }
@@ -2312,7 +2298,7 @@ contract ERC1155Test is Test {
         amounts[3] = 20;
 
         vm.startPrank(makeAddr("nonOwner"));
-        vm.expectRevert(bytes("AccessControl: access is denied"));
+        vm.expectRevert(bytes("ERC1155: access is denied"));
         ERC1155Extended.safe_mint_batch(makeAddr("owner"), ids, amounts, data);
         vm.stopPrank();
     }
@@ -2371,13 +2357,13 @@ contract ERC1155Test is Test {
 
     function testSetMinterToZeroAddress() public {
         vm.prank(deployer);
-        vm.expectRevert(bytes("AccessControl: minter is the zero address"));
+        vm.expectRevert(bytes("ERC1155: minter is the zero address"));
         ERC1155Extended.set_minter(zeroAddress, true);
     }
 
     function testSetMinterRemoveOwnerAddress() public {
         vm.prank(deployer);
-        vm.expectRevert(bytes("AccessControl: minter is owner address"));
+        vm.expectRevert(bytes("ERC1155: minter is owner address"));
         ERC1155Extended.set_minter(deployer, false);
     }
 
@@ -2409,7 +2395,7 @@ contract ERC1155Test is Test {
 
     function testTransferOwnershipToZeroAddress() public {
         vm.prank(deployer);
-        vm.expectRevert(bytes("Ownable: new owner is the zero address"));
+        vm.expectRevert(bytes("ERC1155: new owner is the zero address"));
         ERC1155Extended.transfer_ownership(zeroAddress);
     }
 
@@ -2932,7 +2918,7 @@ contract ERC1155Test is Test {
 
     function testFuzzSetUriNonMinter(address nonOwner) public {
         vm.assume(nonOwner != deployer);
-        vm.expectRevert(bytes("AccessControl: access is denied"));
+        vm.expectRevert(bytes("ERC1155: access is denied"));
         vm.prank(nonOwner);
         ERC1155Extended.set_uri(1, "my_awesome_uri");
     }
@@ -3284,10 +3270,10 @@ contract ERC1155Test is Test {
         uint256 amount2 = 15;
         bytes memory data = new bytes(0);
         vm.startPrank(nonOwner);
-        vm.expectRevert(bytes("AccessControl: access is denied"));
+        vm.expectRevert(bytes("ERC1155: access is denied"));
         ERC1155Extended.safe_mint(receiver, id1, amount1, data);
 
-        vm.expectRevert(bytes("AccessControl: access is denied"));
+        vm.expectRevert(bytes("ERC1155: access is denied"));
         ERC1155Extended.safe_mint(receiver, id2, amount2, data);
         vm.stopPrank();
     }
@@ -3460,7 +3446,7 @@ contract ERC1155Test is Test {
         amounts[3] = 20;
 
         vm.startPrank(nonOwner);
-        vm.expectRevert(bytes("AccessControl: access is denied"));
+        vm.expectRevert(bytes("ERC1155: access is denied"));
         ERC1155Extended.safe_mint_batch(makeAddr("owner"), ids, amounts, data);
         vm.stopPrank();
     }
@@ -3586,8 +3572,8 @@ contract ERC1155Invariants is Test {
         bytes memory args = abi.encode(_BASE_URI);
         ERC1155Extended = IERC1155Extended(
             vyperDeployer.deployContract(
-                "src/snekmate/tokens/",
-                "ERC1155",
+                "src/snekmate/tokens/mocks/",
+                "ERC1155Mock",
                 args
             )
         );
@@ -3596,7 +3582,7 @@ contract ERC1155Invariants is Test {
         targetSender(deployer);
     }
 
-    function invariantOwner() public view {
+    function statefulFuzzOwner() public view {
         assertEq(ERC1155Extended.owner(), erc1155Handler.owner());
     }
 }

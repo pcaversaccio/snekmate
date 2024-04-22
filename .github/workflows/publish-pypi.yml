@@ -20,7 +20,7 @@ jobs:
         architecture:
           - x64
         python_version:
-          - 3.12
+          - 3.11
 
     steps:
       - name: Checkout

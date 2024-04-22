@@ -532,7 +532,7 @@ contract ERC20Test is Test {
     }
 
     function testMintNonMinter() public {
-        vm.expectRevert(bytes("AccessControl: access is denied"));
+        vm.expectRevert(bytes("ERC20: access is denied"));
         ERC20Extended.mint(makeAddr("owner"), 100);
     }
 
@@ -571,13 +571,13 @@ contract ERC20Test is Test {
 
     function testSetMinterToZeroAddress() public {
         vm.prank(deployer);
-        vm.expectRevert(bytes("AccessControl: minter is the zero address"));
+        vm.expectRevert(bytes("ERC20: minter is the zero address"));
         ERC20Extended.set_minter(zeroAddress, true);
     }
 
     function testSetMinterRemoveOwnerAddress() public {
         vm.prank(deployer);
-        vm.expectRevert(bytes("AccessControl: minter is owner address"));
+        vm.expectRevert(bytes("ERC20: minter is owner address"));
         ERC20Extended.set_minter(deployer, false);
     }
 
@@ -643,7 +643,7 @@ contract ERC20Test is Test {
         vm.expectEmit(true, true, false, true);
         emit IERC20.Approval(owner, spender, amount);
         ERC20Extended.permit(owner, spender, amount, deadline, v, r, s);
-        vm.expectRevert(bytes("ERC20Permit: invalid signature"));
+        vm.expectRevert(bytes("ERC20: invalid signature"));
         ERC20Extended.permit(owner, spender, amount, deadline, v, r, s);
     }
 
@@ -673,7 +673,7 @@ contract ERC20Test is Test {
                 )
             )
         );
-        vm.expectRevert(bytes("ERC20Permit: invalid signature"));
+        vm.expectRevert(bytes("ERC20: invalid signature"));
         ERC20Extended.permit(owner, spender, amount, deadline, v, r, s);
     }
 
@@ -711,7 +711,7 @@ contract ERC20Test is Test {
                 )
             )
         );
-        vm.expectRevert(bytes("ERC20Permit: invalid signature"));
+        vm.expectRevert(bytes("ERC20: invalid signature"));
         ERC20Extended.permit(owner, spender, amount, deadline, v, r, s);
     }
 
@@ -741,7 +741,7 @@ contract ERC20Test is Test {
                 )
             )
         );
-        vm.expectRevert(bytes("ERC20Permit: invalid signature"));
+        vm.expectRevert(bytes("ERC20: invalid signature"));
         ERC20Extended.permit(owner, spender, amount, deadline, v, r, s);
     }
 
@@ -771,7 +771,7 @@ contract ERC20Test is Test {
                 )
             )
         );
-        vm.expectRevert(bytes("ERC20Permit: expired deadline"));
+        vm.expectRevert(bytes("ERC20: expired deadline"));
         ERC20Extended.permit(owner, spender, amount, deadline, v, r, s);
     }
 
@@ -851,7 +851,7 @@ contract ERC20Test is Test {
 
     function testTransferOwnershipToZeroAddress() public {
         vm.prank(deployer);
-        vm.expectRevert(bytes("Ownable: new owner is the zero address"));
+        vm.expectRevert(bytes("ERC20: new owner is the zero address"));
         ERC20Extended.transfer_ownership(zeroAddress);
     }
 
@@ -1043,7 +1043,7 @@ contract ERC20Test is Test {
         string calldata owner,
         uint256 amount
     ) public {
-        vm.expectRevert(bytes("AccessControl: access is denied"));
+        vm.expectRevert(bytes("ERC20: access is denied"));
         ERC20Extended.mint(makeAddr(owner), amount);
     }
 
@@ -1143,7 +1143,7 @@ contract ERC20Test is Test {
                 )
             )
         );
-        vm.expectRevert(bytes("ERC20Permit: invalid signature"));
+        vm.expectRevert(bytes("ERC20: invalid signature"));
         ERC20Extended.permit(ownerAddr, spenderAddr, amount, deadline, v, r, s);
     }
 

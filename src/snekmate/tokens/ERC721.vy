@@ -541,7 +541,7 @@ def tokenByIndex(index: uint256) -> uint256:
     @return uint256 The 32-byte token ID at index
             `index`.
     """
-    assert index < self._total_supply(), "ERC721Enumerable: global index out of bounds"
+    assert index < self._total_supply(), "ERC721: global index out of bounds"
     return self._all_tokens[index]
 
 
@@ -559,7 +559,7 @@ def tokenOfOwnerByIndex(owner: address, index: uint256) -> uint256:
     @return uint256 The 32-byte token ID owned by
             `owner` at index `index`.
     """
-    assert index < self._balance_of(owner), "ERC721Enumerable: owner index out of bounds"
+    assert index < self._balance_of(owner), "ERC721: owner index out of bounds"
     return self._owned_tokens[owner][index]
 
 
@@ -587,7 +587,7 @@ def safe_mint(owner: address, uri: String[432]):
     @param uri The maximum 432-character user-readable
            string URI for computing `tokenURI`.
     """
-    assert self.is_minter[msg.sender], "AccessControl: access is denied"
+    assert self.is_minter[msg.sender], "ERC721: access is denied"
     # New tokens will be automatically assigned an incremental ID.
     # The first token ID will be zero.
     token_id: uint256 = self._counter
@@ -615,10 +615,10 @@ def set_minter(minter: address, status: bool):
     @param status The Boolean variable that sets the status.
     """
     ownable._check_owner()
-    assert minter != empty(address), "AccessControl: minter is the zero address"
+    assert minter != empty(address), "ERC721: minter is the zero address"
     # We ensured in the previous step `ownable._check_owner`
     # that `msg.sender` is the `owner`.
-    assert minter != msg.sender, "AccessControl: minter is owner address"
+    assert minter != msg.sender, "ERC721: minter is owner address"
     self.is_minter[minter] = status
     log RoleMinterChanged(minter, status)
 
@@ -643,7 +643,7 @@ def permit(spender: address, token_id: uint256, deadline: uint256, v: uint8, r: 
     @param r The secp256k1 32-byte signature parameter `r`.
     @param s The secp256k1 32-byte signature parameter `s`.
     """
-    assert block.timestamp <= deadline, "ERC721Permit: expired deadline"
+    assert block.timestamp <= deadline, "ERC721: expired deadline"
 
     current_nonce: uint256 = self.nonces[token_id]
     self.nonces[token_id] = unsafe_add(current_nonce, 1)
@@ -652,7 +652,7 @@ def permit(spender: address, token_id: uint256, deadline: uint256, v: uint8, r: 
     hash: bytes32  = eip712_domain_separator._hash_typed_data_v4(struct_hash)
 
     signer: address = ecdsa._recover_vrs(hash, convert(v, uint256), convert(r, uint256), convert(s, uint256))
-    assert signer == self._owner_of(token_id), "ERC721Permit: invalid signature"
+    assert signer == self._owner_of(token_id), "ERC721: invalid signature"
 
     self._approve(spender, token_id)
 
@@ -682,7 +682,7 @@ def transfer_ownership(new_owner: address):
     @param new_owner The 20-byte address of the new owner.
     """
     ownable._check_owner()
-    assert new_owner != empty(address), "Ownable: new owner is the zero address"
+    assert new_owner != empty(address), "ERC721: new owner is the zero address"
 
     self.is_minter[msg.sender] = False
     log RoleMinterChanged(msg.sender, False)
@@ -958,7 +958,7 @@ def _set_token_uri(token_id: uint256, token_uri: String[432]):
     @param token_uri The maximum 432-character user-readable
            string URI for computing `tokenURI`.
     """
-    assert self._exists(token_id), "ERC721URIStorage: URI set of nonexistent token"
+    assert self._exists(token_id), "ERC721: URI set of nonexistent token"
     self._token_uris[token_id] = token_uri
     log MetadataUpdate(token_id)
 
