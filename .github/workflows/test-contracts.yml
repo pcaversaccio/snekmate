@@ -84,7 +84,7 @@ jobs:
       #     FOUNDRY_PROFILE: ci
 
       # - name: Foundry tests
-      #   run: forge test --no-match-path "test/tokens/echidna/**/*"
+      #   run: forge test
       #   env:
       #     FOUNDRY_PROFILE: ci
 
@@ -94,7 +94,7 @@ jobs:
           FOUNDRY_PROFILE: default
 
       - name: Run snapshot
-        run: NO_COLOR=1 forge snapshot --no-match-path "test/tokens/echidna/**/*" >> $GITHUB_STEP_SUMMARY
+        run: NO_COLOR=1 forge snapshot >> $GITHUB_STEP_SUMMARY
         env:
           FOUNDRY_PROFILE: default
 
@@ -104,5 +104,6 @@ jobs:
           echidna-workdir: test/tokens/echidna
           files: ERC20Properties.sol
           contract: CryticERC20ExternalHarness
+          solc-version: 0.8.25
           config: echidna-config.yaml
           crytic-args: --ignore-compile
