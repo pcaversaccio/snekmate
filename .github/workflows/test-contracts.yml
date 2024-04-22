@@ -98,6 +98,9 @@ jobs:
         env:
           FOUNDRY_PROFILE: default
 
+      - name: Compile contracts
+        run: forge build --build-info
+
       - name: Run Echidna ERC-20 property tests
         uses: crytic/echidna-action@v2
         with:
