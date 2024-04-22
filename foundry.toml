@@ -14,7 +14,7 @@ verbosity = 3                                               # the verbosity of t
 fs_permissions = [{ access = "read-write", path = "./"}]    # set read-write access to project root
 solc_version = '0.8.25'                                     # override for the solc version
 evm_version = 'shanghai'                                    # set the EVM target version
-no_match_path = 'test/tokens/echidna/**/*'                  # only run tests in source files that do not match the specified glob pattern
+no_match_path = 'test/tokens/echidna/**/*'                  # only run tests in test directory that do not match the specified glob pattern
 
 ## default overrides for the CI runs
 [profile.ci]
