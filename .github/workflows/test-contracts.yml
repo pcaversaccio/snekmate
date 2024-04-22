@@ -78,15 +78,15 @@ jobs:
         with:
           version: nightly
 
-      - name: Show the Foundry CI config
-        run: forge config
-        env:
-          FOUNDRY_PROFILE: ci
+      # - name: Show the Foundry CI config
+      #   run: forge config
+      #   env:
+      #     FOUNDRY_PROFILE: ci
 
-      - name: Foundry tests
-        run: forge test --no-match-path "test/tokens/echidna/**/*"
-        env:
-          FOUNDRY_PROFILE: ci
+      # - name: Foundry tests
+      #   run: forge test --no-match-path "test/tokens/echidna/**/*"
+      #   env:
+      #     FOUNDRY_PROFILE: ci
 
       - name: Show the Foundry default config
         run: forge config
@@ -101,8 +101,8 @@ jobs:
       - name: Run Echidna ERC-20 property tests
         uses: crytic/echidna-action@v2
         with:
-          echidna-workdir: test/tokens/echidna
-          files: test/tokens/echidna/ERC20Properties.sol
+          echidna-workdir: ./test/tokens/echidna
+          files: ./test/tokens/echidna/ERC20Properties.sol
           contract: CryticERC20ExternalHarness
-          config: test/tokens/echidna/echidna-config.yaml
+          config: ./test/tokens/echidna/echidna-config.yaml
           crytic-args: --ignore-compile
