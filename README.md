@@ -55,7 +55,8 @@ src
     │   │   └── IERC4906 — "EIP-4906 Interface Definition"
     │   └── mocks
     │       ├── ERC20Mock — "ERC20 Module Reference Implementation"
-    │       └── ERC721Mock — "ERC721 Module Reference Implementation"
+    │       ├── ERC721Mock — "ERC721 Module Reference Implementation"
+    │       └── ERC1155Mock — "ERC1155 Module Reference Implementation"
     └── utils
         ├── Base64 — "Base64 Encoding and Decoding Functions"
         ├── BatchDistributor — "Batch Sending Both Native and ERC-20 Tokens"

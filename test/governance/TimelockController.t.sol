@@ -3937,8 +3937,8 @@ contract TimelockControllerTest is Test {
         bytes memory args = abi.encode("https://www.wagmi.xyz/");
         erc1155Mock = IERC1155Extended(
             vyperDeployer.deployContract(
-                "src/snekmate/tokens/",
-                "ERC1155",
+                "src/snekmate/tokens/mocks/",
+                "ERC1155Mock",
                 args
             )
         );

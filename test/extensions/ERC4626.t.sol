@@ -1674,7 +1674,7 @@ contract ERC4626VaultTest is ERC4626Test {
             r,
             s
         );
-        vm.expectRevert(bytes("ERC20Permit: invalid signature"));
+        vm.expectRevert(bytes("ERC20: invalid signature"));
         ERC4626ExtendedDecimalsOffset0.permit(
             owner,
             spender,
@@ -1713,7 +1713,7 @@ contract ERC4626VaultTest is ERC4626Test {
                 )
             )
         );
-        vm.expectRevert(bytes("ERC20Permit: invalid signature"));
+        vm.expectRevert(bytes("ERC20: invalid signature"));
         ERC4626ExtendedDecimalsOffset0.permit(
             owner,
             spender,
@@ -1759,7 +1759,7 @@ contract ERC4626VaultTest is ERC4626Test {
                 )
             )
         );
-        vm.expectRevert(bytes("ERC20Permit: invalid signature"));
+        vm.expectRevert(bytes("ERC20: invalid signature"));
         ERC4626ExtendedDecimalsOffset0.permit(
             owner,
             spender,
@@ -1798,7 +1798,7 @@ contract ERC4626VaultTest is ERC4626Test {
                 )
             )
         );
-        vm.expectRevert(bytes("ERC20Permit: invalid signature"));
+        vm.expectRevert(bytes("ERC20: invalid signature"));
         ERC4626ExtendedDecimalsOffset0.permit(
             owner,
             spender,
@@ -1837,7 +1837,7 @@ contract ERC4626VaultTest is ERC4626Test {
                 )
             )
         );
-        vm.expectRevert(bytes("ERC20Permit: expired deadline"));
+        vm.expectRevert(bytes("ERC20: expired deadline"));
         ERC4626ExtendedDecimalsOffset0.permit(
             owner,
             spender,
@@ -1984,7 +1984,7 @@ contract ERC4626VaultTest is ERC4626Test {
                 )
             )
         );
-        vm.expectRevert(bytes("ERC20Permit: invalid signature"));
+        vm.expectRevert(bytes("ERC20: invalid signature"));
         ERC4626ExtendedDecimalsOffset0.permit(
             ownerAddr,
             spenderAddr,
