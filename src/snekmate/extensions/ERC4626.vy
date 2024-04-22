@@ -319,7 +319,7 @@ def permit(owner: address, spender: address, amount: uint256, deadline: uint256,
     @notice See {ERC20-permit} for the function
             docstring.
     """
-    assert block.timestamp <= deadline, "ERC20Permit: expired deadline"
+    assert block.timestamp <= deadline, "ERC20: expired deadline"
 
     current_nonce: uint256 = self.nonces[owner]
     self.nonces[owner] = unsafe_add(current_nonce, 1)
@@ -328,7 +328,7 @@ def permit(owner: address, spender: address, amount: uint256, deadline: uint256,
     hash: bytes32  = self._hash_typed_data_v4(struct_hash)
 
     signer: address = self._recover_vrs(hash, convert(v, uint256), convert(r, uint256), convert(s, uint256))
-    assert signer == owner, "ERC20Permit: invalid signature"
+    assert signer == owner, "ERC20: invalid signature"
 
     self._approve(owner, spender, amount)
 
