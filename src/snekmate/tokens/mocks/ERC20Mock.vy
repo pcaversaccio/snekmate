@@ -101,7 +101,7 @@ def __init__(name_: String[25], symbol_: String[5], decimals_: uint8, initial_su
 
     # We assign the initial token supply required by
     # the Echidna external harness contract.
-    self.initialSupply = erc20.totalSupply()
+    self.initialSupply = erc20.totalSupply
 
 
 # @dev Duplicate implementation of the `external` function

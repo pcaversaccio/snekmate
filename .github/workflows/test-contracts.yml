@@ -84,7 +84,7 @@ jobs:
           FOUNDRY_PROFILE: ci
 
       - name: Foundry tests
-        run: forge test
+        run: forge test --no-match-path "test/tokens/echidna/**/*"
         env:
           FOUNDRY_PROFILE: ci
 
@@ -94,7 +94,7 @@ jobs:
           FOUNDRY_PROFILE: default
 
       - name: Run snapshot
-        run: NO_COLOR=1 forge snapshot >> $GITHUB_STEP_SUMMARY
+        run: NO_COLOR=1 forge snapshot --no-match-path "test/tokens/echidna/**/*" >> $GITHUB_STEP_SUMMARY
         env:
           FOUNDRY_PROFILE: default
 
