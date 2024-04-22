@@ -101,7 +101,7 @@ jobs:
       - name: Run Echidna ERC-20 property tests
         uses: crytic/echidna-action@v2
         with:
-          files: test/tokens/echidna/ERC20Properties.sol
+          files: .
           contract: CryticERC20ExternalHarness
           config: test/tokens/echidna/echidna-config.yaml
           crytic-args: --ignore-compile
