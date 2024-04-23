@@ -148,6 +148,5 @@ def _customMint(owner: address, amount: uint256):
     """
     for _: uint256 in range(amount, bound=64):
         token_id: uint256 = erc721._counter
-        self.usedId[token_id] = True
         erc721._counter = token_id + 1
         erc721._mint(owner, token_id)
