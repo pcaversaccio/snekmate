@@ -9,7 +9,6 @@ concurrency:
 jobs:
   tests:
     runs-on: ${{ matrix.os }}
-    container: ghcr.io/crytic/echidna/echidna:latest
     strategy:
       matrix:
         os:
@@ -102,11 +101,14 @@ jobs:
       - name: Compile contracts
         run: forge build --build-info
 
-      - name: Install Slither
-        run: pip install slither-analyzer
+      - name: Install Homebrew
+        uses: Homebrew/actions/setup-homebrew@master
+
+      - name: Install Echidna
+        run: brew install echidna
 
       - name: Show the Slither version
-        run: slither --version
+        run: echidna --version
 
       - name: Run Echidna ERC-20 property tests
         run: |
