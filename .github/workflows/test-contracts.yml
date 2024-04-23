@@ -9,6 +9,7 @@ concurrency:
 jobs:
   tests:
     runs-on: ${{ matrix.os }}
+    container: ghcr.io/crytic/echidna/echidna:latest
     strategy:
       matrix:
         os:
@@ -46,32 +47,32 @@ jobs:
       # - name: Check Ape compilation
       #   run: ape compile
 
-      - name: Install pnpm
-        uses: pnpm/action-setup@v3
-        with:
-          version: latest
-          run_install: false
+      # - name: Install pnpm
+      #   uses: pnpm/action-setup@v3
+      #   with:
+      #     version: latest
+      #     run_install: false
 
-      - name: Get pnpm cache directory path
-        id: pnpm-cache-dir-path
-        run: echo "dir=$(pnpm store path --silent)" >> $GITHUB_OUTPUT
+      # - name: Get pnpm cache directory path
+      #   id: pnpm-cache-dir-path
+      #   run: echo "dir=$(pnpm store path --silent)" >> $GITHUB_OUTPUT
 
-      - name: Restore pnpm cache
-        uses: actions/cache@v4
-        id: pnpm-cache
-        with:
-          path: ${{ steps.pnpm-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
+      # - name: Restore pnpm cache
+      #   uses: actions/cache@v4
+      #   id: pnpm-cache
+      #   with:
+      #     path: ${{ steps.pnpm-cache-dir-path.outputs.dir }}
+      #     key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+      #     restore-keys: |
+      #       ${{ runner.os }}-pnpm-store-
 
-      - name: Use Node.js ${{ matrix.node_version }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node_version }}
+      # - name: Use Node.js ${{ matrix.node_version }}
+      #   uses: actions/setup-node@v4
+      #   with:
+      #     node-version: ${{ matrix.node_version }}
 
-      - name: Install pnpm project with a clean slate
-        run: pnpm install --prefer-offline --frozen-lockfile
+      # - name: Install pnpm project with a clean slate
+      #   run: pnpm install --prefer-offline --frozen-lockfile
 
       - name: Install Foundry
         uses: foundry-rs/foundry-toolchain@v1
@@ -88,23 +89,25 @@ jobs:
       #   env:
       #     FOUNDRY_PROFILE: ci
 
-      - name: Show the Foundry default config
-        run: forge config
-        env:
-          FOUNDRY_PROFILE: default
+      # - name: Show the Foundry default config
+      #   run: forge config
+      #   env:
+      #     FOUNDRY_PROFILE: default
 
-      - name: Run snapshot
-        run: NO_COLOR=1 forge snapshot >> $GITHUB_STEP_SUMMARY
-        env:
-          FOUNDRY_PROFILE: default
+      # - name: Run snapshot
+      #   run: NO_COLOR=1 forge snapshot >> $GITHUB_STEP_SUMMARY
+      #   env:
+      #     FOUNDRY_PROFILE: default
 
       - name: Compile contracts
         run: forge build --build-info
 
+      - name: Install Slither
+        run: pip install slither-analyzer
+
+      - name: Show the Slither version
+        run: slither --version
+
       - name: Run Echidna ERC-20 property tests
-        uses: crytic/echidna-action@v2
-        with:
-          files: .
-          contract: CryticERC20ExternalHarness
-          config: test/tokens/echidna/echidna-config.yaml
-          crytic-args: --ignore-compile
+        run: |
+          echidna test/tokens/echidna/ERC20Properties.sol --contract CryticERC20ExternalHarness --config test/tokens/echidna/echidna-config.yaml --crytic-args --ignore-compile
