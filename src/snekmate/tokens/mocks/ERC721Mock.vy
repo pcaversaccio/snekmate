@@ -99,6 +99,12 @@ initializes: erc721[ownable := ow]
 exports: erc721.__interface__
 
 
+# @dev The following two parameters are required for the Echidna
+# fuzzing test integration: https://github.com/crytic/properties.
+isMintableOrBurnable: public(constant(bool)) = True
+usedId: public(HashMap[uint256, bool])
+
+
 @deploy
 @payable
 def __init__(name_: String[25], symbol_: String[5], base_uri_: String[80], name_eip712_: String[50], version_eip712_: String[20]):
@@ -125,3 +131,23 @@ def __init__(name_: String[25], symbol_: String[5], base_uri_: String[80], name_
     # to the `msg.sender`.
     ow.__init__()
     erc721.__init__(name_, symbol_, base_uri_, name_eip712_, version_eip712_)
+
+
+# @dev Custom implementation of the `external` function `safe_mint`
+# without access restriction and {IERC721Receiver-onERC721Received}
+# check to enable the Echidna tests for the external mintable properties.
+@external
+def _customMint(owner: address, amount: uint256):
+    """
+    @dev Creates `amount` tokens and assigns them to
+         `owner`, increasing the total supply.
+    @notice Note that each `token_id` must not exist
+            and `owner` cannot be the zero address.
+    @param owner The 20-byte owner address.
+    @param amount The 32-byte token amount to be created.
+    """
+    for _: uint256 in range(amount, bound=64):
+        token_id: uint256 = erc721._counter
+        self.usedId[token_id] = True
+        erc721._counter = token_id + 1
+        erc721._mint(owner, token_id)
