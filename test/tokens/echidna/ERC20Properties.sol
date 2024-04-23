@@ -11,7 +11,8 @@ import {CryticERC20ExternalMintableProperties} from "properties/ERC20/external/p
 
 contract CryticERC20ExternalHarness is
     CryticERC20ExternalBasicProperties,
-    CryticERC20ExternalBurnableProperties
+    CryticERC20ExternalBurnableProperties,
+    CryticERC20ExternalMintableProperties
 {
     string private constant _NAME = "MyToken";
     string private constant _SYMBOL = "WAGMI";
