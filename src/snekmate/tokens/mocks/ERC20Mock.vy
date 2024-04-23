@@ -61,7 +61,7 @@ exports: erc20.__interface__
 
 
 # @dev The following two parameters are required for the Echidna
-# fuzzing test integrations: https://github.com/crytic/properties.
+# fuzzing test integration: https://github.com/crytic/properties.
 isMintableOrBurnable: public(constant(bool)) = True
 initialSupply: public(uint256)
 

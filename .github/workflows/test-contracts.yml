@@ -78,15 +78,15 @@ jobs:
         with:
           version: nightly
 
-      # - name: Show the Foundry CI config
-      #   run: forge config
-      #   env:
-      #     FOUNDRY_PROFILE: ci
+      - name: Show the Foundry CI config
+        run: forge config
+        env:
+          FOUNDRY_PROFILE: ci
 
-      # - name: Foundry tests
-      #   run: forge test
-      #   env:
-      #     FOUNDRY_PROFILE: ci
+      - name: Foundry tests
+        run: forge test
+        env:
+          FOUNDRY_PROFILE: ci
 
       - name: Show the Foundry default config
         run: forge config
@@ -110,3 +110,7 @@ jobs:
       - name: Run Echidna ERC-20 property tests
         run: |
           echidna test/tokens/echidna/ERC20Properties.sol --contract CryticERC20ExternalHarness --config test/tokens/echidna/echidna-config.yaml --crytic-args --ignore-compile
+
+      - name: Run Echidna ERC-721 property tests
+        run: |
+          echidna test/tokens/echidna/ERC721Properties.sol --contract CryticERC721ExternalHarness --config test/tokens/echidna/echidna-config.yaml --crytic-args --ignore-compile
