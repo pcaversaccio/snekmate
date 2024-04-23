@@ -53,7 +53,6 @@ out
 # Python virtual environments
 env
 venv
-venv-linux
 
 # Python build files
 dist
