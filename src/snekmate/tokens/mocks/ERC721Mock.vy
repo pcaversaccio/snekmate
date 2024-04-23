@@ -99,11 +99,6 @@ initializes: erc721[ownable := ow]
 exports: erc721.__interface__
 
 
-# @dev The following parameter is required for the Echidna fuzzing
-# test integration: https://github.com/crytic/properties.
-isMintableOrBurnable: public(constant(bool)) = True
-
-
 @deploy
 @payable
 def __init__(name_: String[25], symbol_: String[5], base_uri_: String[80], name_eip712_: String[50], version_eip712_: String[20]):
