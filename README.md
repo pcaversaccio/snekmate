@@ -181,7 +181,7 @@ echidna test/tokens/echidna/ERC721Properties.sol --contract CryticERC721External
 ```
 
 > [!TIP]
-> If you encounter any issues, please ensure that you have the latest version of Vyper installed locally.
+> If you encounter any issues, please ensure that you have the latest Vyper version installed locally.
 
 ## 🙏🏼 Acknowledgements
 
