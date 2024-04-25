@@ -122,4 +122,4 @@ jobs:
         run: halmos --version
 
       - name: Run Halmos ERC-20 `testHalmosAssertNoBackdoor` test
-        run: halmos --contract ERC20TestHalmos --function testHalmosAssertNoBackdoor
+        run: halmos --contract ERC20TestHalmos --function testHalmosAssertNoBackdoor --storage-layout generic --ffi
