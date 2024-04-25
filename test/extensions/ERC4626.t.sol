@@ -76,8 +76,8 @@ contract ERC4626VaultTest is ERC4626Test {
         );
         ERC4626ExtendedDecimalsOffset0 = IERC4626Extended(
             vyperDeployer.deployContract(
-                "src/snekmate/extensions/mocks/",
-                "ERC4626Mock",
+                "src/snekmate/extensions/",
+                "ERC4626",
                 argsDecimalsOffset0
             )
         );
@@ -104,8 +104,8 @@ contract ERC4626VaultTest is ERC4626Test {
         );
         ERC4626ExtendedDecimalsOffset6 = IERC4626Extended(
             vyperDeployer.deployContract(
-                "src/snekmate/extensions/mocks/",
-                "ERC4626Mock",
+                "src/snekmate/extensions/",
+                "ERC4626",
                 argsDecimalsOffset6
             )
         );
@@ -123,8 +123,8 @@ contract ERC4626VaultTest is ERC4626Test {
         );
         ERC4626ExtendedDecimalsOffset12 = IERC4626Extended(
             vyperDeployer.deployContract(
-                "src/snekmate/extensions/mocks/",
-                "ERC4626Mock",
+                "src/snekmate/extensions/",
+                "ERC4626",
                 argsDecimalsOffset12
             )
         );
@@ -142,8 +142,8 @@ contract ERC4626VaultTest is ERC4626Test {
         );
         ERC4626ExtendedDecimalsOffset18 = IERC4626Extended(
             vyperDeployer.deployContract(
-                "src/snekmate/extensions/mocks/",
-                "ERC4626Mock",
+                "src/snekmate/extensions/",
+                "ERC4626",
                 argsDecimalsOffset18
             )
         );
@@ -196,8 +196,8 @@ contract ERC4626VaultTest is ERC4626Test {
         // solhint-disable-next-line var-name-mixedcase
         IERC4626Extended ERC4626ExtendedDecimalsOffsetEOA = IERC4626Extended(
             vyperDeployer.deployContract(
-                "src/snekmate/extensions/mocks/",
-                "ERC4626Mock",
+                "src/snekmate/extensions/",
+                "ERC4626",
                 argsDecimalsOffsetEOA
             )
         );
@@ -223,8 +223,8 @@ contract ERC4626VaultTest is ERC4626Test {
         // solhint-disable-next-line var-name-mixedcase
         IERC4626Extended ERC4626ExtendedDecimalsOffsetNoDecimals = IERC4626Extended(
                 vyperDeployer.deployContract(
-                    "src/snekmate/extensions/mocks/",
-                    "ERC4626Mock",
+                    "src/snekmate/extensions/",
+                    "ERC4626",
                     argsDecimalsOffsetNoDecimals
                 )
             );
@@ -251,8 +251,8 @@ contract ERC4626VaultTest is ERC4626Test {
         // solhint-disable-next-line var-name-mixedcase
         IERC4626Extended ERC4626ExtendedDecimalsOffsetTooHighDecimals = IERC4626Extended(
                 vyperDeployer.deployContract(
-                    "src/snekmate/extensions/mocks/",
-                    "ERC4626Mock",
+                    "src/snekmate/extensions/",
+                    "ERC4626",
                     argsDecimalsOffsetTooHighDecimals
                 )
             );
@@ -285,8 +285,8 @@ contract ERC4626VaultTest is ERC4626Test {
         vm.expectRevert();
         IERC4626Extended(
             vyperDeployer.deployContract(
-                "src/snekmate/extensions/mocks/",
-                "ERC4626Mock",
+                "src/snekmate/extensions/",
+                "ERC4626",
                 argsDecimalsOffsetOverflow
             )
         );
@@ -2090,8 +2090,8 @@ contract ERC4626VaultInvariants is Test {
         );
         ERC4626Extended = IERC4626Extended(
             vyperDeployer.deployContract(
-                "src/snekmate/extensions/mocks/",
-                "ERC4626Mock",
+                "src/snekmate/extensions/",
+                "ERC4626",
                 args
             )
         );
@@ -2100,14 +2100,14 @@ contract ERC4626VaultInvariants is Test {
         targetSender(deployer);
     }
 
-    function statefulFuzzTotalSupply() public view {
+    function invariantTotalSupply() public view {
         assertEq(
             ERC4626Extended.totalSupply(),
             erc4626VaultHandler.totalSupply()
         );
     }
 
-    function statefulFuzzTotalAssets() public view {
+    function invariantTotalAssets() public view {
         assertEq(
             ERC4626Extended.totalAssets(),
             erc4626VaultHandler.totalAssets()
