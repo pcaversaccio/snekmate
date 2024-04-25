@@ -34,7 +34,7 @@ contract ERC20TestHalmos is ERC20Test {
             _NAME_EIP712,
             _VERSION_EIP712
         );
-        IERC20 erc20 = IERC20(
+        erc20 = IERC20(
             vyperDeployer.deployContract(
                 "src/snekmate/tokens/mocks/",
                 "ERC20Mock",
