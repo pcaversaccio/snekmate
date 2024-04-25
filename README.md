@@ -33,8 +33,7 @@ src
     │   ├── interfaces
     │   │   └── IERC2981 — "EIP-2981 Interface Definition"
     │   └── mocks
-    │       ├── ERC2981Mock — "ERC2981 Module Reference Implementation"
-    │       └── ERC4626Mock — "ERC4626 Module Reference Implementation"
+    │       └── ERC2981Mock — "ERC2981 Module Reference Implementation"
     ├── governance
     │   ├── TimelockController — "Multi-Role-Based Timelock Controller Reference Implementation"
     │   └── mocks
