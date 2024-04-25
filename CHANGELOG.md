@@ -1,6 +1,6 @@
 # 🕓 Changelog
 
-## [`0.1.0`](https://github.com/pcaversaccio/snekmate/releases/tag/v0.0.1) (Unreleased)
+## [`0.1.0`](https://github.com/pcaversaccio/snekmate/releases/tag/v0.1.0) (Unreleased)
 
 ### ♻️ Refactoring
 
