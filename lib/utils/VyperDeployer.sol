@@ -65,9 +65,10 @@ contract VyperDeployer is Create {
          * @dev Create a list of strings with the commands necessary
          * to compile Vyper contracts.
          */
-        string[] memory cmds = new string[](2);
-        cmds[0] = "vyper";
-        cmds[1] = string.concat(path, fileName, ".vy");
+        string[] memory cmds = new string[](3);
+        cmds[0] = "python";
+        cmds[1] = "lib/utils/compile.py";
+        cmds[2] = string.concat(path, fileName, ".vy");
 
         /**
          * @dev Compile the Vyper contract and return the bytecode.
@@ -122,9 +123,10 @@ contract VyperDeployer is Create {
          * @dev Create a list of strings with the commands necessary
          * to compile Vyper contracts.
          */
-        string[] memory cmds = new string[](2);
-        cmds[0] = "vyper";
-        cmds[1] = string.concat(path, fileName, ".vy");
+        string[] memory cmds = new string[](3);
+        cmds[0] = "python";
+        cmds[1] = "lib/utils/compile.py";
+        cmds[2] = string.concat(path, fileName, ".vy");
 
         /**
          * @dev Compile the Vyper contract and return the bytecode.
@@ -187,11 +189,12 @@ contract VyperDeployer is Create {
          * @dev Create a list of strings with the commands necessary
          * to compile Vyper contracts.
          */
-        string[] memory cmds = new string[](4);
-        cmds[0] = "vyper";
-        cmds[1] = string.concat(path, fileName, ".vy");
-        cmds[2] = "--evm-version";
-        cmds[3] = evmVersion;
+        string[] memory cmds = new string[](5);
+        cmds[0] = "python";
+        cmds[1] = "lib/utils/compile.py";
+        cmds[2] = string.concat(path, fileName, ".vy");
+        cmds[3] = "--evm-version";
+        cmds[4] = evmVersion;
 
         /**
          * @dev Compile the Vyper contract and return the bytecode.
@@ -252,11 +255,12 @@ contract VyperDeployer is Create {
          * @dev Create a list of strings with the commands necessary
          * to compile Vyper contracts.
          */
-        string[] memory cmds = new string[](4);
-        cmds[0] = "vyper";
-        cmds[1] = string.concat(path, fileName, ".vy");
-        cmds[2] = "--evm-version";
-        cmds[3] = evmVersion;
+        string[] memory cmds = new string[](5);
+        cmds[0] = "python";
+        cmds[1] = "lib/utils/compile.py";
+        cmds[2] = string.concat(path, fileName, ".vy");
+        cmds[3] = "--evm-version";
+        cmds[4] = evmVersion;
 
         /**
          * @dev Compile the Vyper contract and return the bytecode.

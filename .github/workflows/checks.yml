@@ -15,6 +15,8 @@ jobs:
           - ubuntu-latest
         architecture:
           - x64
+        python_version:
+          - 3.11
         node_version:
           - 20
 
@@ -51,6 +53,18 @@ jobs:
 
       - name: Prettier and lint
         run: pnpm lint:check
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python_version }}
+          architecture: ${{ matrix.architecture }}
+
+      - name: Check formatting with Black
+        uses: psf/black@stable
+        with:
+          options: "--check --verbose"
+          src: "./lib/utils"
 
   codespell:
     runs-on: ${{ matrix.os }}
@@ -94,6 +108,6 @@ jobs:
       - name: Validate URLs
         run: |
           awesome_bot ./*.md src/snekmate/**/*.vy src/snekmate/**/mocks/*.vy src/snekmate/**/interfaces/*.vyi \
-          test/**/*.sol test/**/interfaces/*.sol test/**/mocks/*.sol test/**/scripts/*.js \
+          test/**/*.sol test/**/interfaces/*.sol test/**/mocks/*.sol test/**/scripts/*.js lib/utils/*.py \
           --allow-dupe --allow-redirect --request-delay 0.4 \
           --white-list https://www.wagmi.xyz,https://github.com/pcaversaccio/snekmate.git@,https://github.com/pcaversaccio/snekmate/releases/tag/v0.1.0,https://github.com/pcaversaccio/snekmate/blob/v0.1.0,https://github.com/pcaversaccio/snekmate/compare/v0.0.5...v0.1.0

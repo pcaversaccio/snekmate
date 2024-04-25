@@ -94,6 +94,23 @@ jobs:
           FOUNDRY_PROFILE: default
 
       - name: Run snapshot
-        run: NO_COLOR=1 forge snapshot >> $GITHUB_STEP_SUMMARY
+        run: NO_COLOR=1 forge snapshot --build-info >> $GITHUB_STEP_SUMMARY
         env:
           FOUNDRY_PROFILE: default
+
+      - name: Install Homebrew
+        uses: Homebrew/actions/setup-homebrew@master
+
+      - name: Install Echidna
+        run: brew install echidna
+
+      - name: Show the Echidna version
+        run: echidna --version
+
+      - name: Run Echidna ERC-20 property tests
+        run: |
+          echidna test/tokens/echidna/ERC20Properties.sol --contract CryticERC20ExternalHarness --config test/tokens/echidna/echidna-config.yaml --crytic-args --ignore-compile
+
+      - name: Run Echidna ERC-721 property tests
+        run: |
+          echidna test/tokens/echidna/ERC721Properties.sol --contract CryticERC721ExternalHarness --config test/tokens/echidna/echidna-config.yaml --crytic-args --ignore-compile

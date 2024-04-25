@@ -60,3 +60,7 @@ dist
 
 # Ape build files
 .build
+
+# Echidna files
+echidna-corpus
+crytic-export

@@ -101,7 +101,8 @@ You can install 🐍 snekmate via submodules using [Foundry](https://github.com/
 forge install pcaversaccio/snekmate
 ```
 
-> If you want to leverage 🐍 snekmate's [`VyperDeployer`](./lib/utils/VyperDeployer.sol) contract for your own testing, ensure that you compile the Vyper contracts with the same EVM version as configured in your `foundry.toml` file. The [`VyperDeployer`](./lib/utils/VyperDeployer.sol) contract offers two overloaded `deployContract` functions that allow the configuration of the target EVM version. Please note that since Vyper version [`0.3.8`](https://github.com/vyperlang/vyper/releases/tag/v0.3.8) the default EVM version is set to `shanghai`.
+> [!NOTE]
+> If you want to leverage 🐍 snekmate's [`VyperDeployer`](./lib/utils/VyperDeployer.sol) contract for your own testing, ensure that you compile the Vyper contracts with the same EVM version as configured in your `foundry.toml` file. The [`VyperDeployer`](./lib/utils/VyperDeployer.sol) contract offers two overloaded `deployContract` functions that allow the configuration of the target EVM version. Please note that since Vyper version [`0.3.8`](https://github.com/vyperlang/vyper/releases/tag/v0.3.8) the default EVM version is set to `shanghai`. Furthermore, the [`VyperDeployer`](./lib/utils/VyperDeployer.sol) contract relies on the Python script [`compile.py`](./lib/utils/compile.py) for successful compilation and deployment. Always use the [`VyperDeployer`](./lib/utils/VyperDeployer.sol) contract alongside with the aforementioned script.
 
 ### 2️⃣ PyPI
 
@@ -167,6 +168,21 @@ This repository contains [Foundry](https://github.com/foundry-rs/foundry)-based 
 | `Multicall`               |       ✅       |            ❌            |         ❌          |
 
 ✅ Test Type Implemented &emsp; ❌ Test Type Not Implemented
+
+Furthermore, the [`echidna`](https://github.com/crytic/echidna)-based [property](https://github.com/crytic/properties) tests for the [`ERC20`](./src/snekmate/tokens/ERC20.vy) and [`ERC721`](./src/snekmate/tokens/ERC721.vy) contracts are available in the [`test/tokens/echidna/`](./test/tokens/echidna) directory. You can run the tests by invoking:
+
+```console
+echidna test/tokens/echidna/ERC20Properties.sol --contract CryticERC20ExternalHarness --config test/tokens/echidna/echidna-config.yaml --crytic-args --ignore-compile
+```
+
+and
+
+```console
+echidna test/tokens/echidna/ERC721Properties.sol --contract CryticERC721ExternalHarness --config test/tokens/echidna/echidna-config.yaml --crytic-args --ignore-compile
+```
+
+> [!TIP]
+> If you encounter any issues, please ensure that you have the latest Vyper version installed locally.
 
 ## 🙏🏼 Acknowledgements
 

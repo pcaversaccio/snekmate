@@ -1,6 +1,6 @@
 # 🕓 Changelog
 
-## [`0.1.0`](https://github.com/pcaversaccio/snekmate/releases/tag/v0.0.1) (Unreleased)
+## [`0.1.0`](https://github.com/pcaversaccio/snekmate/releases/tag/v0.1.0) (Unreleased)
 
 ### ♻️ Refactoring
 
@@ -31,6 +31,12 @@
   - [`Multicall`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/utils/Multicall.vy): Make `Multicall` module-friendly. ([#232](https://github.com/pcaversaccio/snekmate/pull/232))
 - **Vyper Contract Deployer**
   - [`VyperDeployer`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/lib/utils/VyperDeployer.sol): Improve error message in the event of a Vyper compilation error. ([#219](https://github.com/pcaversaccio/snekmate/pull/219))
+
+### 🥢 Test Coverage
+
+- **Tokens**
+  - [`ERC20`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/tokens/ERC20.vy): Add `echidna`-based `ERC20` property tests. ([#239](https://github.com/pcaversaccio/snekmate/pull/239))
+  - [`ERC721`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/tokens/ERC721.vy): Add `echidna`-based `ERC721` property tests. ([#239](https://github.com/pcaversaccio/snekmate/pull/239))
 
 ### 👀 Full Changelog
 
