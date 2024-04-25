@@ -10,7 +10,6 @@
   - [`AccessControl`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/auth/AccessControl.vy): Make `AccessControl` module-friendly. ([#216](https://github.com/pcaversaccio/snekmate/pull/216))
 - **Extensions**
   - [`ERC2981`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/extensions/ERC2981.vy): Make `ERC2981` module-friendly. ([#233](https://github.com/pcaversaccio/snekmate/pull/233))
-  - [`ERC4626`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/extensions/ERC4626.vy): Make `ERC4626` module-friendly. ([#236](https://github.com/pcaversaccio/snekmate/pull/236))
 - **Governance**
   - [`TimelockController`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/governance/TimelockController.vy): Make `TimelockController` module-friendly. ([#220](https://github.com/pcaversaccio/snekmate/pull/220))
 - **Tokens**
