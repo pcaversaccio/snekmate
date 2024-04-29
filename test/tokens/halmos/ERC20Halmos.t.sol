@@ -34,11 +34,18 @@ contract ERC20TestHalmos is ERC20Test {
             _NAME_EIP712,
             _VERSION_EIP712
         );
+        /**
+         * @dev Halmos does not currently work with the latest Vyper jump-table-based
+         * dispatchers: https://github.com/a16z/halmos/issues/253. For Halmos-based tests,
+         * we therefore disable the optimiser.
+         */
         erc20 = IERC20(
             vyperDeployer.deployContract(
                 "src/snekmate/tokens/mocks/",
                 "ERC20Mock",
-                args
+                args,
+                "shanghai",
+                "none"
             )
         );
 
