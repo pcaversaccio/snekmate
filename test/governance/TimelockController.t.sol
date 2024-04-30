@@ -4212,8 +4212,11 @@ contract TimelockControllerInvariants is Test {
 
     address private self = address(this);
     address private timelockControllerHandlerAddr;
+    uint256 private initialTimestamp;
 
     function setUp() public {
+        initialTimestamp = block.timestamp;
+
         address[] memory proposers = new address[](1);
         proposers[0] = self;
         address[] memory executors = new address[](1);
@@ -4350,6 +4353,7 @@ contract TimelockControllerInvariants is Test {
      * @dev The execution of a proposal that is not ready is not possible.
      */
     function invariantExecutingNotReadyProposal() public {
+        vm.warp(initialTimestamp);
         uint256[] memory pending = timelockControllerHandler.getPending();
         for (uint256 i = 0; i < pending.length; ++i) {
             // Ensure that the pending proposal cannot be executed.
