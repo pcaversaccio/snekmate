@@ -64,7 +64,7 @@ contract TimelockControllerTest is Test {
 
     address private deployer = address(vyperDeployer);
     address private self = address(this);
-    address private zeroAddress = zeroAddress;
+    address private zeroAddress = address(0);
     address private target = address(callReceiverMock);
     address private timelockControllerAddr;
     address private timelockControllerInitialEventEmptyAdminAddr;
@@ -4216,8 +4216,11 @@ contract TimelockControllerInvariants is Test {
 
     address private self = address(this);
     address private timelockControllerHandlerAddr;
+    uint256 private initialTimestamp;
 
     function setUp() public {
+        initialTimestamp = block.timestamp;
+
         address[] memory proposers = new address[](1);
         proposers[0] = self;
         address[] memory executors = new address[](1);
@@ -4280,7 +4283,9 @@ contract TimelockControllerInvariants is Test {
     function statefulFuzzOnceProposalExecution() public {
         uint256[] memory executed = timelockControllerHandler.getExecuted();
         for (uint256 i = 0; i < executed.length; ++i) {
-            // Ensure that the executed proposal cannot be executed again.
+            /**
+             * @dev Ensure that the executed proposal cannot be executed again.
+             */
             vm.expectRevert("TimelockController: operation is not ready");
             timelockController.execute(
                 timelockControllerHandlerAddr,
@@ -4322,7 +4327,9 @@ contract TimelockControllerInvariants is Test {
                 bytes32(""),
                 bytes32(executed[i])
             );
-            // Ensure that the executed proposal cannot be cancelled.
+            /**
+             * @dev Ensure that the executed proposal cannot be cancelled.
+             */
             vm.expectRevert(
                 "TimelockController: operation cannot be cancelled"
             );
@@ -4336,7 +4343,9 @@ contract TimelockControllerInvariants is Test {
     function statefulFuzzExecutingCancelledProposal() public {
         uint256[] memory cancelled = timelockControllerHandler.getCancelled();
         for (uint256 i = 0; i < cancelled.length; ++i) {
-            // Ensure that the cancelled proposal cannot be executed.
+            /**
+             * @dev Ensure that the cancelled proposal cannot be executed.
+             */
             vm.expectRevert("TimelockController: operation is not ready");
             timelockController.execute(
                 timelockControllerHandlerAddr,
@@ -4354,9 +4363,12 @@ contract TimelockControllerInvariants is Test {
      * @dev The execution of a proposal that is not ready is not possible.
      */
     function statefulFuzzExecutingNotReadyProposal() public {
+        vm.warp(initialTimestamp);
         uint256[] memory pending = timelockControllerHandler.getPending();
         for (uint256 i = 0; i < pending.length; ++i) {
-            // Ensure that the pending proposal cannot be executed.
+            /**
+             * @dev Ensure that the pending proposal cannot be executed.
+             */
             vm.expectRevert("TimelockController: operation is not ready");
             timelockController.execute(
                 timelockControllerHandlerAddr,
@@ -4425,7 +4437,9 @@ contract TimelockControllerHandler is Test {
         uint256 identifier = random % pending.length;
         uint256 operation = pending[identifier];
 
-        // Advance the time to make the proposal ready.
+        /**
+         * @dev Advance the time to make the proposal ready.
+         */
         vm.warp(block.timestamp + minDelay);
         vm.startPrank(executor);
         timelockController.execute(
