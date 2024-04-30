@@ -64,7 +64,7 @@ contract TimelockControllerTest is Test {
 
     address private deployer = address(vyperDeployer);
     address private self = address(this);
-    address private zeroAddress = zeroAddress;
+    address private zeroAddress = address(0);
     address private target = address(callReceiverMock);
     address private timelockControllerAddr;
     address private timelockControllerInitialEventEmptyAdminAddr;
