@@ -12,6 +12,8 @@ import {IERC721Extended} from "../interfaces/IERC721Extended.sol";
 /**
  * @dev Sets the timeout (in milliseconds) for solving assertion
  * violation conditions; `0` means no timeout.
+ * @notice Halmos currently does not support the new native `assert`
+ * cheatcodes in `forge-std` `v1.8.0` and above.
  * @custom:halmos --solver-timeout-assertion 0
  */
 contract ERC721TestHalmos is Test, SymTest {
@@ -174,22 +176,22 @@ contract ERC721TestHalmos is Test, SymTest {
         }
         vm.stopPrank();
 
-        assertEq(from, oldOwner);
-        assertTrue(approved);
-        assertEq(erc721.ownerOf(tokenId), to);
-        assertEq(erc721.getApproved(tokenId), address(0));
-        assertEq(erc721.ownerOf(otherTokenId), oldOtherTokenOwner);
+        assert(from == oldOwner);
+        assert(approved);
+        assert(erc721.ownerOf(tokenId) == to);
+        assert(erc721.getApproved(tokenId) == address(0));
+        assert(erc721.ownerOf(otherTokenId) == oldOtherTokenOwner);
 
         if (from != to) {
             assert(erc721.balanceOf(from) < oldBalanceFrom);
-            assertEq(erc721.balanceOf(from), oldBalanceFrom - 1);
+            assert(erc721.balanceOf(from) == oldBalanceFrom - 1);
             assert(erc721.balanceOf(to) > oldBalanceTo);
-            assertEq(erc721.balanceOf(to), oldBalanceTo + 1);
+            assert(erc721.balanceOf(to) == oldBalanceTo + 1);
         } else {
-            assertEq(erc721.balanceOf(from), oldBalanceFrom);
-            assertEq(erc721.balanceOf(to), oldBalanceTo);
+            assert(erc721.balanceOf(from) == oldBalanceFrom);
+            assert(erc721.balanceOf(to) == oldBalanceTo);
         }
 
-        assertEq(erc721.balanceOf(other), oldBalanceOther);
+        assert(erc721.balanceOf(other) == oldBalanceOther);
     }
 }

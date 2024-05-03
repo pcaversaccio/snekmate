@@ -12,6 +12,8 @@ import {IMath} from "../interfaces/IMath.sol";
 /**
  * @dev Sets the timeout (in milliseconds) for solving assertion
  * violation conditions; `0` means no timeout.
+ * @notice Halmos currently does not support the new native `assert`
+ * cheatcodes in `forge-std` `v1.8.0` and above.
  * @custom:halmos --solver-timeout-assertion 0
  */
 contract MathTestHalmos is Test, SymTest {
@@ -46,9 +48,9 @@ contract MathTestHalmos is Test, SymTest {
         uint256 denominator,
         Math.Rounding rounding
     ) public view {
-        assertEq(
-            math.mul_div(x, y, denominator, Math.unsignedRoundsUp(rounding)),
-            Math.mulDiv(x, y, denominator, rounding)
+        assert(
+            math.mul_div(x, y, denominator, Math.unsignedRoundsUp(rounding)) ==
+                Math.mulDiv(x, y, denominator, rounding)
         );
     }
 
@@ -56,9 +58,9 @@ contract MathTestHalmos is Test, SymTest {
         uint256 x,
         Math.Rounding rounding
     ) public view {
-        assertEq(
-            math.log_2(x, Math.unsignedRoundsUp(rounding)),
-            Math.log2(x, rounding)
+        assert(
+            math.log_2(x, Math.unsignedRoundsUp(rounding)) ==
+                Math.log2(x, rounding)
         );
     }
 
@@ -66,9 +68,9 @@ contract MathTestHalmos is Test, SymTest {
         uint256 x,
         Math.Rounding rounding
     ) public view {
-        assertEq(
-            math.log_10(x, Math.unsignedRoundsUp(rounding)),
-            Math.log10(x, rounding)
+        assert(
+            math.log_10(x, Math.unsignedRoundsUp(rounding)) ==
+                Math.log10(x, rounding)
         );
     }
 
@@ -76,9 +78,9 @@ contract MathTestHalmos is Test, SymTest {
         uint256 x,
         Math.Rounding rounding
     ) public view {
-        assertEq(
-            math.log_256(x, Math.unsignedRoundsUp(rounding)),
-            Math.log256(x, rounding)
+        assert(
+            math.log_256(x, Math.unsignedRoundsUp(rounding)) ==
+                Math.log256(x, rounding)
         );
     }
 }

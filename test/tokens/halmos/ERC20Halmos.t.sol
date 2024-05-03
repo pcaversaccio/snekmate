@@ -10,6 +10,8 @@ import {IERC20} from "openzeppelin/token/ERC20/IERC20.sol";
 /**
  * @dev Sets the timeout (in milliseconds) for solving assertion
  * violation conditions; `0` means no timeout.
+ * @notice Halmos currently does not support the new native `assert`
+ * cheatcodes in `forge-std` `v1.8.0` and above.
  * @custom:halmos --solver-timeout-assertion 0
  */
 contract ERC20TestHalmos is Test, SymTest {
@@ -130,15 +132,15 @@ contract ERC20TestHalmos is Test, SymTest {
 
         if (sender != receiver) {
             assert(erc20.balanceOf(sender) <= oldBalanceSender);
-            assertEq(erc20.balanceOf(sender), oldBalanceSender - amount);
+            assert(erc20.balanceOf(sender) == oldBalanceSender - amount);
             assert(erc20.balanceOf(receiver) >= oldBalanceReceiver);
-            assertEq(erc20.balanceOf(receiver), oldBalanceReceiver + amount);
+            assert(erc20.balanceOf(receiver) == oldBalanceReceiver + amount);
         } else {
-            assertEq(erc20.balanceOf(sender), oldBalanceSender);
-            assertEq(erc20.balanceOf(receiver), oldBalanceReceiver);
+            assert(erc20.balanceOf(sender) == oldBalanceSender);
+            assert(erc20.balanceOf(receiver) == oldBalanceReceiver);
         }
 
-        assertEq(erc20.balanceOf(other), oldBalanceOther);
+        assert(erc20.balanceOf(other) == oldBalanceOther);
     }
 
     /**
@@ -165,19 +167,19 @@ contract ERC20TestHalmos is Test, SymTest {
 
         if (from != to) {
             assert(erc20.balanceOf(from) <= oldBalanceFrom);
-            assertEq(erc20.balanceOf(from), oldBalanceFrom - amount);
+            assert(erc20.balanceOf(from) == oldBalanceFrom - amount);
             assert(erc20.balanceOf(to) >= oldBalanceTo);
-            assertEq(erc20.balanceOf(to), oldBalanceTo + amount);
+            assert(erc20.balanceOf(to) == oldBalanceTo + amount);
             assert(oldAllowance >= amount);
-            assertTrue(
+            assert(
                 oldAllowance == type(uint256).max ||
                     erc20.allowance(from, caller) == oldAllowance - amount
             );
         } else {
-            assertEq(erc20.balanceOf(from), oldBalanceFrom);
-            assertEq(erc20.balanceOf(to), oldBalanceTo);
+            assert(erc20.balanceOf(from) == oldBalanceFrom);
+            assert(erc20.balanceOf(to) == oldBalanceTo);
         }
 
-        assertEq(erc20.balanceOf(other), oldBalanceOther);
+        assert(erc20.balanceOf(other) == oldBalanceOther);
     }
 }
