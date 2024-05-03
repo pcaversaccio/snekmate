@@ -171,28 +171,27 @@ This repository contains [Foundry](https://github.com/foundry-rs/foundry)-based 
 Furthermore, the [`echidna`](https://github.com/crytic/echidna)-based [property](https://github.com/crytic/properties) tests for the [`ERC20`](./src/snekmate/tokens/ERC20.vy) and [`ERC721`](./src/snekmate/tokens/ERC721.vy) contracts are available in the [`test/tokens/echidna/`](./test/tokens/echidna) directory. You can run the tests by invoking:
 
 ```console
-echidna test/tokens/echidna/ERC20Properties.sol --contract CryticERC20ExternalHarness --config test/tokens/echidna/echidna-config.yaml --crytic-args --ignore-compile
-```
+Run Echidna ERC-20 property tests
+~$ echidna test/tokens/echidna/ERC20Properties.sol --contract CryticERC20ExternalHarness --config test/tokens/echidna/echidna-config.yaml --crytic-args --ignore-compile
 
-and
-
-```console
-echidna test/tokens/echidna/ERC721Properties.sol --contract CryticERC721ExternalHarness --config test/tokens/echidna/echidna-config.yaml --crytic-args --ignore-compile
+Run Echidna ERC-721 property tests
+~$ echidna test/tokens/echidna/ERC721Properties.sol --contract CryticERC721ExternalHarness --config test/tokens/echidna/echidna-config.yaml --crytic-args --ignore-compile
 ```
 
 > [!TIP]
 > If you encounter any issues, please ensure that you have the latest Vyper version installed locally.
 
-Eventually, the [`halmos`](https://github.com/a16z/halmos)-based symbolic tests for the [`ERC20`](./src/snekmate/tokens/ERC20.vy) and [`ERC721`](./src/snekmate/tokens/ERC721.vy) contracts are available in the [`test/tokens/halmos/`](./test/tokens/halmos) directory. You can run the tests by invoking:
+Eventually, the [`halmos`](https://github.com/a16z/halmos)-based symbolic tests for the [`ERC20`](./src/snekmate/tokens/ERC20.vy), [`ERC721`](./src/snekmate/tokens/ERC721.vy), and [`Math`](./src/snekmate/utils/Math.vy) contracts are available in the [`test/tokens/halmos/`](./test/tokens/halmos) directory. You can run the tests by invoking:
 
 ```console
-halmos --contract ERC20TestHalmos --function testHalmos --storage-layout generic --ffi
-```
+# Run Halmos ERC-20 symbolic tests.
+~$ halmos --contract ERC20TestHalmos --function testHalmos --storage-layout generic --ffi
 
-and
+# Run Halmos ERC-721 symbolic tests.
+~$ halmos --contract ERC721TestHalmos --function testHalmos --storage-layout generic --ffi
 
-```console
-halmos --contract ERC721TestHalmos --function testHalmos --storage-layout generic --ffi
+# Run Halmos Math symbolic tests.
+~$ halmos --contract MathTestHalmos --function testHalmos --storage-layout generic --ffi
 ```
 
 ## 🙏🏼 Acknowledgements

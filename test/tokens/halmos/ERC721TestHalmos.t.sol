@@ -9,11 +9,11 @@ import {IERC721} from "openzeppelin/token/ERC721/IERC721.sol";
 
 import {IERC721Extended} from "../interfaces/IERC721Extended.sol";
 
-// /**
-//  * @dev Sets the timeout (in milliseconds) for solving assertion
-//  * violation conditions; `0` means no timeout.
-//  * @custom:halmos --solver-timeout-assertion 0
-//  */
+/**
+ * @dev Sets the timeout (in milliseconds) for solving assertion
+ * violation conditions; `0` means no timeout.
+ * @custom:halmos --solver-timeout-assertion 0
+ */
 contract ERC721TestHalmos is Test, SymTest {
     string private constant _NAME = "MyNFT";
     string private constant _SYMBOL = "WAGMI";
@@ -28,11 +28,11 @@ contract ERC721TestHalmos is Test, SymTest {
     address[] private holders;
     uint256[] private tokenIds;
 
-    // /**
-    //  * @dev Sets timeout (in milliseconds) for solving branching
-    //  * conditions; `0` means no timeout.
-    //  * @custom:halmos --solver-timeout-branching 1000
-    //  */
+    /**
+     * @dev Sets timeout (in milliseconds) for solving branching
+     * conditions; `0` means no timeout.
+     * @custom:halmos --solver-timeout-branching 1000
+     */
     function setUp() public {
         bytes memory args = abi.encode(
             _NAME,
@@ -174,22 +174,22 @@ contract ERC721TestHalmos is Test, SymTest {
         }
         vm.stopPrank();
 
-        assert(from == oldOwner);
-        assert(approved);
-        assert(erc721.ownerOf(tokenId) == to);
-        assert(erc721.getApproved(tokenId) == address(0));
-        assert(erc721.ownerOf(otherTokenId) == oldOtherTokenOwner);
+        assertEq(from, oldOwner);
+        assertTrue(approved);
+        assertEq(erc721.ownerOf(tokenId), to);
+        assertEq(erc721.getApproved(tokenId), address(0));
+        assertEq(erc721.ownerOf(otherTokenId), oldOtherTokenOwner);
 
         if (from != to) {
             assert(erc721.balanceOf(from) < oldBalanceFrom);
-            assert(erc721.balanceOf(from) == oldBalanceFrom - 1);
+            assertEq(erc721.balanceOf(from), oldBalanceFrom - 1);
             assert(erc721.balanceOf(to) > oldBalanceTo);
-            assert(erc721.balanceOf(to) == oldBalanceTo + 1);
+            assertEq(erc721.balanceOf(to), oldBalanceTo + 1);
         } else {
-            assert(erc721.balanceOf(from) == oldBalanceFrom);
-            assert(erc721.balanceOf(to) == oldBalanceTo);
+            assertEq(erc721.balanceOf(from), oldBalanceFrom);
+            assertEq(erc721.balanceOf(to), oldBalanceTo);
         }
 
-        assert(erc721.balanceOf(other) == oldBalanceOther);
+        assertEq(erc721.balanceOf(other), oldBalanceOther);
     }
 }

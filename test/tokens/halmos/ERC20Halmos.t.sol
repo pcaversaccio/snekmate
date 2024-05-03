@@ -130,15 +130,15 @@ contract ERC20TestHalmos is Test, SymTest {
 
         if (sender != receiver) {
             assert(erc20.balanceOf(sender) <= oldBalanceSender);
-            assert(erc20.balanceOf(sender) == oldBalanceSender - amount);
+            assertEq(erc20.balanceOf(sender), oldBalanceSender - amount);
             assert(erc20.balanceOf(receiver) >= oldBalanceReceiver);
-            assert(erc20.balanceOf(receiver) == oldBalanceReceiver + amount);
+            assertEq(erc20.balanceOf(receiver), oldBalanceReceiver + amount);
         } else {
-            assert(erc20.balanceOf(sender) == oldBalanceSender);
-            assert(erc20.balanceOf(receiver) == oldBalanceReceiver);
+            assertEq(erc20.balanceOf(sender), oldBalanceSender);
+            assertEq(erc20.balanceOf(receiver), oldBalanceReceiver);
         }
 
-        assert(erc20.balanceOf(other) == oldBalanceOther);
+        assertEq(erc20.balanceOf(other), oldBalanceOther);
     }
 
     /**
@@ -165,19 +165,19 @@ contract ERC20TestHalmos is Test, SymTest {
 
         if (from != to) {
             assert(erc20.balanceOf(from) <= oldBalanceFrom);
-            assert(erc20.balanceOf(from) == oldBalanceFrom - amount);
+            assertEq(erc20.balanceOf(from), oldBalanceFrom - amount);
             assert(erc20.balanceOf(to) >= oldBalanceTo);
-            assert(erc20.balanceOf(to) == oldBalanceTo + amount);
+            assertEq(erc20.balanceOf(to), oldBalanceTo + amount);
             assert(oldAllowance >= amount);
-            assert(
+            assertTrue(
                 oldAllowance == type(uint256).max ||
                     erc20.allowance(from, caller) == oldAllowance - amount
             );
         } else {
-            assert(erc20.balanceOf(from) == oldBalanceFrom);
-            assert(erc20.balanceOf(to) == oldBalanceTo);
+            assertEq(erc20.balanceOf(from), oldBalanceFrom);
+            assertEq(erc20.balanceOf(to), oldBalanceTo);
         }
 
-        assert(erc20.balanceOf(other) == oldBalanceOther);
+        assertEq(erc20.balanceOf(other), oldBalanceOther);
     }
 }
