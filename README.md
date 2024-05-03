@@ -183,10 +183,16 @@ echidna test/tokens/echidna/ERC721Properties.sol --contract CryticERC721External
 > [!TIP]
 > If you encounter any issues, please ensure that you have the latest Vyper version installed locally.
 
-Eventually, the [`halmos`](https://github.com/a16z/halmos)-based symbolic tests for the [`ERC20`](./src/snekmate/tokens/ERC20.vy) contract are available in the [`test/tokens/halmos/`](./test/tokens/halmos) directory. You can run the tests by invoking:
+Eventually, the [`halmos`](https://github.com/a16z/halmos)-based symbolic tests for the [`ERC20`](./src/snekmate/tokens/ERC20.vy) and [`ERC721`](./src/snekmate/tokens/ERC721.vy) contracts are available in the [`test/tokens/halmos/`](./test/tokens/halmos) directory. You can run the tests by invoking:
 
 ```console
-halmos --contract ERC20TestHalmos --function testHalmosAssertNoBackdoor
+halmos --contract ERC20TestHalmos --function testHalmos --storage-layout generic --ffi
+```
+
+and
+
+```console
+halmos --contract ERC721TestHalmos --function testHalmos --storage-layout generic --ffi
 ```
 
 ## 🙏🏼 Acknowledgements
