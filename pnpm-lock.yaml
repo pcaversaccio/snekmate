@@ -8,17 +8,17 @@ importers:
   .:
     devDependencies:
       "@eslint/js":
-        specifier: ^9.1.1
-        version: 9.1.1
+        specifier: ^9.2.0
+        version: 9.2.0
       "@openzeppelin/merkle-tree":
         specifier: ^1.0.6
         version: 1.0.6
       eslint:
-        specifier: ^9.1.1
-        version: 9.1.1
+        specifier: ^9.2.0
+        version: 9.2.0
       eslint-config-prettier:
         specifier: ^9.1.0
-        version: 9.1.0(eslint@9.1.1)
+        version: 9.1.0(eslint@9.2.0)
       ethers:
         specifier: ^6.12.1
         version: 6.12.1
@@ -89,10 +89,10 @@ packages:
       }
     engines: { node: ^18.18.0 || ^20.9.0 || >=21.1.0 }
 
-  "@eslint/js@9.1.1":
+  "@eslint/js@9.2.0":
     resolution:
       {
-        integrity: sha512-5WoDz3Y19Bg2BnErkZTp0en+c/i9PvgFS7MBe1+m60HjFr0hrphlAGp4yzI7pxpt4xShln4ZyYp4neJm8hmOkQ==,
+        integrity: sha512-ESiIudvhoYni+MdsI8oD7skpprZ89qKocwRM2KEvhhBJ9nl5MRh7BXU5GTod7Mdygq+AUl+QzId6iWJKR/wABA==,
       }
     engines: { node: ^18.18.0 || ^20.9.0 || >=21.1.0 }
 
@@ -239,10 +239,10 @@ packages:
         integrity: sha512-93zYdMES/c1D69yZiKDBj0V24vqNzB/koF26KPaagAfd3P/4gUlh3Dys5ogAK+Exi9QyzlD8x/08Zt7wIKcDcA==,
       }
 
-  "@humanwhocodes/retry@0.2.3":
+  "@humanwhocodes/retry@0.2.4":
     resolution:
       {
-        integrity: sha512-X38nUbachlb01YMlvPFojKoiXq+LzZvuSce70KPMPdeM1Rj03k4dR7lDslhbqXn3Ang4EU3+EAmwEAsbrjHW3g==,
+        integrity: sha512-Ttl/jHpxfS3st5sxwICYfk4pOH0WrLI1SpW283GgQL7sCWU7EHIOhX4b4fkIxr3tkfzwg8+FNojtzsIEE7Ecgg==,
       }
     engines: { node: ">=18.18" }
 
@@ -759,10 +759,10 @@ packages:
       }
     engines: { node: ^18.18.0 || ^20.9.0 || >=21.1.0 }
 
-  eslint@9.1.1:
+  eslint@9.2.0:
     resolution:
       {
-        integrity: sha512-b4cRQ0BeZcSEzPpY2PjFY70VbO32K7BStTGtBsnIGdTSEEQzBi8hPBcGQmTG2zUvFr9uLe0TK42bw8YszuHEqg==,
+        integrity: sha512-0n/I88vZpCOzO+PQpt0lbsqmn9AsnsJAQseIqhZFI8ibQT0U1AkEKRxA3EVMos0BoHSXDQvCXY25TUjB5tr8Og==,
       }
     engines: { node: ^18.18.0 || ^20.9.0 || >=21.1.0 }
     hasBin: true
@@ -1279,10 +1279,10 @@ packages:
         integrity: sha512-Ntyt4AIXyaLIuMHF6IOoTakB3K+RWxwtsHNRxllEoA6vPwP9o4866g6YWDLUdnucilZhmkxiHwHr11gAENw+QA==,
       }
 
-  node-gyp-build@4.8.0:
+  node-gyp-build@4.8.1:
     resolution:
       {
-        integrity: sha512-u6fs2AEUljNho3EYTJNBfImO5QTo/J/1Etd+NVdCj7qWKUSN/bSLkZwhDv7I+w/MSC6qJ4cknepkAYykDdK8og==,
+        integrity: sha512-OSs33Z9yWr148JZcbZd5WiAXhh/n9z8TxQcdMhIOlpN9AhWpLfvVFO73+m77bBABQMaY9XSvIa+qk0jlI7Gcaw==,
       }
     hasBin: true
 
@@ -1748,9 +1748,9 @@ snapshots:
       js-tokens: 4.0.0
       picocolors: 1.0.0
 
-  "@eslint-community/eslint-utils@4.4.0(eslint@9.1.1)":
+  "@eslint-community/eslint-utils@4.4.0(eslint@9.2.0)":
     dependencies:
-      eslint: 9.1.1
+      eslint: 9.2.0
       eslint-visitor-keys: 3.4.3
 
   "@eslint-community/regexpp@4.10.0": {}
@@ -1769,7 +1769,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  "@eslint/js@9.1.1": {}
+  "@eslint/js@9.2.0": {}
 
   "@ethereumjs/rlp@4.0.1": {}
 
@@ -1914,7 +1914,7 @@ snapshots:
 
   "@humanwhocodes/object-schema@2.0.3": {}
 
-  "@humanwhocodes/retry@0.2.3": {}
+  "@humanwhocodes/retry@0.2.4": {}
 
   "@noble/curves@1.2.0":
     dependencies:
@@ -2166,9 +2166,9 @@ snapshots:
 
   escape-string-regexp@4.0.0: {}
 
-  eslint-config-prettier@9.1.0(eslint@9.1.1):
+  eslint-config-prettier@9.1.0(eslint@9.2.0):
     dependencies:
-      eslint: 9.1.1
+      eslint: 9.2.0
 
   eslint-scope@8.0.1:
     dependencies:
@@ -2179,15 +2179,15 @@ snapshots:
 
   eslint-visitor-keys@4.0.0: {}
 
-  eslint@9.1.1:
+  eslint@9.2.0:
     dependencies:
-      "@eslint-community/eslint-utils": 4.4.0(eslint@9.1.1)
+      "@eslint-community/eslint-utils": 4.4.0(eslint@9.2.0)
       "@eslint-community/regexpp": 4.10.0
       "@eslint/eslintrc": 3.0.2
-      "@eslint/js": 9.1.1
+      "@eslint/js": 9.2.0
       "@humanwhocodes/config-array": 0.13.0
       "@humanwhocodes/module-importer": 1.0.1
-      "@humanwhocodes/retry": 0.2.3
+      "@humanwhocodes/retry": 0.2.4
       "@nodelib/fs.walk": 1.2.8
       ajv: 6.12.6
       chalk: 4.1.2
@@ -2421,7 +2421,7 @@ snapshots:
   keccak@3.0.4:
     dependencies:
       node-addon-api: 2.0.2
-      node-gyp-build: 4.8.0
+      node-gyp-build: 4.8.1
       readable-stream: 3.6.2
 
   keyv@4.5.4:
@@ -2489,7 +2489,7 @@ snapshots:
 
   node-addon-api@2.0.2: {}
 
-  node-gyp-build@4.8.0: {}
+  node-gyp-build@4.8.1: {}
 
   normalize-url@8.0.1: {}
 
