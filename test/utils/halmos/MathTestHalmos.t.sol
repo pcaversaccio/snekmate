@@ -112,13 +112,23 @@ contract MathTestHalmos is Test, SymTest {
         );
     }
 
-    function testHalmosAssertWadLn(int256 x) public view {
-        assert(math.wad_ln(x) == FixedPointMathLib.lnWad(x));
-    }
+    /**
+     * @dev Currently commented out, as the timeout for the Z3 solver does not work for
+     * the queries of this test, where the Z3 solver is constantly running and consumes
+     * a lot of memory, causing the CI to crash due to out of memory.
+     */
+    // function testHalmosAssertWadLn(int256 x) public view {
+    //     assert(math.wad_ln(x) == FixedPointMathLib.lnWad(x));
+    // }
 
-    function testHalmosAssertWadExp(int256 x) public view {
-        assert(math.wad_exp(x) == FixedPointMathLib.expWad(x));
-    }
+    /**
+     * @dev Currently commented out, as the timeout for the Z3 solver does not work for
+     * the queries of this test, where the Z3 solver is constantly running and consumes
+     * a lot of memory, causing the CI to crash due to out of memory.
+     */
+    // function testHalmosAssertWadExp(int256 x) public view {
+    //     assert(math.wad_exp(x) == FixedPointMathLib.expWad(x));
+    // }
 
     /**
      * @dev Currently commented out, as the timeout for the Z3 solver does not work for
