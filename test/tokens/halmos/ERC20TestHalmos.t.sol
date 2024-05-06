@@ -31,13 +31,13 @@ contract ERC20TestHalmos is Test, SymTest {
      * conditions; `0` means no timeout.
      * @custom:halmos --solver-timeout-branching 1000
      */
-    function setUpSymbolic(uint256 initial_supply_) public {
+    function setUpSymbolic(uint256 initialSupply_) public {
         uint8 decimals = uint8(svm.createUint(8, "decimals"));
         bytes memory args = abi.encode(
             _NAME,
             _SYMBOL,
             decimals,
-            initial_supply_,
+            initialSupply_,
             _NAME_EIP712,
             _VERSION_EIP712
         );

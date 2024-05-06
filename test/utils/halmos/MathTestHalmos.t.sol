@@ -6,7 +6,6 @@ import {SymTest} from "halmos-cheatcodes/SymTest.sol";
 import {VyperDeployer} from "utils/VyperDeployer.sol";
 
 import {Math} from "openzeppelin/utils/math/Math.sol";
-import {SignedMath} from "openzeppelin/utils/math/SignedMath.sol";
 import {FixedPointMathLib} from "solady/utils/FixedPointMathLib.sol";
 
 import {IMath} from "../interfaces/IMath.sol";

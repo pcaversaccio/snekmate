@@ -148,7 +148,7 @@ contract ERC1155TestHalmos is Test, SymTest {
         } else if (selector == IERC1155.safeBatchTransferFrom.selector) {
             uint256[] memory ids = new uint256[](5);
             uint256[] memory values = new uint256[](5);
-            for (uint i = 0; i < ids.length; i++) {
+            for (uint256 i = 0; i < ids.length; i++) {
                 ids[i] = svm.createUint256("ids");
                 values[i] = svm.createUint256("values");
             }

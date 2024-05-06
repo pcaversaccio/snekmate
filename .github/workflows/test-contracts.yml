@@ -19,6 +19,10 @@ jobs:
           - 3.11
         node_version:
           - 20
+        echidna:
+          - "--config test/tokens/echidna/echidna-config.yaml --crytic-args --ignore-compile"
+        halmos:
+          - "--function testHalmos --storage-layout generic --solver-parallel --test-parallel --early-exit --ffi --statistics -vvv"
 
     steps:
       - name: Checkout
@@ -78,57 +82,55 @@ jobs:
         with:
           version: nightly
 
-      # - name: Show the Foundry CI config
-      #   run: forge config
-      #   env:
-      #     FOUNDRY_PROFILE: ci
+      - name: Show the Foundry CI config
+        run: forge config
+        env:
+          FOUNDRY_PROFILE: ci
 
-      # - name: Foundry tests
-      #   run: forge test
-      #   env:
-      #     FOUNDRY_PROFILE: ci
+      - name: Foundry tests
+        run: forge test
+        env:
+          FOUNDRY_PROFILE: ci
 
-      # - name: Show the Foundry default config
-      #   run: forge config
-      #   env:
-      #     FOUNDRY_PROFILE: default
+      - name: Show the Foundry default config
+        run: forge config
+        env:
+          FOUNDRY_PROFILE: default
 
-      # - name: Run snapshot
-      #   run: NO_COLOR=1 forge snapshot --build-info >> $GITHUB_STEP_SUMMARY
-      #   env:
-      #     FOUNDRY_PROFILE: default
+      - name: Run snapshot
+        run: NO_COLOR=1 forge snapshot --build-info >> $GITHUB_STEP_SUMMARY
+        env:
+          FOUNDRY_PROFILE: default
 
-      # - name: Install Homebrew
-      #   uses: Homebrew/actions/setup-homebrew@master
+      - name: Install Homebrew
+        uses: Homebrew/actions/setup-homebrew@master
 
-      # - name: Install Echidna
-      #   run: brew install echidna
+      - name: Install Echidna
+        run: brew install echidna
 
-      # - name: Show the Echidna version
-      #   run: echidna --version
+      - name: Show the Echidna version
+        run: echidna --version
 
-      # - name: Run Echidna ERC-20 property tests
-      #   run: |
-      #     echidna test/tokens/echidna/ERC20Properties.sol --contract CryticERC20ExternalHarness --config test/tokens/echidna/echidna-config.yaml --crytic-args --ignore-compile
+      - name: Run Echidna ERC-20 property tests
+        run: echidna test/tokens/echidna/ERC20Properties.sol --contract CryticERC20ExternalHarness ${{ matrix.echidna }}
 
-      # - name: Run Echidna ERC-721 property tests
-      #   run: |
-      #     echidna test/tokens/echidna/ERC721Properties.sol --contract CryticERC721ExternalHarness --config test/tokens/echidna/echidna-config.yaml --crytic-args --ignore-compile
+      - name: Run Echidna ERC-721 property tests
+        run: echidna test/tokens/echidna/ERC721Properties.sol --contract CryticERC721ExternalHarness ${{ matrix.echidna }}
 
       - name: Install Halmos
-        run: pip install halmos
+        run: pip install git+https://github.com/a16z/halmos
 
       - name: Show the Halmos version
         run: halmos --version
 
       - name: Run Halmos ERC-20 symbolic tests
-        run: halmos --contract ERC20TestHalmos --function testHalmos --storage-layout generic --solver-parallel --test-parallel --early-exit --ffi --statistics -vvv
+        run: halmos --contract ERC20TestHalmos ${{ matrix.halmos }}
 
-      # - name: Run Halmos ERC-721 symbolic tests
-      #   run: halmos --contract ERC721TestHalmos --function testHalmos --storage-layout generic --solver-parallel --test-parallel --early-exit --ffi --statistics -vvv
+      - name: Run Halmos ERC-721 symbolic tests
+        run: halmos --contract ERC721TestHalmos ${{ matrix.halmos }}
 
       - name: Run Halmos ERC-1155 symbolic tests
-        run: halmos --contract ERC1155TestHalmos --function testHalmos --storage-layout generic --solver-parallel --test-parallel --early-exit --ffi --statistics -vvv
+        run: halmos --contract ERC1155TestHalmos ${{ matrix.halmos }}
 
       - name: Run Halmos Math symbolic tests
-        run: halmos --contract MathTestHalmos --function testHalmos --storage-layout generic --solver-parallel --test-parallel --early-exit --ffi --statistics -vvv
+        run: halmos --contract MathTestHalmos ${{ matrix.halmos }}
