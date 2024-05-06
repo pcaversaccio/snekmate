@@ -17,10 +17,8 @@ import {IERC20} from "openzeppelin/token/ERC20/IERC20.sol";
 contract ERC20TestHalmos is Test, SymTest {
     string private constant _NAME = "MyToken";
     string private constant _SYMBOL = "WAGMI";
-    uint8 private constant _DECIMALS = 18;
     string private constant _NAME_EIP712 = "MyToken";
     string private constant _VERSION_EIP712 = "1";
-    uint256 private constant _INITIAL_SUPPLY = type(uint8).max;
 
     VyperDeployer private vyperDeployer = new VyperDeployer();
 
@@ -33,12 +31,13 @@ contract ERC20TestHalmos is Test, SymTest {
      * conditions; `0` means no timeout.
      * @custom:halmos --solver-timeout-branching 1000
      */
-    function setUp() public {
+    function setUpSymbolic(uint256 initial_supply_) public {
+        uint8 decimals = uint8(svm.createUint(8, "decimals"));
         bytes memory args = abi.encode(
             _NAME,
             _SYMBOL,
-            _DECIMALS,
-            _INITIAL_SUPPLY,
+            decimals,
+            initial_supply_,
             _NAME_EIP712,
             _VERSION_EIP712
         );
