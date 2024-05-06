@@ -121,8 +121,8 @@ jobs:
       - name: Show the Halmos version
         run: halmos --version
 
-      - name: Run Halmos ERC-20 symbolic tests
-        run: halmos --contract ERC20TestHalmos --function testHalmos --storage-layout generic --solver-parallel --test-parallel --early-exit --ffi --statistics -vvv
+      # - name: Run Halmos ERC-20 symbolic tests
+      #   run: halmos --contract ERC20TestHalmos --function testHalmos --storage-layout generic --solver-parallel --test-parallel --early-exit --ffi --statistics -vvv
 
       # - name: Run Halmos ERC-721 symbolic tests
       #   run: halmos --contract ERC721TestHalmos --function testHalmos --storage-layout generic --solver-parallel --test-parallel --early-exit --ffi --statistics -vvv

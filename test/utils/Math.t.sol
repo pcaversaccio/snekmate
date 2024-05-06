@@ -29,7 +29,7 @@ contract MathTest is Test {
         uint256 denominator
     ) internal pure returns (uint256 result) {
         // solhint-disable-next-line no-inline-assembly
-        assembly {
+        assembly ("memory-safe") {
             result := mulmod(x, y, denominator)
         }
     }

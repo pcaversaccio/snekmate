@@ -6,6 +6,8 @@ import {SymTest} from "halmos-cheatcodes/SymTest.sol";
 import {VyperDeployer} from "utils/VyperDeployer.sol";
 
 import {Math} from "openzeppelin/utils/math/Math.sol";
+import {SignedMath} from "openzeppelin/utils/math/SignedMath.sol";
+import {FixedPointMathLib} from "solady/utils/FixedPointMathLib.sol";
 
 import {IMath} from "../interfaces/IMath.sol";
 
@@ -42,17 +44,43 @@ contract MathTestHalmos is Test, SymTest {
         );
     }
 
-    function testHalmosAssertMulDiv(
-        uint256 x,
-        uint256 y,
-        uint256 denominator,
-        Math.Rounding rounding
-    ) public view {
-        assert(
-            math.mul_div(x, y, denominator, Math.unsignedRoundsUp(rounding)) ==
-                Math.mulDiv(x, y, denominator, rounding)
-        );
+    function testHalmosAssertUint256Average(uint256 x, uint256 y) public view {
+        assert(math.uint256_average(x, y) == Math.average(x, y));
     }
+
+    function testHalmosAssertInt256Average(int256 x, int256 y) public view {
+        assert(math.int256_average(x, y) == SignedMath.average(x, y));
+    }
+
+    function testHalmosAssertCeilDiv(uint256 x, uint256 y) public view {
+        assert(math.ceil_div(x, y) == Math.ceilDiv(x, y));
+    }
+
+    function testHalmosAssertSignum(int256 x) public view {
+        int256 signum;
+        // solhint-disable-next-line no-inline-assembly
+        assembly ("memory-safe") {
+            signum := sub(sgt(x, 0), slt(x, 0))
+        }
+        assert(math.signum(x) == signum);
+    }
+
+    /**
+     * @dev Currently commented out, as the timeout for the Z3 solver does not work for
+     * the queries of this test, where the Z3 solver is constantly running and consumes
+     * a lot of memory, causing the CI to crash due to out of memory.
+     */
+    // function testHalmosAssertMulDiv(
+    //     uint256 x,
+    //     uint256 y,
+    //     uint256 denominator,
+    //     Math.Rounding rounding
+    // ) public view {
+    //     assert(
+    //         math.mul_div(x, y, denominator, Math.unsignedRoundsUp(rounding)) ==
+    //             Math.mulDiv(x, y, denominator, rounding)
+    //     );
+    // }
 
     function testHalmosAssertLog2(
         uint256 x,
@@ -82,5 +110,28 @@ contract MathTestHalmos is Test, SymTest {
             math.log_256(x, Math.unsignedRoundsUp(rounding)) ==
                 Math.log256(x, rounding)
         );
+    }
+
+    function testHalmosAssertWadLn(int256 x) public view {
+        assert(math.wad_ln(x) == FixedPointMathLib.lnWad(x));
+    }
+
+    function testHalmosAssertWadExp(int256 x) public view {
+        assert(math.wad_exp(x) == FixedPointMathLib.expWad(x));
+    }
+
+    function testHalmosAssertCbrt(uint256 x, bool roundup) public view {
+        if (!roundup) {
+            assert(math.cbrt(x, roundup) == FixedPointMathLib.cbrt(x));
+        } else {
+            assert(
+                math.cbrt(x, roundup) >= FixedPointMathLib.cbrt(x) &&
+                    math.cbrt(x, roundup) <= FixedPointMathLib.cbrt(x) + 1
+            );
+        }
+    }
+
+    function testHalmosAssertWadCbrt(uint256 x) public view {
+        assert(math.wad_cbrt(x) == FixedPointMathLib.cbrtWad(x));
     }
 }

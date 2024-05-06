@@ -37,7 +37,11 @@
   - [`ERC20`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/tokens/ERC20.vy):
     - Add `echidna`-based `ERC20` property tests. ([#239](https://github.com/pcaversaccio/snekmate/pull/239))
     - Add `halmos`-based `ERC20` symbolic tests. ([#240](https://github.com/pcaversaccio/snekmate/pull/240))
-  - [`ERC721`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/tokens/ERC721.vy): Add `echidna`-based `ERC721` property tests. ([#239](https://github.com/pcaversaccio/snekmate/pull/239))
+  - [`ERC721`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/tokens/ERC721.vy):
+    - Add `echidna`-based `ERC721` property tests. ([#239](https://github.com/pcaversaccio/snekmate/pull/239))
+    - Add `halmos`-based `ERC20` symbolic tests. ([#240](https://github.com/pcaversaccio/snekmate/pull/240))
+- **Utility Functions**
+  - [`Math`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/utils/Math.vy): Add `halmos`-based `ERC20` symbolic tests. ([#240](https://github.com/pcaversaccio/snekmate/pull/240))
 
 ### 👀 Full Changelog
 

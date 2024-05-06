@@ -20,7 +20,7 @@ contract ERC1271MaliciousMock is IERC1271 {
         bytes memory
     ) public pure override returns (bytes4) {
         // solhint-disable-next-line no-inline-assembly
-        assembly {
+        assembly ("memory-safe") {
             mstore(
                 0,
                 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
