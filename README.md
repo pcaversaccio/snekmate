@@ -171,10 +171,10 @@ This repository contains [Foundry](https://github.com/foundry-rs/foundry)-based 
 Furthermore, the [`echidna`](https://github.com/crytic/echidna)-based [property](https://github.com/crytic/properties) tests for the [`ERC20`](./src/snekmate/tokens/ERC20.vy) and [`ERC721`](./src/snekmate/tokens/ERC721.vy) contracts are available in the [`test/tokens/echidna/`](./test/tokens/echidna) directory. You can run the tests by invoking:
 
 ```console
-Run Echidna ERC-20 property tests
+# Run Echidna ERC-20 property tests.
 ~$ echidna test/tokens/echidna/ERC20Properties.sol --contract CryticERC20ExternalHarness --config test/tokens/echidna/echidna-config.yaml --crytic-args --ignore-compile
 
-Run Echidna ERC-721 property tests
+# Run Echidna ERC-721 property tests.
 ~$ echidna test/tokens/echidna/ERC721Properties.sol --contract CryticERC721ExternalHarness --config test/tokens/echidna/echidna-config.yaml --crytic-args --ignore-compile
 ```
 

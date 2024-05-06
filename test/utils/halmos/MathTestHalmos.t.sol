@@ -49,7 +49,7 @@ contract MathTestHalmos is Test, SymTest {
     }
 
     function testHalmosAssertInt256Average(int256 x, int256 y) public view {
-        assert(math.int256_average(x, y) == SignedMath.average(x, y));
+        assert(math.int256_average(x, y) == FixedPointMathLib.avg(x, y));
     }
 
     function testHalmosAssertCeilDiv(uint256 x, uint256 y) public view {
@@ -120,18 +120,28 @@ contract MathTestHalmos is Test, SymTest {
         assert(math.wad_exp(x) == FixedPointMathLib.expWad(x));
     }
 
-    function testHalmosAssertCbrt(uint256 x, bool roundup) public view {
-        if (!roundup) {
-            assert(math.cbrt(x, roundup) == FixedPointMathLib.cbrt(x));
-        } else {
-            assert(
-                math.cbrt(x, roundup) >= FixedPointMathLib.cbrt(x) &&
-                    math.cbrt(x, roundup) <= FixedPointMathLib.cbrt(x) + 1
-            );
-        }
-    }
+    /**
+     * @dev Currently commented out, as the timeout for the Z3 solver does not work for
+     * the queries of this test, where the Z3 solver is constantly running and consumes
+     * a lot of memory, causing the CI to crash due to out of memory.
+     */
+    // function testHalmosAssertCbrt(uint256 x, bool roundup) public view {
+    //     if (!roundup) {
+    //         assert(math.cbrt(x, roundup) == FixedPointMathLib.cbrt(x));
+    //     } else {
+    //         assert(
+    //             math.cbrt(x, roundup) >= FixedPointMathLib.cbrt(x) &&
+    //                 math.cbrt(x, roundup) <= FixedPointMathLib.cbrt(x) + 1
+    //         );
+    //     }
+    // }
 
-    function testHalmosAssertWadCbrt(uint256 x) public view {
-        assert(math.wad_cbrt(x) == FixedPointMathLib.cbrtWad(x));
-    }
+    /**
+     * @dev Currently commented out, as the timeout for the Z3 solver does not work for
+     * the queries of this test, where the Z3 solver is constantly running and consumes
+     * a lot of memory, causing the CI to crash due to out of memory.
+     */
+    // function testHalmosAssertWadCbrt(uint256 x) public view {
+    //     assert(math.wad_cbrt(x) == FixedPointMathLib.cbrtWad(x));
+    // }
 }
