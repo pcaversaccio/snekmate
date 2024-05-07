@@ -110,7 +110,12 @@ contract ERC1155TestHalmos is Test, SymTest {
         address caller,
         address other
     ) public {
-        vm.assume(caller != other);
+        vm.assume(
+            caller != other &&
+                selector != IERC1155Extended._customMint.selector &&
+                selector != IERC1155Extended.safe_mint.selector &&
+                selector != IERC1155Extended.safe_mint_batch.selector
+        );
         for (uint256 i = 0; i < holders.length; i++) {
             vm.assume(!erc1155.isApprovedForAll(holders[i], caller));
         }

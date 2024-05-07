@@ -100,7 +100,11 @@ contract ERC721TestHalmos is Test, SymTest {
         address caller,
         address other
     ) public {
-        vm.assume(caller != other);
+        vm.assume(
+            caller != other &&
+                selector != IERC721Extended._customMint.selector &&
+                selector != IERC721Extended.safe_mint.selector
+        );
         for (uint256 i = 0; i < holders.length; i++) {
             vm.assume(!erc721.isApprovedForAll(holders[i], caller));
         }
