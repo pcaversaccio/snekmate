@@ -178,10 +178,7 @@ Furthermore, the [`echidna`](https://github.com/crytic/echidna)-based [property]
 ~$ echidna test/tokens/echidna/ERC721Properties.sol --contract CryticERC721ExternalHarness --config test/tokens/echidna/echidna-config.yaml --crytic-args --ignore-compile
 ```
 
-> [!TIP]
-> If you encounter any issues, please ensure that you have the latest Vyper version installed locally.
-
-Eventually, the [`halmos`](https://github.com/a16z/halmos)-based symbolic tests for the [`ERC20`](./src/snekmate/tokens/ERC20.vy), [`ERC721`](./src/snekmate/tokens/ERC721.vy), and [`Math`](./src/snekmate/utils/Math.vy) contracts are available in the [`test/tokens/halmos/`](./test/tokens/halmos) directory. You can run the tests by invoking:
+Eventually, the [`halmos`](https://github.com/a16z/halmos)-based symbolic tests for the [`ERC20`](./src/snekmate/tokens/ERC20.vy), [`ERC721`](./src/snekmate/tokens/ERC721.vy), [`ERC1155`](./src/snekmate/tokens/ERC1155.vy), and [`Math`](./src/snekmate/utils/Math.vy) contracts are available in the [`test/tokens/halmos/`](./test/tokens/halmos) directory. You can run the tests by invoking:
 
 ```console
 # Run Halmos ERC-20 symbolic tests.
@@ -196,6 +193,9 @@ Eventually, the [`halmos`](https://github.com/a16z/halmos)-based symbolic tests 
 # Run Halmos Math symbolic tests.
 ~$ halmos --contract MathTestHalmos --function testHalmos --storage-layout generic --ffi
 ```
+
+> [!TIP]
+> If you encounter any issues, please ensure that you have the [latest](https://github.com/vyperlang/vyper/releases) Vyper version installed locally.
 
 ## 🙏🏼 Acknowledgements
 
