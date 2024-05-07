@@ -4345,7 +4345,7 @@ contract TimelockControllerInvariants is Test {
         uint256[] memory cancelled = timelockControllerHandler.getCancelled();
         uint256[] memory pending = timelockControllerHandler.getPending();
         for (uint256 i = 0; i < cancelled.length; ++i) {
-            for (uint256 j = 0; i < pending.length; ++i) {
+            for (uint256 j = 0; j < pending.length; ++j) {
                 /**
                  * @dev Check if a `cancelled` element is also part of the `pending` array.
                  */
