@@ -4341,6 +4341,17 @@ contract TimelockControllerInvariants is Test {
      * @dev The execution of a proposal that has been cancelled is not possible.
      */
     function statefulFuzzExecutingCancelledProposal() public {
+        timelockControllerHandler.schedule(3);
+
+        timelockControllerHandler.cancel(
+            65677001550888140188330102723587045671713371614332231
+        );
+        timelockControllerHandler.schedule(79964050677889);
+
+        timelockControllerHandler.schedule(3);
+        timelockControllerHandler.execute(147361462983211373378734001576695);
+
+        vm.warp(initialTimestamp);
         uint256[] memory cancelled = timelockControllerHandler.getCancelled();
         for (uint256 i = 0; i < cancelled.length; ++i) {
             /**

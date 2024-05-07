@@ -16,7 +16,7 @@ jobs:
         architecture:
           - x64
         python_version:
-          - 3.11
+          - 3.12
         node_version:
           - 20
 
