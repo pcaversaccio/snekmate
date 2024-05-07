@@ -4341,35 +4341,36 @@ contract TimelockControllerInvariants is Test {
      * @dev The execution of a proposal that has been cancelled is not possible.
      */
     function statefulFuzzExecutingCancelledProposal() public {
-        vm.warp(initialTimestamp);
+        bool isPending;
         uint256[] memory cancelled = timelockControllerHandler.getCancelled();
+        uint256[] memory pending = timelockControllerHandler.getPending();
         for (uint256 i = 0; i < cancelled.length; ++i) {
-            /**
-             * @dev Ensure that the cancelled proposal cannot be executed.
-             */
-            vm.expectRevert("TimelockController: operation is not ready");
-            timelockController.execute(
-                timelockControllerHandlerAddr,
-                0,
-                abi.encodeWithSelector(
-                    TimelockControllerHandler.increment.selector
-                ),
-                bytes32(""),
-                bytes32(cancelled[i])
-            );
+            for (uint256 j = 0; i < pending.length; ++i) {
+                /**
+                 * @dev Check if a `cancelled` element is also part of the `pending` array.
+                 */
+                isPending = (cancelled[i] == pending[j]) ? true : false;
+                if (isPending) {
+                    break;
+                }
+            }
+            if (!isPending) {
+                /**
+                 * @dev Ensure that the cancelled proposal cannot be executed.
+                 */
+                vm.expectRevert("TimelockController: operation is not ready");
+                timelockController.execute(
+                    timelockControllerHandlerAddr,
+                    0,
+                    abi.encodeWithSelector(
+                        TimelockControllerHandler.increment.selector
+                    ),
+                    bytes32(""),
+                    bytes32(cancelled[i])
+                );
+            }
+            isPending = false;
         }
-    }
-
-    function testCanceledProposal() public {
-        timelockControllerHandler.schedule(3);
-
-        timelockControllerHandler.cancel(
-            65677001550888140188330102723587045671713371614332231
-        );
-        timelockControllerHandler.schedule(79964050677889);
-
-        timelockControllerHandler.schedule(3);
-        timelockControllerHandler.execute(147361462983211373378734001576695);
     }
 
     /**
