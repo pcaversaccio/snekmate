@@ -1196,13 +1196,6 @@ packages:
       }
     engines: { node: ^12.20.0 || ^14.13.1 || >=16.0.0 }
 
-  lru-cache@6.0.0:
-    resolution:
-      {
-        integrity: sha512-Jo6dJ04CmSjuznwJSS3pUeWmd/H0ffTlkXXgwZi+eq1UCmqQwCh+eLsYOYCwY991i2Fah4h1BEMCx4qThGbsiA==,
-      }
-    engines: { node: ">=10" }
-
   merkletreejs@0.3.11:
     resolution:
       {
@@ -1527,10 +1520,10 @@ packages:
         integrity: sha512-rp3So07KcdmmKbGvgaNxQSJr7bGVSVk5S9Eq1F+ppbRo70+YeaDxkw5Dd8NPN+GD6bjnYm2VuPuCXmpuYvmCXQ==,
       }
 
-  semver@7.6.0:
+  semver@7.6.1:
     resolution:
       {
-        integrity: sha512-EnwXhrlwXMk9gKu5/flx5sv/an57AkRplG3hTK68W7FRDN+k+OWBj65M7719OkA82XLBxrcX0KSHj+X5COhOVg==,
+        integrity: sha512-f/vbBsu+fOiYt+lmwZV0rVwJScl46HppnOA1ZvIuBWKOTlllpyJ3bfVax76/OrhCH38dyxoDIA8K7uB963IYgA==,
       }
     engines: { node: ">=10" }
     hasBin: true
@@ -1717,12 +1710,6 @@ packages:
         optional: true
       utf-8-validate:
         optional: true
-
-  yallist@4.0.0:
-    resolution:
-      {
-        integrity: sha512-3wdGidZyq5PB084XLES5TpOSRA3wjXAlIWMhum2kRcv/41Sn2emQ0dycQW4uZXLejwKvg6EsvbdlVL+FYEct7A==,
-      }
 
   yocto-queue@0.1.0:
     resolution:
@@ -2451,10 +2438,6 @@ snapshots:
 
   lowercase-keys@3.0.0: {}
 
-  lru-cache@6.0.0:
-    dependencies:
-      yallist: 4.0.0
-
   merkletreejs@0.3.11:
     dependencies:
       bignumber.js: 9.1.2
@@ -2526,7 +2509,7 @@ snapshots:
       got: 12.6.1
       registry-auth-token: 5.0.2
       registry-url: 6.0.1
-      semver: 7.6.0
+      semver: 7.6.1
 
   parent-module@1.0.1:
     dependencies:
@@ -2555,7 +2538,7 @@ snapshots:
     dependencies:
       "@solidity-parser/parser": 0.17.0
       prettier: 3.2.5
-      semver: 7.6.0
+      semver: 7.6.1
       solidity-comments-extractor: 0.0.8
 
   prettier@2.8.8:
@@ -2614,9 +2597,7 @@ snapshots:
 
   safe-buffer@5.2.1: {}
 
-  semver@7.6.0:
-    dependencies:
-      lru-cache: 6.0.0
+  semver@7.6.1: {}
 
   shebang-command@2.0.0:
     dependencies:
@@ -2646,7 +2627,7 @@ snapshots:
       latest-version: 7.0.0
       lodash: 4.17.21
       pluralize: 8.0.0
-      semver: 7.6.0
+      semver: 7.6.1
       strip-ansi: 6.0.1
       table: 6.8.2
       text-table: 0.2.0
@@ -2733,7 +2714,5 @@ snapshots:
   wrappy@1.0.2: {}
 
   ws@8.5.0: {}
-
-  yallist@4.0.0: {}
 
   yocto-queue@0.1.0: {}
