@@ -138,7 +138,7 @@ exports: (
 asset: public(immutable(address))
 
 
-# @dev Stores the ERC-20 interface of the underlying
+# @dev Stores the ERC-20 interface object of the underlying
 # token used for the vault for accounting, depositing,
 # and withdrawing.
 _ASSET: immutable(IERC20)
