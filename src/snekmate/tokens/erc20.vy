@@ -77,7 +77,7 @@ implements: IERC5267
 
 
 # @dev We import and use the `ownable` module.
-from ..auth import Ownable as ownable
+from ..auth import ownable
 uses: ownable
 
 
