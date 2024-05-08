@@ -40,7 +40,8 @@
 
 ### ❗️ Breaking Changes
 
-- The file names of 🐍 snekmate module and mock contracts use the _snake case_ notation (e.g. `my_module`), whilst the Vyper interface files `.vyi` use the notation _Pascal case_ prefixed with `I` (e.g. `IMyInterface`). ([#241](https://github.com/pcaversaccio/snekmate/pull/241))
+- The file names of 🐍 snekmate module and mock contracts use the _snake case_ notation (e.g. `my_module`), whilst the Vyper interface files `.vyi` use the notation _Pascal case_ prefixed with `I` (e.g. `IMyInterface`). ([#242](https://github.com/pcaversaccio/snekmate/pull/242))
+- The mathematical utility functions `_log_2`, `_log_10`, and `_log_256` are renamed to `_log2`, `_log10`, and `_log256`. ([#242](https://github.com/pcaversaccio/snekmate/pull/242))
 
 ### 👀 Full Changelog
 
