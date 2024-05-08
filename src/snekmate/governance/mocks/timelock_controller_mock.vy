@@ -1,7 +1,7 @@
 # pragma version ~=0.4.0rc2
 """
-@title TimelockController Module Reference Implementation
-@custom:contract-name TimelockControllerMock
+@title `timelock_controller` Module Reference Implementation
+@custom:contract-name timelock_controller_mock
 @license GNU Affero General Public License v3.0 only
 @author pcaversaccio
 """
@@ -34,20 +34,20 @@ from ...tokens.interfaces import IERC1155Receiver
 implements: IERC1155Receiver
 
 
-# @dev We import and initialise the `AccessControl` module.
-from ...auth import AccessControl as ac
+# @dev We import and initialise the `access_control` module.
+from ...auth import access_control as ac
 initializes: ac
 
 
-# @dev We import and initialise the `TimelockController` module.
-from .. import TimelockController as tc
+# @dev We import and initialise the `timelock_controller` module.
+from .. import timelock_controller as tc
 initializes: tc[access_control := ac]
 
 
 # @dev We export (i.e. the runtime bytecode exposes these
 # functions externally, allowing them to be called using
 # the ABI encoding specification) all `external` functions
-# from the `TimelockController` module. The built-in dunder
+# from the `timelock_controller` module. The built-in dunder
 # method `__interface__` allows you to export all functions
 # of a module without specifying the individual functions (see
 # https://github.com/vyperlang/vyper/pull/3919). Please take

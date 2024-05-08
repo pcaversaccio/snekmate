@@ -1,17 +1,17 @@
 # pragma version ~=0.4.0rc2
 """
-@title ECDSA Module Reference Implementation
-@custom:contract-name ECDSAMock
+@title `ecdsa` Module Reference Implementation
+@custom:contract-name ecdsa_mock
 @license GNU Affero General Public License v3.0 only
 @author pcaversaccio
 """
 
 
-# @dev We import the `ECDSA` module.
-# @notice Please note that the `ECDSA` module
+# @dev We import the `ecdsa` module.
+# @notice Please note that the `ecdsa` module
 # is stateless and therefore does not require
 # the `initializes` keyword for initialisation.
-from .. import ECDSA as ec
+from .. import ecdsa as ec
 
 
 @deploy

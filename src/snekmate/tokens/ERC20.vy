@@ -1,7 +1,7 @@
 # pragma version ~=0.4.0rc2
 """
 @title Modern and Gas-Efficient ERC-20 + EIP-2612 Implementation
-@custom:contract-name ERC20
+@custom:contract-name erc20
 @license GNU Affero General Public License v3.0 only
 @author pcaversaccio
 @notice These functions implement the ERC-20
@@ -76,28 +76,28 @@ from ..utils.interfaces import IERC5267
 implements: IERC5267
 
 
-# @dev We import and use the `Ownable` module.
+# @dev We import and use the `ownable` module.
 from ..auth import Ownable as ownable
 uses: ownable
 
 
-# @dev We import the `ECDSA` module.
-# @notice Please note that the `ECDSA` module
+# @dev We import the `ecdsa` module.
+# @notice Please note that the `ecdsa` module
 # is stateless and therefore does not require
 # the `uses` keyword for usage.
-from ..utils import ECDSA as ecdsa
+from ..utils import ecdsa
 
 
-# @dev We import and use the `EIP712DomainSeparator` module.
-from ..utils import EIP712DomainSeparator as eip712_domain_separator
+# @dev We import and use the `eip712_domain_separator` module.
+from ..utils import eip712_domain_separator
 initializes: eip712_domain_separator
 
 
 # @dev We export (i.e. the runtime bytecode exposes these
 # functions externally, allowing them to be called using
 # the ABI encoding specification) the `external` getter
-# function `owner` from the `Ownable` module as well as the
-# function `eip712Domain` from the `EIP712DomainSeparator`
+# function `owner` from the `ownable` module as well as the
+# function `eip712Domain` from the `eip712_domain_separator`
 # module.
 # @notice Please note that you must always also export (if
 # required by the contract logic) `public` declared `constant`,
@@ -107,7 +107,7 @@ exports: (
     # @notice This ERC-20 implementation includes the `transfer_ownership`
     # and `renounce_ownership` functions, which incorporate
     # the additional built-in `is_minter` role logic and are
-    # therefore not exported from the `Ownable` module.
+    # therefore not exported from the `ownable` module.
     ownable.owner,
     eip712_domain_separator.eip712Domain,
 )
@@ -201,7 +201,7 @@ def __init__(name_: String[25], symbol_: String[5], decimals_: uint8, name_eip71
          is declared as `payable`.
     @notice At initialisation time, the `owner` role will be
             assigned to the `msg.sender` since we `uses` the
-            `Ownable` module, which implements the aforementioned
+            `ownable` module, which implements the aforementioned
             logic at contract creation time.
     @param name_ The maximum 25-character user-readable
            string name of the token.
@@ -335,7 +335,7 @@ def mint(owner: address, amount: uint256):
             Note that `owner` cannot be the zero address.
     @param amount The 32-byte token amount to be created.
     """
-    assert self.is_minter[msg.sender], "ERC20: access is denied"
+    assert self.is_minter[msg.sender], "erc20: access is denied"
     self._mint(owner, amount)
 
 
@@ -352,10 +352,10 @@ def set_minter(minter: address, status: bool):
     @param status The Boolean variable that sets the status.
     """
     ownable._check_owner()
-    assert minter != empty(address), "ERC20: minter is the zero address"
+    assert minter != empty(address), "erc20: minter is the zero address"
     # We ensured in the previous step `ownable._check_owner`
     # that `msg.sender` is the `owner`.
-    assert minter != msg.sender, "ERC20: minter is owner address"
+    assert minter != msg.sender, "erc20: minter is owner address"
     self.is_minter[minter] = status
     log RoleMinterChanged(minter, status)
 
@@ -382,7 +382,7 @@ def permit(owner: address, spender: address, amount: uint256, deadline: uint256,
     @param r The secp256k1 32-byte signature parameter `r`.
     @param s The secp256k1 32-byte signature parameter `s`.
     """
-    assert block.timestamp <= deadline, "ERC20: expired deadline"
+    assert block.timestamp <= deadline, "erc20: expired deadline"
 
     current_nonce: uint256 = self.nonces[owner]
     self.nonces[owner] = unsafe_add(current_nonce, 1)
@@ -391,7 +391,7 @@ def permit(owner: address, spender: address, amount: uint256, deadline: uint256,
     hash: bytes32  = eip712_domain_separator._hash_typed_data_v4(struct_hash)
 
     signer: address = ecdsa._recover_vrs(hash, convert(v, uint256), convert(r, uint256), convert(s, uint256))
-    assert signer == owner, "ERC20: invalid signature"
+    assert signer == owner, "erc20: invalid signature"
 
     self._approve(owner, spender, amount)
 
@@ -421,7 +421,7 @@ def transfer_ownership(new_owner: address):
     @param new_owner The 20-byte address of the new owner.
     """
     ownable._check_owner()
-    assert new_owner != empty(address), "ERC20: new owner is the zero address"
+    assert new_owner != empty(address), "erc20: new owner is the zero address"
 
     self.is_minter[msg.sender] = False
     log RoleMinterChanged(msg.sender, False)
@@ -466,13 +466,13 @@ def _transfer(owner: address, to: address, amount: uint256):
     @param to The 20-byte receiver address.
     @param amount The 32-byte token amount to be transferred.
     """
-    assert owner != empty(address), "ERC20: transfer from the zero address"
-    assert to != empty(address), "ERC20: transfer to the zero address"
+    assert owner != empty(address), "erc20: transfer from the zero address"
+    assert to != empty(address), "erc20: transfer to the zero address"
 
     self._before_token_transfer(owner, to, amount)
 
     owner_balanceOf: uint256 = self.balanceOf[owner]
-    assert owner_balanceOf >= amount, "ERC20: transfer amount exceeds balance"
+    assert owner_balanceOf >= amount, "erc20: transfer amount exceeds balance"
     self.balanceOf[owner] = unsafe_sub(owner_balanceOf, amount)
     self.balanceOf[to] = unsafe_add(self.balanceOf[to], amount)
     log Transfer(owner, to, amount)
@@ -492,7 +492,7 @@ def _mint(owner: address, amount: uint256):
     @param owner The 20-byte owner address.
     @param amount The 32-byte token amount to be created.
     """
-    assert owner != empty(address), "ERC20: mint to the zero address"
+    assert owner != empty(address), "erc20: mint to the zero address"
 
     self._before_token_transfer(empty(address), owner, amount)
 
@@ -514,12 +514,12 @@ def _burn(owner: address, amount: uint256):
     @param owner The 20-byte owner address.
     @param amount The 32-byte token amount to be destroyed.
     """
-    assert owner != empty(address), "ERC20: burn from the zero address"
+    assert owner != empty(address), "erc20: burn from the zero address"
 
     self._before_token_transfer(owner, empty(address), amount)
 
     account_balance: uint256 = self.balanceOf[owner]
-    assert account_balance >= amount, "ERC20: burn amount exceeds balance"
+    assert account_balance >= amount, "erc20: burn amount exceeds balance"
     self.balanceOf[owner] = unsafe_sub(account_balance, amount)
     self.totalSupply = unsafe_sub(self.totalSupply, amount)
     log Transfer(owner, empty(address), amount)
@@ -539,8 +539,8 @@ def _approve(owner: address, spender: address, amount: uint256):
     @param amount The 32-byte token amount that is
            allowed to be spent by the `spender`.
     """
-    assert owner != empty(address), "ERC20: approve from the zero address"
-    assert spender != empty(address), "ERC20: approve to the zero address"
+    assert owner != empty(address), "erc20: approve from the zero address"
+    assert spender != empty(address), "erc20: approve to the zero address"
 
     self.allowance[owner][spender] = amount
     log Approval(owner, spender, amount)
@@ -568,7 +568,7 @@ def _spend_allowance(owner: address, spender: address, amount: uint256):
         # of 0. However, this poisoning attack is not an on-chain
         # vulnerability. All assets are safe. It is an off-chain
         # log interpretation issue.
-        assert current_allowance >= amount, "ERC20: insufficient allowance"
+        assert current_allowance >= amount, "erc20: insufficient allowance"
         self._approve(owner, spender, unsafe_sub(current_allowance, amount))
 
 

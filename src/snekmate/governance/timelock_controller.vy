@@ -1,13 +1,13 @@
 # pragma version ~=0.4.0rc2
 """
 @title Multi-Role-Based Timelock Controller Reference Implementation
-@custom:contract-name TimelockController
+@custom:contract-name timelock_controller
 @license GNU Affero General Public License v3.0 only
 @author pcaversaccio
 @custom:coauthor cairoeth
 @notice This module enables the timelocking of operations by scheduling
         and executing transactions. By leveraging `AccessControl`, the
-        `TimelockController` contract introduces three roles:
+        `timelock_controller` contract introduces three roles:
           1. proposer (`PROPOSER_ROLE`),
           2. executor (`EXECUTOR_ROLE`), and
           3. canceller (`CANCELLER_ROLE`).
@@ -32,7 +32,7 @@
         The latter is useful for processes that have to be executed in the
         same block.
 
-        Please note that the `TimelockController` contract is able to receive
+        Please note that the `timelock_controller` contract is able to receive
         and transfer ERC-721 and ERC-1155 tokens.
 
         The implementation is inspired by OpenZeppelin's implementation here:
@@ -67,8 +67,8 @@ from ..tokens.interfaces import IERC1155Receiver
 implements: IERC1155Receiver
 
 
-# @dev We import and use the `AccessControl` module.
-from ..auth import AccessControl as access_control
+# @dev We import and use the `access_control` module.
+from ..auth import access_control
 uses: access_control
 
 
@@ -76,7 +76,7 @@ uses: access_control
 # functions externally, allowing them to be called using
 # the ABI encoding specification) all `external` functions
 # (with the exception of the `supportsInterface` function)
-# from the `AccessControl` module.
+# from the `access_control` module.
 # @notice Please note that you must always also export (if
 # required by the contract logic) `public` declared `constant`,
 # `immutable`, and state variables, for which Vyper automatically
@@ -443,7 +443,7 @@ def schedule_batch(targets: DynArray[address, _DYNARRAY_BOUND], amounts: DynArra
            Must be greater than or equal to the minimum delay.
     """
     access_control._check_role(PROPOSER_ROLE, msg.sender)
-    assert ((len(targets) == len(amounts)) and (len(targets) == len(payloads))), "TimelockController: length mismatch"
+    assert ((len(targets) == len(amounts)) and (len(targets) == len(payloads))), "timelock_controller: length mismatch"
     id: bytes32 = self._hash_operation_batch(targets, amounts, payloads, predecessor, salt)
 
     self._schedule(id, delay)
@@ -467,7 +467,7 @@ def cancel(id: bytes32):
     @param id The 32-byte operation identifier.
     """
     access_control._check_role(CANCELLER_ROLE, msg.sender)
-    assert self._is_operation_pending(id), "TimelockController: operation cannot be cancelled"
+    assert self._is_operation_pending(id), "timelock_controller: operation cannot be cancelled"
     self.get_timestamp[id] = empty(uint256)
     log Cancelled(id)
 
@@ -522,7 +522,7 @@ def execute_batch(targets: DynArray[address, _DYNARRAY_BOUND], amounts: DynArray
                      the operation during reentrancy are caught.
     """
     self._only_role_or_open_role(EXECUTOR_ROLE)
-    assert ((len(targets) == len(amounts)) and (len(targets) == len(payloads))), "TimelockController: length mismatch"
+    assert ((len(targets) == len(amounts)) and (len(targets) == len(payloads))), "timelock_controller: length mismatch"
     id: bytes32 = self._hash_operation_batch(targets, amounts, payloads, predecessor, salt)
 
     self._before_call(id, predecessor)
@@ -543,14 +543,14 @@ def update_delay(new_delay: uint256):
     """
     @dev Changes the minimum timelock duration for future
          operations. Emits a `MinimumDelayChange` event.
-    @notice Note that the caller must be the `TimelockController`
+    @notice Note that the caller must be the `timelock_controller`
             contract itself. This can only be achieved by scheduling
-            and later executing an operation where the `TimelockController`
+            and later executing an operation where the `timelock_controller`
             contract is the target and the payload is the ABI-encoded
             call to this function.
     @param new_delay The new 32-byte minimum delay in seconds.
     """
-    assert msg.sender == self, "TimelockController: caller must be timelock"
+    assert msg.sender == self, "timelock_controller: caller must be timelock"
     log MinimumDelayChange(self.get_minimum_delay, new_delay)
     self.get_minimum_delay = new_delay
 
@@ -754,8 +754,8 @@ def _schedule(id: bytes32, delay: uint256):
            becomes valid. Must be greater than or equal
            to the minimum delay.
     """
-    assert not(self._is_operation(id)), "TimelockController: operation already scheduled"
-    assert delay >= self.get_minimum_delay, "TimelockController: insufficient delay"
+    assert not(self._is_operation(id)), "timelock_controller: operation already scheduled"
+    assert delay >= self.get_minimum_delay, "timelock_controller: insufficient delay"
     self.get_timestamp[id] = block.timestamp + delay
 
 
@@ -778,7 +778,7 @@ def _execute(target: address, amount: uint256, payload: Bytes[1_024]):
             # Bubble up the revert reason.
             raw_revert(return_data)
 
-        raise "TimelockController: underlying transaction reverted"
+        raise "timelock_controller: underlying transaction reverted"
 
 
 @internal
@@ -791,8 +791,8 @@ def _before_call(id: bytes32, predecessor: bytes32):
     @param predecessor The 32-byte hash of the preceding
            operation.
     """
-    assert self._is_operation_ready(id), "TimelockController: operation is not ready"
-    assert ((predecessor == empty(bytes32)) or (self._is_operation_done(predecessor))), "TimelockController: missing dependency"
+    assert self._is_operation_ready(id), "timelock_controller: operation is not ready"
+    assert ((predecessor == empty(bytes32)) or (self._is_operation_done(predecessor))), "timelock_controller: missing dependency"
 
 
 @internal
@@ -802,7 +802,7 @@ def _after_call(id: bytes32):
          executing (an) operation call(s).
     @param id The 32-byte operation identifier.
     """
-    assert self._is_operation_ready(id), "TimelockController: operation is not ready"
+    assert self._is_operation_ready(id), "timelock_controller: operation is not ready"
     self.get_timestamp[id] = _DONE_TIMESTAMP
 
 

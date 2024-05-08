@@ -1,7 +1,7 @@
 # pragma version ~=0.4.0rc2
 """
 @title `CREATE` EVM Opcode Utility Functions for Address Calculations
-@custom:contract-name CreateAddress
+@custom:contract-name create_address
 @license GNU Affero General Public License v3.0 only
 @author pcaversaccio
 @notice These functions can be used to compute in advance the address
@@ -60,7 +60,7 @@ def _compute_address_rlp(deployer: address, nonce: uint256) -> address:
 
     # The theoretical allowed limit, based on EIP-2681, for an
     # account nonce is 2**64-2: https://eips.ethereum.org/EIPS/eip-2681.
-    assert nonce < convert(max_value(uint64), uint256), "CreateAddress: invalid nonce value"
+    assert nonce < convert(max_value(uint64), uint256), "create_address: invalid nonce value"
 
     # The integer zero is treated as an empty byte string and
     # therefore has only one length prefix, 0x80, which is

@@ -1,11 +1,11 @@
 # pragma version ~=0.4.0rc2
 """
 @title ECDSA and EIP-1271 Signature Verification Functions
-@custom:contract-name SignatureChecker
+@custom:contract-name signature_checker
 @license GNU Affero General Public License v3.0 only
 @author pcaversaccio
 @notice Signature verification helper functions that can be used
-        instead of {ECDSA-_recover_sig} to seamlessly support both
+        instead of {ecdsa-_recover_sig} to seamlessly support both
         ECDSA signatures from externally-owned accounts (EOAs) as
         well as EIP-1271 (https://eips.ethereum.org/EIPS/eip-1271)
         signatures from smart contract wallets like Argent and Safe.
@@ -22,11 +22,11 @@
 """
 
 
-# @dev We import the `ECDSA` module.
-# @notice Please note that the `ECDSA` module
+# @dev We import the `ecdsa` module.
+# @notice Please note that the `ecdsa` module
 # is stateless and therefore does not require
 # the `uses` keyword for usage.
-from . import ECDSA as ecdsa
+from . import ecdsa
 
 
 # @dev The 4-byte function selector of `isValidSignature(bytes32,bytes)`.
@@ -55,7 +55,7 @@ def _is_valid_signature_now(signer: address, hash: bytes32, signature: Bytes[65]
          for a given `signer` and message digest `hash`.
          If the signer is a smart contract, the signature
          is validated against that smart contract using
-         EIP-1271, otherwise it's validated using {ECDSA-_recover_sig}.
+         EIP-1271, otherwise it's validated using {ecdsa-_recover_sig}.
     @notice Unlike ECDSA signatures, contract signatures
             are revocable and the result of this function
             can therefore change over time. It could return

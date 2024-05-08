@@ -1,7 +1,7 @@
 # pragma version ~=0.4.0rc2
 """
-@title ERC4626 Module Reference Implementation
-@custom:contract-name ERC4626Mock
+@title `erc4626` Module Reference Implementation
+@custom:contract-name erc4626_mock
 @license GNU Affero General Public License v3.0 only
 @author pcaversaccio
 """
@@ -38,15 +38,15 @@ from ...utils.interfaces import IERC5267
 implements: IERC5267
 
 
-# @dev We import and initialise the `ERC4626` module.
-from .. import ERC4626 as erc4626
+# @dev We import and initialise the `erc4626` module.
+from .. import erc4626
 initializes: erc4626
 
 
 # @dev We export (i.e. the runtime bytecode exposes these
 # functions externally, allowing them to be called using
 # the ABI encoding specification) all `external` functions
-# from the `ERC4626` module. The built-in dunder method
+# from the `erc4626` module. The built-in dunder method
 # `__interface__` allows you to export all functions of a
 # module without specifying the individual functions (see
 # https://github.com/vyperlang/vyper/pull/3919). Please take

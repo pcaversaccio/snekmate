@@ -23,7 +23,7 @@ contract BatchDistributorTest is Test {
         batchDistributor = IBatchDistributor(
             vyperDeployer.deployContract(
                 "src/snekmate/utils/mocks/",
-                "BatchDistributorMock"
+                "batch_distributor_mock"
             )
         );
         batchDistributorAddr = address(batchDistributor);
@@ -488,7 +488,7 @@ contract BatchDistributorInvariants is Test {
         batchDistributor = IBatchDistributor(
             vyperDeployer.deployContract(
                 "src/snekmate/utils/mocks/",
-                "BatchDistributorMock"
+                "batch_distributor_mock"
             )
         );
         batchDistributorAddr = address(batchDistributor);

@@ -24,7 +24,7 @@ contract ERC2981Test is Test {
         ERC2981Extended = IERC2981Extended(
             vyperDeployer.deployContract(
                 "src/snekmate/extensions/mocks/",
-                "ERC2981Mock"
+                "erc2981_mock"
             )
         );
     }
@@ -45,7 +45,7 @@ contract ERC2981Test is Test {
         ERC2981ExtendedInitialEvent = IERC2981Extended(
             vyperDeployer.deployContract(
                 "src/snekmate/extensions/mocks/",
-                "ERC2981Mock"
+                "erc2981_mock"
             )
         );
         (
@@ -312,7 +312,7 @@ contract ERC2981Test is Test {
     function testSetDefaultRoyaltyTooHighFeeNumerator() public {
         address owner = deployer;
         vm.startPrank(owner);
-        vm.expectRevert("ERC2981: royalty fee will exceed sale_price");
+        vm.expectRevert("erc2981: royalty fee will exceed sale_price");
         ERC2981Extended.set_default_royalty(makeAddr("receiver"), 11_000);
         vm.stopPrank();
     }
@@ -320,25 +320,25 @@ contract ERC2981Test is Test {
     function testSetDefaultRoyaltyInvalidReceiver() public {
         address owner = deployer;
         vm.startPrank(owner);
-        vm.expectRevert("ERC2981: invalid receiver");
+        vm.expectRevert("erc2981: invalid receiver");
         ERC2981Extended.set_default_royalty(zeroAddress, 10);
         vm.stopPrank();
     }
 
     function testSetDefaultRoyaltyNonOwner() public {
-        vm.expectRevert("Ownable: caller is not the owner");
+        vm.expectRevert("ownable: caller is not the owner");
         ERC2981Extended.set_default_royalty(zeroAddress, 10);
     }
 
     function testDeleteDefaultRoyaltyNonOwner() public {
-        vm.expectRevert("Ownable: caller is not the owner");
+        vm.expectRevert("ownable: caller is not the owner");
         ERC2981Extended.delete_default_royalty();
     }
 
     function testSetTokenRoyaltyTooHighFeeNumerator() public {
         address owner = deployer;
         vm.startPrank(owner);
-        vm.expectRevert("ERC2981: royalty fee will exceed sale_price");
+        vm.expectRevert("erc2981: royalty fee will exceed sale_price");
         ERC2981Extended.set_token_royalty(1, makeAddr("receiver"), 11_000);
         vm.stopPrank();
     }
@@ -346,18 +346,18 @@ contract ERC2981Test is Test {
     function testSetTokenRoyaltyInvalidReceiver() public {
         address owner = deployer;
         vm.startPrank(owner);
-        vm.expectRevert("ERC2981: invalid receiver");
+        vm.expectRevert("erc2981: invalid receiver");
         ERC2981Extended.set_token_royalty(1, zeroAddress, 10);
         vm.stopPrank();
     }
 
     function testSetTokenRoyaltyNonOwner() public {
-        vm.expectRevert("Ownable: caller is not the owner");
+        vm.expectRevert("ownable: caller is not the owner");
         ERC2981Extended.set_token_royalty(1, zeroAddress, 10);
     }
 
     function testResetTokenRoyaltyNonOwner() public {
-        vm.expectRevert("Ownable: caller is not the owner");
+        vm.expectRevert("ownable: caller is not the owner");
         ERC2981Extended.reset_token_royalty(1);
     }
 
@@ -377,13 +377,13 @@ contract ERC2981Test is Test {
     }
 
     function testTransferOwnershipNonOwner() public {
-        vm.expectRevert(bytes("Ownable: caller is not the owner"));
+        vm.expectRevert(bytes("ownable: caller is not the owner"));
         ERC2981Extended.transfer_ownership(makeAddr("newOwner"));
     }
 
     function testTransferOwnershipToZeroAddress() public {
         vm.prank(deployer);
-        vm.expectRevert(bytes("Ownable: new owner is the zero address"));
+        vm.expectRevert(bytes("ownable: new owner is the zero address"));
         ERC2981Extended.transfer_ownership(zeroAddress);
     }
 
@@ -399,7 +399,7 @@ contract ERC2981Test is Test {
     }
 
     function testRenounceOwnershipNonOwner() public {
-        vm.expectRevert(bytes("Ownable: caller is not the owner"));
+        vm.expectRevert(bytes("ownable: caller is not the owner"));
         ERC2981Extended.renounce_ownership();
     }
 
@@ -657,20 +657,20 @@ contract ERC2981Test is Test {
         );
         address owner = deployer;
         vm.startPrank(owner);
-        vm.expectRevert("ERC2981: royalty fee will exceed sale_price");
+        vm.expectRevert("erc2981: royalty fee will exceed sale_price");
         ERC2981Extended.set_default_royalty(makeAddr("receiver"), feeNumerator);
         vm.stopPrank();
     }
 
     function testFuzzSetDefaultRoyaltyNonOwner(address msgSender) public {
         vm.assume(msgSender != deployer);
-        vm.expectRevert("Ownable: caller is not the owner");
+        vm.expectRevert("ownable: caller is not the owner");
         ERC2981Extended.set_default_royalty(zeroAddress, 10);
     }
 
     function testFuzzDeleteDefaultRoyaltyNonOwner(address msgSender) public {
         vm.assume(msgSender != deployer);
-        vm.expectRevert("Ownable: caller is not the owner");
+        vm.expectRevert("ownable: caller is not the owner");
         ERC2981Extended.delete_default_royalty();
     }
 
@@ -682,7 +682,7 @@ contract ERC2981Test is Test {
         );
         address owner = deployer;
         vm.startPrank(owner);
-        vm.expectRevert("ERC2981: royalty fee will exceed sale_price");
+        vm.expectRevert("erc2981: royalty fee will exceed sale_price");
         ERC2981Extended.set_token_royalty(
             1,
             makeAddr("receiver"),
@@ -695,20 +695,20 @@ contract ERC2981Test is Test {
         vm.assume(msgSender != deployer);
         address owner = deployer;
         vm.startPrank(owner);
-        vm.expectRevert("ERC2981: invalid receiver");
+        vm.expectRevert("erc2981: invalid receiver");
         ERC2981Extended.set_token_royalty(1, zeroAddress, 10);
         vm.stopPrank();
     }
 
     function testFuzzSetTokenRoyaltyNonOwner(address msgSender) public {
         vm.assume(msgSender != deployer);
-        vm.expectRevert("Ownable: caller is not the owner");
+        vm.expectRevert("ownable: caller is not the owner");
         ERC2981Extended.set_token_royalty(1, zeroAddress, 10);
     }
 
     function testFuzzResetTokenRoyaltyNonOwner(address msgSender) public {
         vm.assume(msgSender != deployer);
-        vm.expectRevert("Ownable: caller is not the owner");
+        vm.expectRevert("ownable: caller is not the owner");
         ERC2981Extended.reset_token_royalty(1);
     }
 
@@ -739,7 +739,7 @@ contract ERC2981Test is Test {
     ) public {
         vm.assume(nonOwner != deployer);
         vm.prank(nonOwner);
-        vm.expectRevert(bytes("Ownable: caller is not the owner"));
+        vm.expectRevert(bytes("ownable: caller is not the owner"));
         ERC2981Extended.transfer_ownership(newOwner);
     }
 
@@ -765,7 +765,7 @@ contract ERC2981Test is Test {
     function testFuzzRenounceOwnershipNonOwner(address nonOwner) public {
         vm.assume(nonOwner != deployer);
         vm.prank(nonOwner);
-        vm.expectRevert(bytes("Ownable: caller is not the owner"));
+        vm.expectRevert(bytes("ownable: caller is not the owner"));
         ERC2981Extended.renounce_ownership();
     }
 }
@@ -783,7 +783,7 @@ contract ERC2981Invariants is Test {
         ERC2981Extended = IERC2981Extended(
             vyperDeployer.deployContract(
                 "src/snekmate/extensions/mocks/",
-                "ERC2981Mock"
+                "erc2981_mock"
             )
         );
         erc2981Handler = new ERC2981Handler(ERC2981Extended, deployer);

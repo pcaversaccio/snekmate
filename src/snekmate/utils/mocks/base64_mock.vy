@@ -1,17 +1,17 @@
 # pragma version ~=0.4.0rc2
 """
-@title Base64 Module Reference Implementation
-@custom:contract-name Base64Mock
+@title `base64` Module Reference Implementation
+@custom:contract-name base64_mock
 @license GNU Affero General Public License v3.0 only
 @author pcaversaccio
 """
 
 
-# @dev We import the `Base64` module.
-# @notice Please note that the `Base64` module
+# @dev We import the `base64` module.
+# @notice Please note that the `base64` module
 # is stateless and therefore does not require
 # the `initializes` keyword for initialisation.
-from .. import Base64 as b64
+from .. import base64 as b64
 
 
 @deploy

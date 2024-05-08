@@ -1,17 +1,17 @@
 # pragma version ~=0.4.0rc2
 """
-@title CreateAddress Module Reference Implementation
-@custom:contract-name CreateAddressMock
+@title `create_address` Module Reference Implementation
+@custom:contract-name create_address_mock
 @license GNU Affero General Public License v3.0 only
 @author pcaversaccio
 """
 
 
-# @dev We import the `CreateAddress` module.
-# @notice Please note that the `CreateAddress`
+# @dev We import the `create_address` module.
+# @notice Please note that the `create_address`
 # module is stateless and therefore does not require
 # the `initializes` keyword for initialisation.
-from .. import CreateAddress as ca
+from .. import create_address as ca
 
 
 @deploy

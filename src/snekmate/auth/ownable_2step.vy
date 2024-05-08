@@ -1,13 +1,13 @@
 # pragma version ~=0.4.0rc2
 """
 @title 2-Step Ownership Transfer Functions
-@custom:contract-name Ownable2Step
+@custom:contract-name ownable_2step
 @license GNU Affero General Public License v3.0 only
 @author pcaversaccio
 @notice These functions can be used to implement a basic access
         control mechanism, where there is an account (an owner)
         that can be granted exclusive access to specific functions.
-        This extension to the {Ownable} contract includes a two-step
+        This extension to the {ownable} contract includes a two-step
         ownership transfer mechanism where the new owner must call
         `accept_ownership` to replace the old one. This can help
         avoid common mistakes, such as ownership transfers to incorrect
@@ -20,15 +20,15 @@
 """
 
 
-# @dev We import and use the `Ownable` module.
-from . import Ownable as ownable
+# @dev We import and use the `ownable` module.
+from . import ownable
 uses: ownable
 
 
 # @dev We export (i.e. the runtime bytecode exposes these
 # functions externally, allowing them to be called using
 # the ABI encoding specification) the `external` getter
-# function `owner` from the `Ownable` module.
+# function `owner` from the `ownable` module.
 # @notice Please note that you must always also export (if
 # required by the contract logic) `public` declared `constant`,
 # `immutable`, and state variables, for which Vyper automatically
@@ -59,7 +59,7 @@ def __init__():
          is declared as `payable`.
     @notice At initialisation time, the `owner` role will
             be assigned to the `msg.sender` since we `uses`
-            the `Ownable` module, which implements the
+            the `ownable` module, which implements the
             aforementioned logic at contract creation time.
     """
     pass
@@ -92,7 +92,7 @@ def accept_ownership():
     @notice Note that this function can only be
             called by the current `pending_owner`.
     """
-    assert self.pending_owner == msg.sender, "Ownable2Step: caller is not the new owner"
+    assert self.pending_owner == msg.sender, "ownable_2step: caller is not the new owner"
     self._transfer_ownership(msg.sender)
 
 

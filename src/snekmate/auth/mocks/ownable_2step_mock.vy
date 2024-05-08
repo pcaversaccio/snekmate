@@ -1,26 +1,26 @@
 # pragma version ~=0.4.0rc2
 """
-@title Ownable2Step Module Reference Implementation
-@custom:contract-name Ownable2StepMock
+@title `ownable_2step` Module Reference Implementation
+@custom:contract-name ownable_2step_mock
 @license GNU Affero General Public License v3.0 only
 @author pcaversaccio
 """
 
 
-# @dev We import and initialise the `Ownable` module.
-from .. import Ownable as ow
+# @dev We import and initialise the `ownable` module.
+from .. import ownable as ow
 initializes: ow
 
 
-# @dev We import and initialise the `Ownable2Step` module.
-from .. import Ownable2Step as o2
+# @dev We import and initialise the `ownable_2step` module.
+from .. import ownable_2step as o2
 initializes: o2[ownable := ow]
 
 
 # @dev We export (i.e. the runtime bytecode exposes these
 # functions externally, allowing them to be called using
 # the ABI encoding specification) all `external` functions
-# from the `Ownable2Step` module. The built-in dunder method
+# from the `ownable_2step` module. The built-in dunder method
 # `__interface__` allows you to export all functions of a
 # module without specifying the individual functions (see
 # https://github.com/vyperlang/vyper/pull/3919). Please take

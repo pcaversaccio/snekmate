@@ -77,7 +77,7 @@ contract ERC4626VaultTest is ERC4626Test {
         ERC4626ExtendedDecimalsOffset0 = IERC4626Extended(
             vyperDeployer.deployContract(
                 "src/snekmate/extensions/mocks/",
-                "ERC4626Mock",
+                "erc4626_mock",
                 argsDecimalsOffset0
             )
         );
@@ -105,7 +105,7 @@ contract ERC4626VaultTest is ERC4626Test {
         ERC4626ExtendedDecimalsOffset6 = IERC4626Extended(
             vyperDeployer.deployContract(
                 "src/snekmate/extensions/mocks/",
-                "ERC4626Mock",
+                "erc4626_mock",
                 argsDecimalsOffset6
             )
         );
@@ -124,7 +124,7 @@ contract ERC4626VaultTest is ERC4626Test {
         ERC4626ExtendedDecimalsOffset12 = IERC4626Extended(
             vyperDeployer.deployContract(
                 "src/snekmate/extensions/mocks/",
-                "ERC4626Mock",
+                "erc4626_mock",
                 argsDecimalsOffset12
             )
         );
@@ -143,7 +143,7 @@ contract ERC4626VaultTest is ERC4626Test {
         ERC4626ExtendedDecimalsOffset18 = IERC4626Extended(
             vyperDeployer.deployContract(
                 "src/snekmate/extensions/mocks/",
-                "ERC4626Mock",
+                "erc4626_mock",
                 argsDecimalsOffset18
             )
         );
@@ -197,7 +197,7 @@ contract ERC4626VaultTest is ERC4626Test {
         IERC4626Extended ERC4626ExtendedDecimalsOffsetEOA = IERC4626Extended(
             vyperDeployer.deployContract(
                 "src/snekmate/extensions/mocks/",
-                "ERC4626Mock",
+                "erc4626_mock",
                 argsDecimalsOffsetEOA
             )
         );
@@ -224,7 +224,7 @@ contract ERC4626VaultTest is ERC4626Test {
         IERC4626Extended ERC4626ExtendedDecimalsOffsetNoDecimals = IERC4626Extended(
                 vyperDeployer.deployContract(
                     "src/snekmate/extensions/mocks/",
-                    "ERC4626Mock",
+                    "erc4626_mock",
                     argsDecimalsOffsetNoDecimals
                 )
             );
@@ -252,7 +252,7 @@ contract ERC4626VaultTest is ERC4626Test {
         IERC4626Extended ERC4626ExtendedDecimalsOffsetTooHighDecimals = IERC4626Extended(
                 vyperDeployer.deployContract(
                     "src/snekmate/extensions/mocks/",
-                    "ERC4626Mock",
+                    "erc4626_mock",
                     argsDecimalsOffsetTooHighDecimals
                 )
             );
@@ -286,7 +286,7 @@ contract ERC4626VaultTest is ERC4626Test {
         IERC4626Extended(
             vyperDeployer.deployContract(
                 "src/snekmate/extensions/mocks/",
-                "ERC4626Mock",
+                "erc4626_mock",
                 argsDecimalsOffsetOverflow
             )
         );
@@ -1463,7 +1463,7 @@ contract ERC4626VaultTest is ERC4626Test {
         underlying.mint(self, type(uint8).max);
         underlying.approve(ERC4626ExtendedDecimalsOffset0Addr, type(uint8).max);
         ERC4626ExtendedDecimalsOffset0.deposit(type(uint8).max, self);
-        vm.expectRevert(bytes("ERC4626: withdraw more than maximum"));
+        vm.expectRevert(bytes("erc4626: withdraw more than maximum"));
         ERC4626ExtendedDecimalsOffset0.withdraw(
             uint256(type(uint8).max) + 1,
             self,
@@ -1475,7 +1475,7 @@ contract ERC4626VaultTest is ERC4626Test {
         underlying.mint(self, type(uint8).max);
         underlying.approve(ERC4626ExtendedDecimalsOffset0Addr, type(uint8).max);
         ERC4626ExtendedDecimalsOffset0.deposit(type(uint8).max, self);
-        vm.expectRevert(bytes("ERC20: insufficient allowance"));
+        vm.expectRevert(bytes("erc20: insufficient allowance"));
         vm.prank(makeAddr("otherAccount"));
         ERC4626ExtendedDecimalsOffset0.withdraw(type(uint8).max, self, self);
     }
@@ -1484,7 +1484,7 @@ contract ERC4626VaultTest is ERC4626Test {
         underlying.mint(self, type(uint16).max);
         underlying.approve(ERC4626ExtendedDecimalsOffset0Addr, type(uint8).max);
         ERC4626ExtendedDecimalsOffset0.deposit(type(uint8).max, self);
-        vm.expectRevert(bytes("ERC4626: redeem more than maximum"));
+        vm.expectRevert(bytes("erc4626: redeem more than maximum"));
         ERC4626ExtendedDecimalsOffset0.redeem(
             uint256(type(uint8).max) + 1,
             self,
@@ -1493,12 +1493,12 @@ contract ERC4626VaultTest is ERC4626Test {
     }
 
     function testWithdrawWithNoAssets() public {
-        vm.expectRevert(bytes("ERC4626: withdraw more than maximum"));
+        vm.expectRevert(bytes("erc4626: withdraw more than maximum"));
         ERC4626ExtendedDecimalsOffset0.withdraw(type(uint8).max, self, self);
     }
 
     function testRedeemWithNoShares() public {
-        vm.expectRevert(bytes("ERC4626: redeem more than maximum"));
+        vm.expectRevert(bytes("erc4626: redeem more than maximum"));
         ERC4626ExtendedDecimalsOffset0.redeem(type(uint8).max, self, self);
     }
 
@@ -1586,7 +1586,7 @@ contract ERC4626VaultTest is ERC4626Test {
         vm.stopPrank();
 
         vm.startPrank(bob);
-        vm.expectRevert(bytes("ERC4626: withdraw more than maximum"));
+        vm.expectRevert(bytes("erc4626: withdraw more than maximum"));
         ERC4626ExtendedDecimalsOffset0.withdraw(amount, alice, bob);
         vm.stopPrank();
     }
@@ -1674,7 +1674,7 @@ contract ERC4626VaultTest is ERC4626Test {
             r,
             s
         );
-        vm.expectRevert(bytes("ERC20: invalid signature"));
+        vm.expectRevert(bytes("erc20: invalid signature"));
         ERC4626ExtendedDecimalsOffset0.permit(
             owner,
             spender,
@@ -1713,7 +1713,7 @@ contract ERC4626VaultTest is ERC4626Test {
                 )
             )
         );
-        vm.expectRevert(bytes("ERC20: invalid signature"));
+        vm.expectRevert(bytes("erc20: invalid signature"));
         ERC4626ExtendedDecimalsOffset0.permit(
             owner,
             spender,
@@ -1759,7 +1759,7 @@ contract ERC4626VaultTest is ERC4626Test {
                 )
             )
         );
-        vm.expectRevert(bytes("ERC20: invalid signature"));
+        vm.expectRevert(bytes("erc20: invalid signature"));
         ERC4626ExtendedDecimalsOffset0.permit(
             owner,
             spender,
@@ -1798,7 +1798,7 @@ contract ERC4626VaultTest is ERC4626Test {
                 )
             )
         );
-        vm.expectRevert(bytes("ERC20: invalid signature"));
+        vm.expectRevert(bytes("erc20: invalid signature"));
         ERC4626ExtendedDecimalsOffset0.permit(
             owner,
             spender,
@@ -1837,7 +1837,7 @@ contract ERC4626VaultTest is ERC4626Test {
                 )
             )
         );
-        vm.expectRevert(bytes("ERC20: expired deadline"));
+        vm.expectRevert(bytes("erc20: expired deadline"));
         ERC4626ExtendedDecimalsOffset0.permit(
             owner,
             spender,
@@ -1984,7 +1984,7 @@ contract ERC4626VaultTest is ERC4626Test {
                 )
             )
         );
-        vm.expectRevert(bytes("ERC20: invalid signature"));
+        vm.expectRevert(bytes("erc20: invalid signature"));
         ERC4626ExtendedDecimalsOffset0.permit(
             ownerAddr,
             spenderAddr,
@@ -2091,7 +2091,7 @@ contract ERC4626VaultInvariants is Test {
         ERC4626Extended = IERC4626Extended(
             vyperDeployer.deployContract(
                 "src/snekmate/extensions/mocks/",
-                "ERC4626Mock",
+                "erc4626_mock",
                 args
             )
         );

@@ -1,7 +1,7 @@
 # pragma version ~=0.4.0rc2
 """
 @title Elliptic Curve Digital Signature Algorithm (ECDSA) Functions
-@custom:contract-name ECDSA
+@custom:contract-name ecdsa
 @license GNU Affero General Public License v3.0 only
 @author pcaversaccio
 @notice These functions can be used to verify that a message was signed by
@@ -123,9 +123,9 @@ def _try_recover_vrs(hash: bytes32, v: uint256, r: uint256, s: uint256) -> addre
     @param s The secp256k1 32-byte signature parameter `s`.
     @return address The recovered 20-byte signer address.
     """
-    assert s <= convert(_MALLEABILITY_THRESHOLD, uint256), "ECDSA: invalid signature `s` value"
+    assert s <= convert(_MALLEABILITY_THRESHOLD, uint256), "ecdsa: invalid signature `s` value"
 
     signer: address = ecrecover(hash, v, r, s)
-    assert signer != empty(address), "ECDSA: invalid signature"
+    assert signer != empty(address), "ecdsa: invalid signature"
 
     return signer

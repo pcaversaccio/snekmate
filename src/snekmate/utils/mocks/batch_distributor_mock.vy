@@ -1,14 +1,14 @@
 # pragma version ~=0.4.0rc2
 """
-@title BatchDistributor Module Reference Implementation
-@custom:contract-name BatchDistributorMock
+@title `batch_distributor` Module Reference Implementation
+@custom:contract-name batch_distributor_mock
 @license GNU Affero General Public License v3.0 only
 @author pcaversaccio
 """
 
 
-# @dev We import and initialise the `BatchDistributor` module.
-from .. import BatchDistributor as bd
+# @dev We import and initialise the `batch_distributor` module.
+from .. import batch_distributor as bd
 initializes: bd
 
 

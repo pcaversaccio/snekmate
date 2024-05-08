@@ -1,7 +1,7 @@
 # pragma version ~=0.4.0rc2
 """
 @title Standard Mathematical Utility Functions
-@custom:contract-name Math
+@custom:contract-name math
 @license GNU Affero General Public License v3.0 only
 @author pcaversaccio
 @custom:coauthor bout3fiddy
@@ -15,9 +15,9 @@
         - `_ceil_div` (`internal` `pure` function),
         - `_signum` (`internal` `pure` function),
         - `_mul_div` (`internal` `pure` function),
-        - `_log_2` (`internal` `pure` function),
-        - `_log_10` (`internal` `pure` function),
-        - `_log_256` (`internal` `pure` function),
+        - `_log2` (`internal` `pure` function),
+        - `_log10` (`internal` `pure` function),
+        - `_log256` (`internal` `pure` function),
         - `_wad_ln` (`internal` `pure` function),
         - `_wad_exp` (`internal` `pure` function),
         - `_cbrt` (`internal` `pure` function),
@@ -82,7 +82,7 @@ def _ceil_div(x: uint256, y: uint256) -> uint256:
     @param y The 32-byte denominator.
     @return uint256 The 32-byte rounded up result of "x/y".
     """
-    assert y != empty(uint256), "Math: ceil_div division by zero"
+    assert y != empty(uint256), "math: ceil_div division by zero"
     # Due to a known compiler bug (https://github.com/vyperlang/vyper/issues/3480),
     # we use `0` instead of `empty(uint256)` as return value.
     return 0 if (x == empty(uint256)) else unsafe_add(unsafe_div(x - 1, y), 1)
@@ -123,7 +123,7 @@ def _mul_div(x: uint256, y: uint256, denominator: uint256, roundup: bool) -> uin
     @return uint256 The 32-byte calculation result.
     """
     # Handle division by zero.
-    assert denominator != empty(uint256), "Math: mul_div division by zero"
+    assert denominator != empty(uint256), "math: mul_div division by zero"
 
     # 512-bit multiplication "[prod1 prod0] = x * y".
     # Compute the product "mod 2**256" and "mod 2**256 - 1".
@@ -154,7 +154,7 @@ def _mul_div(x: uint256, y: uint256, denominator: uint256, roundup: bool) -> uin
 
     # Ensure that the result is less than 2**256. Also,
     # prevents that `denominator == 0`.
-    assert denominator > prod1, "Math: mul_div overflow"
+    assert denominator > prod1, "math: mul_div overflow"
 
     #######################
     # 512 by 256 Division #
@@ -224,7 +224,7 @@ def _mul_div(x: uint256, y: uint256, denominator: uint256, roundup: bool) -> uin
 
 @internal
 @pure
-def _log_2(x: uint256, roundup: bool) -> uint256:
+def _log2(x: uint256, roundup: bool) -> uint256:
     """
     @dev Returns the log in base 2 of `x`, following the selected
          rounding direction.
@@ -245,7 +245,7 @@ def _log_2(x: uint256, roundup: bool) -> uint256:
     result: uint256 = empty(uint256)
 
     # The following lines cannot overflow because we have the well-known
-    # decay behaviour of `log_2(max_value(uint256)) < max_value(uint256)`.
+    # decay behaviour of `log2(max_value(uint256)) < max_value(uint256)`.
     if (x >> 128 != empty(uint256)):
         value = x >> 128
         result = 128
@@ -278,7 +278,7 @@ def _log_2(x: uint256, roundup: bool) -> uint256:
 
 @internal
 @pure
-def _log_10(x: uint256, roundup: bool) -> uint256:
+def _log10(x: uint256, roundup: bool) -> uint256:
     """
     @dev Returns the log in base 10 of `x`, following the selected
          rounding direction.
@@ -299,7 +299,7 @@ def _log_10(x: uint256, roundup: bool) -> uint256:
     result: uint256 = empty(uint256)
 
     # The following lines cannot overflow because we have the well-known
-    # decay behaviour of `log_10(max_value(uint256)) < max_value(uint256)`.
+    # decay behaviour of `log10(max_value(uint256)) < max_value(uint256)`.
     if (x >= 10 ** 64):
         value = unsafe_div(x, 10 ** 64)
         result = 64
@@ -329,7 +329,7 @@ def _log_10(x: uint256, roundup: bool) -> uint256:
 
 @internal
 @pure
-def _log_256(x: uint256, roundup: bool) -> uint256:
+def _log256(x: uint256, roundup: bool) -> uint256:
     """
     @dev Returns the log in base 256 of `x`, following the selected
          rounding direction.
@@ -352,7 +352,7 @@ def _log_256(x: uint256, roundup: bool) -> uint256:
     result: uint256 = empty(uint256)
 
     # The following lines cannot overflow because we have the well-known
-    # decay behaviour of `log_256(max_value(uint256)) < max_value(uint256)`.
+    # decay behaviour of `log256(max_value(uint256)) < max_value(uint256)`.
     if (x >> 128 != empty(uint256)):
         value = x >> 128
         result = 16
@@ -388,7 +388,7 @@ def _wad_ln(x: int256) -> int256:
     @param x The 32-byte variable.
     @return int256 The 32-byte calculation result.
     """
-    assert x >= empty(int256), "Math: wad_ln undefined"
+    assert x >= empty(int256), "math: wad_ln undefined"
 
     # For the special case `x == 0` we already return 0 here in order
     # not to iterate through the remaining code.
@@ -404,7 +404,7 @@ def _wad_ln(x: int256) -> int256:
 
     # Reduce the range of `x` to "(1, 2) * 2 ** 96".
     # Also remember that "ln(2 ** k * x) = k * ln(2) + ln(x)" holds.
-    k: int256 = unsafe_sub(convert(self._log_2(convert(x, uint256), False), int256), 96)
+    k: int256 = unsafe_sub(convert(self._log2(convert(x, uint256), False), int256), 96)
     # Note that to circumvent Vyper's safecast feature for the potentially
     # negative expression `value <<= uint256(159 - k)`, we first convert the
     # expression `value <<= uint256(159 - k)` to `bytes32` and subsequently
@@ -468,7 +468,7 @@ def _wad_exp(x: int256) -> int256:
 
     # When the result is "> (2 ** 255 - 1) / 1e18" we cannot represent it as a signed integer.
     # This happens when "x >= floor(log((2 ** 255 - 1) / 1e18) * 1e18) ~ 135".
-    assert x < 135_305_999_368_893_231_589, "Math: wad_exp overflow"
+    assert x < 135_305_999_368_893_231_589, "math: wad_exp overflow"
 
     # `x` is now in the range "(-42, 136) * 1e18". Convert to "(-42, 136) * 2 ** 96" for higher
     # intermediate precision and a binary base. This base conversion is a multiplication with
@@ -572,7 +572,7 @@ def _wad_cbrt(x: uint256) -> uint256:
         value = unsafe_mul(x, 10 ** 36)
 
     # Compute the binary logarithm of `value`.
-    log2x: uint256 = self._log_2(value, False)
+    log2x: uint256 = self._log2(value, False)
 
     # If we divide log2x by 3, the remainder is "log2x % 3". So if we simply
     # multiply "2 ** (log2x/3)" and discard the remainder to calculate our guess,

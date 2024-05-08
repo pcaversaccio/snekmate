@@ -1,7 +1,7 @@
 # pragma version ~=0.4.0rc2
 """
-@title ERC20 Module Reference Implementation
-@custom:contract-name ERC20Mock
+@title `erc20` Module Reference Implementation
+@custom:contract-name erc20_mock
 @license GNU Affero General Public License v3.0 only
 @author pcaversaccio
 """
@@ -32,20 +32,20 @@ from ...utils.interfaces import IERC5267
 implements: IERC5267
 
 
-# @dev We import and initialise the `Ownable` module.
-from ...auth import Ownable as ow
+# @dev We import and initialise the `ownable` module.
+from ...auth import ownable as ow
 initializes: ow
 
 
-# @dev We import and initialise the `ERC20` module.
-from .. import ERC20 as erc20
+# @dev We import and initialise the `erc20` module.
+from .. import erc20
 initializes: erc20[ownable := ow]
 
 
 # @dev We export (i.e. the runtime bytecode exposes these
 # functions externally, allowing them to be called using
 # the ABI encoding specification) all `external` functions
-# from the `ERC20` module. The built-in dunder method
+# from the `erc20` module. The built-in dunder method
 # `__interface__` allows you to export all functions of a
 # module without specifying the individual functions (see
 # https://github.com/vyperlang/vyper/pull/3919). Please take

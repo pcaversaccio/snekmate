@@ -1,17 +1,17 @@
 # pragma version ~=0.4.0rc2
 """
-@title Math Module Reference Implementation
-@custom:contract-name MathMock
+@title `math` Module Reference Implementation
+@custom:contract-name math_mock
 @license GNU Affero General Public License v3.0 only
 @author pcaversaccio
 """
 
 
-# @dev We import the `Math` module.
-# @notice Please note that the `Math` module
+# @dev We import the `math` module.
+# @notice Please note that the `math` module
 # is stateless and therefore does not require
 # the `initializes` keyword for initialisation.
-from .. import Math as ma
+from .. import math as ma
 
 
 @deploy
@@ -113,7 +113,7 @@ def mul_div(x: uint256, y: uint256, denominator: uint256, roundup: bool) -> uint
 
 @external
 @pure
-def log_2(x: uint256, roundup: bool) -> uint256:
+def log2(x: uint256, roundup: bool) -> uint256:
     """
     @dev Returns the log in base 2 of `x`, following the selected
          rounding direction.
@@ -125,12 +125,12 @@ def log_2(x: uint256, roundup: bool) -> uint256:
            to round up or not. The default `False` is round down.
     @return uint256 The 32-byte calculation result.
     """
-    return ma._log_2(x, roundup)
+    return ma._log2(x, roundup)
 
 
 @external
 @pure
-def log_10(x: uint256, roundup: bool) -> uint256:
+def log10(x: uint256, roundup: bool) -> uint256:
     """
     @dev Returns the log in base 10 of `x`, following the selected
          rounding direction.
@@ -142,12 +142,12 @@ def log_10(x: uint256, roundup: bool) -> uint256:
            to round up or not. The default `False` is round down.
     @return uint256 The 32-byte calculation result.
     """
-    return ma._log_10(x, roundup)
+    return ma._log10(x, roundup)
 
 
 @external
 @pure
-def log_256(x: uint256, roundup: bool) -> uint256:
+def log256(x: uint256, roundup: bool) -> uint256:
     """
     @dev Returns the log in base 256 of `x`, following the selected
          rounding direction.
@@ -161,7 +161,7 @@ def log_256(x: uint256, roundup: bool) -> uint256:
            to round up or not. The default `False` is round down.
     @return uint256 The 32-byte calculation result.
     """
-    return ma._log_256(x, roundup)
+    return ma._log256(x, roundup)
 
 
 @external

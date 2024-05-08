@@ -1,7 +1,7 @@
 # pragma version ~=0.4.0rc2
 """
 @title Modern and Gas-Efficient ERC-4626 Tokenised Vault Implementation
-@custom:contract-name ERC4626
+@custom:contract-name erc4626
 @license GNU Affero General Public License v3.0 only
 @author pcaversaccio
 @notice These functions implement the ERC-4626
@@ -81,29 +81,29 @@ from ..utils.interfaces import IERC5267
 implements: IERC5267
 
 
-# @dev We import the `Math` module.
-# @notice Please note that the `Math` module is stateless
+# @dev We import the `math` module.
+# @notice Please note that the `math` module is stateless
 # and therefore does not require the `uses` keyword for usage.
-from ..utils import Math as math
+from ..utils import math
 
 
-# @dev We import and initialise the `Ownable` module.
-# @notice The `Ownable` module is merely used to initialise
-# the `ERC20` module, but none of the associated functions
+# @dev We import and initialise the `ownable` module.
+# @notice The `ownable` module is merely used to initialise
+# the `erc20` module, but none of the associated functions
 # are exported.
-from ..auth import Ownable as ownable
+from ..auth import ownable
 initializes: ownable
 
 
-# @dev We import and initialise the `ERC20` module.
-from ..tokens import ERC20 as erc20
+# @dev We import and initialise the `erc20` module.
+from ..tokens import erc20
 initializes: erc20[ownable := ownable]
 
 
 # @dev We export (i.e. the runtime bytecode exposes these
 # functions externally, allowing them to be called using
 # the ABI encoding specification) the required `external`
-# functions from the `ERC20` module to implement a compliant
+# functions from the `erc20` module to implement a compliant
 # ERC-20 + EIP-2612 token.
 # @notice Please note that you must always also export (if
 # required by the contract logic) `public` declared `constant`,
@@ -214,8 +214,8 @@ def __init__(name_: String[25], symbol_: String[5], asset_: IERC20, decimals_off
     _UNDERLYING_DECIMALS = decoded_decimals if success else 18
     _DECIMALS_OFFSET = decimals_offset_
 
-    # Please note that the `Ownable` module is merely used to
-    # initialise the `ERC20` module, but none of the associated
+    # Please note that the `ownable` module is merely used to
+    # initialise the `erc20` module, but none of the associated
     # functions are exported.
     ownable.__init__()
     # The following line uses intentionally checked arithmetic
@@ -309,7 +309,7 @@ def deposit(assets: uint256, receiver: address) -> uint256:
     @param receiver The 20-byte receiver address.
     @return uint256 The 32-byte shares amount to be created.
     """
-    assert assets <= self._max_deposit(receiver), "ERC4626: deposit more than maximum"
+    assert assets <= self._max_deposit(receiver), "erc4626: deposit more than maximum"
     shares: uint256 = self._preview_deposit(assets)
     self._deposit(msg.sender, receiver, assets, shares)
     return shares
@@ -355,7 +355,7 @@ def mint(shares: uint256, receiver:address) -> uint256:
     @param receiver The 20-byte receiver address.
     @return uint256 The deposited 32-byte assets amount.
     """
-    assert shares <= self._max_mint(receiver), "ERC4626: mint more than maximum"
+    assert shares <= self._max_mint(receiver), "erc4626: mint more than maximum"
     assets: uint256 = self._preview_mint(shares)
     self._deposit(msg.sender, receiver, assets, shares)
     return assets
@@ -403,7 +403,7 @@ def withdraw(assets: uint256, receiver: address, owner: address) -> uint256:
     @param owner The 20-byte owner address.
     @return uint256 The burned 32-byte shares amount.
     """
-    assert assets <= self._max_withdraw(receiver), "ERC4626: withdraw more than maximum"
+    assert assets <= self._max_withdraw(receiver), "erc4626: withdraw more than maximum"
     shares: uint256 = self._preview_withdraw(assets)
     self._withdraw(msg.sender, receiver, owner, assets, shares)
     return shares
@@ -450,7 +450,7 @@ def redeem(shares: uint256, receiver: address, owner: address) -> uint256:
     @param owner The 20-byte owner address.
     @return uint256 The returned 32-byte assets amount.
     """
-    assert shares <= self._max_redeem(owner), "ERC4626: redeem more than maximum"
+    assert shares <= self._max_redeem(owner), "erc4626: redeem more than maximum"
     assets: uint256 = self._preview_redeem(shares)
     self._withdraw(msg.sender, receiver, owner, assets, shares)
     return assets
@@ -677,7 +677,7 @@ def _deposit(sender: address, receiver: address, assets: uint256, shares: uint25
     # always performs an external code size check on the target address unless
     # you add the kwarg `skip_contract_check=True`. If the check fails (i.e.
     # the target address is an EOA), the call reverts.
-    assert extcall _ASSET.transferFrom(sender, self, assets, default_return_value=True), "ERC4626: transferFrom operation did not succeed"
+    assert extcall _ASSET.transferFrom(sender, self, assets, default_return_value=True), "erc4626: transferFrom operation did not succeed"
     erc20._mint(receiver, shares)
     log Deposit(sender, receiver, assets, shares)
 
@@ -717,5 +717,5 @@ def _withdraw(sender: address, receiver: address, owner: address, assets: uint25
     # always performs an external code size check on the target address unless
     # you add the kwarg `skip_contract_check=True`. If the check fails (i.e.
     # the target address is an EOA), the call reverts.
-    assert extcall _ASSET.transfer(receiver, assets, default_return_value=True), "ERC4626: transfer operation did not succeed"
+    assert extcall _ASSET.transfer(receiver, assets, default_return_value=True), "erc4626: transfer operation did not succeed"
     log Withdraw(sender, receiver, owner, assets, shares)

@@ -1,7 +1,7 @@
 # pragma version ~=0.4.0rc2
 """
 @title Owner-Based Access Control Functions
-@custom:contract-name Ownable
+@custom:contract-name ownable
 @license GNU Affero General Public License v3.0 only
 @author pcaversaccio
 @notice These functions can be used to implement a basic access
@@ -54,7 +54,7 @@ def transfer_ownership(new_owner: address):
     @param new_owner The 20-byte address of the new owner.
     """
     self._check_owner()
-    assert new_owner != empty(address), "Ownable: new owner is the zero address"
+    assert new_owner != empty(address), "ownable: new owner is the zero address"
     self._transfer_ownership(new_owner)
 
 
@@ -76,7 +76,7 @@ def _check_owner():
     """
     @dev Throws if the sender is not the owner.
     """
-    assert msg.sender == self.owner, "Ownable: caller is not the owner"
+    assert msg.sender == self.owner, "ownable: caller is not the owner"
 
 
 @internal

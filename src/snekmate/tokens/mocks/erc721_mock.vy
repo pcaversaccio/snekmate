@@ -1,7 +1,7 @@
 # pragma version ~=0.4.0rc2
 """
-@title ERC721 Module Reference Implementation
-@custom:contract-name ERC721Mock
+@title `erc721` Module Reference Implementation
+@custom:contract-name erc721_mock
 @license GNU Affero General Public License v3.0 only
 @author pcaversaccio
 """
@@ -52,20 +52,20 @@ from ...utils.interfaces import IERC5267
 implements: IERC5267
 
 
-# @dev We import and initialise the `Ownable` module.
-from ...auth import Ownable as ow
+# @dev We import and initialise the `ownable` module.
+from ...auth import ownable as ow
 initializes: ow
 
 
-# @dev We import and initialise the `ERC721` module.
-from .. import ERC721 as erc721
+# @dev We import and initialise the `erc721` module.
+from .. import erc721
 initializes: erc721[ownable := ow]
 
 
 # @dev We export (i.e. the runtime bytecode exposes these
 # functions externally, allowing them to be called using
 # the ABI encoding specification) all `external` functions
-# from the `ERC721` module. The built-in dunder method
+# from the `erc721` module. The built-in dunder method
 # `__interface__` allows you to export all functions of a
 # module without specifying the individual functions (see
 # https://github.com/vyperlang/vyper/pull/3919). Please take
@@ -78,10 +78,10 @@ initializes: erc721[ownable := ow]
 # `immutable`, and state variables, for which Vyper automatically
 # generates an `external` getter function for the variable.
 # Furthermore, if you are not using the full feature set of
-# the {ERC721} contract, please ensure you exclude the unused
+# the {erc721} contract, please ensure you exclude the unused
 # ERC-165 interface identifiers in the main contract. One way
 # to achieve this would be to not export the `supportsInterface`
-# function from {ERC721} in the main contract and implement the
+# function from {erc721} in the main contract and implement the
 # following function in the main contract instead:
 # ```vy
 # _SUPPORTED_INTERFACES: constant(bytes4[...]) = [

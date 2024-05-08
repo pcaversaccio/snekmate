@@ -1,17 +1,15 @@
 # pragma version ~=0.4.0rc2
 """
-@title MessageHashUtils Module Reference Implementation
-@custom:contract-name MessageHashUtilsMock
+@title Signature Message Hash Utility Functions
+@custom:contract-name message_hash_utils
 @license GNU Affero General Public License v3.0 only
 @author pcaversaccio
+@notice These functions can be used to generate message hashes that conform
+        to the EIP-191 (https://eips.ethereum.org/EIPS/eip-191) as well as
+        EIP-712 (https://eips.ethereum.org/EIPS/eip-712) specifications. The
+        implementation is inspired by OpenZeppelin's implementation here:
+        https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/cryptography/MessageHashUtils.sol.
 """
-
-
-# @dev We import the `MessageHashUtils` module.
-# @notice Please note that the `MessageHashUtils`
-# module is stateless and therefore does not require
-# the `initializes` keyword for initialisation.
-from .. import MessageHashUtils as mu
 
 
 @deploy
@@ -25,9 +23,9 @@ def __init__():
     pass
 
 
-@external
+@internal
 @pure
-def to_eth_signed_message_hash(hash: bytes32) -> bytes32:
+def _to_eth_signed_message_hash(hash: bytes32) -> bytes32:
     """
     @dev Returns an Ethereum signed message from a 32-byte
          message digest `hash`.
@@ -39,12 +37,12 @@ def to_eth_signed_message_hash(hash: bytes32) -> bytes32:
     @param hash The 32-byte message digest.
     @return bytes32 The 32-byte Ethereum signed message.
     """
-    return mu._to_eth_signed_message_hash(hash)
+    return keccak256(concat(b"\x19Ethereum Signed Message:\n32", hash))
 
 
-@external
+@internal
 @view
-def to_data_with_intended_validator_hash_self(data: Bytes[1_024]) -> bytes32:
+def _to_data_with_intended_validator_hash_self(data: Bytes[1_024]) -> bytes32:
     """
     @dev Returns an Ethereum signed data with this contract
          as the intended validator and a maximum 1,024-byte
@@ -55,12 +53,12 @@ def to_data_with_intended_validator_hash_self(data: Bytes[1_024]) -> bytes32:
     @param data The maximum 1,024-byte data to be signed.
     @return bytes32 The 32-byte Ethereum signed data.
     """
-    return mu._to_data_with_intended_validator_hash(self, data)
+    return self._to_data_with_intended_validator_hash(self, data)
 
 
-@external
+@internal
 @pure
-def to_data_with_intended_validator_hash(validator: address, data: Bytes[1_024]) -> bytes32:
+def _to_data_with_intended_validator_hash(validator: address, data: Bytes[1_024]) -> bytes32:
     """
     @dev Returns an Ethereum signed data with `validator` as
          the intended validator and a maximum 1,024-byte payload
@@ -72,12 +70,12 @@ def to_data_with_intended_validator_hash(validator: address, data: Bytes[1_024])
     @param data The maximum 1,024-byte data to be signed.
     @return bytes32 The 32-byte Ethereum signed data.
     """
-    return mu._to_data_with_intended_validator_hash(validator, data)
+    return keccak256(concat(b"\x19\x00", convert(validator, bytes20), data))
 
 
-@external
+@internal
 @pure
-def to_typed_data_hash(domain_separator: bytes32, struct_hash: bytes32) -> bytes32:
+def _to_typed_data_hash(domain_separator: bytes32, struct_hash: bytes32) -> bytes32:
     """
     @dev Returns an Ethereum signed typed data from a 32-byte
          `domain_separator` and a 32-byte `struct_hash`.
@@ -93,4 +91,4 @@ def to_typed_data_hash(domain_separator: bytes32, struct_hash: bytes32) -> bytes
            https://eips.ethereum.org/EIPS/eip-712#definition-of-hashstruct.
     @return bytes32 The 32-byte Ethereum signed typed data.
     """
-    return mu._to_typed_data_hash(domain_separator, struct_hash)
+    return keccak256(concat(b"\x19\x01", domain_separator, struct_hash))

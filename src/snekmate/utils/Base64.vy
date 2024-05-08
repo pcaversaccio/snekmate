@@ -1,7 +1,7 @@
 # pragma version ~=0.4.0rc2
 """
 @title Base64 Encoding and Decoding Functions
-@custom:contract-name Base64
+@custom:contract-name base64
 @license GNU Affero General Public License v3.0 only
 @author pcaversaccio
 @notice These functions can be used to encode bytes or to decode strings
@@ -172,7 +172,7 @@ def _decode(data: String[_DATA_OUTPUT_BOUND], base64_url: bool) -> DynArray[Byte
 
     # If the length of the encoded input is not a
     # multiple of four, it is an invalid input.
-    assert data_length % 4 == empty(uint256), "Base64: length mismatch"
+    assert data_length % 4 == empty(uint256), "base64: length mismatch"
 
     result: DynArray[Bytes[3], _DATA_INPUT_BOUND] = []
     idx: uint256 = empty(uint256)
@@ -298,6 +298,6 @@ def _index_of(char: String[1], base64_url: bool) -> uint256:
 
     # If no matching character is found, it is an
     # invalid input.
-    assert pos < len(_TABLE_URL_CHARS), "Base64: invalid string"
+    assert pos < len(_TABLE_URL_CHARS), "base64: invalid string"
     
     return pos

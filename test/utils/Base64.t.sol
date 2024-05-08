@@ -23,7 +23,7 @@ contract Base64Test is PRBTest {
         base64 = IBase64(
             vyperDeployer.deployContract(
                 "src/snekmate/utils/mocks/",
-                "Base64Mock"
+                "base64_mock"
             )
         );
     }
@@ -230,7 +230,7 @@ contract Base64Test is PRBTest {
     function testDecodeSafeUrl() public {
         string memory text = "[]c!~?[]~";
         string memory data = "W11jIX4_W11-";
-        vm.expectRevert(bytes("Base64: invalid string"));
+        vm.expectRevert(bytes("base64: invalid string"));
         base64.decode(data, false);
         bytes[] memory outputUrl = base64.decode(data, true);
         bytes memory returnDataUrl = bytes.concat(
@@ -243,9 +243,9 @@ contract Base64Test is PRBTest {
 
     function testDataLengthMismatch() public {
         string memory data = "W11jI";
-        vm.expectRevert(bytes("Base64: length mismatch"));
+        vm.expectRevert(bytes("base64: length mismatch"));
         base64.decode(data, false);
-        vm.expectRevert(bytes("Base64: length mismatch"));
+        vm.expectRevert(bytes("base64: length mismatch"));
         base64.decode(data, true);
     }
 }

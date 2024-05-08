@@ -1,7 +1,7 @@
 # pragma version ~=0.4.0rc2
 """
 @title EIP-712 Domain Separator
-@custom:contract-name EIP712DomainSeparator
+@custom:contract-name eip712_domain_separator
 @license GNU Affero General Public License v3.0 only
 @author pcaversaccio
 @notice These functions are part of EIP-712: https://eips.ethereum.org/EIPS/eip-712.
@@ -21,11 +21,11 @@ import interfaces.IERC5267 as IERC5267
 implements: IERC5267
 
 
-# @dev We import the `MessageHashUtils` module.
-# @notice Please note that the `MessageHashUtils`
+# @dev We import the `message_hash_utils` module.
+# @notice Please note that the `message_hash_utils`
 # module is stateless and therefore does not require
 # the `uses` keyword for usage.
-from . import MessageHashUtils as message_hash_utils
+from . import message_hash_utils
 
 
 # @dev The 32-byte type hash for the EIP-712 domain separator.

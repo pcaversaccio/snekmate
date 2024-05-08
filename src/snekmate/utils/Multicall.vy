@@ -1,7 +1,7 @@
 # pragma version ~=0.4.0rc2
 """
 @title Multicall Functions
-@custom:contract-name Multicall
+@custom:contract-name multicall
 @license GNU Affero General Public License v3.0 only
 @author pcaversaccio
 @notice These functions can be used to batch together multiple `external`
@@ -132,7 +132,7 @@ def _multicall_value(data: DynArray[BatchValue, _DYNARRAY_BOUND]) -> DynArray[Re
             success, return_data = \
                 raw_call(batch.target, batch.calldata, max_outsize=255, value=msg_value, revert_on_failure=False)
             results.append(Result(success=success, return_data=return_data))
-    assert msg.value == value_accumulator, "Multicall: value mismatch"
+    assert msg.value == value_accumulator, "multicall: value mismatch"
     return results
 
 

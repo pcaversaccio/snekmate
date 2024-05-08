@@ -1,7 +1,7 @@
 # pragma version ~=0.4.0rc2
 """
 @title ERC-721 and ERC-1155 Compatible ERC-2981 Reference Implementation
-@custom:contract-name ERC2981
+@custom:contract-name erc2981
 @license GNU Affero General Public License v3.0 only
 @author pcaversaccio
 @notice Reference implementation of the non-fungible token (NFT) royalty
@@ -37,7 +37,7 @@
                  implements: IERC2981
 
                  from snekmate.tokens import ERC721 as erc721
-                 from snekmate.extensions import ERC2981 as erc2981
+                 from snekmate.extensions import erc2981
 
                  exports: ...
 
@@ -71,15 +71,15 @@ import interfaces.IERC2981 as IERC2981
 implements: IERC2981
 
 
-# @dev We import and use the `Ownable` module.
-from ..auth import Ownable as ownable
+# @dev We import and use the `ownable` module.
+from ..auth import ownable
 uses: ownable
 
 
 # @dev We export (i.e. the runtime bytecode exposes these
 # functions externally, allowing them to be called using
 # the ABI encoding specification) all `external` functions
-# from the `Ownable` module.
+# from the `ownable` module.
 # @notice Please note that you must always also export (if
 # required by the contract logic) `public` declared `constant`,
 # `immutable`, and state variables, for which Vyper automatically
@@ -148,7 +148,7 @@ def __init__():
             to `10_000` so that the fee is in basis points by
             default. At initialisation time, the `owner` role
             will be assigned to the `msg.sender` since we `uses`
-            the `Ownable` module, which implements the
+            the `ownable` module, which implements the
             aforementioned logic at contract creation time.
 
             IMPORTANT: The `_default_royalty_info` is set to
@@ -275,8 +275,8 @@ def _set_default_royalty(receiver: address, fee_numerator: uint96):
            the royalty fraction.
     """
     denominator: uint256 = self._fee_denominator
-    assert convert(fee_numerator, uint256) <= denominator, "ERC2981: royalty fee will exceed sale_price"
-    assert receiver != empty(address), "ERC2981: invalid receiver"
+    assert convert(fee_numerator, uint256) <= denominator, "erc2981: royalty fee will exceed sale_price"
+    assert receiver != empty(address), "erc2981: invalid receiver"
     self._default_royalty_info = RoyaltyInfo(receiver=receiver, royalty_fraction=fee_numerator)
 
 
@@ -305,8 +305,8 @@ def _set_token_royalty(token_id: uint256, receiver: address, fee_numerator: uint
            the royalty fraction.
     """
     denominator: uint256 = self._fee_denominator
-    assert convert(fee_numerator, uint256) <= denominator, "ERC2981: royalty fee will exceed sale_price"
-    assert receiver != empty(address), "ERC2981: invalid receiver"
+    assert convert(fee_numerator, uint256) <= denominator, "erc2981: royalty fee will exceed sale_price"
+    assert receiver != empty(address), "erc2981: invalid receiver"
     self._token_royalty_info[token_id] = RoyaltyInfo(receiver=receiver, royalty_fraction=fee_numerator)
 
 

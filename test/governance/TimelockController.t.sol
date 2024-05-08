@@ -103,7 +103,7 @@ contract TimelockControllerTest is Test {
         timelockController = ITimelockController(
             vyperDeployer.deployContract(
                 "src/snekmate/governance/mocks/",
-                "TimelockControllerMock",
+                "timelock_controller_mock",
                 args
             )
         );
@@ -273,7 +273,7 @@ contract TimelockControllerTest is Test {
         timelockControllerInitialEventEmptyAdmin = ITimelockController(
             vyperDeployer.deployContract(
                 "src/snekmate/governance/mocks/",
-                "TimelockControllerMock",
+                "timelock_controller_mock",
                 argsEmptyAdmin
             )
         );
@@ -456,7 +456,7 @@ contract TimelockControllerTest is Test {
         timelockControllerInitialEventNonEmptyAdmin = ITimelockController(
             vyperDeployer.deployContract(
                 "src/snekmate/governance/mocks/",
-                "TimelockControllerMock",
+                "timelock_controller_mock",
                 argsNonEmptyAdmin
             )
         );
@@ -857,7 +857,7 @@ contract TimelockControllerTest is Test {
             EMPTY_SALT,
             MIN_DELAY
         );
-        vm.expectRevert("TimelockController: operation already scheduled");
+        vm.expectRevert("timelock_controller: operation already scheduled");
         timelockController.schedule(
             target,
             amount,
@@ -870,7 +870,7 @@ contract TimelockControllerTest is Test {
     }
 
     function testOperationInsufficientDelay() public {
-        vm.expectRevert("TimelockController: insufficient delay");
+        vm.expectRevert("timelock_controller: insufficient delay");
         vm.prank(PROPOSER_ONE);
         timelockController.schedule(
             target,
@@ -1084,7 +1084,7 @@ contract TimelockControllerTest is Test {
         vm.stopPrank();
 
         vm.warp(block.timestamp + MIN_DELAY - 2 days);
-        vm.expectRevert("TimelockController: operation is not ready");
+        vm.expectRevert("timelock_controller: operation is not ready");
         vm.prank(EXECUTOR_ONE);
         timelockController.execute(
             zeroAddress,
@@ -1159,7 +1159,7 @@ contract TimelockControllerTest is Test {
         vm.stopPrank();
 
         vm.warp(block.timestamp + MIN_DELAY + 2 days);
-        vm.expectRevert("TimelockController: missing dependency");
+        vm.expectRevert("timelock_controller: missing dependency");
         vm.prank(EXECUTOR_ONE);
         timelockController.execute(target, amount, payload, operationId1, SALT);
     }
@@ -1210,7 +1210,7 @@ contract TimelockControllerTest is Test {
         vm.stopPrank();
 
         vm.warp(block.timestamp + MIN_DELAY + 2 days);
-        vm.expectRevert("TimelockController: missing dependency");
+        vm.expectRevert("timelock_controller: missing dependency");
         vm.prank(EXECUTOR_ONE);
         timelockController.execute(target, amount, payload, operationId1, SALT);
     }
@@ -1255,7 +1255,7 @@ contract TimelockControllerTest is Test {
         vm.stopPrank();
 
         vm.warp(block.timestamp + MIN_DELAY + 2 days);
-        vm.expectRevert("TimelockController: missing dependency");
+        vm.expectRevert("timelock_controller: missing dependency");
         vm.prank(EXECUTOR_ONE);
         timelockController.execute(
             target,
@@ -1338,7 +1338,7 @@ contract TimelockControllerTest is Test {
             NO_PREDECESSOR,
             EMPTY_SALT
         );
-        vm.expectRevert("TimelockController: underlying transaction reverted");
+        vm.expectRevert("timelock_controller: underlying transaction reverted");
         timelockController.execute(
             target,
             amount,
@@ -1402,7 +1402,7 @@ contract TimelockControllerTest is Test {
         vm.stopPrank();
 
         vm.warp(block.timestamp + MIN_DELAY + 2 days);
-        vm.expectRevert("TimelockController: missing dependency");
+        vm.expectRevert("timelock_controller: missing dependency");
         vm.prank(EXECUTOR_ONE);
         timelockController.execute(
             target,
@@ -1471,7 +1471,7 @@ contract TimelockControllerTest is Test {
         vm.stopPrank();
 
         vm.prank(PROPOSER_ONE);
-        vm.expectRevert("TimelockController: operation cannot be cancelled");
+        vm.expectRevert("timelock_controller: operation cannot be cancelled");
         timelockController.cancel(operationId);
     }
 
@@ -2145,7 +2145,7 @@ contract TimelockControllerTest is Test {
             EMPTY_SALT,
             MIN_DELAY
         );
-        vm.expectRevert("TimelockController: operation already scheduled");
+        vm.expectRevert("timelock_controller: operation already scheduled");
         timelockController.schedule_batch(
             targets,
             amounts,
@@ -2170,7 +2170,7 @@ contract TimelockControllerTest is Test {
             slot,
             value
         );
-        vm.expectRevert("TimelockController: insufficient delay");
+        vm.expectRevert("timelock_controller: insufficient delay");
         vm.prank(PROPOSER_ONE);
         timelockController.schedule_batch(
             targets,
@@ -2361,7 +2361,7 @@ contract TimelockControllerTest is Test {
         vm.stopPrank();
 
         vm.warp(block.timestamp + MIN_DELAY - 2 days);
-        vm.expectRevert("TimelockController: operation is not ready");
+        vm.expectRevert("timelock_controller: operation is not ready");
         vm.prank(EXECUTOR_ONE);
         timelockController.execute_batch(
             targets,
@@ -2444,7 +2444,7 @@ contract TimelockControllerTest is Test {
         vm.stopPrank();
 
         vm.warp(block.timestamp + MIN_DELAY + 2 days);
-        vm.expectRevert("TimelockController: missing dependency");
+        vm.expectRevert("timelock_controller: missing dependency");
         vm.prank(EXECUTOR_ONE);
         timelockController.execute_batch(
             targets,
@@ -2507,7 +2507,7 @@ contract TimelockControllerTest is Test {
         vm.stopPrank();
 
         vm.warp(block.timestamp + MIN_DELAY + 2 days);
-        vm.expectRevert("TimelockController: missing dependency");
+        vm.expectRevert("timelock_controller: missing dependency");
         vm.prank(EXECUTOR_ONE);
         timelockController.execute_batch(
             targets,
@@ -2564,7 +2564,7 @@ contract TimelockControllerTest is Test {
         vm.stopPrank();
 
         vm.warp(block.timestamp + MIN_DELAY + 2 days);
-        vm.expectRevert("TimelockController: missing dependency");
+        vm.expectRevert("timelock_controller: missing dependency");
         vm.prank(EXECUTOR_ONE);
         timelockController.execute_batch(
             targets,
@@ -2656,7 +2656,7 @@ contract TimelockControllerTest is Test {
             NO_PREDECESSOR,
             EMPTY_SALT
         );
-        vm.expectRevert("TimelockController: underlying transaction reverted");
+        vm.expectRevert("timelock_controller: underlying transaction reverted");
         timelockController.execute_batch(
             targets,
             amounts,
@@ -2725,7 +2725,7 @@ contract TimelockControllerTest is Test {
         vm.stopPrank();
 
         vm.warp(block.timestamp + MIN_DELAY + 2 days);
-        vm.expectRevert("TimelockController: missing dependency");
+        vm.expectRevert("timelock_controller: missing dependency");
         vm.prank(EXECUTOR_ONE);
         timelockController.execute_batch(
             targets,
@@ -2802,7 +2802,7 @@ contract TimelockControllerTest is Test {
         vm.stopPrank();
 
         vm.prank(PROPOSER_ONE);
-        vm.expectRevert("TimelockController: operation cannot be cancelled");
+        vm.expectRevert("timelock_controller: operation cannot be cancelled");
         timelockController.cancel(batchedOperationId);
     }
 
@@ -3313,7 +3313,7 @@ contract TimelockControllerTest is Test {
     }
 
     function testRevertWhenNotTimelock() public {
-        vm.expectRevert("TimelockController: caller must be timelock");
+        vm.expectRevert("timelock_controller: caller must be timelock");
         vm.prank(STRANGER);
         timelockController.update_delay(3 days);
     }
@@ -3322,7 +3322,7 @@ contract TimelockControllerTest is Test {
         address[] memory targets = new address[](0);
         uint256[] memory amounts = new uint256[](0);
         bytes[] memory payloads = new bytes[](0);
-        vm.expectRevert("AccessControl: account is missing role");
+        vm.expectRevert("access_control: account is missing role");
         vm.prank(self);
         timelockController.schedule_batch(
             targets,
@@ -3335,7 +3335,7 @@ contract TimelockControllerTest is Test {
     }
 
     function testAdminCannotSchedule() public {
-        vm.expectRevert("AccessControl: account is missing role");
+        vm.expectRevert("access_control: account is missing role");
         vm.prank(self);
         timelockController.schedule(
             zeroAddress,
@@ -3352,7 +3352,7 @@ contract TimelockControllerTest is Test {
         uint256[] memory amounts = new uint256[](0);
         bytes[] memory payloads = new bytes[](0);
 
-        vm.expectRevert("AccessControl: account is missing role");
+        vm.expectRevert("access_control: account is missing role");
         vm.prank(self);
         timelockController.execute_batch(
             targets,
@@ -3364,7 +3364,7 @@ contract TimelockControllerTest is Test {
     }
 
     function testAdminCannotExecute() public {
-        vm.expectRevert("AccessControl: account is missing role");
+        vm.expectRevert("access_control: account is missing role");
         vm.prank(self);
         timelockController.execute(
             zeroAddress,
@@ -3376,7 +3376,7 @@ contract TimelockControllerTest is Test {
     }
 
     function testAdminCannotCancel() public {
-        vm.expectRevert("AccessControl: account is missing role");
+        vm.expectRevert("access_control: account is missing role");
         vm.prank(self);
         timelockController.cancel(EMPTY_SALT);
     }
@@ -3437,7 +3437,7 @@ contract TimelockControllerTest is Test {
         uint256[] memory amounts = new uint256[](0);
         bytes[] memory payloads = new bytes[](0);
 
-        vm.expectRevert("AccessControl: account is missing role");
+        vm.expectRevert("access_control: account is missing role");
         vm.prank(PROPOSER_ONE);
         timelockController.execute_batch(
             targets,
@@ -3447,7 +3447,7 @@ contract TimelockControllerTest is Test {
             EMPTY_SALT
         );
 
-        vm.expectRevert("AccessControl: account is missing role");
+        vm.expectRevert("access_control: account is missing role");
         vm.prank(PROPOSER_TWO);
         timelockController.execute_batch(
             targets,
@@ -3459,7 +3459,7 @@ contract TimelockControllerTest is Test {
     }
 
     function testProposerCannotExecute() public {
-        vm.expectRevert("AccessControl: account is missing role");
+        vm.expectRevert("access_control: account is missing role");
         vm.prank(PROPOSER_ONE);
         timelockController.execute(
             zeroAddress,
@@ -3469,7 +3469,7 @@ contract TimelockControllerTest is Test {
             EMPTY_SALT
         );
 
-        vm.expectRevert("AccessControl: account is missing role");
+        vm.expectRevert("access_control: account is missing role");
         vm.prank(PROPOSER_TWO);
         timelockController.execute(
             zeroAddress,
@@ -3481,11 +3481,11 @@ contract TimelockControllerTest is Test {
     }
 
     function testProposerCanCancel() public {
-        vm.expectRevert("TimelockController: operation cannot be cancelled");
+        vm.expectRevert("timelock_controller: operation cannot be cancelled");
         vm.prank(PROPOSER_ONE);
         timelockController.cancel(EMPTY_SALT);
 
-        vm.expectRevert("TimelockController: operation cannot be cancelled");
+        vm.expectRevert("timelock_controller: operation cannot be cancelled");
         vm.prank(PROPOSER_TWO);
         timelockController.cancel(EMPTY_SALT);
     }
@@ -3495,7 +3495,7 @@ contract TimelockControllerTest is Test {
         uint256[] memory amounts = new uint256[](0);
         bytes[] memory payloads = new bytes[](0);
 
-        vm.expectRevert("AccessControl: account is missing role");
+        vm.expectRevert("access_control: account is missing role");
         vm.prank(EXECUTOR_ONE);
         timelockController.schedule_batch(
             targets,
@@ -3506,7 +3506,7 @@ contract TimelockControllerTest is Test {
             MIN_DELAY
         );
 
-        vm.expectRevert("AccessControl: account is missing role");
+        vm.expectRevert("access_control: account is missing role");
         vm.prank(EXECUTOR_TWO);
         timelockController.schedule_batch(
             targets,
@@ -3519,7 +3519,7 @@ contract TimelockControllerTest is Test {
     }
 
     function testExecutorCannotSchedule() public {
-        vm.expectRevert("AccessControl: account is missing role");
+        vm.expectRevert("access_control: account is missing role");
         vm.prank(EXECUTOR_ONE);
         timelockController.schedule(
             zeroAddress,
@@ -3530,7 +3530,7 @@ contract TimelockControllerTest is Test {
             MIN_DELAY
         );
 
-        vm.expectRevert("AccessControl: account is missing role");
+        vm.expectRevert("access_control: account is missing role");
         vm.prank(EXECUTOR_TWO);
         timelockController.schedule(
             zeroAddress,
@@ -3547,7 +3547,7 @@ contract TimelockControllerTest is Test {
         uint256[] memory amounts = new uint256[](0);
         bytes[] memory payloads = new bytes[](0);
 
-        vm.expectRevert("TimelockController: operation is not ready");
+        vm.expectRevert("timelock_controller: operation is not ready");
         vm.prank(EXECUTOR_ONE);
         timelockController.execute_batch(
             targets,
@@ -3557,7 +3557,7 @@ contract TimelockControllerTest is Test {
             EMPTY_SALT
         );
 
-        vm.expectRevert("TimelockController: operation is not ready");
+        vm.expectRevert("timelock_controller: operation is not ready");
         vm.prank(EXECUTOR_TWO);
         timelockController.execute_batch(
             targets,
@@ -3569,7 +3569,7 @@ contract TimelockControllerTest is Test {
     }
 
     function testExecutorCanExecute() public {
-        vm.expectRevert("TimelockController: operation is not ready");
+        vm.expectRevert("timelock_controller: operation is not ready");
         vm.prank(EXECUTOR_ONE);
         timelockController.execute(
             zeroAddress,
@@ -3579,7 +3579,7 @@ contract TimelockControllerTest is Test {
             EMPTY_SALT
         );
 
-        vm.expectRevert("TimelockController: operation is not ready");
+        vm.expectRevert("timelock_controller: operation is not ready");
         vm.prank(EXECUTOR_TWO);
         timelockController.execute(
             zeroAddress,
@@ -3591,11 +3591,11 @@ contract TimelockControllerTest is Test {
     }
 
     function testExecutorCannotCancel() public {
-        vm.expectRevert("AccessControl: account is missing role");
+        vm.expectRevert("access_control: account is missing role");
         vm.prank(EXECUTOR_ONE);
         timelockController.cancel(EMPTY_SALT);
 
-        vm.expectRevert("AccessControl: account is missing role");
+        vm.expectRevert("access_control: account is missing role");
         vm.prank(EXECUTOR_TWO);
         timelockController.cancel(EMPTY_SALT);
     }
@@ -3605,7 +3605,7 @@ contract TimelockControllerTest is Test {
         uint256[] memory amounts = new uint256[](0);
         bytes[] memory payloads = new bytes[](0);
 
-        vm.expectRevert("AccessControl: account is missing role");
+        vm.expectRevert("access_control: account is missing role");
         vm.prank(STRANGER);
         timelockController.schedule_batch(
             targets,
@@ -3618,7 +3618,7 @@ contract TimelockControllerTest is Test {
     }
 
     function testStrangerCannotSchedule() public {
-        vm.expectRevert("AccessControl: account is missing role");
+        vm.expectRevert("access_control: account is missing role");
         vm.prank(STRANGER);
         timelockController.schedule(
             zeroAddress,
@@ -3635,7 +3635,7 @@ contract TimelockControllerTest is Test {
         uint256[] memory amounts = new uint256[](0);
         bytes[] memory payloads = new bytes[](0);
 
-        vm.expectRevert("AccessControl: account is missing role");
+        vm.expectRevert("access_control: account is missing role");
         vm.prank(STRANGER);
         timelockController.execute_batch(
             targets,
@@ -3647,7 +3647,7 @@ contract TimelockControllerTest is Test {
     }
 
     function testStrangerCannotExecute() public {
-        vm.expectRevert("AccessControl: account is missing role");
+        vm.expectRevert("access_control: account is missing role");
         vm.prank(STRANGER);
         timelockController.execute(
             zeroAddress,
@@ -3659,7 +3659,7 @@ contract TimelockControllerTest is Test {
     }
 
     function testStrangerCannotCancel() public {
-        vm.expectRevert("AccessControl: account is missing role");
+        vm.expectRevert("access_control: account is missing role");
         vm.prank(STRANGER);
         timelockController.cancel(EMPTY_SALT);
     }
@@ -3860,7 +3860,7 @@ contract TimelockControllerTest is Test {
         erc721Mock = IERC721Extended(
             vyperDeployer.deployContract(
                 "src/snekmate/tokens/mocks/",
-                "ERC721Mock",
+                "erc721_mock",
                 args
             )
         );
@@ -3938,7 +3938,7 @@ contract TimelockControllerTest is Test {
         erc1155Mock = IERC1155Extended(
             vyperDeployer.deployContract(
                 "src/snekmate/tokens/mocks/",
-                "ERC1155Mock",
+                "erc1155_mock",
                 args
             )
         );
@@ -4230,7 +4230,7 @@ contract TimelockControllerInvariants is Test {
         timelockController = ITimelockController(
             vyperDeployer.deployContract(
                 "src/snekmate/governance/mocks/",
-                "TimelockControllerMock",
+                "timelock_controller_mock",
                 args
             )
         );
@@ -4286,7 +4286,7 @@ contract TimelockControllerInvariants is Test {
             /**
              * @dev Ensure that the executed proposal cannot be executed again.
              */
-            vm.expectRevert("TimelockController: operation is not ready");
+            vm.expectRevert("timelock_controller: operation is not ready");
             timelockController.execute(
                 timelockControllerHandlerAddr,
                 0,
@@ -4331,7 +4331,7 @@ contract TimelockControllerInvariants is Test {
              * @dev Ensure that the executed proposal cannot be cancelled.
              */
             vm.expectRevert(
-                "TimelockController: operation cannot be cancelled"
+                "timelock_controller: operation cannot be cancelled"
             );
             timelockController.cancel(operationId);
         }
@@ -4358,7 +4358,7 @@ contract TimelockControllerInvariants is Test {
                 /**
                  * @dev Ensure that the cancelled proposal cannot be executed.
                  */
-                vm.expectRevert("TimelockController: operation is not ready");
+                vm.expectRevert("timelock_controller: operation is not ready");
                 timelockController.execute(
                     timelockControllerHandlerAddr,
                     0,
@@ -4383,7 +4383,7 @@ contract TimelockControllerInvariants is Test {
             /**
              * @dev Ensure that the pending proposal cannot be executed.
              */
-            vm.expectRevert("TimelockController: operation is not ready");
+            vm.expectRevert("timelock_controller: operation is not ready");
             timelockController.execute(
                 timelockControllerHandlerAddr,
                 0,

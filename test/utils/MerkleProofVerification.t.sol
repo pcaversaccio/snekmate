@@ -278,7 +278,7 @@ contract MerkleProofVerificationTest is Test {
         merkleProofVerification = IMerkleProofVerification(
             vyperDeployer.deployContract(
                 "src/snekmate/utils/mocks/",
-                "MerkleProofVerificationMock"
+                "merkle_proof_verification_mock"
             )
         );
     }
@@ -522,7 +522,7 @@ contract MerkleProofVerificationTest is Test {
         badLeavesDecodedSliced[0] = badLeavesDecoded[0];
         badLeavesDecodedSliced[1] = badLeavesDecoded[2];
 
-        vm.expectRevert(bytes("MerkleProofVerification: invalid multiproof"));
+        vm.expectRevert(bytes("merkle_proof_verification: invalid multiproof"));
         merkleProofVerification.multi_proof_verify(
             badMultiProofDecodedSliced,
             badProofFlags,
@@ -530,7 +530,7 @@ contract MerkleProofVerificationTest is Test {
             badLeavesDecoded
         );
 
-        vm.expectRevert(bytes("MerkleProofVerification: invalid multiproof"));
+        vm.expectRevert(bytes("merkle_proof_verification: invalid multiproof"));
         merkleProofVerification.multi_proof_verify(
             badMultiProofDecoded,
             badProofFlagsSliced,
@@ -538,7 +538,7 @@ contract MerkleProofVerificationTest is Test {
             badLeavesDecoded
         );
 
-        vm.expectRevert(bytes("MerkleProofVerification: invalid multiproof"));
+        vm.expectRevert(bytes("merkle_proof_verification: invalid multiproof"));
         merkleProofVerification.multi_proof_verify(
             badMultiProofDecoded,
             badProofFlags,

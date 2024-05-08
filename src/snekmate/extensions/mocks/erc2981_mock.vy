@@ -1,7 +1,7 @@
 # pragma version ~=0.4.0rc2
 """
-@title ERC2981 Module Reference Implementation
-@custom:contract-name ERC2981Mock
+@title `erc2981` Module Reference Implementation
+@custom:contract-name erc2981_mock
 @license GNU Affero General Public License v3.0 only
 @author pcaversaccio
 """
@@ -19,20 +19,20 @@ from ..interfaces import IERC2981
 implements: IERC2981
 
 
-# @dev We import and initialise the `Ownable` module.
-from ...auth import Ownable as ow
+# @dev We import and initialise the `ownable` module.
+from ...auth import ownable as ow
 initializes: ow
 
 
-# @dev We import and initialise the `ERC2981` module.
-from .. import ERC2981 as erc2981
+# @dev We import and initialise the `erc2981` module.
+from .. import erc2981
 initializes: erc2981[ownable := ow]
 
 
 # @dev We export (i.e. the runtime bytecode exposes these
 # functions externally, allowing them to be called using
 # the ABI encoding specification) all `external` functions
-# from the `ERC2981` module.
+# from the `erc2981` module.
 # @notice Please note that you must always also export (if
 # required by the contract logic) `public` declared `constant`,
 # `immutable`, and state variables, for which Vyper automatically
@@ -43,7 +43,7 @@ exports: (
     # the additional ERC-165 interface identifiers into the
     # function `supportsInterface`. One way to achieve this
     # would be to not export the `supportsInterface` function
-    # from {ERC2981} in the main contract and implement the
+    # from {erc2981} in the main contract and implement the
     # following function in the main contract instead:
     # ```vy
     # @external
@@ -82,12 +82,12 @@ def __init__():
          is declared as `payable`.
     @notice The `owner` role will be assigned to the
             `msg.sender`. Furthermore, the default value
-            of {ERC2981-_fee_denominator} is set to `10_000`.
+            of {erc2981-_fee_denominator} is set to `10_000`.
     """
     # The following line assigns the `owner`
     # to the `msg.sender`.
     ow.__init__()
     # The following line sets the default value
-    # of {ERC2981-_fee_denominator} to `10_000`
+    # of {erc2981-_fee_denominator} to `10_000`
     # so that the fee is in basis points by default.
     erc2981.__init__()

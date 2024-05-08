@@ -1,17 +1,17 @@
 # pragma version ~=0.4.0rc2
 """
-@title MerkleProofVerification Module Reference Implementation
-@custom:contract-name MerkleProofVerificationMock
+@title `merkle_proof_verification` Module Reference Implementation
+@custom:contract-name merkle_proof_verification_mock
 @license GNU Affero General Public License v3.0 only
 @author pcaversaccio
 """
 
 
-# @dev We import the `MerkleProofVerification` module.
-# @notice Please note that the `MerkleProofVerification`
+# @dev We import the `merkle_proof_verification` module.
+# @notice Please note that the `merkle_proof_verification`
 # module is stateless and therefore does not require
 # the `initializes` keyword for initialisation.
-from .. import MerkleProofVerification as mp
+from .. import merkle_proof_verification as mp
 
 
 @deploy
@@ -53,7 +53,7 @@ def multi_proof_verify(proof: DynArray[bytes32, max_value(uint8)], proof_flags: 
          `leaves` are part of a Merkle tree defined by `root`
          and a given set of `proof_flags`.
     @notice Note that not all Merkle trees allow for multiproofs.
-            See {MerkleProofVerification-_process_multi_proof} for
+            See {merkle_proof_verification-_process_multi_proof} for
             further details.
     @param proof The 32-byte array containing sibling hashes
            on the branches from `leaves` to the `root` of the

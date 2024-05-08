@@ -1,7 +1,7 @@
 # pragma version ~=0.4.0rc2
 """
-@title AccessControl Module Reference Implementation
-@custom:contract-name AccessControlMock
+@title `access_control` Module Reference Implementation
+@custom:contract-name access_control_mock
 @license GNU Affero General Public License v3.0 only
 @author pcaversaccio
 """
@@ -20,15 +20,15 @@ from ..interfaces import IAccessControl
 implements: IAccessControl
 
 
-# @dev We import and initialise the `AccessControl` module.
-from .. import AccessControl as ac
+# @dev We import and initialise the `access_control` module.
+from .. import access_control as ac
 initializes: ac
 
 
 # @dev We export (i.e. the runtime bytecode exposes these
 # functions externally, allowing them to be called using
 # the ABI encoding specification) all `external` functions
-# from the `AccessControl` module. The built-in dunder method
+# from the `access_control` module. The built-in dunder method
 # `__interface__` allows you to export all functions of a
 # module without specifying the individual functions (see
 # https://github.com/vyperlang/vyper/pull/3919). Please take

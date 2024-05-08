@@ -50,6 +50,7 @@ Branch names do not matter, and commit messages within a PR are mostly not impor
 
 ## 🐍Vyper Conventions
 
+- The file names of module and mock contracts use the _snake case_ notation (e.g. `my_module`), whilst the Vyper interface files `.vyi` use the notation _Pascal case_ prefixed with `I` (e.g. `IMyInterface`).
 - The names of `constant`, `immutable`, and state variables, functions, and function parameters use the _snake case_ notation (e.g. `my_function`) if no other notation is enforced via an EIP standard. In particular, `constant` and `immutable` variable names use the _screaming snake case_ notation (e.g. `DEFAULT_CONSTANT`) if no other notation is enforced via an EIP standard.
 - `internal` `constant`, `immutable`, state variables and functions must have an underscore prefix:
 

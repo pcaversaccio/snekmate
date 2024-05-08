@@ -5,30 +5,30 @@
 ### ♻️ Refactoring
 
 - **Authentication**
-  - [`Ownable`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/auth/Ownable.vy): Make `Ownable` module-friendly. ([#218](https://github.com/pcaversaccio/snekmate/pull/218))
-  - [`Ownable2Step`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/auth/Ownable2Step.vy): Make `Ownable2Step` module-friendly. ([#219](https://github.com/pcaversaccio/snekmate/pull/219))
-  - [`AccessControl`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/auth/AccessControl.vy): Make `AccessControl` module-friendly. ([#216](https://github.com/pcaversaccio/snekmate/pull/216))
+  - [`ownable`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/auth/ownable.vy): Make `ownable` module-friendly. ([#218](https://github.com/pcaversaccio/snekmate/pull/218))
+  - [`ownable_2step`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/auth/ownable_2step.vy): Make `ownable_2step` module-friendly. ([#219](https://github.com/pcaversaccio/snekmate/pull/219))
+  - [`access_control`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/auth/access_control.vy): Make `access_control` module-friendly. ([#216](https://github.com/pcaversaccio/snekmate/pull/216))
 - **Extensions**
-  - [`ERC2981`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/extensions/ERC2981.vy): Make `ERC2981` module-friendly. ([#233](https://github.com/pcaversaccio/snekmate/pull/233))
-  - [`ERC4626`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/extensions/ERC4626.vy): Make `ERC4626` module-friendly. ([#236](https://github.com/pcaversaccio/snekmate/pull/236))
+  - [`erc2981`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/extensions/erc2981.vy): Make `erc2981` module-friendly. ([#233](https://github.com/pcaversaccio/snekmate/pull/233))
+  - [`erc4626`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/extensions/erc4626.vy): Make `erc4626` module-friendly. ([#236](https://github.com/pcaversaccio/snekmate/pull/236))
 - **Governance**
-  - [`TimelockController`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/governance/TimelockController.vy): Make `TimelockController` module-friendly. ([#220](https://github.com/pcaversaccio/snekmate/pull/220))
+  - [`timelock_controller`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/governance/timelock_controller.vy): Make `timelock_controller` module-friendly. ([#220](https://github.com/pcaversaccio/snekmate/pull/220))
 - **Tokens**
-  - [`ERC20`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/tokens/ERC20.vy): Make `ERC20` module-friendly. ([#234](https://github.com/pcaversaccio/snekmate/pull/234))
-  - [`ERC721`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/tokens/ERC721.vy): Make `ERC721` module-friendly. ([#237](https://github.com/pcaversaccio/snekmate/pull/237))
-  - [`ERC1155`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/tokens/ERC1155.vy): Make `ERC1155` module-friendly. ([#238](https://github.com/pcaversaccio/snekmate/pull/238))
+  - [`erc20`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/tokens/erc20.vy): Make `erc20` module-friendly. ([#234](https://github.com/pcaversaccio/snekmate/pull/234))
+  - [`erc721`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/tokens/erc721.vy): Make `erc721` module-friendly. ([#237](https://github.com/pcaversaccio/snekmate/pull/237))
+  - [`erc1155`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/tokens/erc1155.vy): Make `erc1155` module-friendly. ([#238](https://github.com/pcaversaccio/snekmate/pull/238))
 - **Utility Functions**
-  - [`Base64`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/utils/Base64.vy): Make `Base64` module-friendly. ([#222](https://github.com/pcaversaccio/snekmate/pull/222))
-  - [`BatchDistributor`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/utils/BatchDistributor.vy): Make `BatchDistributor` module-friendly. ([#223](https://github.com/pcaversaccio/snekmate/pull/223))
-  - [`CreateAddress`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/utils/CreateAddress.vy): Make `CreateAddress` module-friendly. ([#224](https://github.com/pcaversaccio/snekmate/pull/224))
-  - [`Create2Address`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/utils/Create2Address.vy): Make `Create2Address` module-friendly. ([#225](https://github.com/pcaversaccio/snekmate/pull/225))
-  - [`ECDSA`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/utils/ECDSA.vy): Make `ECDSA` module-friendly. ([#227](https://github.com/pcaversaccio/snekmate/pull/227))
-  - [`MessageHashUtils`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/utils/MessageHashUtils.vy): Move the `ECDSA` message hash methods to a separate `MessageHashUtils` library module. ([#227](https://github.com/pcaversaccio/snekmate/pull/227))
-  - [`SignatureChecker`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/utils/SignatureChecker.vy): Make `SignatureChecker` module-friendly. ([#228](https://github.com/pcaversaccio/snekmate/pull/228))
-  - [`EIP712DomainSeparator`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/utils/EIP712DomainSeparator.vy): Make `EIP712DomainSeparator` module-friendly. ([#229](https://github.com/pcaversaccio/snekmate/pull/229))
-  - [`Math`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/utils/Math.vy): Make `Math` module-friendly. ([#230](https://github.com/pcaversaccio/snekmate/pull/230))
-  - [`MerkleProofVerification`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/utils/MerkleProofVerification.vy): Make `MerkleProofVerification` module-friendly. ([#231](https://github.com/pcaversaccio/snekmate/pull/231))
-  - [`Multicall`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/utils/Multicall.vy): Make `Multicall` module-friendly. ([#232](https://github.com/pcaversaccio/snekmate/pull/232))
+  - [`base64`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/utils/base64.vy): Make `base64` module-friendly. ([#222](https://github.com/pcaversaccio/snekmate/pull/222))
+  - [`batch_distributor`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/utils/batch_distributor.vy): Make `batch_distributor` module-friendly. ([#223](https://github.com/pcaversaccio/snekmate/pull/223))
+  - [`create_address`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/utils/create_address.vy): Make `create_address` module-friendly. ([#224](https://github.com/pcaversaccio/snekmate/pull/224))
+  - [`create2_address`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/utils/create2_address.vy): Make `create2_address` module-friendly. ([#225](https://github.com/pcaversaccio/snekmate/pull/225))
+  - [`ecdsa`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/utils/ecdsa.vy): Make `ecdsa` module-friendly. ([#227](https://github.com/pcaversaccio/snekmate/pull/227))
+  - [`message_hash_utils`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/utils/message_hash_utils.vy): Move the `ecdsa` message hash methods to a separate `message_hash_utils` library module. ([#227](https://github.com/pcaversaccio/snekmate/pull/227))
+  - [`signature_checker`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/utils/signature_checker.vy): Make `signature_checker` module-friendly. ([#228](https://github.com/pcaversaccio/snekmate/pull/228))
+  - [`eip712_domain_separator`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/utils/eip712_domain_separator.vy): Make `eip712_domain_separator` module-friendly. ([#229](https://github.com/pcaversaccio/snekmate/pull/229))
+  - [`math`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/utils/math.vy): Make `math` module-friendly. ([#230](https://github.com/pcaversaccio/snekmate/pull/230))
+  - [`merkle_proof_verification`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/utils/merkle_proof_verification.vy): Make `merkle_proof_verification` module-friendly. ([#231](https://github.com/pcaversaccio/snekmate/pull/231))
+  - [`multicall`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/utils/multicall.vy): Make `multicall` module-friendly. ([#232](https://github.com/pcaversaccio/snekmate/pull/232))
 - **Vyper Contract Deployer**
   - [`VyperDeployer`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/lib/utils/VyperDeployer.sol): Improve error message in the event of a Vyper compilation error. ([#219](https://github.com/pcaversaccio/snekmate/pull/219))
 
@@ -37,6 +37,10 @@
 - **Tokens**
   - [`ERC20`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/tokens/ERC20.vy): Add `echidna`-based `ERC20` property tests. ([#239](https://github.com/pcaversaccio/snekmate/pull/239))
   - [`ERC721`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/tokens/ERC721.vy): Add `echidna`-based `ERC721` property tests. ([#239](https://github.com/pcaversaccio/snekmate/pull/239))
+
+### ❗️ Breaking Changes
+
+- The file names of 🐍 snekmate module and mock contracts use the _snake case_ notation (e.g. `my_module`), whilst the Vyper interface files `.vyi` use the notation _Pascal case_ prefixed with `I` (e.g. `IMyInterface`). ([#241](https://github.com/pcaversaccio/snekmate/pull/241))
 
 ### 👀 Full Changelog
 

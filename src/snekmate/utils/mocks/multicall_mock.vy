@@ -1,17 +1,17 @@
 # pragma version ~=0.4.0rc2
 """
-@title Multicall Module Reference Implementation
-@custom:contract-name MulticallMock
+@title `multicall` Module Reference Implementation
+@custom:contract-name multicall_mock
 @license GNU Affero General Public License v3.0 only
 @author pcaversaccio
 """
 
 
-# @dev We import the `Multicall` module.
-# @notice Please note that the `Multicall` module
+# @dev We import the `multicall` module.
+# @notice Please note that the `multicall` module
 # is stateless and therefore does not require
 # the `initializes` keyword for initialisation.
-from .. import Multicall as mc
+from .. import multicall as mc
 
 
 @deploy

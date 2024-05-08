@@ -1,7 +1,7 @@
 # pragma version ~=0.4.0rc2
 """
-@title EIP712DomainSeparator Module Reference Implementation
-@custom:contract-name EIP712DomainSeparatorMock
+@title `eip712_domain_separator` Module Reference Implementation
+@custom:contract-name eip712_domain_separator_mock
 @license GNU Affero General Public License v3.0 only
 @author pcaversaccio
 """
@@ -13,15 +13,15 @@ from ..interfaces import IERC5267
 implements: IERC5267
 
 
-# @dev We import and initialise the `EIP712DomainSeparator` module.
-from .. import EIP712DomainSeparator as ed
+# @dev We import and initialise the `eip712_domain_separator` module.
+from .. import eip712_domain_separator as ed
 initializes: ed
 
 
 # @dev We export (i.e. the runtime bytecode exposes these
 # functions externally, allowing them to be called using
 # the ABI encoding specification) the `external` function
-# `eip712Domain` from the `EIP712DomainSeparator` module.
+# `eip712Domain` from the `eip712_domain_separator` module.
 # @notice Please note that you must always also export (if
 # required by the contract logic) `public` declared `constant`,
 # `immutable`, and state variables, for which Vyper automatically

@@ -52,7 +52,7 @@ contract ECDSATest is Test {
         ECDSA = IECDSA(
             vyperDeployer.deployContract(
                 "src/snekmate/utils/mocks/",
-                "ECDSAMock"
+                "ecdsa_mock"
             )
         );
     }
@@ -155,7 +155,7 @@ contract ECDSATest is Test {
         bytes32 hash = keccak256("WAGMI");
         (, bytes32 r, bytes32 s) = vm.sign(key, hash);
         bytes memory signatureInvalid = abi.encodePacked(r, s, bytes1(0xa0));
-        vm.expectRevert(bytes("ECDSA: invalid signature"));
+        vm.expectRevert(bytes("ecdsa: invalid signature"));
         ECDSA.recover_sig(hash, signatureInvalid);
     }
 
@@ -168,7 +168,7 @@ contract ECDSATest is Test {
         (, bytes32 r, bytes32 s) = vm.sign(key, hash);
         bytes memory signatureWithoutVersion = abi.encodePacked(r, s);
         bytes1 version = 0x00;
-        vm.expectRevert(bytes("ECDSA: invalid signature"));
+        vm.expectRevert(bytes("ecdsa: invalid signature"));
         ECDSA.recover_sig(
             hash,
             abi.encodePacked(signatureWithoutVersion, version)
@@ -184,7 +184,7 @@ contract ECDSATest is Test {
         (, bytes32 r, bytes32 s) = vm.sign(key, hash);
         bytes memory signatureWithoutVersion = abi.encodePacked(r, s);
         bytes1 version = 0x02;
-        vm.expectRevert(bytes("ECDSA: invalid signature"));
+        vm.expectRevert(bytes("ecdsa: invalid signature"));
         ECDSA.recover_sig(
             hash,
             abi.encodePacked(signatureWithoutVersion, version)
@@ -226,7 +226,7 @@ contract ECDSATest is Test {
         uint256 sTooHigh = uint256(s) +
             0x7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF5D576E7357A4501DDFE92F46681B20A0;
         bytes memory signature = abi.encodePacked(r, bytes32(sTooHigh), v);
-        vm.expectRevert(bytes("ECDSA: invalid signature `s` value"));
+        vm.expectRevert(bytes("ecdsa: invalid signature `s` value"));
         ECDSA.recover_sig(hash, signature);
 
         /**

@@ -1,7 +1,7 @@
 # pragma version ~=0.4.0rc2
 """
 @title Batch Sending Both Native and ERC-20 Tokens
-@custom:contract-name BatchDistributor
+@custom:contract-name batch_distributor
 @license GNU Affero General Public License v3.0 only
 @author pcaversaccio
 @notice These functions can be used for batch sending
@@ -106,7 +106,7 @@ def _distribute_token(token: IERC20, data: Batch):
     # always performs an external code size check on the target address unless
     # you add the kwarg `skip_contract_check=True`. If the check fails (i.e.
     # the target address is an EOA), the call reverts.
-    assert extcall token.transferFrom(msg.sender, self, total, default_return_value=True), "BatchDistributor: transferFrom operation did not succeed"
+    assert extcall token.transferFrom(msg.sender, self, total, default_return_value=True), "batch_distributor: transferFrom operation did not succeed"
 
     for txn: Transaction in data.txns:
-        assert extcall token.transfer(txn.recipient, txn.amount, default_return_value=True), "BatchDistributor: transfer operation did not succeed"
+        assert extcall token.transfer(txn.recipient, txn.amount, default_return_value=True), "batch_distributor: transfer operation did not succeed"

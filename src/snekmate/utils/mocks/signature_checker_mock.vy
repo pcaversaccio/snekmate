@@ -1,24 +1,24 @@
 # pragma version ~=0.4.0rc2
 """
-@title SignatureChecker Module Reference Implementation
-@custom:contract-name SignatureCheckerMock
+@title `signature_checker` Module Reference Implementation
+@custom:contract-name signature_checker_mock
 @license GNU Affero General Public License v3.0 only
 @author pcaversaccio
 """
 
 
-# @dev We import the `SignatureChecker` module.
-# @notice Please note that the `SignatureChecker`
+# @dev We import the `signature_checker` module.
+# @notice Please note that the `signature_checker`
 # module is stateless and therefore does not require
 # the `initializes` keyword for initialisation.
-from .. import SignatureChecker as sc
+from .. import signature_checker as sc
 
 
 # @dev We export (i.e. the runtime bytecode exposes these
 # functions externally, allowing them to be called using
 # the ABI encoding specification) the `external` getter
 # function `IERC1271_ISVALIDSIGNATURE_SELECTOR` from the
-# `SignatureChecker` module.
+# `signature_checker` module.
 # @notice Please note that you must always also export (if
 # required by the contract logic) `public` declared `constant`,
 # `immutable`, and state variables, for which Vyper automatically
@@ -45,7 +45,7 @@ def is_valid_signature_now(signer: address, hash: bytes32, signature: Bytes[65])
          for a given `signer` and message digest `hash`.
          If the signer is a smart contract, the signature
          is validated against that smart contract using
-         EIP-1271, otherwise it's validated using {ECDSA-_recover_sig}.
+         EIP-1271, otherwise it's validated using {ecdsa-_recover_sig}.
     @notice Unlike ECDSA signatures, contract signatures
             are revocable and the result of this function
             can therefore change over time. It could return

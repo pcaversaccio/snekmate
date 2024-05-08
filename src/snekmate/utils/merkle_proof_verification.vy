@@ -1,7 +1,7 @@
 # pragma version ~=0.4.0rc2
 """
 @title Merkle Tree Proof Verification Functions
-@custom:contract-name MerkleProofVerification
+@custom:contract-name merkle_proof_verification
 @license GNU Affero General Public License v3.0 only
 @author pcaversaccio
 @notice The Merkle tree and the corresponding proofs can be generated
@@ -153,7 +153,7 @@ def _process_multi_proof(proof: DynArray[bytes32, max_value(uint8)], proof_flags
     # `total_hashes` are bounded by the value `max_value(uint8)`
     # and therefore cannot overflow the `uint256` type when they
     # are added together or incremented by `1`.
-    assert unsafe_add(leaves_length, len(proof)) == unsafe_add(total_hashes, 1), "MerkleProofVerification: invalid multiproof"
+    assert unsafe_add(leaves_length, len(proof)) == unsafe_add(total_hashes, 1), "merkle_proof_verification: invalid multiproof"
 
     hashes: DynArray[bytes32, max_value(uint8)] = []
     leaf_pos: uint256 = empty(uint256)
