@@ -29,7 +29,7 @@ implements: IERC20Permit
 # @dev We import and implement the `IERC4626` interface,
 # which is a built-in interface of the Vyper compiler.
 from ethereum.ercs import IERC4626
-# implements: IERC4626
+implements: IERC4626
 
 
 # @dev We import and implement the `IERC5267` interface,

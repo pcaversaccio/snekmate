@@ -135,7 +135,13 @@ exports: (
 # types by default. Furthermore, if you declare a
 # variable as `public`, Vyper automatically generates
 # an `external` getter function for the variable.
-asset: public(immutable(IERC20))
+asset: public(immutable(address))
+
+
+# @dev Stores the ERC-20 interface of the underlying
+# token used for the vault for accounting, depositing,
+# and withdrawing.
+_ASSET: immutable(IERC20)
 
 
 # @dev An offset in the decimal representation between
@@ -196,7 +202,8 @@ def __init__(name_: String[25], symbol_: String[5], asset_: IERC20, decimals_off
            main version of the signing domain. Signatures
            from different versions are not compatible.
     """
-    asset = asset_
+    _ASSET = asset_
+    asset = _ASSET.address
 
     success: bool = empty(bool)
     decoded_decimals: uint8 = empty(uint8)
@@ -489,7 +496,7 @@ def _total_assets() -> uint256:
             https://eips.ethereum.org/EIPS/eip-4626#totalassets.
     @return uint256 The 32-byte total managed assets.
     """
-    return staticcall asset.balanceOf(self)
+    return staticcall _ASSET.balanceOf(self)
 
 
 @internal
@@ -670,7 +677,7 @@ def _deposit(sender: address, receiver: address, assets: uint256, shares: uint25
     # always performs an external code size check on the target address unless
     # you add the kwarg `skip_contract_check=True`. If the check fails (i.e.
     # the target address is an EOA), the call reverts.
-    assert extcall asset.transferFrom(sender, self, assets, default_return_value=True), "ERC4626: transferFrom operation did not succeed"
+    assert extcall _ASSET.transferFrom(sender, self, assets, default_return_value=True), "ERC4626: transferFrom operation did not succeed"
     erc20._mint(receiver, shares)
     log Deposit(sender, receiver, assets, shares)
 
@@ -710,5 +717,5 @@ def _withdraw(sender: address, receiver: address, owner: address, assets: uint25
     # always performs an external code size check on the target address unless
     # you add the kwarg `skip_contract_check=True`. If the check fails (i.e.
     # the target address is an EOA), the call reverts.
-    assert extcall asset.transfer(receiver, assets, default_return_value=True), "ERC4626: transfer operation did not succeed"
+    assert extcall _ASSET.transfer(receiver, assets, default_return_value=True), "ERC4626: transfer operation did not succeed"
     log Withdraw(sender, receiver, owner, assets, shares)
