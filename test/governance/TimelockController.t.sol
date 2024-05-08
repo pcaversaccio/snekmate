@@ -4337,21 +4337,35 @@ contract TimelockControllerInvariants is Test {
      * @dev The execution of a proposal that has been cancelled is not possible.
      */
     function invariantExecutingCancelledProposal() public {
+        bool isPending;
         uint256[] memory cancelled = timelockControllerHandler.getCancelled();
+        uint256[] memory pending = timelockControllerHandler.getPending();
         for (uint256 i = 0; i < cancelled.length; ++i) {
-            /**
-             * @dev Ensure that the cancelled proposal cannot be executed.
-             */
-            vm.expectRevert("TimelockController: operation is not ready");
-            timelockController.execute(
-                timelockControllerHandlerAddr,
-                0,
-                abi.encodeWithSelector(
-                    TimelockControllerHandler.increment.selector
-                ),
-                bytes32(""),
-                bytes32(cancelled[i])
-            );
+            for (uint256 j = 0; j < pending.length; ++j) {
+                /**
+                 * @dev Check if a `cancelled` element is also part of the `pending` array.
+                 */
+                isPending = (cancelled[i] == pending[j]) ? true : false;
+                if (isPending) {
+                    break;
+                }
+            }
+            if (!isPending) {
+                /**
+                 * @dev Ensure that the cancelled proposal cannot be executed.
+                 */
+                vm.expectRevert("TimelockController: operation is not ready");
+                timelockController.execute(
+                    timelockControllerHandlerAddr,
+                    0,
+                    abi.encodeWithSelector(
+                        TimelockControllerHandler.increment.selector
+                    ),
+                    bytes32(""),
+                    bytes32(cancelled[i])
+                );
+            }
+            isPending = false;
         }
     }
 
