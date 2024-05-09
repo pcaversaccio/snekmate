@@ -19,7 +19,7 @@ contract OwnableTest is Test {
         ownable = IOwnable(
             vyperDeployer.deployContract(
                 "src/snekmate/auth/mocks/",
-                "OwnableMock"
+                "ownable_mock"
             )
         );
     }
@@ -32,7 +32,7 @@ contract OwnableTest is Test {
         ownableInitialEvent = IOwnable(
             vyperDeployer.deployContract(
                 "src/snekmate/auth/mocks/",
-                "OwnableMock"
+                "ownable_mock"
             )
         );
         assertEq(ownableInitialEvent.owner(), deployer);
@@ -54,13 +54,13 @@ contract OwnableTest is Test {
     }
 
     function testTransferOwnershipNonOwner() public {
-        vm.expectRevert(bytes("Ownable: caller is not the owner"));
+        vm.expectRevert(bytes("ownable: caller is not the owner"));
         ownable.transfer_ownership(makeAddr("newOwner"));
     }
 
     function testTransferOwnershipToZeroAddress() public {
         vm.prank(deployer);
-        vm.expectRevert(bytes("Ownable: new owner is the zero address"));
+        vm.expectRevert(bytes("ownable: new owner is the zero address"));
         ownable.transfer_ownership(zeroAddress);
     }
 
@@ -76,7 +76,7 @@ contract OwnableTest is Test {
     }
 
     function testRenounceOwnershipNonOwner() public {
-        vm.expectRevert(bytes("Ownable: caller is not the owner"));
+        vm.expectRevert(bytes("ownable: caller is not the owner"));
         ownable.renounce_ownership();
     }
 
@@ -107,7 +107,7 @@ contract OwnableTest is Test {
     ) public {
         vm.assume(nonOwner != deployer);
         vm.prank(nonOwner);
-        vm.expectRevert(bytes("Ownable: caller is not the owner"));
+        vm.expectRevert(bytes("ownable: caller is not the owner"));
         ownable.transfer_ownership(newOwner);
     }
 
@@ -133,7 +133,7 @@ contract OwnableTest is Test {
     function testFuzzRenounceOwnershipNonOwner(address nonOwner) public {
         vm.assume(nonOwner != deployer);
         vm.prank(nonOwner);
-        vm.expectRevert(bytes("Ownable: caller is not the owner"));
+        vm.expectRevert(bytes("ownable: caller is not the owner"));
         ownable.renounce_ownership();
     }
 }
@@ -150,7 +150,7 @@ contract OwnableInvariants is Test {
         ownable = IOwnable(
             vyperDeployer.deployContract(
                 "src/snekmate/auth/mocks/",
-                "OwnableMock"
+                "ownable_mock"
             )
         );
         ownerHandler = new OwnerHandler(ownable, deployer);

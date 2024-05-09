@@ -18,7 +18,7 @@ import {ITimelockController} from "./interfaces/ITimelockController.sol";
 
 /**
  * @dev The standard access control functionalities are not tested as they
- * are imported via the `AccessControl` module. See `AccessControl.t.sol`
+ * are imported via the `access_control` module. See `AccessControl.t.sol`
  * for the corresponding tests. However, please integrate these tests into
  * your own test suite before deploying `TimelockController` into production!
  */
@@ -103,7 +103,7 @@ contract TimelockControllerTest is Test {
         timelockController = ITimelockController(
             vyperDeployer.deployContract(
                 "src/snekmate/governance/mocks/",
-                "TimelockControllerMock",
+                "timelock_controller_mock",
                 args
             )
         );
@@ -273,7 +273,7 @@ contract TimelockControllerTest is Test {
         timelockControllerInitialEventEmptyAdmin = ITimelockController(
             vyperDeployer.deployContract(
                 "src/snekmate/governance/mocks/",
-                "TimelockControllerMock",
+                "timelock_controller_mock",
                 argsEmptyAdmin
             )
         );
@@ -456,7 +456,7 @@ contract TimelockControllerTest is Test {
         timelockControllerInitialEventNonEmptyAdmin = ITimelockController(
             vyperDeployer.deployContract(
                 "src/snekmate/governance/mocks/",
-                "TimelockControllerMock",
+                "timelock_controller_mock",
                 argsNonEmptyAdmin
             )
         );
@@ -658,8 +658,8 @@ contract TimelockControllerTest is Test {
 
     function testHashOperation() public view {
         uint256 amount = 0;
-        bytes32 slot = bytes32(uint256(1337));
-        bytes32 value = bytes32(uint256(6699));
+        bytes32 slot = bytes32(uint256(1_337));
+        bytes32 value = bytes32(uint256(6_699));
         bytes memory payload = abi.encodeWithSelector(
             callReceiverMock.mockFunctionWritesStorage.selector,
             slot,
@@ -682,8 +682,8 @@ contract TimelockControllerTest is Test {
 
     function testScheduleAndExecuteWithEmptySalt() public {
         uint256 amount = 0;
-        bytes32 slot = bytes32(uint256(1337));
-        bytes32 value = bytes32(uint256(6699));
+        bytes32 slot = bytes32(uint256(1_337));
+        bytes32 value = bytes32(uint256(6_699));
         bytes memory payload = abi.encodeWithSelector(
             callReceiverMock.mockFunctionWritesStorage.selector,
             slot,
@@ -755,8 +755,8 @@ contract TimelockControllerTest is Test {
 
     function testScheduleAndExecuteWithNonEmptySalt() public {
         uint256 amount = 0;
-        bytes32 slot = bytes32(uint256(1337));
-        bytes32 value = bytes32(uint256(6699));
+        bytes32 slot = bytes32(uint256(1_337));
+        bytes32 value = bytes32(uint256(6_699));
         bytes memory payload = abi.encodeWithSelector(
             callReceiverMock.mockFunctionWritesStorage.selector,
             slot,
@@ -857,7 +857,7 @@ contract TimelockControllerTest is Test {
             EMPTY_SALT,
             MIN_DELAY
         );
-        vm.expectRevert("TimelockController: operation already scheduled");
+        vm.expectRevert("timelock_controller: operation already scheduled");
         timelockController.schedule(
             target,
             amount,
@@ -870,7 +870,7 @@ contract TimelockControllerTest is Test {
     }
 
     function testOperationInsufficientDelay() public {
-        vm.expectRevert("TimelockController: insufficient delay");
+        vm.expectRevert("timelock_controller: insufficient delay");
         vm.prank(PROPOSER_ONE);
         timelockController.schedule(
             target,
@@ -1084,7 +1084,7 @@ contract TimelockControllerTest is Test {
         vm.stopPrank();
 
         vm.warp(block.timestamp + MIN_DELAY - 2 days);
-        vm.expectRevert("TimelockController: operation is not ready");
+        vm.expectRevert("timelock_controller: operation is not ready");
         vm.prank(EXECUTOR_ONE);
         timelockController.execute(
             zeroAddress,
@@ -1097,8 +1097,8 @@ contract TimelockControllerTest is Test {
 
     function testOperationPredecessorNotExecuted() public {
         uint256 amount = 0;
-        bytes32 slot = bytes32(uint256(1337));
-        bytes32 value = bytes32(uint256(6699));
+        bytes32 slot = bytes32(uint256(1_337));
+        bytes32 value = bytes32(uint256(6_699));
         bytes memory payload = abi.encodeWithSelector(
             callReceiverMock.mockFunctionWritesStorage.selector,
             slot,
@@ -1159,15 +1159,15 @@ contract TimelockControllerTest is Test {
         vm.stopPrank();
 
         vm.warp(block.timestamp + MIN_DELAY + 2 days);
-        vm.expectRevert("TimelockController: missing dependency");
+        vm.expectRevert("timelock_controller: missing dependency");
         vm.prank(EXECUTOR_ONE);
         timelockController.execute(target, amount, payload, operationId1, SALT);
     }
 
     function testOperationPredecessorNotScheduled() public {
         uint256 amount = 0;
-        bytes32 slot = bytes32(uint256(1337));
-        bytes32 value = bytes32(uint256(6699));
+        bytes32 slot = bytes32(uint256(1_337));
+        bytes32 value = bytes32(uint256(6_699));
         bytes memory payload = abi.encodeWithSelector(
             callReceiverMock.mockFunctionWritesStorage.selector,
             slot,
@@ -1210,15 +1210,15 @@ contract TimelockControllerTest is Test {
         vm.stopPrank();
 
         vm.warp(block.timestamp + MIN_DELAY + 2 days);
-        vm.expectRevert("TimelockController: missing dependency");
+        vm.expectRevert("timelock_controller: missing dependency");
         vm.prank(EXECUTOR_ONE);
         timelockController.execute(target, amount, payload, operationId1, SALT);
     }
 
     function testOperationPredecessorInvalid() public {
         uint256 amount = 0;
-        bytes32 slot = bytes32(uint256(1337));
-        bytes32 value = bytes32(uint256(6699));
+        bytes32 slot = bytes32(uint256(1_337));
+        bytes32 value = bytes32(uint256(6_699));
         bytes memory payload = abi.encodeWithSelector(
             callReceiverMock.mockFunctionWritesStorage.selector,
             slot,
@@ -1255,7 +1255,7 @@ contract TimelockControllerTest is Test {
         vm.stopPrank();
 
         vm.warp(block.timestamp + MIN_DELAY + 2 days);
-        vm.expectRevert("TimelockController: missing dependency");
+        vm.expectRevert("timelock_controller: missing dependency");
         vm.prank(EXECUTOR_ONE);
         timelockController.execute(
             target,
@@ -1338,7 +1338,7 @@ contract TimelockControllerTest is Test {
             NO_PREDECESSOR,
             EMPTY_SALT
         );
-        vm.expectRevert("TimelockController: underlying transaction reverted");
+        vm.expectRevert("timelock_controller: underlying transaction reverted");
         timelockController.execute(
             target,
             amount,
@@ -1351,8 +1351,8 @@ contract TimelockControllerTest is Test {
 
     function testOperationPredecessorMultipleNotExecuted() public {
         uint256 amount = 0;
-        bytes32 slot = bytes32(uint256(1337));
-        bytes32 value = bytes32(uint256(6699));
+        bytes32 slot = bytes32(uint256(1_337));
+        bytes32 value = bytes32(uint256(6_699));
         bytes memory payload = abi.encodeWithSelector(
             callReceiverMock.mockFunctionWritesStorage.selector,
             slot,
@@ -1402,7 +1402,7 @@ contract TimelockControllerTest is Test {
         vm.stopPrank();
 
         vm.warp(block.timestamp + MIN_DELAY + 2 days);
-        vm.expectRevert("TimelockController: missing dependency");
+        vm.expectRevert("timelock_controller: missing dependency");
         vm.prank(EXECUTOR_ONE);
         timelockController.execute(
             target,
@@ -1415,8 +1415,8 @@ contract TimelockControllerTest is Test {
 
     function testOperationCancelFinished() public {
         uint256 amount = 0;
-        bytes32 slot = bytes32(uint256(1337));
-        bytes32 value = bytes32(uint256(6699));
+        bytes32 slot = bytes32(uint256(1_337));
+        bytes32 value = bytes32(uint256(6_699));
         bytes memory payload = abi.encodeWithSelector(
             callReceiverMock.mockFunctionWritesStorage.selector,
             slot,
@@ -1471,14 +1471,14 @@ contract TimelockControllerTest is Test {
         vm.stopPrank();
 
         vm.prank(PROPOSER_ONE);
-        vm.expectRevert("TimelockController: operation cannot be cancelled");
+        vm.expectRevert("timelock_controller: operation cannot be cancelled");
         timelockController.cancel(operationId);
     }
 
     function testOperationPendingIfNotYetExecuted() public {
         uint256 amount = 0;
-        bytes32 slot = bytes32(uint256(1337));
-        bytes32 value = bytes32(uint256(6699));
+        bytes32 slot = bytes32(uint256(1_337));
+        bytes32 value = bytes32(uint256(6_699));
         bytes memory payload = abi.encodeWithSelector(
             callReceiverMock.mockFunctionWritesStorage.selector,
             slot,
@@ -1517,8 +1517,8 @@ contract TimelockControllerTest is Test {
 
     function testOperationPendingIfExecuted() public {
         uint256 amount = 0;
-        bytes32 slot = bytes32(uint256(1337));
-        bytes32 value = bytes32(uint256(6699));
+        bytes32 slot = bytes32(uint256(1_337));
+        bytes32 value = bytes32(uint256(6_699));
         bytes memory payload = abi.encodeWithSelector(
             callReceiverMock.mockFunctionWritesStorage.selector,
             slot,
@@ -1576,8 +1576,8 @@ contract TimelockControllerTest is Test {
 
     function testOperationReadyOnTheExecutionTime() public {
         uint256 amount = 0;
-        bytes32 slot = bytes32(uint256(1337));
-        bytes32 value = bytes32(uint256(6699));
+        bytes32 slot = bytes32(uint256(1_337));
+        bytes32 value = bytes32(uint256(6_699));
         bytes memory payload = abi.encodeWithSelector(
             callReceiverMock.mockFunctionWritesStorage.selector,
             slot,
@@ -1617,8 +1617,8 @@ contract TimelockControllerTest is Test {
 
     function testOperationReadyAfterTheExecutionTime() public {
         uint256 amount = 0;
-        bytes32 slot = bytes32(uint256(1337));
-        bytes32 value = bytes32(uint256(6699));
+        bytes32 slot = bytes32(uint256(1_337));
+        bytes32 value = bytes32(uint256(6_699));
         bytes memory payload = abi.encodeWithSelector(
             callReceiverMock.mockFunctionWritesStorage.selector,
             slot,
@@ -1658,8 +1658,8 @@ contract TimelockControllerTest is Test {
 
     function testOperationReadyBeforeTheExecutionTime() public {
         uint256 amount = 0;
-        bytes32 slot = bytes32(uint256(1337));
-        bytes32 value = bytes32(uint256(6699));
+        bytes32 slot = bytes32(uint256(1_337));
+        bytes32 value = bytes32(uint256(6_699));
         bytes memory payload = abi.encodeWithSelector(
             callReceiverMock.mockFunctionWritesStorage.selector,
             slot,
@@ -1699,8 +1699,8 @@ contract TimelockControllerTest is Test {
 
     function testOperationHasBeenExecuted() public {
         uint256 amount = 0;
-        bytes32 slot = bytes32(uint256(1337));
-        bytes32 value = bytes32(uint256(6699));
+        bytes32 slot = bytes32(uint256(1_337));
+        bytes32 value = bytes32(uint256(6_699));
         bytes memory payload = abi.encodeWithSelector(
             callReceiverMock.mockFunctionWritesStorage.selector,
             slot,
@@ -1759,8 +1759,8 @@ contract TimelockControllerTest is Test {
 
     function testOperationHasNotBeenExecuted() public {
         uint256 amount = 0;
-        bytes32 slot = bytes32(uint256(1337));
-        bytes32 value = bytes32(uint256(6699));
+        bytes32 slot = bytes32(uint256(1_337));
+        bytes32 value = bytes32(uint256(6_699));
         bytes memory payload = abi.encodeWithSelector(
             callReceiverMock.mockFunctionWritesStorage.selector,
             slot,
@@ -1799,8 +1799,8 @@ contract TimelockControllerTest is Test {
 
     function testOperationTimestampHasNotBeenExecuted() public {
         uint256 amount = 0;
-        bytes32 slot = bytes32(uint256(1337));
-        bytes32 value = bytes32(uint256(6699));
+        bytes32 slot = bytes32(uint256(1_337));
+        bytes32 value = bytes32(uint256(6_699));
         bytes memory payload = abi.encodeWithSelector(
             callReceiverMock.mockFunctionWritesStorage.selector,
             slot,
@@ -1842,8 +1842,8 @@ contract TimelockControllerTest is Test {
 
     function testOperationTimestampHasBeenExecuted() public {
         uint256 amount = 0;
-        bytes32 slot = bytes32(uint256(1337));
-        bytes32 value = bytes32(uint256(6699));
+        bytes32 slot = bytes32(uint256(1_337));
+        bytes32 value = bytes32(uint256(6_699));
         bytes memory payload = abi.encodeWithSelector(
             callReceiverMock.mockFunctionWritesStorage.selector,
             slot,
@@ -1904,8 +1904,8 @@ contract TimelockControllerTest is Test {
         targets[0] = target;
         uint256[] memory amounts = new uint256[](1);
         amounts[0] = 0;
-        bytes32 slot = bytes32(uint256(1337));
-        bytes32 value = bytes32(uint256(6699));
+        bytes32 slot = bytes32(uint256(1_337));
+        bytes32 value = bytes32(uint256(6_699));
         bytes[] memory payloads = new bytes[](1);
         payloads[0] = abi.encodeWithSelector(
             callReceiverMock.mockFunctionWritesStorage.selector,
@@ -1938,8 +1938,8 @@ contract TimelockControllerTest is Test {
         targets[0] = target;
         uint256[] memory amounts = new uint256[](1);
         amounts[0] = 0;
-        bytes32 slot = bytes32(uint256(1337));
-        bytes32 value = bytes32(uint256(6699));
+        bytes32 slot = bytes32(uint256(1_337));
+        bytes32 value = bytes32(uint256(6_699));
         bytes[] memory payloads = new bytes[](1);
         payloads[0] = abi.encodeWithSelector(
             callReceiverMock.mockFunctionWritesStorage.selector,
@@ -2022,8 +2022,8 @@ contract TimelockControllerTest is Test {
         targets[0] = target;
         uint256[] memory amounts = new uint256[](1);
         amounts[0] = 0;
-        bytes32 slot = bytes32(uint256(1337));
-        bytes32 value = bytes32(uint256(6699));
+        bytes32 slot = bytes32(uint256(1_337));
+        bytes32 value = bytes32(uint256(6_699));
         bytes[] memory payloads = new bytes[](1);
         payloads[0] = abi.encodeWithSelector(
             callReceiverMock.mockFunctionWritesStorage.selector,
@@ -2108,8 +2108,8 @@ contract TimelockControllerTest is Test {
         targets[0] = target;
         uint256[] memory amounts = new uint256[](1);
         amounts[0] = 0;
-        bytes32 slot = bytes32(uint256(1337));
-        bytes32 value = bytes32(uint256(6699));
+        bytes32 slot = bytes32(uint256(1_337));
+        bytes32 value = bytes32(uint256(6_699));
         bytes[] memory payloads = new bytes[](1);
         payloads[0] = abi.encodeWithSelector(
             callReceiverMock.mockFunctionWritesStorage.selector,
@@ -2145,7 +2145,7 @@ contract TimelockControllerTest is Test {
             EMPTY_SALT,
             MIN_DELAY
         );
-        vm.expectRevert("TimelockController: operation already scheduled");
+        vm.expectRevert("timelock_controller: operation already scheduled");
         timelockController.schedule_batch(
             targets,
             amounts,
@@ -2162,15 +2162,15 @@ contract TimelockControllerTest is Test {
         targets[0] = target;
         uint256[] memory amounts = new uint256[](1);
         amounts[0] = 0;
-        bytes32 slot = bytes32(uint256(1337));
-        bytes32 value = bytes32(uint256(6699));
+        bytes32 slot = bytes32(uint256(1_337));
+        bytes32 value = bytes32(uint256(6_699));
         bytes[] memory payloads = new bytes[](1);
         payloads[0] = abi.encodeWithSelector(
             callReceiverMock.mockFunctionWritesStorage.selector,
             slot,
             value
         );
-        vm.expectRevert("TimelockController: insufficient delay");
+        vm.expectRevert("timelock_controller: insufficient delay");
         vm.prank(PROPOSER_ONE);
         timelockController.schedule_batch(
             targets,
@@ -2187,8 +2187,8 @@ contract TimelockControllerTest is Test {
         targets[0] = target;
         uint256[] memory amounts = new uint256[](1);
         amounts[0] = 0;
-        bytes32 slot = bytes32(uint256(1337));
-        bytes32 value = bytes32(uint256(6699));
+        bytes32 slot = bytes32(uint256(1_337));
+        bytes32 value = bytes32(uint256(6_699));
         bytes[] memory payloads = new bytes[](1);
         payloads[0] = abi.encodeWithSelector(
             callReceiverMock.mockFunctionWritesStorage.selector,
@@ -2264,8 +2264,8 @@ contract TimelockControllerTest is Test {
         targets[0] = target;
         uint256[] memory amounts = new uint256[](1);
         amounts[0] = 0;
-        bytes32 slot = bytes32(uint256(1337));
-        bytes32 value = bytes32(uint256(6699));
+        bytes32 slot = bytes32(uint256(1_337));
+        bytes32 value = bytes32(uint256(6_699));
         bytes[] memory payloads = new bytes[](1);
         payloads[0] = abi.encodeWithSelector(
             callReceiverMock.mockFunctionWritesStorage.selector,
@@ -2321,8 +2321,8 @@ contract TimelockControllerTest is Test {
         targets[0] = target;
         uint256[] memory amounts = new uint256[](1);
         amounts[0] = 0;
-        bytes32 slot = bytes32(uint256(1337));
-        bytes32 value = bytes32(uint256(6699));
+        bytes32 slot = bytes32(uint256(1_337));
+        bytes32 value = bytes32(uint256(6_699));
         bytes[] memory payloads = new bytes[](1);
         payloads[0] = abi.encodeWithSelector(
             callReceiverMock.mockFunctionWritesStorage.selector,
@@ -2361,7 +2361,7 @@ contract TimelockControllerTest is Test {
         vm.stopPrank();
 
         vm.warp(block.timestamp + MIN_DELAY - 2 days);
-        vm.expectRevert("TimelockController: operation is not ready");
+        vm.expectRevert("timelock_controller: operation is not ready");
         vm.prank(EXECUTOR_ONE);
         timelockController.execute_batch(
             targets,
@@ -2377,8 +2377,8 @@ contract TimelockControllerTest is Test {
         targets[0] = target;
         uint256[] memory amounts = new uint256[](1);
         amounts[0] = 0;
-        bytes32 slot = bytes32(uint256(1337));
-        bytes32 value = bytes32(uint256(6699));
+        bytes32 slot = bytes32(uint256(1_337));
+        bytes32 value = bytes32(uint256(6_699));
         bytes[] memory payloads = new bytes[](1);
         payloads[0] = abi.encodeWithSelector(
             callReceiverMock.mockFunctionWritesStorage.selector,
@@ -2444,7 +2444,7 @@ contract TimelockControllerTest is Test {
         vm.stopPrank();
 
         vm.warp(block.timestamp + MIN_DELAY + 2 days);
-        vm.expectRevert("TimelockController: missing dependency");
+        vm.expectRevert("timelock_controller: missing dependency");
         vm.prank(EXECUTOR_ONE);
         timelockController.execute_batch(
             targets,
@@ -2460,8 +2460,8 @@ contract TimelockControllerTest is Test {
         targets[0] = target;
         uint256[] memory amounts = new uint256[](1);
         amounts[0] = 0;
-        bytes32 slot = bytes32(uint256(1337));
-        bytes32 value = bytes32(uint256(6699));
+        bytes32 slot = bytes32(uint256(1_337));
+        bytes32 value = bytes32(uint256(6_699));
         bytes[] memory payloads = new bytes[](1);
         payloads[0] = abi.encodeWithSelector(
             callReceiverMock.mockFunctionWritesStorage.selector,
@@ -2507,7 +2507,7 @@ contract TimelockControllerTest is Test {
         vm.stopPrank();
 
         vm.warp(block.timestamp + MIN_DELAY + 2 days);
-        vm.expectRevert("TimelockController: missing dependency");
+        vm.expectRevert("timelock_controller: missing dependency");
         vm.prank(EXECUTOR_ONE);
         timelockController.execute_batch(
             targets,
@@ -2523,8 +2523,8 @@ contract TimelockControllerTest is Test {
         targets[0] = target;
         uint256[] memory amounts = new uint256[](1);
         amounts[0] = 0;
-        bytes32 slot = bytes32(uint256(1337));
-        bytes32 value = bytes32(uint256(6699));
+        bytes32 slot = bytes32(uint256(1_337));
+        bytes32 value = bytes32(uint256(6_699));
         bytes[] memory payloads = new bytes[](1);
         payloads[0] = abi.encodeWithSelector(
             callReceiverMock.mockFunctionWritesStorage.selector,
@@ -2564,7 +2564,7 @@ contract TimelockControllerTest is Test {
         vm.stopPrank();
 
         vm.warp(block.timestamp + MIN_DELAY + 2 days);
-        vm.expectRevert("TimelockController: missing dependency");
+        vm.expectRevert("timelock_controller: missing dependency");
         vm.prank(EXECUTOR_ONE);
         timelockController.execute_batch(
             targets,
@@ -2656,7 +2656,7 @@ contract TimelockControllerTest is Test {
             NO_PREDECESSOR,
             EMPTY_SALT
         );
-        vm.expectRevert("TimelockController: underlying transaction reverted");
+        vm.expectRevert("timelock_controller: underlying transaction reverted");
         timelockController.execute_batch(
             targets,
             amounts,
@@ -2672,8 +2672,8 @@ contract TimelockControllerTest is Test {
         targets[0] = target;
         uint256[] memory amounts = new uint256[](1);
         amounts[0] = 0;
-        bytes32 slot = bytes32(uint256(1337));
-        bytes32 value = bytes32(uint256(6699));
+        bytes32 slot = bytes32(uint256(1_337));
+        bytes32 value = bytes32(uint256(6_699));
         bytes[] memory payloads = new bytes[](1);
         payloads[0] = abi.encodeWithSelector(
             callReceiverMock.mockFunctionWritesStorage.selector,
@@ -2725,7 +2725,7 @@ contract TimelockControllerTest is Test {
         vm.stopPrank();
 
         vm.warp(block.timestamp + MIN_DELAY + 2 days);
-        vm.expectRevert("TimelockController: missing dependency");
+        vm.expectRevert("timelock_controller: missing dependency");
         vm.prank(EXECUTOR_ONE);
         timelockController.execute_batch(
             targets,
@@ -2741,8 +2741,8 @@ contract TimelockControllerTest is Test {
         targets[0] = target;
         uint256[] memory amounts = new uint256[](1);
         amounts[0] = 0;
-        bytes32 slot = bytes32(uint256(1337));
-        bytes32 value = bytes32(uint256(6699));
+        bytes32 slot = bytes32(uint256(1_337));
+        bytes32 value = bytes32(uint256(6_699));
         bytes[] memory payloads = new bytes[](1);
         payloads[0] = abi.encodeWithSelector(
             callReceiverMock.mockFunctionWritesStorage.selector,
@@ -2802,7 +2802,7 @@ contract TimelockControllerTest is Test {
         vm.stopPrank();
 
         vm.prank(PROPOSER_ONE);
-        vm.expectRevert("TimelockController: operation cannot be cancelled");
+        vm.expectRevert("timelock_controller: operation cannot be cancelled");
         timelockController.cancel(batchedOperationId);
     }
 
@@ -2811,8 +2811,8 @@ contract TimelockControllerTest is Test {
         targets[0] = target;
         uint256[] memory amounts = new uint256[](1);
         amounts[0] = 0;
-        bytes32 slot = bytes32(uint256(1337));
-        bytes32 value = bytes32(uint256(6699));
+        bytes32 slot = bytes32(uint256(1_337));
+        bytes32 value = bytes32(uint256(6_699));
         bytes[] memory payloads = new bytes[](1);
         payloads[0] = abi.encodeWithSelector(
             callReceiverMock.mockFunctionWritesStorage.selector,
@@ -2857,8 +2857,8 @@ contract TimelockControllerTest is Test {
         targets[0] = target;
         uint256[] memory amounts = new uint256[](1);
         amounts[0] = 0;
-        bytes32 slot = bytes32(uint256(1337));
-        bytes32 value = bytes32(uint256(6699));
+        bytes32 slot = bytes32(uint256(1_337));
+        bytes32 value = bytes32(uint256(6_699));
         bytes[] memory payloads = new bytes[](1);
         payloads[0] = abi.encodeWithSelector(
             callReceiverMock.mockFunctionWritesStorage.selector,
@@ -2926,8 +2926,8 @@ contract TimelockControllerTest is Test {
         targets[0] = target;
         uint256[] memory amounts = new uint256[](1);
         amounts[0] = 0;
-        bytes32 slot = bytes32(uint256(1337));
-        bytes32 value = bytes32(uint256(6699));
+        bytes32 slot = bytes32(uint256(1_337));
+        bytes32 value = bytes32(uint256(6_699));
         bytes[] memory payloads = new bytes[](1);
         payloads[0] = abi.encodeWithSelector(
             callReceiverMock.mockFunctionWritesStorage.selector,
@@ -2973,8 +2973,8 @@ contract TimelockControllerTest is Test {
         targets[0] = target;
         uint256[] memory amounts = new uint256[](1);
         amounts[0] = 0;
-        bytes32 slot = bytes32(uint256(1337));
-        bytes32 value = bytes32(uint256(6699));
+        bytes32 slot = bytes32(uint256(1_337));
+        bytes32 value = bytes32(uint256(6_699));
         bytes[] memory payloads = new bytes[](1);
         payloads[0] = abi.encodeWithSelector(
             callReceiverMock.mockFunctionWritesStorage.selector,
@@ -3020,8 +3020,8 @@ contract TimelockControllerTest is Test {
         targets[0] = target;
         uint256[] memory amounts = new uint256[](1);
         amounts[0] = 0;
-        bytes32 slot = bytes32(uint256(1337));
-        bytes32 value = bytes32(uint256(6699));
+        bytes32 slot = bytes32(uint256(1_337));
+        bytes32 value = bytes32(uint256(6_699));
         bytes[] memory payloads = new bytes[](1);
         payloads[0] = abi.encodeWithSelector(
             callReceiverMock.mockFunctionWritesStorage.selector,
@@ -3067,8 +3067,8 @@ contract TimelockControllerTest is Test {
         targets[0] = target;
         uint256[] memory amounts = new uint256[](1);
         amounts[0] = 0;
-        bytes32 slot = bytes32(uint256(1337));
-        bytes32 value = bytes32(uint256(6699));
+        bytes32 slot = bytes32(uint256(1_337));
+        bytes32 value = bytes32(uint256(6_699));
         bytes[] memory payloads = new bytes[](1);
         payloads[0] = abi.encodeWithSelector(
             callReceiverMock.mockFunctionWritesStorage.selector,
@@ -3135,8 +3135,8 @@ contract TimelockControllerTest is Test {
         targets[0] = target;
         uint256[] memory amounts = new uint256[](1);
         amounts[0] = 0;
-        bytes32 slot = bytes32(uint256(1337));
-        bytes32 value = bytes32(uint256(6699));
+        bytes32 slot = bytes32(uint256(1_337));
+        bytes32 value = bytes32(uint256(6_699));
         bytes[] memory payloads = new bytes[](1);
         payloads[0] = abi.encodeWithSelector(
             callReceiverMock.mockFunctionWritesStorage.selector,
@@ -3181,8 +3181,8 @@ contract TimelockControllerTest is Test {
         targets[0] = target;
         uint256[] memory amounts = new uint256[](1);
         amounts[0] = 0;
-        bytes32 slot = bytes32(uint256(1337));
-        bytes32 value = bytes32(uint256(6699));
+        bytes32 slot = bytes32(uint256(1_337));
+        bytes32 value = bytes32(uint256(6_699));
         bytes[] memory payloads = new bytes[](1);
         payloads[0] = abi.encodeWithSelector(
             callReceiverMock.mockFunctionWritesStorage.selector,
@@ -3230,8 +3230,8 @@ contract TimelockControllerTest is Test {
         targets[0] = target;
         uint256[] memory amounts = new uint256[](1);
         amounts[0] = 0;
-        bytes32 slot = bytes32(uint256(1337));
-        bytes32 value = bytes32(uint256(6699));
+        bytes32 slot = bytes32(uint256(1_337));
+        bytes32 value = bytes32(uint256(6_699));
         bytes[] memory payloads = new bytes[](1);
         payloads[0] = abi.encodeWithSelector(
             callReceiverMock.mockFunctionWritesStorage.selector,
@@ -3313,7 +3313,7 @@ contract TimelockControllerTest is Test {
     }
 
     function testRevertWhenNotTimelock() public {
-        vm.expectRevert("TimelockController: caller must be timelock");
+        vm.expectRevert("timelock_controller: caller must be timelock");
         vm.prank(STRANGER);
         timelockController.update_delay(3 days);
     }
@@ -3322,7 +3322,7 @@ contract TimelockControllerTest is Test {
         address[] memory targets = new address[](0);
         uint256[] memory amounts = new uint256[](0);
         bytes[] memory payloads = new bytes[](0);
-        vm.expectRevert("AccessControl: account is missing role");
+        vm.expectRevert("access_control: account is missing role");
         vm.prank(self);
         timelockController.schedule_batch(
             targets,
@@ -3335,7 +3335,7 @@ contract TimelockControllerTest is Test {
     }
 
     function testAdminCannotSchedule() public {
-        vm.expectRevert("AccessControl: account is missing role");
+        vm.expectRevert("access_control: account is missing role");
         vm.prank(self);
         timelockController.schedule(
             zeroAddress,
@@ -3352,7 +3352,7 @@ contract TimelockControllerTest is Test {
         uint256[] memory amounts = new uint256[](0);
         bytes[] memory payloads = new bytes[](0);
 
-        vm.expectRevert("AccessControl: account is missing role");
+        vm.expectRevert("access_control: account is missing role");
         vm.prank(self);
         timelockController.execute_batch(
             targets,
@@ -3364,7 +3364,7 @@ contract TimelockControllerTest is Test {
     }
 
     function testAdminCannotExecute() public {
-        vm.expectRevert("AccessControl: account is missing role");
+        vm.expectRevert("access_control: account is missing role");
         vm.prank(self);
         timelockController.execute(
             zeroAddress,
@@ -3376,7 +3376,7 @@ contract TimelockControllerTest is Test {
     }
 
     function testAdminCannotCancel() public {
-        vm.expectRevert("AccessControl: account is missing role");
+        vm.expectRevert("access_control: account is missing role");
         vm.prank(self);
         timelockController.cancel(EMPTY_SALT);
     }
@@ -3437,7 +3437,7 @@ contract TimelockControllerTest is Test {
         uint256[] memory amounts = new uint256[](0);
         bytes[] memory payloads = new bytes[](0);
 
-        vm.expectRevert("AccessControl: account is missing role");
+        vm.expectRevert("access_control: account is missing role");
         vm.prank(PROPOSER_ONE);
         timelockController.execute_batch(
             targets,
@@ -3447,7 +3447,7 @@ contract TimelockControllerTest is Test {
             EMPTY_SALT
         );
 
-        vm.expectRevert("AccessControl: account is missing role");
+        vm.expectRevert("access_control: account is missing role");
         vm.prank(PROPOSER_TWO);
         timelockController.execute_batch(
             targets,
@@ -3459,7 +3459,7 @@ contract TimelockControllerTest is Test {
     }
 
     function testProposerCannotExecute() public {
-        vm.expectRevert("AccessControl: account is missing role");
+        vm.expectRevert("access_control: account is missing role");
         vm.prank(PROPOSER_ONE);
         timelockController.execute(
             zeroAddress,
@@ -3469,7 +3469,7 @@ contract TimelockControllerTest is Test {
             EMPTY_SALT
         );
 
-        vm.expectRevert("AccessControl: account is missing role");
+        vm.expectRevert("access_control: account is missing role");
         vm.prank(PROPOSER_TWO);
         timelockController.execute(
             zeroAddress,
@@ -3481,11 +3481,11 @@ contract TimelockControllerTest is Test {
     }
 
     function testProposerCanCancel() public {
-        vm.expectRevert("TimelockController: operation cannot be cancelled");
+        vm.expectRevert("timelock_controller: operation cannot be cancelled");
         vm.prank(PROPOSER_ONE);
         timelockController.cancel(EMPTY_SALT);
 
-        vm.expectRevert("TimelockController: operation cannot be cancelled");
+        vm.expectRevert("timelock_controller: operation cannot be cancelled");
         vm.prank(PROPOSER_TWO);
         timelockController.cancel(EMPTY_SALT);
     }
@@ -3495,7 +3495,7 @@ contract TimelockControllerTest is Test {
         uint256[] memory amounts = new uint256[](0);
         bytes[] memory payloads = new bytes[](0);
 
-        vm.expectRevert("AccessControl: account is missing role");
+        vm.expectRevert("access_control: account is missing role");
         vm.prank(EXECUTOR_ONE);
         timelockController.schedule_batch(
             targets,
@@ -3506,7 +3506,7 @@ contract TimelockControllerTest is Test {
             MIN_DELAY
         );
 
-        vm.expectRevert("AccessControl: account is missing role");
+        vm.expectRevert("access_control: account is missing role");
         vm.prank(EXECUTOR_TWO);
         timelockController.schedule_batch(
             targets,
@@ -3519,7 +3519,7 @@ contract TimelockControllerTest is Test {
     }
 
     function testExecutorCannotSchedule() public {
-        vm.expectRevert("AccessControl: account is missing role");
+        vm.expectRevert("access_control: account is missing role");
         vm.prank(EXECUTOR_ONE);
         timelockController.schedule(
             zeroAddress,
@@ -3530,7 +3530,7 @@ contract TimelockControllerTest is Test {
             MIN_DELAY
         );
 
-        vm.expectRevert("AccessControl: account is missing role");
+        vm.expectRevert("access_control: account is missing role");
         vm.prank(EXECUTOR_TWO);
         timelockController.schedule(
             zeroAddress,
@@ -3547,7 +3547,7 @@ contract TimelockControllerTest is Test {
         uint256[] memory amounts = new uint256[](0);
         bytes[] memory payloads = new bytes[](0);
 
-        vm.expectRevert("TimelockController: operation is not ready");
+        vm.expectRevert("timelock_controller: operation is not ready");
         vm.prank(EXECUTOR_ONE);
         timelockController.execute_batch(
             targets,
@@ -3557,7 +3557,7 @@ contract TimelockControllerTest is Test {
             EMPTY_SALT
         );
 
-        vm.expectRevert("TimelockController: operation is not ready");
+        vm.expectRevert("timelock_controller: operation is not ready");
         vm.prank(EXECUTOR_TWO);
         timelockController.execute_batch(
             targets,
@@ -3569,7 +3569,7 @@ contract TimelockControllerTest is Test {
     }
 
     function testExecutorCanExecute() public {
-        vm.expectRevert("TimelockController: operation is not ready");
+        vm.expectRevert("timelock_controller: operation is not ready");
         vm.prank(EXECUTOR_ONE);
         timelockController.execute(
             zeroAddress,
@@ -3579,7 +3579,7 @@ contract TimelockControllerTest is Test {
             EMPTY_SALT
         );
 
-        vm.expectRevert("TimelockController: operation is not ready");
+        vm.expectRevert("timelock_controller: operation is not ready");
         vm.prank(EXECUTOR_TWO);
         timelockController.execute(
             zeroAddress,
@@ -3591,11 +3591,11 @@ contract TimelockControllerTest is Test {
     }
 
     function testExecutorCannotCancel() public {
-        vm.expectRevert("AccessControl: account is missing role");
+        vm.expectRevert("access_control: account is missing role");
         vm.prank(EXECUTOR_ONE);
         timelockController.cancel(EMPTY_SALT);
 
-        vm.expectRevert("AccessControl: account is missing role");
+        vm.expectRevert("access_control: account is missing role");
         vm.prank(EXECUTOR_TWO);
         timelockController.cancel(EMPTY_SALT);
     }
@@ -3605,7 +3605,7 @@ contract TimelockControllerTest is Test {
         uint256[] memory amounts = new uint256[](0);
         bytes[] memory payloads = new bytes[](0);
 
-        vm.expectRevert("AccessControl: account is missing role");
+        vm.expectRevert("access_control: account is missing role");
         vm.prank(STRANGER);
         timelockController.schedule_batch(
             targets,
@@ -3618,7 +3618,7 @@ contract TimelockControllerTest is Test {
     }
 
     function testStrangerCannotSchedule() public {
-        vm.expectRevert("AccessControl: account is missing role");
+        vm.expectRevert("access_control: account is missing role");
         vm.prank(STRANGER);
         timelockController.schedule(
             zeroAddress,
@@ -3635,7 +3635,7 @@ contract TimelockControllerTest is Test {
         uint256[] memory amounts = new uint256[](0);
         bytes[] memory payloads = new bytes[](0);
 
-        vm.expectRevert("AccessControl: account is missing role");
+        vm.expectRevert("access_control: account is missing role");
         vm.prank(STRANGER);
         timelockController.execute_batch(
             targets,
@@ -3647,7 +3647,7 @@ contract TimelockControllerTest is Test {
     }
 
     function testStrangerCannotExecute() public {
-        vm.expectRevert("AccessControl: account is missing role");
+        vm.expectRevert("access_control: account is missing role");
         vm.prank(STRANGER);
         timelockController.execute(
             zeroAddress,
@@ -3659,7 +3659,7 @@ contract TimelockControllerTest is Test {
     }
 
     function testStrangerCannotCancel() public {
-        vm.expectRevert("AccessControl: account is missing role");
+        vm.expectRevert("access_control: account is missing role");
         vm.prank(STRANGER);
         timelockController.cancel(EMPTY_SALT);
     }
@@ -3669,8 +3669,8 @@ contract TimelockControllerTest is Test {
         targets[0] = target;
         uint256[] memory amounts = new uint256[](1);
         amounts[0] = 0;
-        bytes32 slot = bytes32(uint256(1337));
-        bytes32 value = bytes32(uint256(6699));
+        bytes32 slot = bytes32(uint256(1_337));
+        bytes32 value = bytes32(uint256(6_699));
         bytes[] memory payloads = new bytes[](1);
         payloads[0] = abi.encodeWithSelector(
             callReceiverMock.mockFunctionWritesStorage.selector,
@@ -3860,7 +3860,7 @@ contract TimelockControllerTest is Test {
         erc721Mock = IERC721Extended(
             vyperDeployer.deployContract(
                 "src/snekmate/tokens/mocks/",
-                "ERC721Mock",
+                "erc721_mock",
                 args
             )
         );
@@ -3938,7 +3938,7 @@ contract TimelockControllerTest is Test {
         erc1155Mock = IERC1155Extended(
             vyperDeployer.deployContract(
                 "src/snekmate/tokens/mocks/",
-                "ERC1155Mock",
+                "erc1155_mock",
                 args
             )
         );
@@ -4053,8 +4053,8 @@ contract TimelockControllerTest is Test {
 
     function testFuzzOperationValue(uint256 amount) public {
         amount = bound(amount, 0, type(uint64).max);
-        bytes32 slot = bytes32(uint256(1337));
-        bytes32 value = bytes32(uint256(6699));
+        bytes32 slot = bytes32(uint256(1_337));
+        bytes32 value = bytes32(uint256(6_699));
         bytes memory payload = abi.encodeWithSelector(
             callReceiverMock.mockFunctionWritesStorage.selector,
             slot,
@@ -4140,8 +4140,8 @@ contract TimelockControllerTest is Test {
         targets[0] = target;
         uint256[] memory amounts = new uint256[](1);
         amounts[0] = amount;
-        bytes32 slot = bytes32(uint256(1337));
-        bytes32 value = bytes32(uint256(6699));
+        bytes32 slot = bytes32(uint256(1_337));
+        bytes32 value = bytes32(uint256(6_699));
         bytes[] memory payloads = new bytes[](1);
         payloads[0] = abi.encodeWithSelector(
             callReceiverMock.mockFunctionWritesStorage.selector,
@@ -4230,7 +4230,7 @@ contract TimelockControllerInvariants is Test {
         timelockController = ITimelockController(
             vyperDeployer.deployContract(
                 "src/snekmate/governance/mocks/",
-                "TimelockControllerMock",
+                "timelock_controller_mock",
                 args
             )
         );
@@ -4286,7 +4286,7 @@ contract TimelockControllerInvariants is Test {
             /**
              * @dev Ensure that the executed proposal cannot be executed again.
              */
-            vm.expectRevert("TimelockController: operation is not ready");
+            vm.expectRevert("timelock_controller: operation is not ready");
             timelockController.execute(
                 timelockControllerHandlerAddr,
                 0,
@@ -4331,7 +4331,7 @@ contract TimelockControllerInvariants is Test {
              * @dev Ensure that the executed proposal cannot be cancelled.
              */
             vm.expectRevert(
-                "TimelockController: operation cannot be cancelled"
+                "timelock_controller: operation cannot be cancelled"
             );
             timelockController.cancel(operationId);
         }
@@ -4358,7 +4358,7 @@ contract TimelockControllerInvariants is Test {
                 /**
                  * @dev Ensure that the cancelled proposal cannot be executed.
                  */
-                vm.expectRevert("TimelockController: operation is not ready");
+                vm.expectRevert("timelock_controller: operation is not ready");
                 timelockController.execute(
                     timelockControllerHandlerAddr,
                     0,
@@ -4383,7 +4383,7 @@ contract TimelockControllerInvariants is Test {
             /**
              * @dev Ensure that the pending proposal cannot be executed.
              */
-            vm.expectRevert("TimelockController: operation is not ready");
+            vm.expectRevert("timelock_controller: operation is not ready");
             timelockController.execute(
                 timelockControllerHandlerAddr,
                 0,

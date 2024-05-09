@@ -23,7 +23,7 @@ contract CreateAddressTest is Test {
         createAddress = ICreateAddress(
             vyperDeployer.deployContract(
                 "src/snekmate/utils/mocks/",
-                "CreateAddressMock"
+                "create_address_mock"
             )
         );
         createAddressAddr = address(createAddress);
@@ -31,13 +31,13 @@ contract CreateAddressTest is Test {
 
     function testComputeAddressRevertTooHighNonce() public {
         uint72 nonce = uint72(type(uint64).max);
-        vm.expectRevert(bytes("CreateAddress: invalid nonce value"));
+        vm.expectRevert(bytes("create_address: invalid nonce value"));
         createAddress.compute_address_rlp(makeAddr("alice"), nonce);
     }
 
     function testComputeAddressSelfRevertTooHighNonce() public {
         uint72 nonce = uint72(type(uint64).max);
-        vm.expectRevert(bytes("CreateAddress: invalid nonce value"));
+        vm.expectRevert(bytes("create_address: invalid nonce value"));
         createAddress.compute_address_rlp_self(nonce);
     }
 
@@ -488,7 +488,7 @@ contract CreateAddressTest is Test {
             uint256(type(uint64).max),
             uint256(type(uint256).max)
         );
-        vm.expectRevert(bytes("CreateAddress: invalid nonce value"));
+        vm.expectRevert(bytes("create_address: invalid nonce value"));
         createAddress.compute_address_rlp(deployer, nonce);
     }
 
@@ -500,7 +500,7 @@ contract CreateAddressTest is Test {
             uint256(type(uint64).max),
             uint256(type(uint256).max)
         );
-        vm.expectRevert(bytes("CreateAddress: invalid nonce value"));
+        vm.expectRevert(bytes("create_address: invalid nonce value"));
         createAddress.compute_address_rlp_self(nonce);
     }
 

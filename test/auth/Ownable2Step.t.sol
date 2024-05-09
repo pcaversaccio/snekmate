@@ -19,7 +19,7 @@ contract Ownable2StepTest is Test {
         ownable2Step = IOwnable2Step(
             vyperDeployer.deployContract(
                 "src/snekmate/auth/mocks/",
-                "Ownable2StepMock"
+                "ownable_2step_mock"
             )
         );
     }
@@ -33,7 +33,7 @@ contract Ownable2StepTest is Test {
         ownable2StepInitialEvent = IOwnable2Step(
             vyperDeployer.deployContract(
                 "src/snekmate/auth/mocks/",
-                "Ownable2StepMock"
+                "ownable_2step_mock"
             )
         );
         assertEq(ownable2StepInitialEvent.owner(), deployer);
@@ -58,7 +58,7 @@ contract Ownable2StepTest is Test {
     }
 
     function testTransferOwnershipNonOwner() public {
-        vm.expectRevert(bytes("Ownable: caller is not the owner"));
+        vm.expectRevert(bytes("ownable: caller is not the owner"));
         ownable2Step.transfer_ownership(makeAddr("newOwner"));
     }
 
@@ -93,7 +93,7 @@ contract Ownable2StepTest is Test {
         assertEq(ownable2Step.owner(), oldOwner);
         assertEq(ownable2Step.pending_owner(), newOwner);
 
-        vm.expectRevert(bytes("Ownable2Step: caller is not the new owner"));
+        vm.expectRevert(bytes("ownable_2step: caller is not the new owner"));
         ownable2Step.accept_ownership();
         vm.stopPrank();
     }
@@ -110,7 +110,7 @@ contract Ownable2StepTest is Test {
     }
 
     function testRenounceOwnershipNonOwner() public {
-        vm.expectRevert(bytes("Ownable: caller is not the owner"));
+        vm.expectRevert(bytes("ownable: caller is not the owner"));
         ownable2Step.renounce_ownership();
     }
 
@@ -131,7 +131,7 @@ contract Ownable2StepTest is Test {
         vm.stopPrank();
 
         vm.startPrank(newOwner);
-        vm.expectRevert(bytes("Ownable2Step: caller is not the new owner"));
+        vm.expectRevert(bytes("ownable_2step: caller is not the new owner"));
         ownable2Step.accept_ownership();
         vm.stopPrank();
     }
@@ -164,7 +164,7 @@ contract Ownable2StepTest is Test {
     ) public {
         vm.assume(nonOwner != deployer);
         vm.prank(nonOwner);
-        vm.expectRevert(bytes("Ownable: caller is not the owner"));
+        vm.expectRevert(bytes("ownable: caller is not the owner"));
         ownable2Step.transfer_ownership(newOwner);
     }
 
@@ -215,7 +215,7 @@ contract Ownable2StepTest is Test {
         assertEq(ownable2Step.owner(), oldOwner);
         assertEq(ownable2Step.pending_owner(), newOwner);
 
-        vm.expectRevert(bytes("Ownable2Step: caller is not the new owner"));
+        vm.expectRevert(bytes("ownable_2step: caller is not the new owner"));
         ownable2Step.accept_ownership();
         vm.stopPrank();
     }
@@ -251,7 +251,7 @@ contract Ownable2StepTest is Test {
     function testFuzzRenounceOwnershipNonOwner(address nonOwner) public {
         vm.assume(nonOwner != deployer);
         vm.prank(nonOwner);
-        vm.expectRevert(bytes("Ownable: caller is not the owner"));
+        vm.expectRevert(bytes("ownable: caller is not the owner"));
         ownable2Step.renounce_ownership();
     }
 
@@ -274,7 +274,7 @@ contract Ownable2StepTest is Test {
         vm.stopPrank();
 
         vm.startPrank(newOwner);
-        vm.expectRevert(bytes("Ownable2Step: caller is not the new owner"));
+        vm.expectRevert(bytes("ownable_2step: caller is not the new owner"));
         ownable2Step.accept_ownership();
         vm.stopPrank();
     }
@@ -293,7 +293,7 @@ contract Ownable2StepInvariants is Test {
         ownable2Step = IOwnable2Step(
             vyperDeployer.deployContract(
                 "src/snekmate/auth/mocks/",
-                "Ownable2StepMock"
+                "ownable_2step_mock"
             )
         );
         owner2StepHandler = new Owner2StepHandler(

@@ -23,7 +23,7 @@ contract MulticallTest is Test {
         multicall = IMulticall(
             vyperDeployer.deployContract(
                 "src/snekmate/utils/mocks/",
-                "MulticallMock"
+                "multicall_mock"
             )
         );
     }
@@ -198,7 +198,7 @@ contract MulticallTest is Test {
             abi.encodeWithSignature("transferEther(address)", etherReceiverAddr)
         );
 
-        vm.expectRevert(bytes("Multicall: value mismatch"));
+        vm.expectRevert(bytes("multicall: value mismatch"));
         /**
          * @dev We don't send any `msg.value`.
          */

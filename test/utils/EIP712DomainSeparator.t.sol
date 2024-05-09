@@ -37,7 +37,7 @@ contract EIP712DomainSeparatorTest is Test {
         EIP712domainSeparator = IEIP712DomainSeparator(
             vyperDeployer.deployContract(
                 "src/snekmate/utils/mocks/",
-                "EIP712DomainSeparatorMock",
+                "eip712_domain_separator_mock",
                 args
             )
         );

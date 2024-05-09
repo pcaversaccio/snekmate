@@ -25,7 +25,7 @@ contract AccessControlTest is Test {
         accessControl = IAccessControlExtended(
             vyperDeployer.deployContract(
                 "src/snekmate/auth/mocks/",
-                "AccessControlMock"
+                "access_control_mock"
             )
         );
     }
@@ -53,7 +53,7 @@ contract AccessControlTest is Test {
         accessControlInitialEvent = IAccessControlExtended(
             vyperDeployer.deployContract(
                 "src/snekmate/auth/mocks/",
-                "AccessControlMock"
+                "access_control_mock"
             )
         );
         assertEq(
@@ -151,7 +151,7 @@ contract AccessControlTest is Test {
     }
 
     function testGrantRoleNonAdmin() public {
-        vm.expectRevert(bytes("AccessControl: account is missing role"));
+        vm.expectRevert(bytes("access_control: account is missing role"));
         accessControl.grantRole(MINTER_ROLE, makeAddr("account"));
     }
 
@@ -206,13 +206,13 @@ contract AccessControlTest is Test {
         accessControl.revokeRole(DEFAULT_ADMIN_ROLE, admin);
         assertTrue(!accessControl.hasRole(DEFAULT_ADMIN_ROLE, admin));
 
-        vm.expectRevert(bytes("AccessControl: account is missing role"));
+        vm.expectRevert(bytes("access_control: account is missing role"));
         accessControl.revokeRole(MINTER_ROLE, admin);
         vm.stopPrank();
     }
 
     function testRevokeRoleNonAdmin() public {
-        vm.expectRevert(bytes("AccessControl: account is missing role"));
+        vm.expectRevert(bytes("access_control: account is missing role"));
         accessControl.revokeRole(MINTER_ROLE, makeAddr("account"));
     }
 
@@ -282,7 +282,7 @@ contract AccessControlTest is Test {
 
     function testRenounceRoleNonMsgSender() public {
         vm.expectRevert(
-            bytes("AccessControl: can only renounce roles for itself")
+            bytes("access_control: can only renounce roles for itself")
         );
         accessControl.renounceRole(MINTER_ROLE, makeAddr("account"));
     }
@@ -340,7 +340,7 @@ contract AccessControlTest is Test {
         accessControl.grantRole(otherAdminRole, otherAdmin);
         assertTrue(accessControl.hasRole(otherAdminRole, otherAdmin));
 
-        vm.expectRevert(bytes("AccessControl: account is missing role"));
+        vm.expectRevert(bytes("access_control: account is missing role"));
         accessControl.grantRole(MINTER_ROLE, account);
         vm.stopPrank();
     }
@@ -366,7 +366,7 @@ contract AccessControlTest is Test {
         accessControl.grantRole(otherAdminRole, otherAdmin);
         assertTrue(accessControl.hasRole(otherAdminRole, otherAdmin));
 
-        vm.expectRevert(bytes("AccessControl: account is missing role"));
+        vm.expectRevert(bytes("access_control: account is missing role"));
         accessControl.revokeRole(MINTER_ROLE, account);
         vm.stopPrank();
     }
@@ -416,7 +416,7 @@ contract AccessControlTest is Test {
     ) public {
         vm.assume(nonAdmin != deployer);
         vm.prank(nonAdmin);
-        vm.expectRevert(bytes("AccessControl: account is missing role"));
+        vm.expectRevert(bytes("access_control: account is missing role"));
         accessControl.grantRole(MINTER_ROLE, account);
     }
 
@@ -468,7 +468,7 @@ contract AccessControlTest is Test {
     ) public {
         vm.assume(nonAdmin != deployer);
         vm.prank(nonAdmin);
-        vm.expectRevert(bytes("AccessControl: account is missing role"));
+        vm.expectRevert(bytes("access_control: account is missing role"));
         accessControl.revokeRole(MINTER_ROLE, account);
     }
 
@@ -525,7 +525,7 @@ contract AccessControlTest is Test {
     function testFuzzRenounceRoleNonMsgSender(address account) public {
         vm.assume(address(this) != account);
         vm.expectRevert(
-            bytes("AccessControl: can only renounce roles for itself")
+            bytes("access_control: can only renounce roles for itself")
         );
         accessControl.renounceRole(MINTER_ROLE, account);
     }
@@ -587,7 +587,7 @@ contract AccessControlTest is Test {
         accessControl.grantRole(otherAdminRole, otherAdmin);
         assertTrue(accessControl.hasRole(otherAdminRole, otherAdmin));
 
-        vm.expectRevert(bytes("AccessControl: account is missing role"));
+        vm.expectRevert(bytes("access_control: account is missing role"));
         accessControl.grantRole(MINTER_ROLE, account);
         vm.stopPrank();
     }
@@ -615,7 +615,7 @@ contract AccessControlTest is Test {
         accessControl.grantRole(otherAdminRole, otherAdmin);
         assertTrue(accessControl.hasRole(otherAdminRole, otherAdmin));
 
-        vm.expectRevert(bytes("AccessControl: account is missing role"));
+        vm.expectRevert(bytes("access_control: account is missing role"));
         accessControl.revokeRole(MINTER_ROLE, account);
         vm.stopPrank();
     }
@@ -637,7 +637,7 @@ contract AccessControlInvariants is Test {
         accessControl = IAccessControlExtended(
             vyperDeployer.deployContract(
                 "src/snekmate/auth/mocks/",
-                "AccessControlMock"
+                "access_control_mock"
             )
         );
         accessControlHandler = new AccessControlHandler(

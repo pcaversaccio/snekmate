@@ -11,7 +11,7 @@ import {ERC20Mock} from "./ERC20Mock.sol";
  * in `BatchDistributor`.
  */
 contract DistributeEtherReentrancyMock {
-    address private constant _FUND_RECEIVER = address(1337);
+    address private constant _FUND_RECEIVER = address(1_337);
     uint256 private _counter;
 
     /**
@@ -55,7 +55,7 @@ contract DistributeEtherReentrancyMock {
  * and `distribute_token` in `BatchDistributor`.
  */
 contract DistributeTokenReentrancyMock {
-    address private constant _FUND_RECEIVER = address(1337);
+    address private constant _FUND_RECEIVER = address(1_337);
     uint256 private _counter;
 
     /**
