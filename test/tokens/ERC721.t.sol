@@ -1478,7 +1478,7 @@ contract ERC721Test is Test {
 
         /**
          * @dev To display the default storage layout for a contract
-         * in Vyper, use `vyper -f layout yourFileName.vy`.
+         * in Vyper, use `vyper -f layout your_filename.vy`.
          */
         vm.store(
             ERC721ExtendedAddr,
@@ -1586,7 +1586,7 @@ contract ERC721Test is Test {
     function testSafeMintOverflow() public {
         /**
          * @dev To display the default storage layout for a contract
-         * in Vyper, use `vyper -f layout yourFileName.vy`.
+         * in Vyper, use `vyper -f layout your_filename.vy`.
          */
         vm.store(
             ERC721ExtendedAddr,

@@ -51,8 +51,8 @@ initializes: erc20[ownable := ow]
 # https://github.com/vyperlang/vyper/pull/3919). Please take
 # note that if you do not know the full interface of a module
 # contract, you can get the `.vyi` interface in Vyper by using
-# `vyper -f interface yourFileName.vy` or the external interface
-# by using `vyper -f external_interface yourFileName.vy`.
+# `vyper -f interface your_filename.vy` or the external interface
+# by using `vyper -f external_interface your_filename.vy`.
 # @notice Please note that you must always also export (if
 # required by the contract logic) `public` declared `constant`,
 # `immutable`, and state variables, for which Vyper automatically
