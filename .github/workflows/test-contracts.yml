@@ -118,7 +118,7 @@ jobs:
         run: echidna test/tokens/echidna/ERC721Properties.sol --contract CryticERC721ExternalHarness ${{ matrix.echidna }}
 
       - name: Install Halmos
-        run: pip install git+https://github.com/a16z/halmos
+        run: pip install git+https://github.com/a16z/halmos.git@main
 
       - name: Show the Halmos version
         run: halmos --version
