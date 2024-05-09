@@ -76,7 +76,7 @@ src
             ├── base64_mock — "`base64` Module Reference Implementation"
             ├── batch_distributor_mock — "`batch_distributor` Module Reference Implementation"
             ├── create_address_mock — "`create_address` Module Reference Implementation"
-            ├── create2_address_mock — "`Create2Address` Module Reference Implementation"
+            ├── create2_address_mock — "`create2_address` Module Reference Implementation"
             ├── ecdsa_mock — "`ecdsa` Module Reference Implementation"
             ├── message_hash_utils_mock — "`message_hash_utils` Module Reference Implementation"
             ├── signature_checker_mock — "`signature_checker` Module Reference Implementation"
@@ -162,7 +162,7 @@ This repository contains [Foundry](https://github.com/foundry-rs/foundry)-based 
 | `ecdsa`                     |       ✅       |            ✅            |         ❌          |
 | `message_hash_utils`        |       ✅       |            ✅            |         ❌          |
 | `signature_checker`         |       ✅       |            ✅            |         ❌          |
-| `eip712_Domain_Separator`   |       ✅       |            ✅            |         ❌          |
+| `eip712_domain_separator`   |       ✅       |            ✅            |         ❌          |
 | `math`                      |       ✅       |            ✅            |         ❌          |
 | `merkle_proof_verification` |       ✅       |            ✅            |         ❌          |
 | `multicall`                 |       ✅       |            ❌            |         ❌          |
