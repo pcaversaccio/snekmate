@@ -94,7 +94,7 @@ contract CallReceiverMock {
         bytes32 value
     ) public payable returns (string memory) {
         // solhint-disable-next-line no-inline-assembly
-        assembly {
+        assembly ("memory-safe") {
             sstore(slot, value)
         }
         return _retValue;

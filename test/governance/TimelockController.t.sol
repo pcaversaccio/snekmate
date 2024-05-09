@@ -658,8 +658,8 @@ contract TimelockControllerTest is Test {
 
     function testHashOperation() public view {
         uint256 amount = 0;
-        bytes32 slot = bytes32(uint256(1337));
-        bytes32 value = bytes32(uint256(6699));
+        bytes32 slot = bytes32(uint256(1_337));
+        bytes32 value = bytes32(uint256(6_699));
         bytes memory payload = abi.encodeWithSelector(
             callReceiverMock.mockFunctionWritesStorage.selector,
             slot,
@@ -682,8 +682,8 @@ contract TimelockControllerTest is Test {
 
     function testScheduleAndExecuteWithEmptySalt() public {
         uint256 amount = 0;
-        bytes32 slot = bytes32(uint256(1337));
-        bytes32 value = bytes32(uint256(6699));
+        bytes32 slot = bytes32(uint256(1_337));
+        bytes32 value = bytes32(uint256(6_699));
         bytes memory payload = abi.encodeWithSelector(
             callReceiverMock.mockFunctionWritesStorage.selector,
             slot,
@@ -755,8 +755,8 @@ contract TimelockControllerTest is Test {
 
     function testScheduleAndExecuteWithNonEmptySalt() public {
         uint256 amount = 0;
-        bytes32 slot = bytes32(uint256(1337));
-        bytes32 value = bytes32(uint256(6699));
+        bytes32 slot = bytes32(uint256(1_337));
+        bytes32 value = bytes32(uint256(6_699));
         bytes memory payload = abi.encodeWithSelector(
             callReceiverMock.mockFunctionWritesStorage.selector,
             slot,
@@ -1097,8 +1097,8 @@ contract TimelockControllerTest is Test {
 
     function testOperationPredecessorNotExecuted() public {
         uint256 amount = 0;
-        bytes32 slot = bytes32(uint256(1337));
-        bytes32 value = bytes32(uint256(6699));
+        bytes32 slot = bytes32(uint256(1_337));
+        bytes32 value = bytes32(uint256(6_699));
         bytes memory payload = abi.encodeWithSelector(
             callReceiverMock.mockFunctionWritesStorage.selector,
             slot,
@@ -1166,8 +1166,8 @@ contract TimelockControllerTest is Test {
 
     function testOperationPredecessorNotScheduled() public {
         uint256 amount = 0;
-        bytes32 slot = bytes32(uint256(1337));
-        bytes32 value = bytes32(uint256(6699));
+        bytes32 slot = bytes32(uint256(1_337));
+        bytes32 value = bytes32(uint256(6_699));
         bytes memory payload = abi.encodeWithSelector(
             callReceiverMock.mockFunctionWritesStorage.selector,
             slot,
@@ -1217,8 +1217,8 @@ contract TimelockControllerTest is Test {
 
     function testOperationPredecessorInvalid() public {
         uint256 amount = 0;
-        bytes32 slot = bytes32(uint256(1337));
-        bytes32 value = bytes32(uint256(6699));
+        bytes32 slot = bytes32(uint256(1_337));
+        bytes32 value = bytes32(uint256(6_699));
         bytes memory payload = abi.encodeWithSelector(
             callReceiverMock.mockFunctionWritesStorage.selector,
             slot,
@@ -1351,8 +1351,8 @@ contract TimelockControllerTest is Test {
 
     function testOperationPredecessorMultipleNotExecuted() public {
         uint256 amount = 0;
-        bytes32 slot = bytes32(uint256(1337));
-        bytes32 value = bytes32(uint256(6699));
+        bytes32 slot = bytes32(uint256(1_337));
+        bytes32 value = bytes32(uint256(6_699));
         bytes memory payload = abi.encodeWithSelector(
             callReceiverMock.mockFunctionWritesStorage.selector,
             slot,
@@ -1415,8 +1415,8 @@ contract TimelockControllerTest is Test {
 
     function testOperationCancelFinished() public {
         uint256 amount = 0;
-        bytes32 slot = bytes32(uint256(1337));
-        bytes32 value = bytes32(uint256(6699));
+        bytes32 slot = bytes32(uint256(1_337));
+        bytes32 value = bytes32(uint256(6_699));
         bytes memory payload = abi.encodeWithSelector(
             callReceiverMock.mockFunctionWritesStorage.selector,
             slot,
@@ -1477,8 +1477,8 @@ contract TimelockControllerTest is Test {
 
     function testOperationPendingIfNotYetExecuted() public {
         uint256 amount = 0;
-        bytes32 slot = bytes32(uint256(1337));
-        bytes32 value = bytes32(uint256(6699));
+        bytes32 slot = bytes32(uint256(1_337));
+        bytes32 value = bytes32(uint256(6_699));
         bytes memory payload = abi.encodeWithSelector(
             callReceiverMock.mockFunctionWritesStorage.selector,
             slot,
@@ -1517,8 +1517,8 @@ contract TimelockControllerTest is Test {
 
     function testOperationPendingIfExecuted() public {
         uint256 amount = 0;
-        bytes32 slot = bytes32(uint256(1337));
-        bytes32 value = bytes32(uint256(6699));
+        bytes32 slot = bytes32(uint256(1_337));
+        bytes32 value = bytes32(uint256(6_699));
         bytes memory payload = abi.encodeWithSelector(
             callReceiverMock.mockFunctionWritesStorage.selector,
             slot,
@@ -1576,8 +1576,8 @@ contract TimelockControllerTest is Test {
 
     function testOperationReadyOnTheExecutionTime() public {
         uint256 amount = 0;
-        bytes32 slot = bytes32(uint256(1337));
-        bytes32 value = bytes32(uint256(6699));
+        bytes32 slot = bytes32(uint256(1_337));
+        bytes32 value = bytes32(uint256(6_699));
         bytes memory payload = abi.encodeWithSelector(
             callReceiverMock.mockFunctionWritesStorage.selector,
             slot,
@@ -1617,8 +1617,8 @@ contract TimelockControllerTest is Test {
 
     function testOperationReadyAfterTheExecutionTime() public {
         uint256 amount = 0;
-        bytes32 slot = bytes32(uint256(1337));
-        bytes32 value = bytes32(uint256(6699));
+        bytes32 slot = bytes32(uint256(1_337));
+        bytes32 value = bytes32(uint256(6_699));
         bytes memory payload = abi.encodeWithSelector(
             callReceiverMock.mockFunctionWritesStorage.selector,
             slot,
@@ -1658,8 +1658,8 @@ contract TimelockControllerTest is Test {
 
     function testOperationReadyBeforeTheExecutionTime() public {
         uint256 amount = 0;
-        bytes32 slot = bytes32(uint256(1337));
-        bytes32 value = bytes32(uint256(6699));
+        bytes32 slot = bytes32(uint256(1_337));
+        bytes32 value = bytes32(uint256(6_699));
         bytes memory payload = abi.encodeWithSelector(
             callReceiverMock.mockFunctionWritesStorage.selector,
             slot,
@@ -1699,8 +1699,8 @@ contract TimelockControllerTest is Test {
 
     function testOperationHasBeenExecuted() public {
         uint256 amount = 0;
-        bytes32 slot = bytes32(uint256(1337));
-        bytes32 value = bytes32(uint256(6699));
+        bytes32 slot = bytes32(uint256(1_337));
+        bytes32 value = bytes32(uint256(6_699));
         bytes memory payload = abi.encodeWithSelector(
             callReceiverMock.mockFunctionWritesStorage.selector,
             slot,
@@ -1759,8 +1759,8 @@ contract TimelockControllerTest is Test {
 
     function testOperationHasNotBeenExecuted() public {
         uint256 amount = 0;
-        bytes32 slot = bytes32(uint256(1337));
-        bytes32 value = bytes32(uint256(6699));
+        bytes32 slot = bytes32(uint256(1_337));
+        bytes32 value = bytes32(uint256(6_699));
         bytes memory payload = abi.encodeWithSelector(
             callReceiverMock.mockFunctionWritesStorage.selector,
             slot,
@@ -1799,8 +1799,8 @@ contract TimelockControllerTest is Test {
 
     function testOperationTimestampHasNotBeenExecuted() public {
         uint256 amount = 0;
-        bytes32 slot = bytes32(uint256(1337));
-        bytes32 value = bytes32(uint256(6699));
+        bytes32 slot = bytes32(uint256(1_337));
+        bytes32 value = bytes32(uint256(6_699));
         bytes memory payload = abi.encodeWithSelector(
             callReceiverMock.mockFunctionWritesStorage.selector,
             slot,
@@ -1842,8 +1842,8 @@ contract TimelockControllerTest is Test {
 
     function testOperationTimestampHasBeenExecuted() public {
         uint256 amount = 0;
-        bytes32 slot = bytes32(uint256(1337));
-        bytes32 value = bytes32(uint256(6699));
+        bytes32 slot = bytes32(uint256(1_337));
+        bytes32 value = bytes32(uint256(6_699));
         bytes memory payload = abi.encodeWithSelector(
             callReceiverMock.mockFunctionWritesStorage.selector,
             slot,
@@ -1904,8 +1904,8 @@ contract TimelockControllerTest is Test {
         targets[0] = target;
         uint256[] memory amounts = new uint256[](1);
         amounts[0] = 0;
-        bytes32 slot = bytes32(uint256(1337));
-        bytes32 value = bytes32(uint256(6699));
+        bytes32 slot = bytes32(uint256(1_337));
+        bytes32 value = bytes32(uint256(6_699));
         bytes[] memory payloads = new bytes[](1);
         payloads[0] = abi.encodeWithSelector(
             callReceiverMock.mockFunctionWritesStorage.selector,
@@ -1938,8 +1938,8 @@ contract TimelockControllerTest is Test {
         targets[0] = target;
         uint256[] memory amounts = new uint256[](1);
         amounts[0] = 0;
-        bytes32 slot = bytes32(uint256(1337));
-        bytes32 value = bytes32(uint256(6699));
+        bytes32 slot = bytes32(uint256(1_337));
+        bytes32 value = bytes32(uint256(6_699));
         bytes[] memory payloads = new bytes[](1);
         payloads[0] = abi.encodeWithSelector(
             callReceiverMock.mockFunctionWritesStorage.selector,
@@ -2022,8 +2022,8 @@ contract TimelockControllerTest is Test {
         targets[0] = target;
         uint256[] memory amounts = new uint256[](1);
         amounts[0] = 0;
-        bytes32 slot = bytes32(uint256(1337));
-        bytes32 value = bytes32(uint256(6699));
+        bytes32 slot = bytes32(uint256(1_337));
+        bytes32 value = bytes32(uint256(6_699));
         bytes[] memory payloads = new bytes[](1);
         payloads[0] = abi.encodeWithSelector(
             callReceiverMock.mockFunctionWritesStorage.selector,
@@ -2108,8 +2108,8 @@ contract TimelockControllerTest is Test {
         targets[0] = target;
         uint256[] memory amounts = new uint256[](1);
         amounts[0] = 0;
-        bytes32 slot = bytes32(uint256(1337));
-        bytes32 value = bytes32(uint256(6699));
+        bytes32 slot = bytes32(uint256(1_337));
+        bytes32 value = bytes32(uint256(6_699));
         bytes[] memory payloads = new bytes[](1);
         payloads[0] = abi.encodeWithSelector(
             callReceiverMock.mockFunctionWritesStorage.selector,
@@ -2162,8 +2162,8 @@ contract TimelockControllerTest is Test {
         targets[0] = target;
         uint256[] memory amounts = new uint256[](1);
         amounts[0] = 0;
-        bytes32 slot = bytes32(uint256(1337));
-        bytes32 value = bytes32(uint256(6699));
+        bytes32 slot = bytes32(uint256(1_337));
+        bytes32 value = bytes32(uint256(6_699));
         bytes[] memory payloads = new bytes[](1);
         payloads[0] = abi.encodeWithSelector(
             callReceiverMock.mockFunctionWritesStorage.selector,
@@ -2187,8 +2187,8 @@ contract TimelockControllerTest is Test {
         targets[0] = target;
         uint256[] memory amounts = new uint256[](1);
         amounts[0] = 0;
-        bytes32 slot = bytes32(uint256(1337));
-        bytes32 value = bytes32(uint256(6699));
+        bytes32 slot = bytes32(uint256(1_337));
+        bytes32 value = bytes32(uint256(6_699));
         bytes[] memory payloads = new bytes[](1);
         payloads[0] = abi.encodeWithSelector(
             callReceiverMock.mockFunctionWritesStorage.selector,
@@ -2264,8 +2264,8 @@ contract TimelockControllerTest is Test {
         targets[0] = target;
         uint256[] memory amounts = new uint256[](1);
         amounts[0] = 0;
-        bytes32 slot = bytes32(uint256(1337));
-        bytes32 value = bytes32(uint256(6699));
+        bytes32 slot = bytes32(uint256(1_337));
+        bytes32 value = bytes32(uint256(6_699));
         bytes[] memory payloads = new bytes[](1);
         payloads[0] = abi.encodeWithSelector(
             callReceiverMock.mockFunctionWritesStorage.selector,
@@ -2321,8 +2321,8 @@ contract TimelockControllerTest is Test {
         targets[0] = target;
         uint256[] memory amounts = new uint256[](1);
         amounts[0] = 0;
-        bytes32 slot = bytes32(uint256(1337));
-        bytes32 value = bytes32(uint256(6699));
+        bytes32 slot = bytes32(uint256(1_337));
+        bytes32 value = bytes32(uint256(6_699));
         bytes[] memory payloads = new bytes[](1);
         payloads[0] = abi.encodeWithSelector(
             callReceiverMock.mockFunctionWritesStorage.selector,
@@ -2377,8 +2377,8 @@ contract TimelockControllerTest is Test {
         targets[0] = target;
         uint256[] memory amounts = new uint256[](1);
         amounts[0] = 0;
-        bytes32 slot = bytes32(uint256(1337));
-        bytes32 value = bytes32(uint256(6699));
+        bytes32 slot = bytes32(uint256(1_337));
+        bytes32 value = bytes32(uint256(6_699));
         bytes[] memory payloads = new bytes[](1);
         payloads[0] = abi.encodeWithSelector(
             callReceiverMock.mockFunctionWritesStorage.selector,
@@ -2460,8 +2460,8 @@ contract TimelockControllerTest is Test {
         targets[0] = target;
         uint256[] memory amounts = new uint256[](1);
         amounts[0] = 0;
-        bytes32 slot = bytes32(uint256(1337));
-        bytes32 value = bytes32(uint256(6699));
+        bytes32 slot = bytes32(uint256(1_337));
+        bytes32 value = bytes32(uint256(6_699));
         bytes[] memory payloads = new bytes[](1);
         payloads[0] = abi.encodeWithSelector(
             callReceiverMock.mockFunctionWritesStorage.selector,
@@ -2523,8 +2523,8 @@ contract TimelockControllerTest is Test {
         targets[0] = target;
         uint256[] memory amounts = new uint256[](1);
         amounts[0] = 0;
-        bytes32 slot = bytes32(uint256(1337));
-        bytes32 value = bytes32(uint256(6699));
+        bytes32 slot = bytes32(uint256(1_337));
+        bytes32 value = bytes32(uint256(6_699));
         bytes[] memory payloads = new bytes[](1);
         payloads[0] = abi.encodeWithSelector(
             callReceiverMock.mockFunctionWritesStorage.selector,
@@ -2672,8 +2672,8 @@ contract TimelockControllerTest is Test {
         targets[0] = target;
         uint256[] memory amounts = new uint256[](1);
         amounts[0] = 0;
-        bytes32 slot = bytes32(uint256(1337));
-        bytes32 value = bytes32(uint256(6699));
+        bytes32 slot = bytes32(uint256(1_337));
+        bytes32 value = bytes32(uint256(6_699));
         bytes[] memory payloads = new bytes[](1);
         payloads[0] = abi.encodeWithSelector(
             callReceiverMock.mockFunctionWritesStorage.selector,
@@ -2741,8 +2741,8 @@ contract TimelockControllerTest is Test {
         targets[0] = target;
         uint256[] memory amounts = new uint256[](1);
         amounts[0] = 0;
-        bytes32 slot = bytes32(uint256(1337));
-        bytes32 value = bytes32(uint256(6699));
+        bytes32 slot = bytes32(uint256(1_337));
+        bytes32 value = bytes32(uint256(6_699));
         bytes[] memory payloads = new bytes[](1);
         payloads[0] = abi.encodeWithSelector(
             callReceiverMock.mockFunctionWritesStorage.selector,
@@ -2811,8 +2811,8 @@ contract TimelockControllerTest is Test {
         targets[0] = target;
         uint256[] memory amounts = new uint256[](1);
         amounts[0] = 0;
-        bytes32 slot = bytes32(uint256(1337));
-        bytes32 value = bytes32(uint256(6699));
+        bytes32 slot = bytes32(uint256(1_337));
+        bytes32 value = bytes32(uint256(6_699));
         bytes[] memory payloads = new bytes[](1);
         payloads[0] = abi.encodeWithSelector(
             callReceiverMock.mockFunctionWritesStorage.selector,
@@ -2857,8 +2857,8 @@ contract TimelockControllerTest is Test {
         targets[0] = target;
         uint256[] memory amounts = new uint256[](1);
         amounts[0] = 0;
-        bytes32 slot = bytes32(uint256(1337));
-        bytes32 value = bytes32(uint256(6699));
+        bytes32 slot = bytes32(uint256(1_337));
+        bytes32 value = bytes32(uint256(6_699));
         bytes[] memory payloads = new bytes[](1);
         payloads[0] = abi.encodeWithSelector(
             callReceiverMock.mockFunctionWritesStorage.selector,
@@ -2926,8 +2926,8 @@ contract TimelockControllerTest is Test {
         targets[0] = target;
         uint256[] memory amounts = new uint256[](1);
         amounts[0] = 0;
-        bytes32 slot = bytes32(uint256(1337));
-        bytes32 value = bytes32(uint256(6699));
+        bytes32 slot = bytes32(uint256(1_337));
+        bytes32 value = bytes32(uint256(6_699));
         bytes[] memory payloads = new bytes[](1);
         payloads[0] = abi.encodeWithSelector(
             callReceiverMock.mockFunctionWritesStorage.selector,
@@ -2973,8 +2973,8 @@ contract TimelockControllerTest is Test {
         targets[0] = target;
         uint256[] memory amounts = new uint256[](1);
         amounts[0] = 0;
-        bytes32 slot = bytes32(uint256(1337));
-        bytes32 value = bytes32(uint256(6699));
+        bytes32 slot = bytes32(uint256(1_337));
+        bytes32 value = bytes32(uint256(6_699));
         bytes[] memory payloads = new bytes[](1);
         payloads[0] = abi.encodeWithSelector(
             callReceiverMock.mockFunctionWritesStorage.selector,
@@ -3020,8 +3020,8 @@ contract TimelockControllerTest is Test {
         targets[0] = target;
         uint256[] memory amounts = new uint256[](1);
         amounts[0] = 0;
-        bytes32 slot = bytes32(uint256(1337));
-        bytes32 value = bytes32(uint256(6699));
+        bytes32 slot = bytes32(uint256(1_337));
+        bytes32 value = bytes32(uint256(6_699));
         bytes[] memory payloads = new bytes[](1);
         payloads[0] = abi.encodeWithSelector(
             callReceiverMock.mockFunctionWritesStorage.selector,
@@ -3067,8 +3067,8 @@ contract TimelockControllerTest is Test {
         targets[0] = target;
         uint256[] memory amounts = new uint256[](1);
         amounts[0] = 0;
-        bytes32 slot = bytes32(uint256(1337));
-        bytes32 value = bytes32(uint256(6699));
+        bytes32 slot = bytes32(uint256(1_337));
+        bytes32 value = bytes32(uint256(6_699));
         bytes[] memory payloads = new bytes[](1);
         payloads[0] = abi.encodeWithSelector(
             callReceiverMock.mockFunctionWritesStorage.selector,
@@ -3135,8 +3135,8 @@ contract TimelockControllerTest is Test {
         targets[0] = target;
         uint256[] memory amounts = new uint256[](1);
         amounts[0] = 0;
-        bytes32 slot = bytes32(uint256(1337));
-        bytes32 value = bytes32(uint256(6699));
+        bytes32 slot = bytes32(uint256(1_337));
+        bytes32 value = bytes32(uint256(6_699));
         bytes[] memory payloads = new bytes[](1);
         payloads[0] = abi.encodeWithSelector(
             callReceiverMock.mockFunctionWritesStorage.selector,
@@ -3181,8 +3181,8 @@ contract TimelockControllerTest is Test {
         targets[0] = target;
         uint256[] memory amounts = new uint256[](1);
         amounts[0] = 0;
-        bytes32 slot = bytes32(uint256(1337));
-        bytes32 value = bytes32(uint256(6699));
+        bytes32 slot = bytes32(uint256(1_337));
+        bytes32 value = bytes32(uint256(6_699));
         bytes[] memory payloads = new bytes[](1);
         payloads[0] = abi.encodeWithSelector(
             callReceiverMock.mockFunctionWritesStorage.selector,
@@ -3230,8 +3230,8 @@ contract TimelockControllerTest is Test {
         targets[0] = target;
         uint256[] memory amounts = new uint256[](1);
         amounts[0] = 0;
-        bytes32 slot = bytes32(uint256(1337));
-        bytes32 value = bytes32(uint256(6699));
+        bytes32 slot = bytes32(uint256(1_337));
+        bytes32 value = bytes32(uint256(6_699));
         bytes[] memory payloads = new bytes[](1);
         payloads[0] = abi.encodeWithSelector(
             callReceiverMock.mockFunctionWritesStorage.selector,
@@ -3669,8 +3669,8 @@ contract TimelockControllerTest is Test {
         targets[0] = target;
         uint256[] memory amounts = new uint256[](1);
         amounts[0] = 0;
-        bytes32 slot = bytes32(uint256(1337));
-        bytes32 value = bytes32(uint256(6699));
+        bytes32 slot = bytes32(uint256(1_337));
+        bytes32 value = bytes32(uint256(6_699));
         bytes[] memory payloads = new bytes[](1);
         payloads[0] = abi.encodeWithSelector(
             callReceiverMock.mockFunctionWritesStorage.selector,
@@ -4053,8 +4053,8 @@ contract TimelockControllerTest is Test {
 
     function testFuzzOperationValue(uint256 amount) public {
         amount = bound(amount, 0, type(uint64).max);
-        bytes32 slot = bytes32(uint256(1337));
-        bytes32 value = bytes32(uint256(6699));
+        bytes32 slot = bytes32(uint256(1_337));
+        bytes32 value = bytes32(uint256(6_699));
         bytes memory payload = abi.encodeWithSelector(
             callReceiverMock.mockFunctionWritesStorage.selector,
             slot,
@@ -4140,8 +4140,8 @@ contract TimelockControllerTest is Test {
         targets[0] = target;
         uint256[] memory amounts = new uint256[](1);
         amounts[0] = amount;
-        bytes32 slot = bytes32(uint256(1337));
-        bytes32 value = bytes32(uint256(6699));
+        bytes32 slot = bytes32(uint256(1_337));
+        bytes32 value = bytes32(uint256(6_699));
         bytes[] memory payloads = new bytes[](1);
         payloads[0] = abi.encodeWithSelector(
             callReceiverMock.mockFunctionWritesStorage.selector,
