@@ -179,7 +179,7 @@ Furthermore, the [`echidna`](https://github.com/crytic/echidna)-based [property]
 ~$ echidna test/tokens/echidna/ERC721Properties.sol --contract CryticERC721ExternalHarness --config test/tokens/echidna/echidna-config.yaml --crytic-args --ignore-compile
 ```
 
-Eventually, the [`halmos`](https://github.com/a16z/halmos)-based symbolic tests for the [`ERC20`](./src/snekmate/tokens/ERC20.vy), [`ERC721`](./src/snekmate/tokens/ERC721.vy), [`ERC1155`](./src/snekmate/tokens/ERC1155.vy), and [`Math`](./src/snekmate/utils/Math.vy) contracts are available in the [`test/tokens/halmos/`](./test/tokens/halmos) and [`test/utils/halmos/`](./test/utils/halmos) directories. You can run the tests by invoking:
+Eventually, the [`halmos`](https://github.com/a16z/halmos)-based symbolic tests for the [`erc20`](./src/snekmate/tokens/erc20.vy), [`erc721`](./src/snekmate/tokens/erc721.vy), [`erc1155`](./src/snekmate/tokens/erc1155.vy), and [`math`](./src/snekmate/utils/math.vy) contracts are available in the [`test/tokens/halmos/`](./test/tokens/halmos) and [`test/utils/halmos/`](./test/utils/halmos) directories. You can run the tests by invoking:
 
 ```console
 # Run Halmos ERC-20 symbolic tests.

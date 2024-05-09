@@ -32,7 +32,7 @@ contract ERC1155TestHalmos is Test, SymTest {
         erc1155 = IERC1155(
             vyperDeployer.deployContract(
                 "src/snekmate/tokens/mocks/",
-                "ERC1155Mock",
+                "erc1155_mock",
                 args
             )
         );

@@ -51,7 +51,7 @@ contract ERC721TestHalmos is Test, SymTest {
         erc721 = IERC721(
             vyperDeployer.deployContract(
                 "src/snekmate/tokens/mocks/",
-                "ERC721Mock",
+                "erc721_mock",
                 args,
                 "shanghai",
                 "none"

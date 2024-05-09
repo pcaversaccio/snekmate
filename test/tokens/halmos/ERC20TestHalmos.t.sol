@@ -49,7 +49,7 @@ contract ERC20TestHalmos is Test, SymTest {
         erc20 = IERC20(
             vyperDeployer.deployContract(
                 "src/snekmate/tokens/mocks/",
-                "ERC20Mock",
+                "erc20_mock",
                 args,
                 "shanghai",
                 "none"

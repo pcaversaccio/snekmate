@@ -36,7 +36,7 @@ contract MathTestHalmos is Test, SymTest {
         math = IMath(
             vyperDeployer.deployContract(
                 "src/snekmate/utils/mocks/",
-                "MathMock",
+                "math_mock",
                 "shanghai",
                 "none"
             )
@@ -86,7 +86,7 @@ contract MathTestHalmos is Test, SymTest {
         Math.Rounding rounding
     ) public view {
         assert(
-            math.log_2(x, Math.unsignedRoundsUp(rounding)) ==
+            math.log2(x, Math.unsignedRoundsUp(rounding)) ==
                 Math.log2(x, rounding)
         );
     }
@@ -96,7 +96,7 @@ contract MathTestHalmos is Test, SymTest {
         Math.Rounding rounding
     ) public view {
         assert(
-            math.log_10(x, Math.unsignedRoundsUp(rounding)) ==
+            math.log10(x, Math.unsignedRoundsUp(rounding)) ==
                 Math.log10(x, rounding)
         );
     }
@@ -106,7 +106,7 @@ contract MathTestHalmos is Test, SymTest {
         Math.Rounding rounding
     ) public view {
         assert(
-            math.log_256(x, Math.unsignedRoundsUp(rounding)) ==
+            math.log256(x, Math.unsignedRoundsUp(rounding)) ==
                 Math.log256(x, rounding)
         );
     }
