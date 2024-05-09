@@ -35,12 +35,12 @@
 ### 🥢 Test Coverage
 
 - **Tokens**
-  - [`ERC20`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/tokens/ERC20.vy): Add `echidna`-based `ERC20` property tests. ([#239](https://github.com/pcaversaccio/snekmate/pull/239))
-  - [`ERC721`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/tokens/ERC721.vy): Add `echidna`-based `ERC721` property tests. ([#239](https://github.com/pcaversaccio/snekmate/pull/239))
+  - [`erc20`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/tokens/erc20.vy): Add `echidna`-based `erc20` property tests. ([#239](https://github.com/pcaversaccio/snekmate/pull/239))
+  - [`erc721`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/tokens/erc721.vy): Add `echidna`-based `erc721` property tests. ([#239](https://github.com/pcaversaccio/snekmate/pull/239))
 
 ### ❗️ Breaking Changes
 
-- The file names of 🐍 snekmate module and mock contracts use the _snake case_ notation (e.g. `my_module`), whilst the Vyper interface files `.vyi` use the notation _Pascal case_ prefixed with `I` (e.g. `IMyInterface`). ([#242](https://github.com/pcaversaccio/snekmate/pull/242))
+- The file names of 🐍 snekmate module and mock contracts use the _snake case_ notation (e.g. `my_module.vy` or `my_module_mock.vy`), whilst the Vyper interface files `.vyi` use the _Pascal case_ notation prefixed with `I` (e.g. `IMyInterface.vyi`). ([#242](https://github.com/pcaversaccio/snekmate/pull/242))
 - The mathematical utility functions `_log_2`, `_log_10`, and `_log_256` are renamed to `_log2`, `_log10`, and `_log256`. ([#242](https://github.com/pcaversaccio/snekmate/pull/242))
 
 ### 👀 Full Changelog
