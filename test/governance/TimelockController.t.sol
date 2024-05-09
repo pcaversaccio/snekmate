@@ -18,7 +18,7 @@ import {ITimelockController} from "./interfaces/ITimelockController.sol";
 
 /**
  * @dev The standard access control functionalities are not tested as they
- * are imported via the `AccessControl` module. See `AccessControl.t.sol`
+ * are imported via the `access_control` module. See `AccessControl.t.sol`
  * for the corresponding tests. However, please integrate these tests into
  * your own test suite before deploying `TimelockController` into production!
  */
