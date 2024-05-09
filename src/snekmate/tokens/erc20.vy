@@ -39,7 +39,7 @@
         https://github.com/ApeAcademy/ERC20/blob/main/%7B%7Bcookiecutter.project_name%7D%7D/contracts/Token.vy.
 @custom:security This ERC-20 implementation allows the commonly known
                  address poisoning attack, where `transferFrom` instructions
-                 are executed from arbitrary addresses with an `amount` of 0.
+                 are executed from arbitrary addresses with an `amount` of `0`.
                  However, this poisoning attack is not an on-chain vulnerability.
                  All assets are safe. It is an off-chain log interpretation issue.
                  The main reason why we do not disallow address poisonig is that
