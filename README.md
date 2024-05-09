@@ -18,31 +18,31 @@
 src
 └── snekmate
     ├── auth
-    │   ├── Ownable — "Owner-Based Access Control Functions"
-    │   ├── Ownable2Step — "2-Step Ownership Transfer Functions"
-    │   ├── AccessControl — "Multi-Role-Based Access Control Functions"
+    │   ├── ownable — "Owner-Based Access Control Functions"
+    │   ├── ownable_2step — "2-Step Ownership Transfer Functions"
+    │   ├── access_control — "Multi-Role-Based Access Control Functions"
     │   ├── interfaces
     │   │   └── IAccessControl — "AccessControl Interface Definition"
     │   └── mocks
-    │       ├── OwnableMock — "Ownable Module Reference Implementation"
-    │       ├── Ownable2StepMock — "Ownable2Step Module Reference Implementation"
-    │       └── AccessControlMock — "AccessControl Module Reference Implementation"
+    │       ├── ownable_mock — "`ownable` Module Reference Implementation"
+    │       ├── ownable_2step_mock — "`ownable_2step` Module Reference Implementation"
+    │       └── access_control_mock — "`access_control` Module Reference Implementation"
     ├── extensions
-    │   ├── ERC2981 — "ERC-721 and ERC-1155 Compatible ERC-2981 Reference Implementation"
-    │   ├── ERC4626 — "Modern and Gas-Efficient ERC-4626 Tokenised Vault Implementation"
+    │   ├── erc2981 — "ERC-721 and ERC-1155 Compatible ERC-2981 Reference Implementation"
+    │   ├── erc4626 — "Modern and Gas-Efficient ERC-4626 Tokenised Vault Implementation"
     │   ├── interfaces
     │   │   └── IERC2981 — "EIP-2981 Interface Definition"
     │   └── mocks
-    │       ├── ERC2981Mock — "ERC2981 Module Reference Implementation"
-    │       └── ERC4626Mock — "ERC4626 Module Reference Implementation"
+    │       ├── erc2981_mock — "`erc2981` Module Reference Implementation"
+    │       └── erc4626_mock — "`erc4626` Module Reference Implementation"
     ├── governance
-    │   ├── TimelockController — "Multi-Role-Based Timelock Controller Reference Implementation"
+    │   ├── timelock_controller — "Multi-Role-Based Timelock Controller Reference Implementation"
     │   └── mocks
-    │       └── TimelockControllerMock — "TimelockController Module Reference Implementation"
+    │       └── timelock_controller_mock — "`timelock_controller` Module Reference Implementation"
     ├── tokens
-    │   ├── ERC20 — "Modern and Gas-Efficient ERC-20 + EIP-2612 Implementation"
-    │   ├── ERC721 — "Modern and Gas-Efficient ERC-721 + EIP-4494 Implementation"
-    │   ├── ERC1155 — "Modern and Gas-Efficient ERC-1155 Implementation"
+    │   ├── erc20 — "Modern and Gas-Efficient ERC-20 + EIP-2612 Implementation"
+    │   ├── erc721 — "Modern and Gas-Efficient ERC-721 + EIP-4494 Implementation"
+    │   ├── erc1155 — "Modern and Gas-Efficient ERC-1155 Implementation"
     │   ├── interfaces
     │   │   ├── IERC20Permit — "EIP-2612 Interface Definition"
     │   │   ├── IERC721Enumerable — "EIP-721 Optional Enumeration Interface Definition"
@@ -54,36 +54,36 @@ src
     │   │   ├── IERC1155Receiver — "EIP-1155 Token Receiver Interface Definition"
     │   │   └── IERC4906 — "EIP-4906 Interface Definition"
     │   └── mocks
-    │       ├── ERC20Mock — "ERC20 Module Reference Implementation"
-    │       ├── ERC721Mock — "ERC721 Module Reference Implementation"
-    │       └── ERC1155Mock — "ERC1155 Module Reference Implementation"
+    │       ├── erc20_mock — "`erc20` Module Reference Implementation"
+    │       ├── erc721_mock — "`erc721` Module Reference Implementation"
+    │       └── erc1155_mock — "`erc1155` Module Reference Implementation"
     └── utils
-        ├── Base64 — "Base64 Encoding and Decoding Functions"
-        ├── BatchDistributor — "Batch Sending Both Native and ERC-20 Tokens"
-        ├── CreateAddress — "`CREATE` EVM Opcode Utility Function for Address Calculation"
-        ├── Create2Address — "`CREATE2` EVM Opcode Utility Functions for Address Calculations"
-        ├── ECDSA — "Elliptic Curve Digital Signature Algorithm (ECDSA) Functions"
-        ├── MessageHashUtils — "Signature Message Hash Utility Functions"
-        ├── SignatureChecker — "ECDSA and EIP-1271 Signature Verification Functions"
-        ├── EIP712DomainSeparator — "EIP-712 Domain Separator"
-        ├── Math — "Standard Mathematical Utility Functions"
-        ├── MerkleProofVerification — "Merkle Tree Proof Verification Functions"
-        ├── Multicall — "Multicall Functions"
+        ├── base64 — "Base64 Encoding and Decoding Functions"
+        ├── batch_distributor — "Batch Sending Both Native and ERC-20 Tokens"
+        ├── create_address — "`CREATE` EVM Opcode Utility Function for Address Calculation"
+        ├── create2_address — "`CREATE2` EVM Opcode Utility Functions for Address Calculations"
+        ├── ecdsa — "Elliptic Curve Digital Signature Algorithm (ECDSA) Functions"
+        ├── message_hash_utils — "Signature Message Hash Utility Functions"
+        ├── signature_checker — "ECDSA and EIP-1271 Signature Verification Functions"
+        ├── eip712_domain_separator — "EIP-712 Domain Separator"
+        ├── math — "Standard Mathematical Utility Functions"
+        ├── merkle_proof_verification — "Merkle Tree Proof Verification Functions"
+        ├── multicall — "Multicall Functions"
         ├── interfaces
         │   ├── IERC1271 — "EIP-1271 Interface Definition"
         │   └── IERC5267 — "EIP-5267 Interface Definition"
         └── mocks
-            ├── Base64Mock — "Base64 Module Reference Implementation"
-            ├── BatchDistributorMock — "BatchDistributor Module Reference Implementation"
-            ├── CreateAddressMock — "CreateAddress Module Reference Implementation"
-            ├── Create2AddressMock — "Create2Address Module Reference Implementation"
-            ├── ECDSAMock — "ECDSA Module Reference Implementation"
-            ├── MessageHashUtilsMock — "MessageHashUtils Module Reference Implementation"
-            ├── SignatureCheckerMock — "SignatureChecker Module Reference Implementation"
-            ├── EIP712DomainSeparatorMock — "EIP712DomainSeparator Module Reference Implementation"
-            ├── MathMock — "Math Module Reference Implementation"
-            ├── MerkleProofVerificationMock — "MerkleProofVerification Module Reference Implementation"
-            └── MulticallMock — "Multicall Module Reference Implementation"
+            ├── base64_mock — "`base64` Module Reference Implementation"
+            ├── batch_distributor_mock — "`batch_distributor` Module Reference Implementation"
+            ├── create_address_mock — "`create_address` Module Reference Implementation"
+            ├── create2_address_mock — "`create2_address` Module Reference Implementation"
+            ├── ecdsa_mock — "`ecdsa` Module Reference Implementation"
+            ├── message_hash_utils_mock — "`message_hash_utils` Module Reference Implementation"
+            ├── signature_checker_mock — "`signature_checker` Module Reference Implementation"
+            ├── eip712_domain_separator_mock — "`eip712_domain_separator` Module Reference Implementation"
+            ├── math_mock — "`math` Module Reference Implementation"
+            ├── merkle_proof_verification_mock — "`merkle_proof_verification` Module Reference Implementation"
+            └── multicall_mock — "`multicall` Module Reference Implementation"
 ```
 
 ## 🎛 Installation
@@ -144,32 +144,32 @@ This repository contains [Foundry](https://github.com/foundry-rs/foundry)-based 
 > [!NOTE]
 > An _invariant_ is a property of a program that should always hold true. Fuzzing is a way of checking whether the invariant is falsifiable.
 
-| **Contract**              | **Unit Tests** | **Property-Based Tests** | **Invariant Tests** |
-| :------------------------ | :------------: | :----------------------: | :-----------------: |
-| `Ownable`                 |       ✅       |            ✅            |         ✅          |
-| `Ownable2Step`            |       ✅       |            ✅            |         ✅          |
-| `AccessControl`           |       ✅       |            ✅            |         ✅          |
-| `ERC2981`                 |       ✅       |            ✅            |         ✅          |
-| `ERC4626`                 |       ✅       |            ✅            |         ✅          |
-| `TimelockController`      |       ✅       |            ✅            |         ✅          |
-| `ERC20`                   |       ✅       |            ✅            |         ✅          |
-| `ERC721`                  |       ✅       |            ✅            |         ✅          |
-| `ERC1155`                 |       ✅       |            ✅            |         ✅          |
-| `Base64`                  |       ✅       |            ❌            |         ❌          |
-| `BatchDistributor`        |       ✅       |            ✅            |         ✅          |
-| `CreateAddress`           |       ✅       |            ✅            |         ❌          |
-| `Create2Address`          |       ✅       |            ✅            |         ❌          |
-| `ECDSA`                   |       ✅       |            ✅            |         ❌          |
-| `MessageHashUtils`        |       ✅       |            ✅            |         ❌          |
-| `SignatureChecker`        |       ✅       |            ✅            |         ❌          |
-| `EIP712DomainSeparator`   |       ✅       |            ✅            |         ❌          |
-| `Math`                    |       ✅       |            ✅            |         ❌          |
-| `MerkleProofVerification` |       ✅       |            ✅            |         ❌          |
-| `Multicall`               |       ✅       |            ❌            |         ❌          |
+| **Contract**                | **Unit Tests** | **Property-Based Tests** | **Invariant Tests** |
+| :-------------------------- | :------------: | :----------------------: | :-----------------: |
+| `ownable`                   |       ✅       |            ✅            |         ✅          |
+| `ownable_2step`             |       ✅       |            ✅            |         ✅          |
+| `access_control`            |       ✅       |            ✅            |         ✅          |
+| `erc2981`                   |       ✅       |            ✅            |         ✅          |
+| `erc4626`                   |       ✅       |            ✅            |         ✅          |
+| `timelock_controller`       |       ✅       |            ✅            |         ✅          |
+| `erc20`                     |       ✅       |            ✅            |         ✅          |
+| `erc721`                    |       ✅       |            ✅            |         ✅          |
+| `erc1155`                   |       ✅       |            ✅            |         ✅          |
+| `base64`                    |       ✅       |            ❌            |         ❌          |
+| `batch_distributor`         |       ✅       |            ✅            |         ✅          |
+| `create_address`            |       ✅       |            ✅            |         ❌          |
+| `create2_address`           |       ✅       |            ✅            |         ❌          |
+| `ecdsa`                     |       ✅       |            ✅            |         ❌          |
+| `message_hash_utils`        |       ✅       |            ✅            |         ❌          |
+| `signature_checker`         |       ✅       |            ✅            |         ❌          |
+| `eip712_domain_separator`   |       ✅       |            ✅            |         ❌          |
+| `math`                      |       ✅       |            ✅            |         ❌          |
+| `merkle_proof_verification` |       ✅       |            ✅            |         ❌          |
+| `multicall`                 |       ✅       |            ❌            |         ❌          |
 
 ✅ Test Type Implemented &emsp; ❌ Test Type Not Implemented
 
-Furthermore, the [`echidna`](https://github.com/crytic/echidna)-based [property](https://github.com/crytic/properties) tests for the [`ERC20`](./src/snekmate/tokens/ERC20.vy) and [`ERC721`](./src/snekmate/tokens/ERC721.vy) contracts are available in the [`test/tokens/echidna/`](./test/tokens/echidna) directory. You can run the tests by invoking:
+Furthermore, the [`echidna`](https://github.com/crytic/echidna)-based [property](https://github.com/crytic/properties) tests for the [`erc20`](./src/snekmate/tokens/ERC20.vy) and [`erc721`](./src/snekmate/tokens/ERC721.vy) contracts are available in the [`test/tokens/echidna/`](./test/tokens/echidna) directory. You can run the tests by invoking:
 
 ```console
 # Run Echidna ERC-20 property tests.

@@ -1,10 +1,10 @@
-# pragma version ~=0.4.0rc2
+# pragma version ~=0.4.0rc3
 """
-@title AccessControl Interface Definition
+@title `access_control` Interface Definition
 @custom:contract-name IAccessControl
 @license GNU Affero General Public License v3.0 only
 @author pcaversaccio
-@notice The interface definition of `AccessControl`
+@notice The interface definition of `access_control`
         to support the ERC-165 detection. In order
         to ensure consistency and interoperability,
         we follow OpenZeppelin's definition here:
@@ -70,7 +70,7 @@ def getRoleAdmin(role: bytes32) -> bytes32:
          `role`.
     @notice See `grantRole` and `revokeRole`.
             To change a role's admin, use
-            {AccessControl-set_role_admin}.
+            {access_control-set_role_admin}.
     @param role The 32-byte role definition.
     @return bytes32 The 32-byte admin role
             that controls `role`.

@@ -92,7 +92,7 @@ contract ERC721Test is Test {
         bytes memory data
     ) internal {
         vm.startPrank(makeAddr("nonOwner"));
-        vm.expectRevert(bytes("ERC721: caller is not token owner or approved"));
+        vm.expectRevert(bytes("erc721: caller is not token owner or approved"));
         if (!withData) {
             Address.functionCall(
                 ERC721ExtendedAddr,
@@ -118,7 +118,7 @@ contract ERC721Test is Test {
         vm.stopPrank();
 
         vm.startPrank(owner);
-        vm.expectRevert(bytes("ERC721: transfer from incorrect owner"));
+        vm.expectRevert(bytes("erc721: transfer from incorrect owner"));
         if (!withData) {
             Address.functionCall(
                 ERC721ExtendedAddr,
@@ -144,7 +144,7 @@ contract ERC721Test is Test {
         vm.stopPrank();
 
         vm.startPrank(owner);
-        vm.expectRevert(bytes("ERC721: invalid token ID"));
+        vm.expectRevert(bytes("erc721: invalid token ID"));
         if (!withData) {
             Address.functionCall(
                 ERC721ExtendedAddr,
@@ -170,7 +170,7 @@ contract ERC721Test is Test {
         vm.stopPrank();
 
         vm.startPrank(owner);
-        vm.expectRevert(bytes("ERC721: transfer to the zero address"));
+        vm.expectRevert(bytes("erc721: transfer to the zero address"));
         if (!withData) {
             Address.functionCall(
                 ERC721ExtendedAddr,
@@ -471,7 +471,7 @@ contract ERC721Test is Test {
         vm.revertTo(snapshot);
 
         vm.startPrank(owner);
-        vm.expectRevert(bytes("ERC721: invalid token ID"));
+        vm.expectRevert(bytes("erc721: invalid token ID"));
         Address.functionCall(
             ERC721ExtendedAddr,
             abi.encodeWithSignature(
@@ -496,7 +496,7 @@ contract ERC721Test is Test {
         ERC721Extended = IERC721Extended(
             vyperDeployer.deployContract(
                 "src/snekmate/tokens/mocks/",
-                "ERC721Mock",
+                "erc721_mock",
                 args
             )
         );
@@ -533,7 +533,7 @@ contract ERC721Test is Test {
         ERC721ExtendedInitialEvent = IERC721Extended(
             vyperDeployer.deployContract(
                 "src/snekmate/tokens/mocks/",
-                "ERC721Mock",
+                "erc721_mock",
                 args
             )
         );
@@ -600,7 +600,7 @@ contract ERC721Test is Test {
     }
 
     function testBalanceOfZeroAddress() public {
-        vm.expectRevert(bytes("ERC721: the zero address is not a valid owner"));
+        vm.expectRevert(bytes("erc721: the zero address is not a valid owner"));
         ERC721Extended.balanceOf(zeroAddress);
     }
 
@@ -614,7 +614,7 @@ contract ERC721Test is Test {
     }
 
     function testOwnerOfInvalidTokenId() public {
-        vm.expectRevert(bytes("ERC721: invalid token ID"));
+        vm.expectRevert(bytes("erc721: invalid token ID"));
         ERC721Extended.ownerOf(0);
     }
 
@@ -737,7 +737,7 @@ contract ERC721Test is Test {
 
         vm.startPrank(owner);
         vm.expectRevert(
-            bytes("ERC721: transfer to non-ERC721Receiver implementer")
+            bytes("erc721: transfer to non-IERC721Receiver implementer")
         );
         ERC721Extended.safeTransferFrom(owner, receiver, 0, new bytes(0));
         vm.stopPrank();
@@ -947,7 +947,7 @@ contract ERC721Test is Test {
         vm.stopPrank();
 
         vm.startPrank(owner);
-        vm.expectRevert(bytes("ERC721: approval to current owner"));
+        vm.expectRevert(bytes("erc721: approval to current owner"));
         ERC721Extended.approve(owner, tokenId);
         vm.stopPrank();
     }
@@ -963,7 +963,7 @@ contract ERC721Test is Test {
         vm.startPrank(makeAddr("nonOwner"));
         vm.expectRevert(
             bytes(
-                "ERC721: approve caller is not token owner or approved for all"
+                "erc721: approve caller is not token owner or approved for all"
             )
         );
         ERC721Extended.approve(makeAddr("to"), tokenId);
@@ -986,7 +986,7 @@ contract ERC721Test is Test {
         vm.startPrank(spender);
         vm.expectRevert(
             bytes(
-                "ERC721: approve caller is not token owner or approved for all"
+                "erc721: approve caller is not token owner or approved for all"
             )
         );
         ERC721Extended.approve(makeAddr("to"), tokenId);
@@ -1024,7 +1024,7 @@ contract ERC721Test is Test {
         vm.stopPrank();
 
         vm.startPrank(owner);
-        vm.expectRevert(bytes("ERC721: invalid token ID"));
+        vm.expectRevert(bytes("erc721: invalid token ID"));
         ERC721Extended.approve(makeAddr("to"), tokenId + 1);
         vm.stopPrank();
     }
@@ -1103,13 +1103,13 @@ contract ERC721Test is Test {
         vm.stopPrank();
 
         vm.startPrank(owner);
-        vm.expectRevert(bytes("ERC721: approve to caller"));
+        vm.expectRevert(bytes("erc721: approve to caller"));
         ERC721Extended.setApprovalForAll(owner, true);
         vm.stopPrank();
     }
 
     function testGetApprovedInvalidTokenId() public {
-        vm.expectRevert(bytes("ERC721: invalid token ID"));
+        vm.expectRevert(bytes("erc721: invalid token ID"));
         ERC721Extended.getApproved(0);
     }
 
@@ -1164,7 +1164,7 @@ contract ERC721Test is Test {
         ERC721ExtendedNoBaseURI = IERC721Extended(
             vyperDeployer.deployContract(
                 "src/snekmate/tokens/mocks/",
-                "ERC721Mock",
+                "erc721_mock",
                 args
             )
         );
@@ -1177,7 +1177,7 @@ contract ERC721Test is Test {
     }
 
     function testTokenURIInvalidTokenId() public {
-        vm.expectRevert(bytes("ERC721: invalid token ID"));
+        vm.expectRevert(bytes("erc721: invalid token ID"));
         ERC721Extended.tokenURI(0);
     }
 
@@ -1192,7 +1192,7 @@ contract ERC721Test is Test {
         ERC721Extended.burn(0);
         vm.stopPrank();
 
-        vm.expectRevert(bytes("ERC721: invalid token ID"));
+        vm.expectRevert(bytes("erc721: invalid token ID"));
         ERC721Extended.tokenURI(0);
     }
 
@@ -1249,7 +1249,7 @@ contract ERC721Test is Test {
         vm.stopPrank();
         assertEq(ERC721Extended.totalSupply(), 2);
 
-        vm.expectRevert(bytes("ERC721: global index out of bounds"));
+        vm.expectRevert(bytes("erc721: global index out of bounds"));
         ERC721Extended.tokenByIndex(2);
     }
 
@@ -1325,7 +1325,7 @@ contract ERC721Test is Test {
         ERC721Extended.safe_mint(owner, uri3);
         vm.stopPrank();
         assertEq(ERC721Extended.totalSupply(), 3);
-        vm.expectRevert(bytes("ERC721: owner index out of bounds"));
+        vm.expectRevert(bytes("erc721: owner index out of bounds"));
         ERC721Extended.tokenOfOwnerByIndex(owner, tokenId + 3);
 
         vm.startPrank(owner);
@@ -1334,7 +1334,7 @@ contract ERC721Test is Test {
         ERC721Extended.safeTransferFrom(owner, other, tokenId + 2, "");
         vm.stopPrank();
         assertEq(ERC721Extended.totalSupply(), 3);
-        vm.expectRevert(bytes("ERC721: owner index out of bounds"));
+        vm.expectRevert(bytes("erc721: owner index out of bounds"));
         ERC721Extended.tokenOfOwnerByIndex(owner, tokenId);
         assertEq(ERC721Extended.tokenOfOwnerByIndex(other, tokenId), tokenId);
         assertEq(
@@ -1361,11 +1361,11 @@ contract ERC721Test is Test {
         vm.expectEmit(true, true, true, false);
         emit IERC721.Transfer(owner, zeroAddress, tokenId);
         ERC721Extended.burn(tokenId);
-        vm.expectRevert(bytes("ERC721: invalid token ID"));
+        vm.expectRevert(bytes("erc721: invalid token ID"));
         ERC721Extended.burn(tokenId);
         vm.stopPrank();
 
-        vm.expectRevert(bytes("ERC721: invalid token ID"));
+        vm.expectRevert(bytes("erc721: invalid token ID"));
         ERC721Extended.ownerOf(tokenId);
         assertEq(ERC721Extended.balanceOf(owner), 1);
     }
@@ -1383,7 +1383,7 @@ contract ERC721Test is Test {
         vm.stopPrank();
 
         vm.startPrank(owner);
-        vm.expectRevert(bytes("ERC721: invalid token ID"));
+        vm.expectRevert(bytes("erc721: invalid token ID"));
         ERC721Extended.burn(tokenId + 2);
         ERC721Extended.setApprovalForAll(operator, true);
         ERC721Extended.approve(other, tokenId + 1);
@@ -1402,13 +1402,13 @@ contract ERC721Test is Test {
         vm.stopPrank();
 
         vm.startPrank(owner);
-        vm.expectRevert(bytes("ERC721: invalid token ID"));
+        vm.expectRevert(bytes("erc721: invalid token ID"));
         ERC721Extended.burn(tokenId);
         vm.stopPrank();
 
-        vm.expectRevert(bytes("ERC721: invalid token ID"));
+        vm.expectRevert(bytes("erc721: invalid token ID"));
         ERC721Extended.ownerOf(tokenId);
-        vm.expectRevert(bytes("ERC721: invalid token ID"));
+        vm.expectRevert(bytes("erc721: invalid token ID"));
         ERC721Extended.getApproved(tokenId);
         assertEq(ERC721Extended.balanceOf(owner), 0);
         assertEq(ERC721Extended.balanceOf(operator), 0);
@@ -1478,14 +1478,14 @@ contract ERC721Test is Test {
 
         /**
          * @dev To display the default storage layout for a contract
-         * in Vyper, use `vyper -f layout yourFileName.vy`.
+         * in Vyper, use `vyper -f layout your_filename.vy`.
          */
         vm.store(
             ERC721ExtendedAddr,
             bytes32(uint256(18_446_744_073_709_551_628)),
             bytes32(0)
         );
-        vm.expectRevert(bytes("ERC721: token already minted"));
+        vm.expectRevert(bytes("erc721: token already minted"));
         ERC721Extended.safe_mint(owner, "");
         vm.stopPrank();
     }
@@ -1516,7 +1516,7 @@ contract ERC721Test is Test {
         string memory uri = "my_awesome_nft_uri";
         vm.startPrank(deployer);
         vm.expectRevert(
-            bytes("ERC721: transfer to non-ERC721Receiver implementer")
+            bytes("erc721: transfer to non-IERC721Receiver implementer")
         );
         ERC721Extended.safe_mint(owner, uri);
         vm.stopPrank();
@@ -1573,20 +1573,20 @@ contract ERC721Test is Test {
     }
 
     function testSafeMintNonMinter() public {
-        vm.expectRevert(bytes("ERC721: access is denied"));
+        vm.expectRevert(bytes("erc721: access is denied"));
         ERC721Extended.safe_mint(makeAddr("owner"), "my_awesome_nft_uri");
     }
 
     function testSafeMintToZeroAddress() public {
         vm.prank(deployer);
-        vm.expectRevert(bytes("ERC721: mint to the zero address"));
+        vm.expectRevert(bytes("erc721: mint to the zero address"));
         ERC721Extended.safe_mint(zeroAddress, "my_awesome_nft_uri");
     }
 
     function testSafeMintOverflow() public {
         /**
          * @dev To display the default storage layout for a contract
-         * in Vyper, use `vyper -f layout yourFileName.vy`.
+         * in Vyper, use `vyper -f layout your_filename.vy`.
          */
         vm.store(
             ERC721ExtendedAddr,
@@ -1615,19 +1615,19 @@ contract ERC721Test is Test {
     }
 
     function testSetMinterNonOwner() public {
-        vm.expectRevert(bytes("Ownable: caller is not the owner"));
+        vm.expectRevert(bytes("ownable: caller is not the owner"));
         ERC721Extended.set_minter(makeAddr("minter"), true);
     }
 
     function testSetMinterToZeroAddress() public {
         vm.prank(deployer);
-        vm.expectRevert(bytes("ERC721: minter is the zero address"));
+        vm.expectRevert(bytes("erc721: minter is the zero address"));
         ERC721Extended.set_minter(zeroAddress, true);
     }
 
     function testSetMinterRemoveOwnerAddress() public {
         vm.prank(deployer);
-        vm.expectRevert(bytes("ERC721: minter is owner address"));
+        vm.expectRevert(bytes("erc721: minter is owner address"));
         ERC721Extended.set_minter(deployer, false);
     }
 
@@ -1701,7 +1701,7 @@ contract ERC721Test is Test {
         vm.expectEmit(true, true, true, false);
         emit IERC721.Approval(owner, spender, tokenId);
         ERC721Extended.permit(spender, tokenId, deadline, v, r, s);
-        vm.expectRevert(bytes("ERC721: invalid signature"));
+        vm.expectRevert(bytes("erc721: invalid signature"));
         ERC721Extended.permit(spender, tokenId, deadline, v, r, s);
     }
 
@@ -1735,7 +1735,7 @@ contract ERC721Test is Test {
                 )
             )
         );
-        vm.expectRevert(bytes("ERC721: invalid signature"));
+        vm.expectRevert(bytes("erc721: invalid signature"));
         ERC721Extended.permit(spender, tokenId, deadline, v, r, s);
     }
 
@@ -1777,7 +1777,7 @@ contract ERC721Test is Test {
                 )
             )
         );
-        vm.expectRevert(bytes("ERC721: invalid signature"));
+        vm.expectRevert(bytes("erc721: invalid signature"));
         ERC721Extended.permit(spender, tokenId, deadline, v, r, s);
     }
 
@@ -1811,7 +1811,7 @@ contract ERC721Test is Test {
                 )
             )
         );
-        vm.expectRevert(bytes("ERC721: invalid signature"));
+        vm.expectRevert(bytes("erc721: invalid signature"));
         ERC721Extended.permit(spender, tokenId, deadline, v, r, s);
     }
 
@@ -1845,7 +1845,7 @@ contract ERC721Test is Test {
                 )
             )
         );
-        vm.expectRevert(bytes("ERC721: expired deadline"));
+        vm.expectRevert(bytes("erc721: expired deadline"));
         ERC721Extended.permit(spender, tokenId, deadline, v, r, s);
     }
 
@@ -1919,13 +1919,13 @@ contract ERC721Test is Test {
     }
 
     function testTransferOwnershipNonOwner() public {
-        vm.expectRevert(bytes("Ownable: caller is not the owner"));
+        vm.expectRevert(bytes("ownable: caller is not the owner"));
         ERC721Extended.transfer_ownership(makeAddr("newOwner"));
     }
 
     function testTransferOwnershipToZeroAddress() public {
         vm.prank(deployer);
-        vm.expectRevert(bytes("ERC721: new owner is the zero address"));
+        vm.expectRevert(bytes("erc721: new owner is the zero address"));
         ERC721Extended.transfer_ownership(zeroAddress);
     }
 
@@ -1944,7 +1944,7 @@ contract ERC721Test is Test {
     }
 
     function testRenounceOwnershipNonOwner() public {
-        vm.expectRevert(bytes("Ownable: caller is not the owner"));
+        vm.expectRevert(bytes("ownable: caller is not the owner"));
         ERC721Extended.renounce_ownership();
     }
 
@@ -2160,7 +2160,7 @@ contract ERC721Test is Test {
         vm.startPrank(nonOwner);
         vm.expectRevert(
             bytes(
-                "ERC721: approve caller is not token owner or approved for all"
+                "erc721: approve caller is not token owner or approved for all"
             )
         );
         ERC721Extended.approve(makeAddr("to"), tokenId);
@@ -2287,11 +2287,11 @@ contract ERC721Test is Test {
         vm.expectEmit(true, true, true, false);
         emit IERC721.Transfer(owner, zeroAddress, tokenId);
         ERC721Extended.burn(tokenId);
-        vm.expectRevert(bytes("ERC721: invalid token ID"));
+        vm.expectRevert(bytes("erc721: invalid token ID"));
         ERC721Extended.burn(tokenId);
         vm.stopPrank();
 
-        vm.expectRevert(bytes("ERC721: invalid token ID"));
+        vm.expectRevert(bytes("erc721: invalid token ID"));
         ERC721Extended.ownerOf(tokenId);
         assertEq(ERC721Extended.balanceOf(owner), 1);
     }
@@ -2316,7 +2316,7 @@ contract ERC721Test is Test {
 
     function testFuzzSafeMintNonMinter(address nonOwner) public {
         vm.assume(nonOwner != deployer);
-        vm.expectRevert(bytes("ERC721: access is denied"));
+        vm.expectRevert(bytes("erc721: access is denied"));
         ERC721Extended.safe_mint(makeAddr("owner"), "my_awesome_nft_uri");
     }
 
@@ -2341,7 +2341,7 @@ contract ERC721Test is Test {
         string calldata minter
     ) public {
         vm.assume(msgSender != deployer);
-        vm.expectRevert(bytes("Ownable: caller is not the owner"));
+        vm.expectRevert(bytes("ownable: caller is not the owner"));
         ERC721Extended.set_minter(makeAddr(minter), true);
     }
 
@@ -2424,7 +2424,7 @@ contract ERC721Test is Test {
                 )
             )
         );
-        vm.expectRevert(bytes("ERC721: invalid signature"));
+        vm.expectRevert(bytes("erc721: invalid signature"));
         ERC721Extended.permit(spenderAddr, tokenId, deadline, v, r, s);
     }
 
@@ -2531,7 +2531,7 @@ contract ERC721Test is Test {
     ) public {
         vm.assume(nonOwner != deployer);
         vm.prank(nonOwner);
-        vm.expectRevert(bytes("Ownable: caller is not the owner"));
+        vm.expectRevert(bytes("ownable: caller is not the owner"));
         ERC721Extended.transfer_ownership(newOwner);
     }
 
@@ -2562,7 +2562,7 @@ contract ERC721Test is Test {
     function testFuzzRenounceOwnershipNonOwner(address nonOwner) public {
         vm.assume(nonOwner != deployer);
         vm.prank(nonOwner);
-        vm.expectRevert(bytes("Ownable: caller is not the owner"));
+        vm.expectRevert(bytes("ownable: caller is not the owner"));
         ERC721Extended.renounce_ownership();
     }
 }
@@ -2593,7 +2593,7 @@ contract ERC721Invariants is Test {
         ERC721Extended = IERC721Extended(
             vyperDeployer.deployContract(
                 "src/snekmate/tokens/mocks/",
-                "ERC721Mock",
+                "erc721_mock",
                 args
             )
         );

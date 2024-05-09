@@ -17,7 +17,7 @@ contract MessageHashUtilsTest is Test {
         messageHashUtils = IMessageHashUtils(
             vyperDeployer.deployContract(
                 "src/snekmate/utils/mocks/",
-                "MessageHashUtilsMocks"
+                "message_hash_utils_mock"
             )
         );
         messageHashUtilsAddr = address(messageHashUtils);

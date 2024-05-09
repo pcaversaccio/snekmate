@@ -35,7 +35,7 @@ contract CryticERC20ExternalHarness is
         token = ITokenMock(
             vyperDeployer.deployContract(
                 "src/snekmate/tokens/mocks/",
-                "ERC20Mock",
+                "erc20_mock",
                 args
             )
         );

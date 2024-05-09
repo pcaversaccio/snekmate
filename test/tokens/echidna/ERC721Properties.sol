@@ -34,7 +34,7 @@ contract CryticERC721ExternalHarness is
         token = IERC721Internal(
             vyperDeployer.deployContract(
                 "src/snekmate/tokens/mocks/",
-                "ERC721Mock",
+                "erc721_mock",
                 args
             )
         );
