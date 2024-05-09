@@ -132,5 +132,5 @@ jobs:
       - name: Run Halmos ERC-1155 symbolic tests
         run: halmos --contract ERC1155TestHalmos ${{ matrix.halmos }}
 
-      - name: Run Halmos Math symbolic tests
+      - name: Run Halmos math symbolic tests
         run: halmos --contract MathTestHalmos ${{ matrix.halmos }}
