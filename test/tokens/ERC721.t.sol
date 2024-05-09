@@ -737,7 +737,7 @@ contract ERC721Test is Test {
 
         vm.startPrank(owner);
         vm.expectRevert(
-            bytes("erc721: transfer to non-ERC721TokenReceiver implementer")
+            bytes("erc721: transfer to non-IERC721Receiver implementer")
         );
         ERC721Extended.safeTransferFrom(owner, receiver, 0, new bytes(0));
         vm.stopPrank();
@@ -1516,7 +1516,7 @@ contract ERC721Test is Test {
         string memory uri = "my_awesome_nft_uri";
         vm.startPrank(deployer);
         vm.expectRevert(
-            bytes("erc721: transfer to non-ERC721TokenReceiver implementer")
+            bytes("erc721: transfer to non-IERC721Receiver implementer")
         );
         ERC721Extended.safe_mint(owner, uri);
         vm.stopPrank();

@@ -846,7 +846,7 @@ def _safe_mint(owner: address, token_id: uint256, data: Bytes[1_024]):
            to `owner`.
     """
     self._mint(owner, token_id)
-    assert self._check_on_erc721_received(empty(address), owner, token_id, data), "erc721: transfer to non-ERC721TokenReceiver implementer"
+    assert self._check_on_erc721_received(empty(address), owner, token_id, data), "erc721: transfer to non-IERC721Receiver implementer"
 
 
 @internal
@@ -914,7 +914,7 @@ def _safe_transfer(owner: address, to: address, token_id: uint256, data: Bytes[1
            to `to`.
     """
     self._transfer(owner, to, token_id)
-    assert self._check_on_erc721_received(owner, to, token_id, data), "erc721: transfer to non-ERC721TokenReceiver implementer"
+    assert self._check_on_erc721_received(owner, to, token_id, data), "erc721: transfer to non-IERC721Receiver implementer"
 
 
 @internal
@@ -1025,7 +1025,7 @@ def _check_on_erc721_received(owner: address, to: address, token_id: uint256, da
     # Contract case.
     if (to.is_contract):
         return_value: bytes4 = extcall IERC721Receiver(to).onERC721Received(msg.sender, owner, token_id, data)
-        assert return_value == method_id("onERC721Received(address,address,uint256,bytes)", output_type=bytes4), "erc721: transfer to non-ERC721TokenReceiver implementer"
+        assert return_value == method_id("onERC721Received(address,address,uint256,bytes)", output_type=bytes4), "erc721: transfer to non-IERC721Receiver implementer"
         return True
 
     # EOA case.
