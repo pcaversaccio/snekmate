@@ -36,7 +36,7 @@
                  from snekmate.extensions.interfaces import IERC2981
                  implements: IERC2981
 
-                 from snekmate.tokens import ERC721 as erc721
+                 from snekmate.tokens import erc721
                  from snekmate.extensions import erc2981
 
                  exports: ...
@@ -45,7 +45,7 @@
 
                  external
                  def burn(token_id: uint256):
-                     assert erc721._is_approved_or_owner(msg.sender, token_id), "ERC721: caller is not token owner or approved"
+                     assert erc721._is_approved_or_owner(msg.sender, token_id), "erc721: caller is not token owner or approved"
                      self._burn(token_id)
 
                  internal
