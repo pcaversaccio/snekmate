@@ -530,7 +530,7 @@ contract ERC1155Test is Test {
 
         vm.startPrank(owner);
         vm.expectRevert(
-            bytes("erc1155: transfer to non-IERC1155Receiver  implementer")
+            bytes("erc1155: transfer to non-IERC1155Receiver implementer")
         );
         ERC1155Extended.safeTransferFrom(owner, receiver, id1, amount1, data);
         vm.stopPrank();
@@ -545,7 +545,7 @@ contract ERC1155Test is Test {
 
         vm.startPrank(operator);
         vm.expectRevert(
-            bytes("erc1155: transfer to non-IERC1155Receiver  implementer")
+            bytes("erc1155: transfer to non-IERC1155Receiver implementer")
         );
         ERC1155Extended.safeTransferFrom(owner, receiver, id2, amount2, data);
         vm.stopPrank();
@@ -926,7 +926,7 @@ contract ERC1155Test is Test {
 
         vm.startPrank(owner);
         vm.expectRevert(
-            bytes("erc1155: transfer to non-IERC1155Receiver  implementer")
+            bytes("erc1155: transfer to non-IERC1155Receiver implementer")
         );
         ERC1155Extended.safeBatchTransferFrom(
             owner,
@@ -1875,12 +1875,12 @@ contract ERC1155Test is Test {
         bytes memory data = new bytes(0);
         vm.startPrank(deployer);
         vm.expectRevert(
-            bytes("erc1155: transfer to non-IERC1155Receiver  implementer")
+            bytes("erc1155: transfer to non-IERC1155Receiver implementer")
         );
         ERC1155Extended.safe_mint(receiver, id1, amount1, data);
 
         vm.expectRevert(
-            bytes("erc1155: transfer to non-IERC1155Receiver  implementer")
+            bytes("erc1155: transfer to non-IERC1155Receiver implementer")
         );
         ERC1155Extended.safe_mint(receiver, id2, amount2, data);
         vm.stopPrank();
@@ -2129,7 +2129,7 @@ contract ERC1155Test is Test {
 
         vm.startPrank(deployer);
         vm.expectRevert(
-            bytes("erc1155: transfer to non-IERC1155Receiver  implementer")
+            bytes("erc1155: transfer to non-IERC1155Receiver implementer")
         );
         ERC1155Extended.safe_mint_batch(receiver, ids, amounts, data);
         vm.stopPrank();
