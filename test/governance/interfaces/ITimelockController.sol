@@ -67,9 +67,10 @@ interface ITimelockController is
     function is_operation_done(bytes32 id) external view returns (bool);
 
     /**
-     * @dev As Enums are handled differently in Vyper and Solidity (see https://twitter.com/pcaversaccio/status/1626514029094047747),
-     * we directly return the underlying Vyper type `uint256` (instead of `OperationState`)
-     * for Enums for ease of testing.
+     * @dev As Flags (a.k.a. Enums) are handled differently in Vyper and Solidity
+     * (see https://twitter.com/pcaversaccio/status/1626514029094047747), we directly
+     * return the underlying Vyper type `uint256` (instead of `OperationState`) for
+     * Flags for ease of testing.
      */
     function get_operation_state(bytes32 id) external view returns (uint256);
 

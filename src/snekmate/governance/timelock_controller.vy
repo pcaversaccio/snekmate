@@ -6,7 +6,7 @@
 @author pcaversaccio
 @custom:coauthor cairoeth
 @notice This module enables the timelocking of operations by scheduling
-        and executing transactions. By leveraging `AccessControl`, the
+        and executing transactions. By leveraging `access_control`, the
         `timelock_controller` contract introduces three roles:
           1. proposer (`PROPOSER_ROLE`),
           2. executor (`EXECUTOR_ROLE`), and
@@ -147,11 +147,11 @@ _DYNARRAY_BOUND: constant(uint8) = max_value(uint8)
 
 
 # @dev The possible states of a proposal.
-# @notice Enums are treated differently in Vyper and
-# Solidity. The members are represented by `uint256`
-# values (in Solidity the values are of type `uint8`)
-# in the form `2**n`, where `n` is the index of the
-# member in the range `0 <= n <= 255` (i.e. the first
+# @notice Flags (a.k.a. Enums) are treated differently
+# in Vyper and Solidity. The members are represented by
+# `uint256` values (in Solidity the values are of type
+# `uint8`) in the form `2**n`, where `n` is the index of
+# the member in the range `0 <= n <= 255` (i.e. the first
 # index value is `1`). For further insights also, see
 # the following Twitter thread:
 # https://twitter.com/pcaversaccio/status/1626514029094047747.
