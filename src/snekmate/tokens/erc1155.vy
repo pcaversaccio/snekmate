@@ -568,7 +568,7 @@ def _safe_transfer_from(owner: address, to: address, id: uint256, amount: uint25
 
     self._after_token_transfer(owner, to, self._as_singleton_array(id), self._as_singleton_array(amount), data)
 
-    assert self._check_on_erc1155_received(owner, to, id, amount, data), "erc1155: transfer to non-erc1155_receiver implementer"
+    assert self._check_on_erc1155_received(owner, to, id, amount, data), "erc1155: transfer to non-IERC1155Receiver  implementer"
 
 
 @internal
@@ -624,7 +624,7 @@ def _safe_batch_transfer_from(owner: address, to: address, ids: DynArray[uint256
 
     self._after_token_transfer(owner, to, ids, amounts, data)
 
-    assert self._check_on_erc1155_batch_received(owner, to, ids, amounts, data), "erc1155: transfer to non-erc1155_receiver implementer"
+    assert self._check_on_erc1155_batch_received(owner, to, ids, amounts, data), "erc1155: transfer to non-IERC1155Receiver  implementer"
 
 
 @internal
@@ -663,7 +663,7 @@ def _safe_mint(owner: address, id: uint256, amount: uint256, data: Bytes[1_024])
 
     self._after_token_transfer(empty(address), owner, self._as_singleton_array(id), self._as_singleton_array(amount), data)
 
-    assert self._check_on_erc1155_received(empty(address), owner, id, amount, data), "erc1155: mint to non-erc1155_receiver implementer"
+    assert self._check_on_erc1155_received(empty(address), owner, id, amount, data), "erc1155: mint to non-IERC1155Receiver  implementer"
 
 
 @internal
@@ -713,7 +713,7 @@ def _safe_mint_batch(owner: address, ids: DynArray[uint256, _BATCH_SIZE], amount
 
     self._after_token_transfer(empty(address), owner, ids, amounts, data)
 
-    assert self._check_on_erc1155_batch_received(empty(address), owner, ids, amounts, data), "erc1155: transfer to non-erc1155_receiver implementer"
+    assert self._check_on_erc1155_batch_received(empty(address), owner, ids, amounts, data), "erc1155: transfer to non-IERC1155Receiver  implementer"
 
 
 @internal
@@ -854,7 +854,7 @@ def _check_on_erc1155_received(owner: address, to: address, id: uint256, amount:
     if (to.is_contract):
         return_value: bytes4 = extcall IERC1155Receiver(to).onERC1155Received(msg.sender, owner, id, amount, data)
         assert return_value == method_id("onERC1155Received(address,address,uint256,uint256,bytes)", output_type=bytes4),\
-                                         "erc1155: transfer to non-erc1155_receiver implementer"
+                                         "erc1155: transfer to non-IERC1155Receiver  implementer"
         return True
 
     # EOA case.
@@ -883,7 +883,7 @@ def _check_on_erc1155_batch_received(owner: address, to: address, ids: DynArray[
     if (to.is_contract):
         return_value: bytes4 = extcall IERC1155Receiver(to).onERC1155BatchReceived(msg.sender, owner, ids, amounts, data)
         assert return_value == method_id("onERC1155BatchReceived(address,address,uint256[],uint256[],bytes)", output_type=bytes4),\
-                                         "erc1155: transfer to non-erc1155_receiver implementer"
+                                         "erc1155: transfer to non-IERC1155Receiver  implementer"
         return True
 
     # EOA case.
