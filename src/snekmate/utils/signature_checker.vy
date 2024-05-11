@@ -6,12 +6,13 @@
 @author pcaversaccio
 @notice Signature verification helper functions that can be used
         instead of {ecdsa-_recover_sig} to seamlessly support both
-        ECDSA signatures from externally-owned accounts (EOAs) as
-        well as EIP-1271 (https://eips.ethereum.org/EIPS/eip-1271)
-        signatures from smart contract wallets like Argent and Safe.
-        For strict EIP-1271 verification, i.e. only valid EIP-1271
-        signatures are verified, the function `_is_valid_ERC1271_signature_now`
-        can be called. The implementation is inspired by OpenZeppelin's
+        ECDSA secp256k1-based (see https://en.bitcoin.it/wiki/Secp256k1)
+        signatures from externally-owned accounts (EOAs) as well as
+        EIP-1271 (https://eips.ethereum.org/EIPS/eip-1271) signatures
+        from smart contract wallets like Argent and Safe. For strict
+        EIP-1271 verification, i.e. only valid EIP-1271 signatures are
+        verified, the function `_is_valid_ERC1271_signature_now` can
+        be called. The implementation is inspired by OpenZeppelin's
         implementation here:
         https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/cryptography/SignatureChecker.sol.
 @custom:security Signatures must not be used as unique identifiers since the

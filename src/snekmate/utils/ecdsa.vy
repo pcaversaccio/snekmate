@@ -1,12 +1,16 @@
 # pragma version ~=0.4.0rc3
 """
-@title Elliptic Curve Digital Signature Algorithm (ECDSA) Functions
+@title Elliptic Curve Digital Signature Algorithm (ECDSA) Secp256k1-Based Functions
 @custom:contract-name ecdsa
 @license GNU Affero General Public License v3.0 only
 @author pcaversaccio
 @notice These functions can be used to verify that a message was signed by
-        the holder of the private key of a given address. The implementation
-        is inspired by OpenZeppelin's implementation here:
+        the holder of the private key of a given address. All cryptographic
+        calculations are based on the Ethereum-native secp256k1 elliptic curve
+        (see https://en.bitcoin.it/wiki/Secp256k1). For verification functions
+        based on the NIST P-256 elliptic curve (also known as secp256r1), see
+        the {p256} contract. The implementation is inspired by OpenZeppelin's
+        implementation here:
         https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/cryptography/ECDSA.sol.
 @custom:security Signatures must not be used as unique identifiers since the
                  `ecrecover` EVM precompile allows for malleable (non-unique)
