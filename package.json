@@ -37,7 +37,6 @@
   ],
   "devDependencies": {
     "@eslint/js": "^9.2.0",
-    "@noble/curves": "^1.4.0",
     "@openzeppelin/merkle-tree": "^1.0.6",
     "eslint": "^9.2.0",
     "eslint-config-prettier": "^9.1.0",

@@ -20,6 +20,10 @@
 # curve database: https://neuromancer.sk/std/secg/secp256r1).
 
 
+# @dev Constant used as part of the ECDSA verification function.
+_MALLEABILITY_THRESHOLD: constant(uint256) = 57_896_044_605_178_124_381_348_723_474_703_786_764_998_477_612_067_880_171_211_129_530_534_256_022_184
+
+
 # @dev Curve prime field modulus.
 p: constant(uint256) = 115_792_089_210_356_248_762_697_446_949_407_573_530_086_143_415_290_314_195_533_631_308_867_097_853_951
 
@@ -74,6 +78,8 @@ def _verify_sig(hash: bytes32, r: uint256, s: uint256, x: uint256, y: uint256) -
     @return bool The verification whether the signature is
             authentic or not.
     """
+    assert s <= _MALLEABILITY_THRESHOLD, "p256: invalid signature `s` value"
+
     # Checks if `r` and `s` are in the scalar field.
     if ((r == empty(uint256)) or (r >= n) or (s == empty(uint256)) or (s >= n)):
         return False
