@@ -27,17 +27,17 @@ def __init__():
 
 @external
 @view
-def verify_sig(hash: bytes32, r: uint256, s: uint256, x: uint256, y: uint256) -> bool:
+def verify_sig(hash: bytes32, r: uint256, s: uint256, qx: uint256, qy: uint256) -> bool:
     """
     @dev Verifies the signature of a message digest `hash`
          based on the secp256r1 signature parameters `r` and
-         `s`, and the public key coordinates `x` and `y`.
+         `s`, and the public key coordinates `qx` and `qy`.
     @param hash The 32-byte message digest that was signed.
     @param r The secp256r1 32-byte signature parameter `r`.
     @param s The secp256r1 32-byte signature parameter `s`.
-    @param x The 32-byte public key coordinate `x`.
-    @param y The 32-byte public key coordinate `y`.
+    @param qx The 32-byte public key coordinate `qx`.
+    @param qy The 32-byte public key coordinate `qy`.
     @return bool The verification whether the signature is
             authentic or not.
     """
-    return p2._verify_sig(hash, r, s, x, y)
+    return p2._verify_sig(hash, r, s, qx, qy)

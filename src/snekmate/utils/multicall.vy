@@ -91,7 +91,7 @@ def _multicall(data: DynArray[Batch, _DYNARRAY_BOUND]) -> DynArray[Result, _DYNA
             success = True
             results.append(Result(success=success, return_data=return_data))
         else:
-            success, return_data = \
+            success, return_data =\
                 raw_call(batch.target, batch.calldata, max_outsize=255, revert_on_failure=False)
             results.append(Result(success=success, return_data=return_data))
     return results
@@ -129,7 +129,7 @@ def _multicall_value(data: DynArray[BatchValue, _DYNARRAY_BOUND]) -> DynArray[Re
             success = True
             results.append(Result(success=success, return_data=return_data))
         else:
-            success, return_data = \
+            success, return_data =\
                 raw_call(batch.target, batch.calldata, max_outsize=255, value=msg_value, revert_on_failure=False)
             results.append(Result(success=success, return_data=return_data))
     assert msg.value == value_accumulator, "multicall: value mismatch"
@@ -165,7 +165,7 @@ def _multicall_self(data: DynArray[BatchSelf, _DYNARRAY_BOUND]) -> DynArray[Resu
             success = True
             results.append(Result(success=success, return_data=return_data))
         else:
-            success, return_data = \
+            success, return_data =\
                 raw_call(self, batch.calldata, max_outsize=255, is_delegate_call=True, revert_on_failure=False)
             results.append(Result(success=success, return_data=return_data))
     return results
@@ -192,7 +192,7 @@ def _multistaticcall(data: DynArray[Batch, _DYNARRAY_BOUND]) -> DynArray[Result,
             success = True
             results.append(Result(success=success, return_data=return_data))
         else:
-            success, return_data = \
+            success, return_data =\
                 raw_call(batch.target, batch.calldata, max_outsize=255, is_static_call=True, revert_on_failure=False)
             results.append(Result(success=success, return_data=return_data))
     return results

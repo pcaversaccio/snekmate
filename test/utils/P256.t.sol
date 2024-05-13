@@ -23,9 +23,9 @@ contract P256Test is Test {
         19_738_613_187_745_101_558_623_338_726_804_762_177_711_919_211_234_071_563_652_772_152_683_725_073_944;
     uint256 private constant sValid =
         34_753_961_278_895_633_991_577_816_754_222_591_531_863_837_041_401_341_770_838_584_739_693_604_822_390;
-    uint256 private constant xValid =
+    uint256 private constant qxValid =
         18_614_955_573_315_897_657_680_976_650_685_450_080_931_919_913_269_223_958_732_452_353_593_824_192_568;
-    uint256 private constant yValid =
+    uint256 private constant qyValid =
         90_223_116_347_859_880_166_570_198_725_387_569_567_414_254_547_569_925_327_988_539_833_150_573_990_206;
     uint256 private constant p =
         115_792_089_210_356_248_762_697_446_949_407_573_530_086_143_415_290_314_195_533_631_308_867_097_853_951;
@@ -46,9 +46,9 @@ contract P256Test is Test {
     }
 
     function testVerifyWithValidSignature() public view {
-        assertTrue(P256.verify_sig(hashValid, rValid, sValid, xValid, yValid));
+        assertTrue(P256.verify_sig(hashValid, rValid, sValid, qxValid, qyValid));
         assertTrue(
-            !P256.verify_sig(hashValid, rValid, sValid, xValid + 1, yValid)
+            !P256.verify_sig(hashValid, rValid, sValid, qxValid + 1, qyValid)
         );
     }
 
@@ -56,22 +56,27 @@ contract P256Test is Test {
         assertTrue(!P256.verify_sig(bytes32(0), 0, 0, 0, 0));
     }
 
-    function testVerifyWithOutOfBoundPublicKey() public view {
-        assertTrue(!P256.verify_sig(hashValid, rValid, sValid, p, yValid));
-        assertTrue(!P256.verify_sig(hashValid, rValid, sValid, xValid, p));
-        assertTrue(!P256.verify_sig(hashValid, rValid, sValid, p, p));
+    function testVerifyWithOutOfBoundsPublicKey() public view {
+        assertTrue(!P256.verify_sig(hashValid, rValid, sValid, 0, 1));
+        assertTrue(!P256.verify_sig(hashValid, rValid, sValid, 1, 0));
+        assertTrue(!P256.verify_sig(hashValid, rValid, sValid, 1, p));
+        assertTrue(!P256.verify_sig(hashValid, rValid, sValid, p, 1));
+        /**
+         * @dev The value `p-1` is technically in-bounds, but the point is not on the curve.
+         */
+        assertTrue(!P256.verify_sig(hashValid, rValid, sValid, p -1, 1));
     }
 
     function testVerifyWithFlippedValues() public view {
-        assertTrue(P256.verify_sig(hashValid, rValid, sValid, xValid, yValid));
-        assertTrue(!P256.verify_sig(hashValid, sValid, rValid, xValid, yValid));
-        assertTrue(!P256.verify_sig(hashValid, rValid, sValid, yValid, xValid));
-        assertTrue(!P256.verify_sig(hashValid, sValid, rValid, yValid, xValid));
+        assertTrue(P256.verify_sig(hashValid, rValid, sValid, qxValid, qyValid));
+        assertTrue(!P256.verify_sig(hashValid, sValid, rValid, qxValid, qyValid));
+        assertTrue(!P256.verify_sig(hashValid, rValid, sValid, qyValid, qxValid));
+        assertTrue(!P256.verify_sig(hashValid, sValid, rValid, qyValid, qxValid));
     }
 
     function testVerifyWithInvalidSignature() public view {
         assertTrue(
-            !P256.verify_sig(keccak256("WAGMI"), rValid, sValid, xValid, yValid)
+            !P256.verify_sig(keccak256("WAGMI"), rValid, sValid, qxValid, qyValid)
         );
     }
 
@@ -104,7 +109,7 @@ contract P256Test is Test {
     function testVerifyWithTooHighSValue() public {
         uint256 sTooHigh = sValid + _MALLEABILITY_THRESHOLD;
         vm.expectRevert(bytes("p256: invalid signature `s` value"));
-        P256.verify_sig(hashValid, rValid, sTooHigh, xValid, yValid);
+        P256.verify_sig(hashValid, rValid, sTooHigh, qxValid, qyValid);
     }
 
     function testFuzzVerifyWithValidSignature(
@@ -114,12 +119,12 @@ contract P256Test is Test {
         (, uint256 key) = makeAddrAndKey(signer);
         bytes32 hash = keccak256(abi.encode(message));
         (bytes32 r, bytes32 s) = vm.signP256(key, hash);
-        (uint256 x, uint256 y) = FCL_ecdsa_utils.ecdsa_derivKpub(key);
+        (uint256 qx, uint256 qy) = FCL_ecdsa_utils.ecdsa_derivKpub(key);
         if (uint256(s) <= _MALLEABILITY_THRESHOLD) {
-            assertTrue(P256.verify_sig(hash, uint256(r), uint256(s), x, y));
+            assertTrue(P256.verify_sig(hash, uint256(r), uint256(s), qx, qy));
         } else {
             vm.expectRevert(bytes("p256: invalid signature `s` value"));
-            P256.verify_sig(hash, uint256(r), uint256(s), x, y);
+            P256.verify_sig(hash, uint256(r), uint256(s), qx, qy);
         }
     }
 }

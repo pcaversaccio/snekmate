@@ -6,7 +6,7 @@ interface IP256 {
         bytes32 hash,
         uint256 r,
         uint256 s,
-        uint256 x,
-        uint256 y
+        uint256 qx,
+        uint256 qy
     ) external view returns (bool);
 }
