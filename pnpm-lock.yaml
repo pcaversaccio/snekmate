@@ -35,8 +35,8 @@ importers:
         specifier: ^1.3.1
         version: 1.3.1(prettier@3.2.5)
       solhint:
-        specifier: ^5.0.0
-        version: 5.0.0
+        specifier: ^5.0.1
+        version: 5.0.1
 
 packages:
   "@adraffy/ens-normalize@1.10.1":
@@ -1549,10 +1549,10 @@ packages:
       }
     engines: { node: ">=10" }
 
-  solhint@5.0.0:
+  solhint@5.0.1:
     resolution:
       {
-        integrity: sha512-pSRKkzRsruia6/xa9L5VSyd7dMZkiiTi/aYZcvUQo7KK+S16ojPwIbt2jfjbH5WEJ83grzIIE4WrYQfAxGWh/A==,
+        integrity: sha512-QeQLS9HGCnIiibt+xiOa/+MuP7BWz9N7C5+Mj9pLHshdkNhuo3AzCpWmjfWVZBUuwIUO3YyCRVIcYLR3YOKGfg==,
       }
     hasBin: true
 
@@ -2611,7 +2611,7 @@ snapshots:
       astral-regex: 2.0.0
       is-fullwidth-code-point: 3.0.0
 
-  solhint@5.0.0:
+  solhint@5.0.1:
     dependencies:
       "@solidity-parser/parser": 0.18.0
       ajv: 6.12.6
