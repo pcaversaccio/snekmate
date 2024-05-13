@@ -1,12 +1,16 @@
 # pragma version ~=0.4.0rc3
 """
-@title Elliptic Curve Digital Signature Algorithm (ECDSA) Functions
+@title Elliptic Curve Digital Signature Algorithm (ECDSA) Secp256k1-Based Functions
 @custom:contract-name ecdsa
 @license GNU Affero General Public License v3.0 only
 @author pcaversaccio
 @notice These functions can be used to verify that a message was signed by
-        the holder of the private key of a given address. The implementation
-        is inspired by OpenZeppelin's implementation here:
+        the holder of the private key of a given address. All cryptographic
+        calculations are based on the Ethereum-native secp256k1 elliptic curve
+        (see https://en.bitcoin.it/wiki/Secp256k1). For verification functions
+        based on the NIST P-256 elliptic curve (also known as secp256r1), see
+        the {p256} contract. The implementation is inspired by OpenZeppelin's
+        implementation here:
         https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/cryptography/ECDSA.sol.
 @custom:security Signatures must not be used as unique identifiers since the
                  `ecrecover` EVM precompile allows for malleable (non-unique)
@@ -17,8 +21,8 @@
 
 
 # @dev Constants used as part of the ECDSA recovery function.
-_MALLEABILITY_THRESHOLD: constant(bytes32) = 0x7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF5D576E7357A4501DDFE92F46681B20A0
-_SIGNATURE_INCREMENT: constant(bytes32) = 0x7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+_MALLEABILITY_THRESHOLD: constant(uint256) = 57_896_044_618_658_097_711_785_492_504_343_953_926_418_782_139_537_452_191_302_581_570_759_080_747_168
+_SIGNATURE_INCREMENT: constant(uint256) = 57_896_044_618_658_097_711_785_492_504_343_953_926_634_992_332_820_282_019_728_792_003_956_564_819_967
 
 
 @deploy
@@ -98,7 +102,7 @@ def _try_recover_r_vs(hash: bytes32, r: uint256, vs: uint256) -> address:
     @param vs The secp256k1 32-byte short signature field of `v` and `s`.
     @return address The recovered 20-byte signer address.
     """
-    s: uint256 = vs & convert(_SIGNATURE_INCREMENT, uint256)
+    s: uint256 = vs & _SIGNATURE_INCREMENT
     # We do not check for an overflow here since the shift operation
     # `vs >> 255` results essentially in a `uint8` type (`0` or `1`) and
     # we use `uint256` as result type.
@@ -123,7 +127,7 @@ def _try_recover_vrs(hash: bytes32, v: uint256, r: uint256, s: uint256) -> addre
     @param s The secp256k1 32-byte signature parameter `s`.
     @return address The recovered 20-byte signer address.
     """
-    assert s <= convert(_MALLEABILITY_THRESHOLD, uint256), "ecdsa: invalid signature `s` value"
+    assert s <= _MALLEABILITY_THRESHOLD, "ecdsa: invalid signature `s` value"
 
     signer: address = ecrecover(hash, v, r, s)
     assert signer != empty(address), "ecdsa: invalid signature"

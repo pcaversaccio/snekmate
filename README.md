@@ -62,7 +62,8 @@ src
         ├── batch_distributor — "Batch Sending Both Native and ERC-20 Tokens"
         ├── create_address — "`CREATE` EVM Opcode Utility Function for Address Calculation"
         ├── create2_address — "`CREATE2` EVM Opcode Utility Functions for Address Calculations"
-        ├── ecdsa — "Elliptic Curve Digital Signature Algorithm (ECDSA) Functions"
+        ├── ecdsa — "Elliptic Curve Digital Signature Algorithm (ECDSA) Secp256k1-Based Functions"
+        ├── p256 — "Elliptic Curve Digital Signature Algorithm (ECDSA) Secp256r1-Based Functions"
         ├── message_hash_utils — "Signature Message Hash Utility Functions"
         ├── signature_checker — "ECDSA and EIP-1271 Signature Verification Functions"
         ├── eip712_domain_separator — "EIP-712 Domain Separator"
@@ -78,6 +79,7 @@ src
             ├── create_address_mock — "`create_address` Module Reference Implementation"
             ├── create2_address_mock — "`create2_address` Module Reference Implementation"
             ├── ecdsa_mock — "`ecdsa` Module Reference Implementation"
+            ├── p256_mock — "`p256` Module Reference Implementation"
             ├── message_hash_utils_mock — "`message_hash_utils` Module Reference Implementation"
             ├── signature_checker_mock — "`signature_checker` Module Reference Implementation"
             ├── eip712_domain_separator_mock — "`eip712_domain_separator` Module Reference Implementation"
@@ -160,6 +162,7 @@ This repository contains [Foundry](https://github.com/foundry-rs/foundry)-based 
 | `create_address`            |       ✅       |            ✅            |         ❌          |
 | `create2_address`           |       ✅       |            ✅            |         ❌          |
 | `ecdsa`                     |       ✅       |            ✅            |         ❌          |
+| `p256`                      |       ✅       |            ✅            |         ❌          |
 | `message_hash_utils`        |       ✅       |            ✅            |         ❌          |
 | `signature_checker`         |       ✅       |            ✅            |         ❌          |
 | `eip712_domain_separator`   |       ✅       |            ✅            |         ❌          |

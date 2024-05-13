@@ -22,6 +22,7 @@ module.exports = [
       "lib/properties/**",
       "lib/create-util/**",
       "lib/erc4626-tests/**",
+      "lib/FreshCryptoLib/**",
       "lib/halmos-cheatcodes/**",
       "lib/solidity-bytes-utils/**",
       "lib/openzeppelin-contracts/**",

@@ -2,7 +2,7 @@
 
 ## [`0.1.0`](https://github.com/pcaversaccio/snekmate/releases/tag/v0.1.0) (Unreleased)
 
-### ♻️ Refactoring
+### 💥 New Features
 
 - **Authentication**
   - [`ownable`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/auth/ownable.vy): Make `ownable` module-friendly. ([#218](https://github.com/pcaversaccio/snekmate/pull/218))
@@ -23,6 +23,7 @@
   - [`create_address`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/utils/create_address.vy): Make `create_address` module-friendly. ([#224](https://github.com/pcaversaccio/snekmate/pull/224))
   - [`create2_address`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/utils/create2_address.vy): Make `create2_address` module-friendly. ([#225](https://github.com/pcaversaccio/snekmate/pull/225))
   - [`ecdsa`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/utils/ecdsa.vy): Make `ecdsa` module-friendly. ([#227](https://github.com/pcaversaccio/snekmate/pull/227))
+  - [`p256`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/utils/p256.vy): Add NIST P-256 (a.k.a. secp256r1) ECDSA verification function. ([#243](https://github.com/pcaversaccio/snekmate/pull/243))
   - [`message_hash_utils`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/utils/message_hash_utils.vy): Move the `ecdsa` message hash methods to a separate `message_hash_utils` library module. ([#227](https://github.com/pcaversaccio/snekmate/pull/227))
   - [`signature_checker`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/utils/signature_checker.vy): Make `signature_checker` module-friendly. ([#228](https://github.com/pcaversaccio/snekmate/pull/228))
   - [`eip712_domain_separator`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/utils/eip712_domain_separator.vy): Make `eip712_domain_separator` module-friendly. ([#229](https://github.com/pcaversaccio/snekmate/pull/229))

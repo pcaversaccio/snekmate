@@ -23,6 +23,9 @@ error InvalidSignatureSValue(address emitter);
 contract ECDSATest is Test {
     using BytesLib for bytes;
 
+    uint256 private constant _MALLEABILITY_THRESHOLD =
+        57_896_044_618_658_097_711_785_492_504_343_953_926_418_782_139_537_452_191_302_581_570_759_080_747_168;
+
     VyperDeployer private vyperDeployer = new VyperDeployer();
 
     // solhint-disable-next-line var-name-mixedcase
@@ -223,8 +226,7 @@ contract ECDSATest is Test {
         (, uint256 key) = makeAddrAndKey("alice");
         bytes32 hash = keccak256("WAGMI");
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(key, hash);
-        uint256 sTooHigh = uint256(s) +
-            0x7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF5D576E7357A4501DDFE92F46681B20A0;
+        uint256 sTooHigh = uint256(s) + _MALLEABILITY_THRESHOLD;
         bytes memory signature = abi.encodePacked(r, bytes32(sTooHigh), v);
         vm.expectRevert(bytes("ecdsa: invalid signature `s` value"));
         ECDSA.recover_sig(hash, signature);
