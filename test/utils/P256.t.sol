@@ -46,7 +46,9 @@ contract P256Test is Test {
     }
 
     function testVerifyWithValidSignature() public view {
-        assertTrue(P256.verify_sig(hashValid, rValid, sValid, qxValid, qyValid));
+        assertTrue(
+            P256.verify_sig(hashValid, rValid, sValid, qxValid, qyValid)
+        );
         assertTrue(
             !P256.verify_sig(hashValid, rValid, sValid, qxValid + 1, qyValid)
         );
@@ -64,19 +66,33 @@ contract P256Test is Test {
         /**
          * @dev The value `p-1` is technically in-bounds, but the point is not on the curve.
          */
-        assertTrue(!P256.verify_sig(hashValid, rValid, sValid, p -1, 1));
+        assertTrue(!P256.verify_sig(hashValid, rValid, sValid, p - 1, 1));
     }
 
     function testVerifyWithFlippedValues() public view {
-        assertTrue(P256.verify_sig(hashValid, rValid, sValid, qxValid, qyValid));
-        assertTrue(!P256.verify_sig(hashValid, sValid, rValid, qxValid, qyValid));
-        assertTrue(!P256.verify_sig(hashValid, rValid, sValid, qyValid, qxValid));
-        assertTrue(!P256.verify_sig(hashValid, sValid, rValid, qyValid, qxValid));
+        assertTrue(
+            P256.verify_sig(hashValid, rValid, sValid, qxValid, qyValid)
+        );
+        assertTrue(
+            !P256.verify_sig(hashValid, sValid, rValid, qxValid, qyValid)
+        );
+        assertTrue(
+            !P256.verify_sig(hashValid, rValid, sValid, qyValid, qxValid)
+        );
+        assertTrue(
+            !P256.verify_sig(hashValid, sValid, rValid, qyValid, qxValid)
+        );
     }
 
     function testVerifyWithInvalidSignature() public view {
         assertTrue(
-            !P256.verify_sig(keccak256("WAGMI"), rValid, sValid, qxValid, qyValid)
+            !P256.verify_sig(
+                keccak256("WAGMI"),
+                rValid,
+                sValid,
+                qxValid,
+                qyValid
+            )
         );
     }
 
