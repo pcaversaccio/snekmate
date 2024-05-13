@@ -6,12 +6,13 @@
 @author pcaversaccio
 @notice Signature verification helper functions that can be used
         instead of {ecdsa-_recover_sig} to seamlessly support both
-        ECDSA signatures from externally-owned accounts (EOAs) as
-        well as EIP-1271 (https://eips.ethereum.org/EIPS/eip-1271)
-        signatures from smart contract wallets like Argent and Safe.
-        For strict EIP-1271 verification, i.e. only valid EIP-1271
-        signatures are verified, the function `_is_valid_ERC1271_signature_now`
-        can be called. The implementation is inspired by OpenZeppelin's
+        ECDSA secp256k1-based (see https://en.bitcoin.it/wiki/Secp256k1)
+        signatures from externally-owned accounts (EOAs) as well as
+        EIP-1271 (https://eips.ethereum.org/EIPS/eip-1271) signatures
+        from smart contract wallets like Argent and Safe. For strict
+        EIP-1271 verification, i.e. only valid EIP-1271 signatures are
+        verified, the function `_is_valid_ERC1271_signature_now` can
+        be called. The implementation is inspired by OpenZeppelin's
         implementation here:
         https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/cryptography/SignatureChecker.sol.
 @custom:security Signatures must not be used as unique identifiers since the
@@ -105,6 +106,6 @@ def _is_valid_ERC1271_signature_now(signer: address, hash: bytes32, signature: B
     # it is important to note that an external call via `raw_call`
     # does not perform an external code size check on the target
     # address.
-    success, return_data = \
+    success, return_data =\
         raw_call(signer, _abi_encode(hash, signature, method_id=IERC1271_ISVALIDSIGNATURE_SELECTOR), max_outsize=32, is_static_call=True, revert_on_failure=False)
     return ((success) and (len(return_data) == 32) and (convert(return_data, bytes32) == convert(IERC1271_ISVALIDSIGNATURE_SELECTOR, bytes32)))
