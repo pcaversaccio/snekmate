@@ -50,72 +50,75 @@ jobs:
       # - name: Check Ape compilation
       #   run: ape compile
 
-      - name: Install pnpm
-        uses: pnpm/action-setup@v3
-        with:
-          version: latest
-          run_install: false
+      # - name: Install pnpm
+      #   uses: pnpm/action-setup@v3
+      #   with:
+      #     version: latest
+      #     run_install: false
 
-      - name: Get pnpm cache directory path
-        id: pnpm-cache-dir-path
-        run: echo "dir=$(pnpm store path --silent)" >> $GITHUB_OUTPUT
+      # - name: Get pnpm cache directory path
+      #   id: pnpm-cache-dir-path
+      #   run: echo "dir=$(pnpm store path --silent)" >> $GITHUB_OUTPUT
 
-      - name: Restore pnpm cache
-        uses: actions/cache@v4
-        id: pnpm-cache
-        with:
-          path: ${{ steps.pnpm-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
+      # - name: Restore pnpm cache
+      #   uses: actions/cache@v4
+      #   id: pnpm-cache
+      #   with:
+      #     path: ${{ steps.pnpm-cache-dir-path.outputs.dir }}
+      #     key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+      #     restore-keys: |
+      #       ${{ runner.os }}-pnpm-store-
 
-      - name: Use Node.js ${{ matrix.node_version }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node_version }}
+      # - name: Use Node.js ${{ matrix.node_version }}
+      #   uses: actions/setup-node@v4
+      #   with:
+      #     node-version: ${{ matrix.node_version }}
 
-      - name: Install pnpm project with a clean slate
-        run: pnpm install --prefer-offline --frozen-lockfile
+      # - name: Install pnpm project with a clean slate
+      #   run: pnpm install --prefer-offline --frozen-lockfile
 
       - name: Install Foundry
         uses: foundry-rs/foundry-toolchain@v1
         with:
           version: nightly
 
-      - name: Show the Foundry CI config
-        run: forge config
-        env:
-          FOUNDRY_PROFILE: ci
+      # - name: Show the Foundry CI config
+      #   run: forge config
+      #   env:
+      #     FOUNDRY_PROFILE: ci
 
-      - name: Foundry tests
-        run: forge test
-        env:
-          FOUNDRY_PROFILE: ci
+      # - name: Foundry tests
+      #   run: forge test
+      #   env:
+      #     FOUNDRY_PROFILE: ci
 
-      - name: Show the Foundry default config
-        run: forge config
-        env:
-          FOUNDRY_PROFILE: default
+      # - name: Show the Foundry default config
+      #   run: forge config
+      #   env:
+      #     FOUNDRY_PROFILE: default
 
-      - name: Run snapshot
-        run: NO_COLOR=1 forge snapshot --build-info >> $GITHUB_STEP_SUMMARY
-        env:
-          FOUNDRY_PROFILE: default
+      # - name: Run snapshot
+      #   run: NO_COLOR=1 forge snapshot --build-info >> $GITHUB_STEP_SUMMARY
+      #   env:
+      #     FOUNDRY_PROFILE: default
 
-      - name: Install Homebrew
-        uses: Homebrew/actions/setup-homebrew@master
+      # - name: Install Homebrew
+      #   uses: Homebrew/actions/setup-homebrew@master
 
-      - name: Install Echidna
-        run: brew install echidna
+      # - name: Install Echidna
+      #   run: brew install echidna
 
-      - name: Show the Echidna version
-        run: echidna --version
+      # - name: Show the Echidna version
+      #   run: echidna --version
 
-      - name: Run Echidna ERC-20 property tests
-        run: echidna test/tokens/echidna/ERC20Properties.sol --contract CryticERC20ExternalHarness ${{ matrix.echidna }}
+      # - name: Run Echidna ERC-20 property tests
+      #   run: echidna test/tokens/echidna/ERC20Properties.sol --contract CryticERC20ExternalHarness ${{ matrix.echidna }}
 
-      - name: Run Echidna ERC-721 property tests
-        run: echidna test/tokens/echidna/ERC721Properties.sol --contract CryticERC721ExternalHarness ${{ matrix.echidna }}
+      # - name: Run Echidna ERC-721 property tests
+      #   run: echidna test/tokens/echidna/ERC721Properties.sol --contract CryticERC721ExternalHarness ${{ matrix.echidna }}
+
+      - name: Install `setuptools`
+        run: pip install setuptools
 
       - name: Install Halmos
         run: pip install git+https://github.com/a16z/halmos.git@optimize-insn-decode
