@@ -15,11 +15,9 @@ Please:
 - [ ] Because this PR includes a **new feature**, the change was previously discussed in an [issue](https://github.com/pcaversaccio/snekmate/issues) or in the [discussions](https://github.com/pcaversaccio/snekmate/discussions) section.
 - [x] I didn't do anything of this.
 
----
+### 🕓 Changelog
 
 <!-- Add a description of your PR here -->
-
----
 
 #### 🐶 Cute Animal Picture
 
