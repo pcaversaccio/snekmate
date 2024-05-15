@@ -96,9 +96,8 @@ def __init__(name_: String[25], symbol_: String[5], decimals_: uint8, initial_su
     erc20.__init__(name_, symbol_, decimals_, name_eip712_, version_eip712_)
 
     # The following line premints an initial token
-    # supply to the `msg.sender`, which takes the
-    # underlying `decimals` value into account.
-    erc20._mint(msg.sender, initial_supply_ * 10 ** convert(decimals_, uint256))
+    # supply to the `msg.sender`.
+    erc20._mint(msg.sender, initial_supply_)
 
     # We assign the initial token supply required by
     # the Echidna external harness contract.
