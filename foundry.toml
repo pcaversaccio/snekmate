@@ -22,3 +22,8 @@ force = true                                                # always perform a c
 fuzz = { runs = 10_000, max_test_rejects = 350_000 }        # increase the number of fuzz runs and maximum number of combined inputs that may be rejected for the tests
 invariant = { runs = 5_000 }                                # increase the number of runs that must execute for each invariant test group
 verbosity = 4                                               # increase the verbosity of tests
+
+## default overrides for the Echidna tests
+[profile.echidna]
+force = true                                                # always perform a clean build
+evm_version = 'shanghai'                                    # set the EVM target version to `shanghai`

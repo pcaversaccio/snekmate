@@ -94,7 +94,7 @@ jobs:
           FOUNDRY_PROFILE: default
 
       - name: Run snapshot
-        run: NO_COLOR=1 forge snapshot --build-info >> $GITHUB_STEP_SUMMARY
+        run: NO_COLOR=1 forge snapshot >> $GITHUB_STEP_SUMMARY
         env:
           FOUNDRY_PROFILE: default
 
@@ -106,6 +106,16 @@ jobs:
 
       - name: Show the Echidna version
         run: echidna --version
+
+      - name: Show the Foundry Echidna config
+        run: forge config
+        env:
+          FOUNDRY_PROFILE: echidna
+
+      - name: Compile the Echidna test contracts
+        run: forge build --build-info
+        env:
+          FOUNDRY_PROFILE: echidna
 
       - name: Run Echidna ERC-20 property tests
         run: |

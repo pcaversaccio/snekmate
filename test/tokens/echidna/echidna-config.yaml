@@ -14,4 +14,3 @@ filterFunctions: # Configure the list of methods to filter.
     "VyperDeployer.deployContract(string,string,bytes,string,bool)",
   ]
 filterBlacklist: true # Blacklist methods in `filterFunctions`.
-

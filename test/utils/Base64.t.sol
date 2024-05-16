@@ -204,8 +204,8 @@ contract Base64Test is PRBTest {
             outputUrl[1],
             outputUrl[2],
             outputUrl[3],
-            outputStd[4],
-            outputStd[5]
+            outputUrl[4],
+            outputUrl[5]
         );
         /**
          * @dev We remove the two trailing zero bytes that stem from
