@@ -4,4 +4,4 @@ default_ecosystem: ethereum
 plugins:
   - name: vyper
 vyper:
-  evm_version: shanghai
+  evm_version: cancun

@@ -1,4 +1,4 @@
-# pragma version ~=0.4.0rc4
+# pragma version ~=0.4.0rc5
 """
 @title `timelock_controller` Module Reference Implementation
 @custom:contract-name timelock_controller_mock

@@ -1,4 +1,4 @@
-# pragma version ~=0.4.0rc4
+# pragma version ~=0.4.0rc5
 """
 @title `message_hash_utils` Module Reference Implementation
 @custom:contract-name message_hash_utils_mock

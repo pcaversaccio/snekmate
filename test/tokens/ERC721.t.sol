@@ -1482,7 +1482,7 @@ contract ERC721Test is Test {
          */
         vm.store(
             ERC721ExtendedAddr,
-            bytes32(uint256(18_446_744_073_709_551_628)),
+            bytes32(uint256(18_446_744_073_709_551_627)),
             bytes32(0)
         );
         vm.expectRevert(bytes("erc721: token already minted"));
@@ -1590,7 +1590,7 @@ contract ERC721Test is Test {
          */
         vm.store(
             ERC721ExtendedAddr,
-            bytes32(uint256(18_446_744_073_709_551_628)),
+            bytes32(uint256(18_446_744_073_709_551_627)),
             bytes32(type(uint256).max)
         );
         vm.prank(deployer);
