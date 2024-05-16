@@ -1,4 +1,4 @@
-# pragma version ~=0.4.0rc3
+# pragma version ~=0.4.0rc4
 """
 @title `math` Module Reference Implementation
 @custom:contract-name math_mock
