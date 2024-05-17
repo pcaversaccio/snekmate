@@ -187,8 +187,8 @@ contract Base64Test is PRBTest {
     }
 
     function testDecodeSentence() public {
-        string memory text = "Snakes are great animals!";
-        string memory data = "U25ha2VzIGFyZSBncmVhdCBhbmltYWxzIQ==";
+        string memory text = "Long Live Vyper!";
+        string memory data = "TG9uZyBMaXZlIFZ5cGVyIQ==";
         bytes[] memory outputStd = base64.decode(data, false);
         bytes[] memory outputUrl = base64.decode(data, true);
         bytes memory returnDataStd = bytes.concat(
@@ -197,10 +197,7 @@ contract Base64Test is PRBTest {
             outputStd[2],
             outputStd[3],
             outputStd[4],
-            outputStd[5],
-            outputStd[6],
-            outputStd[7],
-            outputStd[8]
+            outputStd[5]
         );
         bytes memory returnDataUrl = bytes.concat(
             outputUrl[0],
@@ -208,10 +205,7 @@ contract Base64Test is PRBTest {
             outputUrl[2],
             outputUrl[3],
             outputUrl[4],
-            outputUrl[5],
-            outputUrl[6],
-            outputUrl[7],
-            outputUrl[8]
+            outputUrl[5]
         );
         /**
          * @dev We remove the two trailing zero bytes that stem from

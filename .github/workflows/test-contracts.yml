@@ -94,7 +94,7 @@ jobs:
           FOUNDRY_PROFILE: default
 
       - name: Run snapshot
-        run: NO_COLOR=1 forge snapshot --build-info >> $GITHUB_STEP_SUMMARY
+        run: NO_COLOR=1 forge snapshot >> $GITHUB_STEP_SUMMARY
         env:
           FOUNDRY_PROFILE: default
 
@@ -107,10 +107,24 @@ jobs:
       - name: Show the Echidna version
         run: echidna --version
 
+      - name: Show the Foundry Echidna config
+        run: forge config
+        env:
+          FOUNDRY_PROFILE: echidna
+
+      - name: Compile the Echidna test contracts
+        run: forge build --build-info
+        env:
+          FOUNDRY_PROFILE: echidna
+
       - name: Run Echidna ERC-20 property tests
         run: |
-          echidna test/tokens/echidna/ERC20Properties.sol --contract CryticERC20ExternalHarness --config test/tokens/echidna/echidna-config.yaml --crytic-args --ignore-compile
+          echidna test/tokens/echidna/ERC20Properties.sol --contract CryticERC20ExternalHarness --config test/tokens/echidna/echidna-config.yaml
+        env:
+          FOUNDRY_PROFILE: echidna
 
       - name: Run Echidna ERC-721 property tests
         run: |
-          echidna test/tokens/echidna/ERC721Properties.sol --contract CryticERC721ExternalHarness --config test/tokens/echidna/echidna-config.yaml --crytic-args --ignore-compile
+          echidna test/tokens/echidna/ERC721Properties.sol --contract CryticERC721ExternalHarness --config test/tokens/echidna/echidna-config.yaml
+        env:
+          FOUNDRY_PROFILE: echidna

@@ -1,4 +1,4 @@
-# pragma version ~=0.4.0rc4
+# pragma version ~=0.4.0rc5
 """
 @title `merkle_proof_verification` Module Reference Implementation
 @custom:contract-name merkle_proof_verification_mock
