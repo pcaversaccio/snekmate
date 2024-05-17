@@ -68,7 +68,7 @@ interface ITimelockController is
 
     /**
      * @dev As Flags (a.k.a. Enums) are handled differently in Vyper and Solidity
-     * (see https://twitter.com/pcaversaccio/status/1626514029094047747), we directly
+     * (see https://x.com/pcaversaccio/status/1626514029094047747), we directly
      * return the underlying Vyper type `uint256` (instead of `OperationState`) for
      * Flags for ease of testing.
      */

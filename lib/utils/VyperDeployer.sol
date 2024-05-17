@@ -175,7 +175,7 @@ contract VyperDeployer is Create {
      * @param fileName The file name of the Vyper contract.
      * For example, the file name for "ECDSA.vy" is "ECDSA".
      * @param evmVersion The EVM version used for compilation.
-     * For example, the EVM version for the Paris hard fork is "paris".
+     * For example, the EVM version for the Cancun-Deneb hard fork is "cancun".
      * You can retrieve all available Vyper EVM versions by invoking `vyper -h`.
      * @return deployedAddress The address that the contract was deployed to.
      */
@@ -240,7 +240,7 @@ contract VyperDeployer is Create {
      * For example, the file name for "ECDSA.vy" is "ECDSA".
      * @param args The ABI-encoded constructor arguments.
      * @param evmVersion The EVM version used for compilation.
-     * For example, the EVM version for the Paris hard fork is "paris".
+     * For example, the EVM version for the Cancun-Deneb hard fork is "cancun".
      * You can retrieve all available Vyper EVM versions by invoking `vyper -h`.
      * @return deployedAddress The address that the contract was deployed to.
      */
