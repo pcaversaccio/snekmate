@@ -153,7 +153,7 @@ _DYNARRAY_BOUND: constant(uint8) = max_value(uint8)
 # `uint8`) in the form `2**n`, where `n` is the index of
 # the member in the range `0 <= n <= 255` (i.e. the first
 # index value is `1`). For further insights also, see
-# the following Twitter thread:
+# the following X thread:
 # https://x.com/pcaversaccio/status/1626514029094047747.
 flag OperationState:
     UNSET
