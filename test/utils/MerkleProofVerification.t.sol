@@ -448,7 +448,7 @@ contract MerkleProofVerificationTest is Test {
      * Note that 🐍 snekmate's implementation is not vulnerable by design,
      * as you cannot consume the out-of-bound `hashes` in Vyper. For further
      * insights also, see the following Twitter thread:
-     * https://twitter.com/0xDACA/status/1669846430528286722.
+     * https://x.com/0xDACA/status/1669846430528286722.
      */
     function testMaliciousMultiProofVerify() public {
         /**

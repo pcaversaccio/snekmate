@@ -154,7 +154,7 @@ _DYNARRAY_BOUND: constant(uint8) = max_value(uint8)
 # the member in the range `0 <= n <= 255` (i.e. the first
 # index value is `1`). For further insights also, see
 # the following Twitter thread:
-# https://twitter.com/pcaversaccio/status/1626514029094047747.
+# https://x.com/pcaversaccio/status/1626514029094047747.
 flag OperationState:
     UNSET
     WAITING
