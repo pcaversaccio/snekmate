@@ -119,8 +119,12 @@ jobs:
 
       - name: Run Echidna ERC-20 property tests
         run: |
-          echidna test/tokens/echidna/ERC20Properties.sol --contract CryticERC20ExternalHarness --config test/tokens/echidna/echidna-config.yaml --crytic-args --ignore-compile
+          echidna test/tokens/echidna/ERC20Properties.sol --contract CryticERC20ExternalHarness --config test/tokens/echidna/echidna-config.yaml
+        env:
+          FOUNDRY_PROFILE: echidna
 
       - name: Run Echidna ERC-721 property tests
         run: |
-          echidna test/tokens/echidna/ERC721Properties.sol --contract CryticERC721ExternalHarness --config test/tokens/echidna/echidna-config.yaml --crytic-args --ignore-compile
+          echidna test/tokens/echidna/ERC721Properties.sol --contract CryticERC721ExternalHarness --config test/tokens/echidna/echidna-config.yaml
+        env:
+          FOUNDRY_PROFILE: echidna

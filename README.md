@@ -176,10 +176,10 @@ Furthermore, the [`echidna`](https://github.com/crytic/echidna)-based [property]
 
 ```console
 # Run Echidna ERC-20 property tests.
-~$ echidna test/tokens/echidna/ERC20Properties.sol --contract CryticERC20ExternalHarness --config test/tokens/echidna/echidna-config.yaml --crytic-args --ignore-compile
+~$ FOUNDRY_PROFILE=echidna echidna test/tokens/echidna/ERC20Properties.sol --contract CryticERC20ExternalHarness --config test/tokens/echidna/echidna-config.yaml
 
 # Run Echidna ERC-721 property tests.
-~$ echidna test/tokens/echidna/ERC721Properties.sol --contract CryticERC721ExternalHarness --config test/tokens/echidna/echidna-config.yaml --crytic-args --ignore-compile
+~$ FOUNDRY_PROFILE=echidna echidna test/tokens/echidna/ERC721Properties.sol --contract CryticERC721ExternalHarness --config test/tokens/echidna/echidna-config.yaml
 ```
 
 > [!TIP]
