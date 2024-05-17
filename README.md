@@ -186,16 +186,16 @@ Eventually, the [`halmos`](https://github.com/a16z/halmos)-based symbolic tests 
 
 ```console
 # Run Halmos ERC-20 symbolic tests.
-~$ halmos --contract ERC20TestHalmos --function testHalmos --storage-layout generic --ffi
+~$ FOUNDRY_PROFILE=halmos halmos --contract ERC20TestHalmos --function testHalmos --storage-layout generic --ffi
 
 # Run Halmos ERC-721 symbolic tests.
-~$ halmos --contract ERC721TestHalmos --function testHalmos --storage-layout generic --ffi
+~$ FOUNDRY_PROFILE=halmos halmos --contract ERC721TestHalmos --function testHalmos --storage-layout generic --ffi
 
 # Run Halmos ERC-1155 symbolic tests.
-~$ halmos --contract ERC1155TestHalmos --function testHalmos --storage-layout generic --ffi
+~$ FOUNDRY_PROFILE=halmos halmos --contract ERC1155TestHalmos --function testHalmos --storage-layout generic --ffi
 
 # Run Halmos math symbolic tests.
-~$ halmos --contract MathTestHalmos --function testHalmos --storage-layout generic --ffi
+~$ FOUNDRY_PROFILE=halmos halmos --contract MathTestHalmos --function testHalmos --storage-layout generic --ffi
 ```
 
 > [!TIP]

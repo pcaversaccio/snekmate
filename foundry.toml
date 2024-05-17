@@ -27,3 +27,8 @@ verbosity = 4                                               # increase the verbo
 [profile.echidna]
 force = true                                                # always perform a clean build
 evm_version = 'shanghai'                                    # set the EVM target version to `shanghai`
+
+## default overrides for the Halmos tests
+[profile.halmos]
+force = true                                                # always perform a clean build
+evm_version = 'shanghai'                                    # set the EVM target version to `shanghai`
