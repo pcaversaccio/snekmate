@@ -122,7 +122,7 @@ def _multicall_value(data: DynArray[BatchValue, _DYNARRAY_BOUND]) -> DynArray[Re
         # this function, you must ensure that the next line uses checked arithmetic!
         # Please read the contract-level security notice carefully. For further
         # insights also, see the following Twitter thread:
-        # https://twitter.com/Guhu95/status/1736983530343981307.
+        # https://x.com/Guhu95/status/1736983530343981307.
         value_accumulator = unsafe_add(value_accumulator, msg_value)
         if (batch.allow_failure == False):
             return_data = raw_call(batch.target, batch.calldata, max_outsize=255, value=msg_value)

@@ -1369,10 +1369,10 @@ packages:
       }
     engines: { node: ">=8" }
 
-  picocolors@1.0.0:
+  picocolors@1.0.1:
     resolution:
       {
-        integrity: sha512-1fygroTLlHu66zi26VoTDv8yRgm0Fccecssto+MhsZ0D/DGW2sm8E8AjW7NU5VVTRt5GxbeZ5qBuJr+HyLYkjQ==,
+        integrity: sha512-anP1Z8qwhkbmu7MFP5iTt+wQKXgwzf7zTyGlcdzabySa9vd0Xt392U0rVmz9poOaBj0uHJKyyo9/upk0HrEQew==,
       }
 
   pluralize@8.0.0:
@@ -1724,7 +1724,7 @@ snapshots:
   "@babel/code-frame@7.24.2":
     dependencies:
       "@babel/highlight": 7.24.5
-      picocolors: 1.0.0
+      picocolors: 1.0.1
 
   "@babel/helper-validator-identifier@7.24.5": {}
 
@@ -1733,7 +1733,7 @@ snapshots:
       "@babel/helper-validator-identifier": 7.24.5
       chalk: 2.4.2
       js-tokens: 4.0.0
-      picocolors: 1.0.0
+      picocolors: 1.0.1
 
   "@eslint-community/eslint-utils@4.4.0(eslint@9.2.0)":
     dependencies:
@@ -2528,7 +2528,7 @@ snapshots:
 
   path-type@4.0.0: {}
 
-  picocolors@1.0.0: {}
+  picocolors@1.0.1: {}
 
   pluralize@8.0.0: {}
 
