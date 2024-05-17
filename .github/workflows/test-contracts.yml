@@ -20,7 +20,7 @@ jobs:
         node_version:
           - 20
         echidna:
-          - "--config test/tokens/echidna/echidna-config.yaml --crytic-args --ignore-compile"
+          - "--config test/tokens/echidna/echidna-config.yaml"
         halmos:
           - "--function testHalmos --storage-layout generic --solver-parallel --test-parallel --early-exit --ffi --statistics -vvv"
 
@@ -98,7 +98,7 @@ jobs:
       #     FOUNDRY_PROFILE: default
 
       # - name: Run snapshot
-      #   run: NO_COLOR=1 forge snapshot --build-info >> $GITHUB_STEP_SUMMARY
+      #   run: NO_COLOR=1 forge snapshot >> $GITHUB_STEP_SUMMARY
       #   env:
       #     FOUNDRY_PROFILE: default
 
@@ -111,11 +111,25 @@ jobs:
       # - name: Show the Echidna version
       #   run: echidna --version
 
+      # - name: Show the Foundry Echidna config
+      #   run: forge config
+      #   env:
+      #     FOUNDRY_PROFILE: echidna
+
+      # - name: Compile the Echidna test contracts
+      #   run: forge build --build-info
+      #   env:
+      #     FOUNDRY_PROFILE: echidna
+
       # - name: Run Echidna ERC-20 property tests
       #   run: echidna test/tokens/echidna/ERC20Properties.sol --contract CryticERC20ExternalHarness ${{ matrix.echidna }}
+      #   env:
+      #     FOUNDRY_PROFILE: echidna
 
       # - name: Run Echidna ERC-721 property tests
-      #   run: echidna test/tokens/echidna/ERC721Properties.sol --contract CryticERC721ExternalHarness ${{ matrix.echidna }}
+      #   run: run: echidna test/tokens/echidna/ERC721Properties.sol --contract CryticERC721ExternalHarness ${{ matrix.echidna }}
+      #   env:
+      #     FOUNDRY_PROFILE: echidna
 
       - name: Install `setuptools`
         run: pip install setuptools

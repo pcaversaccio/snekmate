@@ -1,4 +1,4 @@
-# pragma version ~=0.4.0rc4
+# pragma version ~=0.4.0rc5
 """
 @title Multicall Functions
 @custom:contract-name multicall
@@ -121,8 +121,8 @@ def _multicall_value(data: DynArray[BatchValue, _DYNARRAY_BOUND]) -> DynArray[Re
         # WARNING: If you expect to hold any funds in a contract that integrates
         # this function, you must ensure that the next line uses checked arithmetic!
         # Please read the contract-level security notice carefully. For further
-        # insights also, see the following Twitter thread:
-        # https://twitter.com/Guhu95/status/1736983530343981307.
+        # insights also, see the following X thread:
+        # https://x.com/Guhu95/status/1736983530343981307.
         value_accumulator = unsafe_add(value_accumulator, msg_value)
         if (batch.allow_failure == False):
             return_data = raw_call(batch.target, batch.calldata, max_outsize=255, value=msg_value)

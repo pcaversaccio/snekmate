@@ -50,6 +50,14 @@
 
 - The file names of 🐍 snekmate module and mock contracts use the _snake case_ notation (e.g. `my_module.vy` or `my_module_mock.vy`), whilst the Vyper interface files `.vyi` use the _Pascal case_ notation prefixed with `I` (e.g. `IMyInterface.vyi`). ([#242](https://github.com/pcaversaccio/snekmate/pull/242))
 - The mathematical utility functions `_log_2`, `_log_10`, and `_log_256` are renamed to `_log2`, `_log10`, and `_log256`. ([#242](https://github.com/pcaversaccio/snekmate/pull/242))
+- All 🐍 snekmate contracts now target the new Vyper [default EVM version](https://github.com/vyperlang/vyper/pull/4029) `cancun` ([#245](https://github.com/pcaversaccio/snekmate/pull/245)). If you intend to deploy on an EVM chain with no `cancun` support, you must compile — using the `shanghai` EVM version as an example — the main contract that uses the 🐍 snekmate module contracts with the `--evm-version shanghai` option; e.g. `vyper --evm-version shanghai src/snekmate/tokens/mocks/erc20_mock.vy`, or add the `# pragma evm-version shanghai` directive to the main contract that uses the 🐍 snekmate module contracts:
+
+```vyper
+# pragma version ~=0.4.0
+# pragma evm-version shanghai
+
+...
+```
 
 ### 👀 Full Changelog
 
