@@ -140,6 +140,11 @@ jobs:
       - name: Show the Halmos version
         run: halmos --version
 
+      - name: Show the Foundry Halmos config
+        run: forge config
+        env:
+          FOUNDRY_PROFILE: halmos
+
       - name: Run Halmos ERC-20 symbolic tests
         run: halmos --contract ERC20TestHalmos ${{ matrix.halmos }}
         env:

@@ -45,7 +45,9 @@ contract ERC20TestHalmos is Test, SymTest {
         /**
          * @dev Halmos does not currently work with the latest Vyper jump-table-based
          * dispatchers: https://github.com/a16z/halmos/issues/253. For Halmos-based tests,
-         * we therefore disable the optimiser.
+         * we therefore disable the optimiser. Furthermore, Halmos does not currently
+         * work with the EVM version `cancun`: https://github.com/a16z/halmos/issues/290.
+         * For Halmos-based tests, we therefore use the EVM version `shanghai`.
          */
         erc20 = IERC20(
             vyperDeployer.deployContract(

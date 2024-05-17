@@ -29,11 +29,20 @@ contract ERC1155TestHalmos is Test, SymTest {
 
     function setUp() public {
         bytes memory args = abi.encode(_BASE_URI);
+        /**
+         * @dev Halmos does not currently work with the latest Vyper jump-table-based
+         * dispatchers: https://github.com/a16z/halmos/issues/253. For Halmos-based tests,
+         * we therefore disable the optimiser. Furthermore, Halmos does not currently
+         * work with the EVM version `cancun`: https://github.com/a16z/halmos/issues/290.
+         * For Halmos-based tests, we therefore use the EVM version `shanghai`.
+         */
         erc1155 = IERC1155(
             vyperDeployer.deployContract(
                 "src/snekmate/tokens/mocks/",
                 "erc1155_mock",
-                args
+                args,
+                "shanghai",
+                "none"
             )
         );
 
