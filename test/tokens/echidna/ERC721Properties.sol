@@ -42,7 +42,7 @@ contract CryticERC721ExternalHarness is
                 "erc721_mock",
                 args,
                 "shanghai",
-                true
+                "gas"
             )
         );
         mockSafeReceiver = new MockReceiver(true);
