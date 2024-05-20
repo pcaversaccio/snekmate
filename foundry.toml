@@ -11,7 +11,7 @@ fuzz = { runs = 256 }                                       # the number of fuzz
 invariant = { runs = 256 }                                  # the number of runs that must execute for each invariant test group
 ffi = true                                                  # whether to enable foreign function interface (ffi) cheatcodes or not
 verbosity = 3                                               # the verbosity of tests
-fs_permissions = [{ access = "read-write", path = "./"}]    # set read-write access to project root
+fs_permissions = [{ access = "read-write", path = "./" }]   # set read-write access to project root
 solc_version = '0.8.25'                                     # override for the solc version
 evm_version = 'cancun'                                      # set the EVM target version
 no_match_path = 'test/**/{echidna,halmos}/**/*'             # only run tests in test directory that do not match the specified glob pattern
