@@ -226,7 +226,7 @@ contract ERC1155TestHalmos is Test, SymTest {
         }
         vm.stopPrank();
 
-        assert(approved);
+        (from == caller) ? assert(!approved) : assert(approved);
 
         uint256 newBalanceFrom = erc1155.balanceOf(from, tokenIds[0]);
         uint256 newBalanceTo = erc1155.balanceOf(to, tokenIds[0]);
