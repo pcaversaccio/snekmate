@@ -4,6 +4,7 @@ on:
   schedule:
     - cron: "30 3 * * *"
   workflow_dispatch:
+  # Remove after final test
   push:
 
 concurrency:
@@ -22,7 +23,7 @@ jobs:
         architecture:
           - x64
         halmos:
-          - "--function testHalmos --storage-layout generic --solver-parallel --test-parallel --early-exit --ffi --statistics -vv"
+          - "--function testHalmos --storage-layout generic --solver-parallel --test-parallel --early-exit --ffi --statistics -v"
 
     steps:
       - name: Checkout
@@ -61,22 +62,22 @@ jobs:
         env:
           FOUNDRY_PROFILE: halmos
 
-      # - name: Run Halmos ERC-20 symbolic tests
-      #   run: halmos --contract ERC20TestHalmos ${{ matrix.halmos }}
-      #   env:
-      #     FOUNDRY_PROFILE: halmos
+      - name: Run Halmos ERC-20 symbolic tests
+        run: halmos --contract ERC20TestHalmos ${{ matrix.halmos }}
+        env:
+          FOUNDRY_PROFILE: halmos
 
-      # - name: Run Halmos ERC-721 symbolic tests
-      #   run: halmos --contract ERC721TestHalmos ${{ matrix.halmos }}
-      #   env:
-      #     FOUNDRY_PROFILE: halmos
+      - name: Run Halmos ERC-721 symbolic tests
+        run: halmos --contract ERC721TestHalmos ${{ matrix.halmos }}
+        env:
+          FOUNDRY_PROFILE: halmos
 
       - name: Run Halmos ERC-1155 symbolic tests
         run: halmos --contract ERC1155TestHalmos ${{ matrix.halmos }}
         env:
           FOUNDRY_PROFILE: halmos
 
-      # - name: Run Halmos math symbolic tests
-      #   run: halmos --contract MathTestHalmos ${{ matrix.halmos }}
-      #   env:
-      #     FOUNDRY_PROFILE: halmos
+      - name: Run Halmos math symbolic tests
+        run: halmos --contract MathTestHalmos ${{ matrix.halmos }}
+        env:
+          FOUNDRY_PROFILE: halmos
