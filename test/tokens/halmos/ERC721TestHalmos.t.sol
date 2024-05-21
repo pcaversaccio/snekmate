@@ -141,8 +141,11 @@ contract ERC721TestHalmos is Test, SymTest {
         vm.assume(success);
         vm.stopPrank();
 
-        assert(erc721.balanceOf(caller) <= oldBalanceCaller);
-        assert(erc721.balanceOf(other) >= oldBalanceOther);
+        uint256 newBalanceCaller = erc721.balanceOf(caller);
+        uint256 newBalanceOther = erc721.balanceOf(other);
+
+        assert(newBalanceCaller <= oldBalanceCaller);
+        assert(newBalanceOther >= oldBalanceOther);
     }
 
     /**
@@ -162,6 +165,7 @@ contract ERC721TestHalmos is Test, SymTest {
         uint256 oldBalanceFrom = erc721.balanceOf(from);
         uint256 oldBalanceTo = erc721.balanceOf(to);
         uint256 oldBalanceOther = erc721.balanceOf(other);
+
         address oldOwner = erc721.ownerOf(tokenId);
         address oldOtherTokenOwner = erc721.ownerOf(otherTokenId);
         bool approved = (caller == oldOwner ||
@@ -187,16 +191,20 @@ contract ERC721TestHalmos is Test, SymTest {
         assert(erc721.getApproved(tokenId) == address(0));
         assert(erc721.ownerOf(otherTokenId) == oldOtherTokenOwner);
 
+        uint256 newBalanceFrom = erc721.balanceOf(from);
+        uint256 newBalanceTo = erc721.balanceOf(to);
+        uint256 newBalanceOther = erc721.balanceOf(other);
+
         if (from != to) {
-            assert(erc721.balanceOf(from) < oldBalanceFrom);
-            assert(erc721.balanceOf(from) == oldBalanceFrom - 1);
-            assert(erc721.balanceOf(to) > oldBalanceTo);
-            assert(erc721.balanceOf(to) == oldBalanceTo + 1);
+            assert(newBalanceFrom < oldBalanceFrom);
+            assert(newBalanceFrom == oldBalanceFrom - 1);
+            assert(newBalanceTo > oldBalanceTo);
+            assert(newBalanceTo == oldBalanceTo + 1);
         } else {
-            assert(erc721.balanceOf(from) == oldBalanceFrom);
-            assert(erc721.balanceOf(to) == oldBalanceTo);
+            assert(newBalanceFrom == oldBalanceFrom);
+            assert(newBalanceTo == oldBalanceTo);
         }
 
-        assert(erc721.balanceOf(other) == oldBalanceOther);
+        assert(newBalanceOther == oldBalanceOther);
     }
 }
