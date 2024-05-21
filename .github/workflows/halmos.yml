@@ -22,7 +22,7 @@ jobs:
         architecture:
           - x64
         halmos:
-          - "--function testHalmos --storage-layout generic --solver-parallel --test-parallel --early-exit --ffi --statistics -vvv"
+          - "--function testHalmos --storage-layout generic --solver-parallel --test-parallel --early-exit --ffi --statistics -vv"
 
     steps:
       - name: Checkout
@@ -72,8 +72,7 @@ jobs:
       #     FOUNDRY_PROFILE: halmos
 
       - name: Run Halmos ERC-1155 symbolic tests
-        # run: halmos --contract ERC1155TestHalmos ${{ matrix.halmos }}
-        run: halmos --contract ERC1155TestHalmos --function testHalmos --storage-layout generic --solver-parallel --test-parallel --early-exit --ffi --statistics -v
+        run: halmos --contract ERC1155TestHalmos ${{ matrix.halmos }}
         env:
           FOUNDRY_PROFILE: halmos
 

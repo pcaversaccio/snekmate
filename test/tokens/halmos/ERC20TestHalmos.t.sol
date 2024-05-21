@@ -137,9 +137,7 @@ contract ERC20TestHalmos is Test, SymTest {
         uint256 newBalanceOther = erc20.balanceOf(other);
 
         if (sender != receiver) {
-            assert(newBalanceSender <= oldBalanceSender);
             assert(newBalanceSender == oldBalanceSender - amount);
-            assert(newBalanceReceiver >= oldBalanceReceiver);
             assert(newBalanceReceiver == oldBalanceReceiver + amount);
         } else {
             assert(newBalanceSender == oldBalanceSender);
@@ -176,9 +174,7 @@ contract ERC20TestHalmos is Test, SymTest {
         uint256 newBalanceOther = erc20.balanceOf(other);
 
         if (from != to) {
-            assert(newBalanceFrom <= oldBalanceFrom);
             assert(newBalanceFrom == oldBalanceFrom - amount);
-            assert(newBalanceTo >= oldBalanceTo);
             assert(newBalanceTo == oldBalanceTo + amount);
             assert(oldAllowance >= amount);
             assert(

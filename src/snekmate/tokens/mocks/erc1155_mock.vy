@@ -106,15 +106,14 @@ def _customMint(owner: address, id: uint256, amount: uint256):
     @param id The 32-byte identifier of the token.
     @param amount The 32-byte token amount to be created.
     """
-    for _: uint256 in range(amount, bound=64):
-        assert owner != empty(address), "ERC1155Mock: mint to the zero address"
+    assert owner != empty(address), "ERC1155Mock: mint to the zero address"
 
-        erc1155._before_token_transfer(empty(address), owner, erc1155._as_singleton_array(id), erc1155._as_singleton_array(amount), b"")
+    erc1155._before_token_transfer(empty(address), owner, erc1155._as_singleton_array(id), erc1155._as_singleton_array(amount), b"")
 
-        # In the next line, an overflow is not possible
-        # due to an arithmetic check of the entire token
-        # supply in the function `_before_token_transfer`.
-        erc1155.balanceOf[owner][id] = unsafe_add(erc1155.balanceOf[owner][id], amount)
-        log erc1155.TransferSingle(msg.sender, empty(address), owner, id, amount)
+    # In the next line, an overflow is not possible
+    # due to an arithmetic check of the entire token
+    # supply in the function `_before_token_transfer`.
+    erc1155.balanceOf[owner][id] = unsafe_add(erc1155.balanceOf[owner][id], amount)
+    log erc1155.TransferSingle(msg.sender, empty(address), owner, id, amount)
 
-        erc1155._after_token_transfer(empty(address), owner, erc1155._as_singleton_array(id), erc1155._as_singleton_array(amount), b"")
+    erc1155._after_token_transfer(empty(address), owner, erc1155._as_singleton_array(id), erc1155._as_singleton_array(amount), b"")

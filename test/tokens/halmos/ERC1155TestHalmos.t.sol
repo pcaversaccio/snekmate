@@ -94,14 +94,14 @@ contract ERC1155TestHalmos is Test, SymTest {
             holders[1],
             tokenIds[2],
             amounts[2],
-            new bytes(1_337)
+            new bytes(96)
         );
         erc1155.safeTransferFrom(
             deployer,
             holders[2],
             tokenIds[3],
             amounts[3],
-            new bytes(31_337)
+            new bytes(1_024)
         );
         vm.stopPrank();
 
@@ -226,18 +226,20 @@ contract ERC1155TestHalmos is Test, SymTest {
         }
         vm.stopPrank();
 
-        assert(!approved);
+        assert(approved);
+
+        uint256 newBalanceFrom = erc1155.balanceOf(from, tokenIds[0]);
+        uint256 newBalanceTo = erc1155.balanceOf(to, tokenIds[0]);
+        uint256 newBalanceOther = erc1155.balanceOf(other, tokenIds[0]);
 
         if (from != to) {
-            assert(erc1155.balanceOf(from, tokenIds[0]) < oldBalanceFrom);
-            assert(erc1155.balanceOf(from, tokenIds[0]) == oldBalanceFrom - 1);
-            assert(erc1155.balanceOf(to, tokenIds[0]) > oldBalanceTo);
-            assert(erc1155.balanceOf(to, tokenIds[0]) == oldBalanceTo + 1);
+            assert(newBalanceFrom == oldBalanceFrom - 1);
+            assert(newBalanceTo == oldBalanceTo + 1);
         } else {
-            assert(erc1155.balanceOf(from, tokenIds[0]) == oldBalanceFrom);
-            assert(erc1155.balanceOf(to, tokenIds[0]) == oldBalanceTo);
+            assert(newBalanceFrom == oldBalanceFrom);
+            assert(newBalanceTo == oldBalanceTo);
         }
 
-        assert(erc1155.balanceOf(other, tokenIds[0]) == oldBalanceOther);
+        assert(newBalanceOther == oldBalanceOther);
     }
 }
