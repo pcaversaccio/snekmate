@@ -114,17 +114,22 @@ contract ERC1155TestHalmos is Test, SymTest {
         vm.stopPrank();
     }
 
+    /**
+     * @dev Currently commented out due to performance and reverting path issues in Halmos.
+     */
     // function testHalmosAssertNoBackdoor(
     //     bytes4 selector,
     //     address caller,
     //     address other
     // ) public {
-    //     vm.assume(
-    //         caller != other &&
-    //             selector != IERC1155Extended._customMint.selector &&
-    //             selector != IERC1155Extended.safe_mint.selector &&
-    //             selector != IERC1155Extended.safe_mint_batch.selector
-    //     );
+    //     /**
+    //      * @dev Using a single `assume` with conjunctions would result in the creation of
+    //      * multiple paths, negatively impacting performance.
+    //      */
+    //     vm.assume(caller != other);
+    //     vm.assume(selector != IERC1155Extended._customMint.selector);
+    //     vm.assume(selector != IERC1155Extended.safe_mint.selector);
+    //     vm.assume(selector != IERC1155Extended.safe_mint_batch.selector);
     //     for (uint256 i = 0; i < holders.length; i++) {
     //         vm.assume(!erc1155.isApprovedForAll(holders[i], caller));
     //     }
@@ -193,13 +198,18 @@ contract ERC1155TestHalmos is Test, SymTest {
     //     }
     // }
 
-    function testHalmosTransferFrom(
+    function testHalmosSafeTransferFrom(
         address caller,
         address from,
         address to,
         address other
     ) public {
-        vm.assume(other != from && other != to);
+        /**
+         * @dev Using a single `assume` with conjunctions would result in the creation of
+         * multiple paths, negatively impacting performance.
+         */
+        vm.assume(other != from);
+        vm.assume(other != to);
 
         uint256 oldBalanceFrom = erc1155.balanceOf(from, tokenIds[0]);
         uint256 oldBalanceTo = erc1155.balanceOf(to, tokenIds[0]);

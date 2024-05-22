@@ -23,7 +23,7 @@ jobs:
         architecture:
           - x64
         halmos:
-          - "--function testHalmos --storage-layout generic --solver-parallel --test-parallel --early-exit --ffi --statistics -v"
+          - "--function testHalmos --storage-layout generic --solver-command=yices-smt2 --solver-parallel --test-parallel --early-exit --ffi --statistics -v"
 
     steps:
       - name: Checkout
@@ -52,10 +52,16 @@ jobs:
         run: pip install setuptools
 
       - name: Install Halmos
-        run: pip install git+https://github.com/a16z/halmos.git@optimize-insn-decode
+        run: pip install git+https://github.com/a16z/halmos.git@main
 
       - name: Show the Halmos version
         run: halmos --version
+
+      - name: Install Homebrew
+        uses: Homebrew/actions/setup-homebrew@master
+
+      - name: Install Yices 2 SMT solver
+        run: brew install SRI-CSL/sri-csl/yices2
 
       - name: Show the Foundry Halmos config
         run: forge config

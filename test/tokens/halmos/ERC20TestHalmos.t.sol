@@ -122,7 +122,12 @@ contract ERC20TestHalmos is Test, SymTest {
         address other,
         uint256 amount
     ) public {
-        vm.assume(other != sender && other != receiver);
+        /**
+         * @dev Using a single `assume` with conjunctions would result in the creation of
+         * multiple paths, negatively impacting performance.
+         */
+        vm.assume(other != sender);
+        vm.assume(other != receiver);
 
         uint256 oldBalanceSender = erc20.balanceOf(sender);
         uint256 oldBalanceReceiver = erc20.balanceOf(receiver);
@@ -158,7 +163,12 @@ contract ERC20TestHalmos is Test, SymTest {
         address other,
         uint256 amount
     ) public {
-        vm.assume(other != from && other != to);
+        /**
+         * @dev Using a single `assume` with conjunctions would result in the creation of
+         * multiple paths, negatively impacting performance.
+         */
+        vm.assume(other != from);
+        vm.assume(other != to);
 
         uint256 oldBalanceFrom = erc20.balanceOf(from);
         uint256 oldBalanceTo = erc20.balanceOf(to);

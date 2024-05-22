@@ -102,11 +102,13 @@ contract ERC721TestHalmos is Test, SymTest {
         address caller,
         address other
     ) public {
-        vm.assume(
-            caller != other &&
-                selector != IERC721Extended._customMint.selector &&
-                selector != IERC721Extended.safe_mint.selector
-        );
+        /**
+         * @dev Using a single `assume` with conjunctions would result in the creation of
+         * multiple paths, negatively impacting performance.
+         */
+        vm.assume(caller != other);
+        vm.assume(selector != IERC721Extended._customMint.selector);
+        vm.assume(selector != IERC721Extended.safe_mint.selector);
         for (uint256 i = 0; i < holders.length; i++) {
             vm.assume(!erc721.isApprovedForAll(holders[i], caller));
         }
@@ -152,7 +154,7 @@ contract ERC721TestHalmos is Test, SymTest {
      * @notice Forked and adjusted accordingly from here:
      * https://github.com/a16z/halmos/blob/main/examples/tokens/ERC721/test/ERC721Test.sol.
      */
-    function testHalmosTransferFrom(
+    function testHalmosSafeTransferFrom(
         address caller,
         address from,
         address to,
@@ -160,7 +162,13 @@ contract ERC721TestHalmos is Test, SymTest {
         uint256 tokenId,
         uint256 otherTokenId
     ) public {
-        vm.assume(other != from && other != to && otherTokenId != tokenId);
+        /**
+         * @dev Using a single `assume` with conjunctions would result in the creation of
+         * multiple paths, negatively impacting performance.
+         */
+        vm.assume(other != from);
+        vm.assume(other != to);
+        vm.assume(otherTokenId != tokenId);
 
         uint256 oldBalanceFrom = erc721.balanceOf(from);
         uint256 oldBalanceTo = erc721.balanceOf(to);
