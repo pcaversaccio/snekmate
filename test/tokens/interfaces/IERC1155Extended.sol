@@ -34,6 +34,8 @@ interface IERC1155Extended is IERC1155MetadataURI {
         bytes calldata data
     ) external;
 
+    function _customMint(address owner, uint256 id, uint256 amount) external;
+
     function safe_mint_batch(
         address owner,
         uint256[] calldata ids,

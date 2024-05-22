@@ -34,8 +34,8 @@ interface _CheatCodes {
  * https://github.com/0xKitsune/Foundry-Vyper/blob/main/lib/utils/VyperDeployer.sol.
  * @dev The Vyper Contract Deployer is a pre-built contract containing functions that
  * use a path, a filename, any ABI-encoded constructor arguments, and optionally the
- * target EVM version, and deploy the corresponding Vyper contract, returning the address
- * that the bytecode was deployed to.
+ * target EVM version and the compiler optimisation mode, and deploy the corresponding
+ * Vyper contract, returning the address that the bytecode was deployed to.
  */
 contract VyperDeployer is Create {
     address private constant HEVM_ADDRESS =
@@ -169,7 +169,7 @@ contract VyperDeployer is Create {
      * @dev Compiles a Vyper contract and returns the address that the contract
      * was deployed to. If the deployment fails, an error is thrown.
      * @notice Function overload of `deployContract` that allows the configuration
-     * of the target EVM version.
+     * of the target EVM version and the compiler optimisation mode.
      * @param path The directory path of the Vyper contract.
      * For example, the path of "utils" is "src/utils/".
      * @param fileName The file name of the Vyper contract.
@@ -177,24 +177,29 @@ contract VyperDeployer is Create {
      * @param evmVersion The EVM version used for compilation.
      * For example, the EVM version for the Cancun-Deneb hard fork is "cancun".
      * You can retrieve all available Vyper EVM versions by invoking `vyper -h`.
+     * @param optimiserMode The optimisation mode used for compilation.
+     * For example, the default optimisation mode since Vyper `0.3.10` is "gas".
+     * You can retrieve all available Vyper optimisation modes by invoking `vyper -h`.
      * @return deployedAddress The address that the contract was deployed to.
      */
     function deployContract(
         string calldata path,
         string calldata fileName,
         string calldata evmVersion,
-        bool /*overloadPlaceholder*/
+        string calldata optimiserMode
     ) public returns (address deployedAddress) {
         /**
          * @dev Create a list of strings with the commands necessary
          * to compile Vyper contracts.
          */
-        string[] memory cmds = new string[](5);
+        string[] memory cmds = new string[](7);
         cmds[0] = "python";
         cmds[1] = "lib/utils/compile.py";
         cmds[2] = string.concat(path, fileName, ".vy");
         cmds[3] = "--evm-version";
         cmds[4] = evmVersion;
+        cmds[5] = "--optimize";
+        cmds[6] = optimiserMode;
 
         /**
          * @dev Compile the Vyper contract and return the bytecode.
@@ -233,7 +238,7 @@ contract VyperDeployer is Create {
      * is thrown.
      * @notice Function overload of `deployContract`, which allows the passing of
      * any ABI-encoded constructor arguments and enables the configuration of the
-     * target EVM version.
+     * target EVM version and the compiler optimisation mode.
      * @param path The directory path of the Vyper contract.
      * For example, the path of "utils" is "src/utils/".
      * @param fileName The file name of the Vyper contract.
@@ -242,6 +247,9 @@ contract VyperDeployer is Create {
      * @param evmVersion The EVM version used for compilation.
      * For example, the EVM version for the Cancun-Deneb hard fork is "cancun".
      * You can retrieve all available Vyper EVM versions by invoking `vyper -h`.
+     * @param optimiserMode The optimisation mode used for compilation.
+     * For example, the default optimisation mode since Vyper `0.3.10` is "gas".
+     * You can retrieve all available Vyper optimisation modes by invoking `vyper -h`.
      * @return deployedAddress The address that the contract was deployed to.
      */
     function deployContract(
@@ -249,18 +257,20 @@ contract VyperDeployer is Create {
         string calldata fileName,
         bytes calldata args,
         string calldata evmVersion,
-        bool /*overloadPlaceholder*/
+        string calldata optimiserMode
     ) public returns (address deployedAddress) {
         /**
          * @dev Create a list of strings with the commands necessary
          * to compile Vyper contracts.
          */
-        string[] memory cmds = new string[](5);
+        string[] memory cmds = new string[](7);
         cmds[0] = "python";
         cmds[1] = "lib/utils/compile.py";
         cmds[2] = string.concat(path, fileName, ".vy");
         cmds[3] = "--evm-version";
         cmds[4] = evmVersion;
+        cmds[5] = "--optimize";
+        cmds[6] = optimiserMode;
 
         /**
          * @dev Compile the Vyper contract and return the bytecode.

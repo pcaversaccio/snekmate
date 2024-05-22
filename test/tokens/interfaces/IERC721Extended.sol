@@ -27,6 +27,8 @@ interface IERC721Extended is
 
     function safe_mint(address owner, string calldata uri) external;
 
+    function _customMint(address owner, uint256 amount) external;
+
     function set_minter(address minter, bool status) external;
 
     function owner() external view returns (address);

@@ -25,6 +25,9 @@
 [submodule "lib/FreshCryptoLib"]
 	path = lib/FreshCryptoLib
 	url = https://github.com/rdubois-crypto/FreshCryptoLib.git
+[submodule "lib/halmos-cheatcodes"]
+	path = lib/halmos-cheatcodes
+	url = https://github.com/a16z/halmos-cheatcodes.git
 [submodule "lib/solidity-bytes-utils"]
 	path = lib/solidity-bytes-utils
 	url = https://github.com/GNSPS/solidity-bytes-utils.git

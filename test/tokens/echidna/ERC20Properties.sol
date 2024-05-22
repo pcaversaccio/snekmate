@@ -43,7 +43,7 @@ contract CryticERC20ExternalHarness is
                 "erc20_mock",
                 args,
                 "shanghai",
-                true
+                "gas"
             )
         );
     }
