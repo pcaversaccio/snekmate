@@ -89,3 +89,31 @@ def __init__(base_uri_: String[80]):
     # to the `msg.sender`.
     ow.__init__()
     erc1155.__init__(base_uri_)
+
+
+# @dev Custom implementation of the `external` function `safe_mint`
+# without access restriction and {IERC1155Receiver-onERC1155Received}
+# check to enable the Halmos tests for the no-backdoor and transfer
+# properties.
+@external
+def _customMint(owner: address, id: uint256, amount: uint256):
+    """
+    @dev Creates `amount` tokens of token type `id` and
+         transfers them to `owner`, increasing the total
+         supply.
+    @notice Note that `owner` cannot be the zero address.
+    @param owner The 20-byte owner address.
+    @param id The 32-byte identifier of the token.
+    @param amount The 32-byte token amount to be created.
+    """
+    assert owner != empty(address), "ERC1155Mock: mint to the zero address"
+
+    erc1155._before_token_transfer(empty(address), owner, erc1155._as_singleton_array(id), erc1155._as_singleton_array(amount), b"")
+
+    # In the next line, an overflow is not possible
+    # due to an arithmetic check of the entire token
+    # supply in the function `_before_token_transfer`.
+    erc1155.balanceOf[owner][id] = unsafe_add(erc1155.balanceOf[owner][id], amount)
+    log erc1155.TransferSingle(msg.sender, empty(address), owner, id, amount)
+
+    erc1155._after_token_transfer(empty(address), owner, erc1155._as_singleton_array(id), erc1155._as_singleton_array(amount), b"")

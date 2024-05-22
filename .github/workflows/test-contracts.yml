@@ -3,7 +3,7 @@ name: 🕵️‍♂️ Test smart contracts
 on: [push, pull_request, workflow_dispatch]
 
 concurrency:
-  group: ${{github.workflow}}-${{github.ref}}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -13,12 +13,14 @@ jobs:
       matrix:
         os:
           - ubuntu-latest
-        architecture:
-          - x64
         python_version:
           - 3.12
+        architecture:
+          - x64
         node_version:
           - 20
+        echidna:
+          - "--config test/tokens/echidna/echidna-config.yaml"
 
     steps:
       - name: Checkout
@@ -121,13 +123,11 @@ jobs:
           FOUNDRY_PROFILE: echidna
 
       - name: Run Echidna ERC-20 property tests
-        run: |
-          echidna test/tokens/echidna/ERC20Properties.sol --contract CryticERC20ExternalHarness --config test/tokens/echidna/echidna-config.yaml
+        run: echidna test/tokens/echidna/ERC20Properties.sol --contract CryticERC20ExternalHarness ${{ matrix.echidna }}
         env:
           FOUNDRY_PROFILE: echidna
 
       - name: Run Echidna ERC-721 property tests
-        run: |
-          echidna test/tokens/echidna/ERC721Properties.sol --contract CryticERC721ExternalHarness --config test/tokens/echidna/echidna-config.yaml
+        run: echidna test/tokens/echidna/ERC721Properties.sol --contract CryticERC721ExternalHarness ${{ matrix.echidna }}
         env:
           FOUNDRY_PROFILE: echidna

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: WTFPL
-pragma solidity ^0.8.25;
+pragma solidity ^0.8.26;
 
 import {VyperDeployer} from "utils/VyperDeployer.sol";
 
@@ -43,7 +43,7 @@ contract CryticERC20ExternalHarness is
                 "erc20_mock",
                 args,
                 "shanghai",
-                true
+                "gas"
             )
         );
     }

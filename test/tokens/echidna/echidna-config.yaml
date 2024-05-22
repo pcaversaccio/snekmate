@@ -10,8 +10,8 @@ filterFunctions: # Configure the list of methods to filter.
   [
     "VyperDeployer.deployContract(string,string)",
     "VyperDeployer.deployContract(string,string,bytes)",
-    "VyperDeployer.deployContract(string,string,string,bool)",
-    "VyperDeployer.deployContract(string,string,bytes,string,bool)",
+    "VyperDeployer.deployContract(string,string,string,string)",
+    "VyperDeployer.deployContract(string,string,bytes,string,string)",
   ]
 filterBlacklist: true # Blacklist methods in `filterFunctions`.
 cryticArgs: ["--ignore-compile"] # Disable compilation in `crytic-compile`.

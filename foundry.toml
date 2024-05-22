@@ -1,20 +1,20 @@
 ## defaults for all profiles
 [profile.default]
-src = 'src'                                                 # the source directory
-test = 'test'                                               # the test directory
-out = 'out'                                                 # the output directory (for artifacts)
-libs = ['lib']                                              # a list of library directories
+src = "src"                                                 # the source directory
+test = "test"                                               # the test directory
+out = "out"                                                 # the output directory (for artifacts)
+libs = ["lib"]                                              # a list of library directories
 cache = true                                                # whether to cache builds or not
-cache_path = 'cache'                                        # where the cache is stored if enabled
+cache_path = "cache"                                        # where the cache is stored if enabled
 force = false                                               # whether to ignore the cache (clean build)
 fuzz = { runs = 256 }                                       # the number of fuzz runs for tests
 invariant = { runs = 256 }                                  # the number of runs that must execute for each invariant test group
 ffi = true                                                  # whether to enable foreign function interface (ffi) cheatcodes or not
 verbosity = 3                                               # the verbosity of tests
-fs_permissions = [{ access = "read-write", path = "./"}]    # set read-write access to project root
-solc_version = '0.8.25'                                     # override for the solc version
-evm_version = 'cancun'                                      # set the EVM target version
-no_match_path = 'test/tokens/echidna/**/*'                  # only run tests in test directory that do not match the specified glob pattern
+fs_permissions = [{ access = "read-write", path = "./" }]   # set read-write access to project root
+solc_version = "0.8.26"                                     # override for the solc version
+evm_version = "cancun"                                      # set the EVM target version
+no_match_path = "test/**/{echidna,halmos}/**/*"             # only run tests in test directory that do not match the specified glob pattern
 
 ## default overrides for the CI runs
 [profile.ci]
@@ -26,4 +26,9 @@ verbosity = 4                                               # increase the verbo
 ## default overrides for the Echidna tests
 [profile.echidna]
 force = true                                                # always perform a clean build
-evm_version = 'shanghai'                                    # set the EVM target version to `shanghai`
+evm_version = "shanghai"                                    # set the EVM target version to `shanghai`
+
+## default overrides for the Halmos tests
+[profile.halmos]
+force = true                                                # always perform a clean build
+evm_version = "shanghai"                                    # set the EVM target version to `shanghai`

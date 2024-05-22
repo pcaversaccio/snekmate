@@ -36,8 +36,15 @@
 ### 🥢 Test Coverage
 
 - **Tokens**
-  - [`erc20`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/tokens/erc20.vy): Add `echidna`-based `erc20` property tests. ([#239](https://github.com/pcaversaccio/snekmate/pull/239))
-  - [`erc721`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/tokens/erc721.vy): Add `echidna`-based `erc721` property tests. ([#239](https://github.com/pcaversaccio/snekmate/pull/239))
+  - [`erc20`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/tokens/erc20.vy):
+    - Add `echidna`-based `erc20` property tests. ([#239](https://github.com/pcaversaccio/snekmate/pull/239))
+    - Add `halmos`-based `erc20` symbolic tests. ([#240](https://github.com/pcaversaccio/snekmate/pull/240))
+  - [`erc721`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/tokens/erc721.vy):
+    - Add `echidna`-based `erc721` property tests. ([#239](https://github.com/pcaversaccio/snekmate/pull/239))
+    - Add `halmos`-based `erc721` symbolic tests. ([#240](https://github.com/pcaversaccio/snekmate/pull/240))
+  - [`erc1155`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/tokens/erc1155.vy): Add `halmos`-based `erc1155` symbolic tests. ([#240](https://github.com/pcaversaccio/snekmate/pull/240))
+- **Utility Functions**
+  - [`math`](https://github.com/pcaversaccio/snekmate/blob/v0.1.0/src/snekmate/utils/math.vy): Add `halmos`-based `math` symbolic tests. ([#240](https://github.com/pcaversaccio/snekmate/pull/240))
 
 ### ❗️ Breaking Changes
 

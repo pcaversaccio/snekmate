@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: WTFPL
-pragma solidity ^0.8.25;
+pragma solidity ^0.8.26;
 
 import {IERC721Metadata} from "openzeppelin/token/ERC721/extensions/IERC721Metadata.sol";
 import {IERC721Enumerable} from "openzeppelin/token/ERC721/extensions/IERC721Enumerable.sol";
@@ -26,6 +26,8 @@ interface IERC721Extended is
     function is_minter(address minter) external view returns (bool);
 
     function safe_mint(address owner, string calldata uri) external;
+
+    function _customMint(address owner, uint256 amount) external;
 
     function set_minter(address minter, bool status) external;
 
