@@ -4,8 +4,6 @@ on:
   schedule:
     - cron: "30 3 * * *"
   workflow_dispatch:
-  # Remove after final test
-  push:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
