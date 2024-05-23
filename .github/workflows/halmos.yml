@@ -2,9 +2,9 @@ name: 👁️ Halmos symbolic tests
 
 on:
   schedule:
+    # Run every day at 03:30 UTC.
     - cron: "30 3 * * *"
   workflow_dispatch:
-  push:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
