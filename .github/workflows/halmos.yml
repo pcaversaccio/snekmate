@@ -4,13 +4,14 @@ on:
   schedule:
     - cron: "30 3 * * *"
   workflow_dispatch:
+  push:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  halmos-tests:
+  halmos:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -55,11 +56,11 @@ jobs:
       - name: Show the Halmos version
         run: halmos --version
 
-      - name: Install Homebrew
-        uses: Homebrew/actions/setup-homebrew@master
-
       - name: Install Yices 2 SMT solver
-        run: brew install SRI-CSL/sri-csl/yices2
+        run: |
+          sudo add-apt-repository ppa:sri-csl/formal-methods
+          sudo apt-get update
+          sudo apt-get install yices2
 
       - name: Show the Foundry Halmos config
         run: forge config
