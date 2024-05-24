@@ -54,12 +54,6 @@ _VERSION: immutable(String[20])
 _HASHED_VERSION: immutable(bytes32)
 
 
-# @dev May be emitted to signal that the domain could
-# have changed.
-event EIP712DomainChanged:
-    pass
-
-
 @deploy
 @payable
 def __init__(name_: String[50], version_: String[20]):
