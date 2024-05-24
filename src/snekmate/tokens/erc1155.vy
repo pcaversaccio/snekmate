@@ -93,7 +93,7 @@ _SUPPORTED_INTERFACES: constant(bytes4[3]) = [
 
 
 # @dev Stores the upper bound for batch calls.
-_BATCH_SIZE: constant(uint16) = 255
+_BATCH_SIZE: constant(uint16) = 128
 
 
 # @dev Stores the base URI for computing `uri`.
