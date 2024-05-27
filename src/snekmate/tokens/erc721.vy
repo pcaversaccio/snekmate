@@ -236,44 +236,6 @@ _token_uris: HashMap[uint256, String[432]]
 _counter: uint256
 
 
-# @dev Emitted when `token_id` token is
-# transferred from `owner` to `to`.
-event Transfer:
-    owner: indexed(address)
-    to: indexed(address)
-    token_id: indexed(uint256)
-
-
-# @dev Emitted when `owner` enables `approved`
-# to manage the `token_id` token.
-event Approval:
-    owner: indexed(address)
-    approved: indexed(address)
-    token_id: indexed(uint256)
-
-
-# @dev Emitted when `owner` enables or disables
-# (`approved`) `operator` to manage all of its
-# assets.
-event ApprovalForAll:
-    owner: indexed(address)
-    operator: indexed(address)
-    approved: bool
-
-
-# @dev Emitted when the metadata of a token is
-# changed.
-event MetadataUpdate:
-    token_id: uint256
-
-
-# @dev Emitted when the metadata of a range of
-# tokens is changed.
-event BatchMetadataUpdate:
-    from_token_id: uint256
-    token_id: uint256
-
-
 # @dev Emitted when the status of a `minter`
 # address is changed.
 event RoleMinterChanged:
@@ -779,7 +741,7 @@ def _approve(to: address, token_id: uint256):
     @param token_id The 32-byte identifier of the token.
     """
     self._token_approvals[token_id] = to
-    log Approval(self._owner_of(token_id), to, token_id)
+    log IERC721.Approval(self._owner_of(token_id), to, token_id)
 
 
 @internal
@@ -807,7 +769,7 @@ def _set_approval_for_all(owner: address, operator: address, approved: bool):
     """
     assert owner != operator, "erc721: approve to caller"
     self.isApprovedForAll[owner][operator] = approved
-    log ApprovalForAll(owner, operator, approved)
+    log IERC721.ApprovalForAll(owner, operator, approved)
 
 
 @internal
@@ -876,7 +838,7 @@ def _mint(owner: address, token_id: uint256):
     # this is no longer even theoretically possible.
     self._balances[owner] = unsafe_add(self._balances[owner], 1)
     self._owners[token_id] = owner
-    log Transfer(empty(address), owner, token_id)
+    log IERC721.Transfer(empty(address), owner, token_id)
 
     self._after_token_transfer(empty(address), owner, token_id)
 
@@ -944,7 +906,7 @@ def _transfer(owner: address, to: address, token_id: uint256):
     self._balances[owner] = unsafe_sub(self._balances[owner], 1)
     self._balances[to] = unsafe_add(self._balances[to], 1)
     self._owners[token_id] = to
-    log Transfer(owner, to, token_id)
+    log IERC721.Transfer(owner, to, token_id)
 
     self._after_token_transfer(owner, to, token_id)
 
@@ -960,7 +922,7 @@ def _set_token_uri(token_id: uint256, token_uri: String[432]):
     """
     assert self._exists(token_id), "erc721: URI set of nonexistent token"
     self._token_uris[token_id] = token_uri
-    log MetadataUpdate(token_id)
+    log IERC4906.MetadataUpdate(token_id)
 
 
 @internal
@@ -997,7 +959,7 @@ def _burn(token_id: uint256):
     # received through minting and transfer.
     self._balances[owner] = unsafe_sub(self._balances[owner], 1)
     self._owners[token_id] = empty(address)
-    log Transfer(owner, empty(address), token_id)
+    log IERC721.Transfer(owner, empty(address), token_id)
 
     self._after_token_transfer(owner, empty(address), token_id)
 

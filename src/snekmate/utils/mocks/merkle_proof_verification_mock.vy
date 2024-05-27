@@ -27,7 +27,7 @@ def __init__():
 
 @external
 @pure
-def verify(proof: DynArray[bytes32, max_value(uint8)], root: bytes32, leaf: bytes32) -> bool:
+def verify(proof: DynArray[bytes32, mp._DYNARRAY_BOUND], root: bytes32, leaf: bytes32) -> bool:
     """
     @dev Returns `True` if it can be proved that a `leaf` is
          part of a Merkle tree defined by `root`.
@@ -46,8 +46,8 @@ def verify(proof: DynArray[bytes32, max_value(uint8)], root: bytes32, leaf: byte
 
 @external
 @pure
-def multi_proof_verify(proof: DynArray[bytes32, max_value(uint8)], proof_flags: DynArray[bool, max_value(uint8)],
-                       root: bytes32, leaves: DynArray[bytes32, max_value(uint8)]) -> bool:
+def multi_proof_verify(proof: DynArray[bytes32, mp._DYNARRAY_BOUND], proof_flags: DynArray[bool, mp._DYNARRAY_BOUND],
+                       root: bytes32, leaves: DynArray[bytes32, mp._DYNARRAY_BOUND]) -> bool:
     """
     @dev Returns `True` if it can be simultaneously proved that
          `leaves` are part of a Merkle tree defined by `root`
