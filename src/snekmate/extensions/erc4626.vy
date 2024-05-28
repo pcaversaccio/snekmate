@@ -157,27 +157,6 @@ _DECIMALS_OFFSET: immutable(uint8)
 _UNDERLYING_DECIMALS: immutable(uint8)
 
 
-# @dev Emitted when `sender` has exchanged `assets`
-# for `shares`, and transferred those `shares`
-# to `owner`.
-event Deposit:
-    sender: indexed(address)
-    owner: indexed(address)
-    assets: uint256
-    shares: uint256
-
-
-# @dev Emitted when `sender` has exchanged `shares`,
-# owned by `owner`, for `assets`, and transferred
-# those `assets` to `receiver`.
-event Withdraw:
-    sender: indexed(address)
-    receiver: indexed(address)
-    owner: indexed(address)
-    assets: uint256
-    shares: uint256
-
-
 @deploy
 @payable
 def __init__(name_: String[25], symbol_: String[5], asset_: IERC20, decimals_offset_: uint8, name_eip712_: String[50], version_eip712_: String[20]):
@@ -679,7 +658,7 @@ def _deposit(sender: address, receiver: address, assets: uint256, shares: uint25
     # the target address is an EOA), the call reverts.
     assert extcall _ASSET.transferFrom(sender, self, assets, default_return_value=True), "erc4626: transferFrom operation did not succeed"
     erc20._mint(receiver, shares)
-    log Deposit(sender, receiver, assets, shares)
+    log IERC4626.Deposit(sender, receiver, assets, shares)
 
 
 @internal
@@ -718,4 +697,4 @@ def _withdraw(sender: address, receiver: address, owner: address, assets: uint25
     # you add the kwarg `skip_contract_check=True`. If the check fails (i.e.
     # the target address is an EOA), the call reverts.
     assert extcall _ASSET.transfer(receiver, assets, default_return_value=True), "erc4626: transfer operation did not succeed"
-    log Withdraw(sender, receiver, owner, assets, shares)
+    log IERC4626.Withdraw(sender, receiver, owner, assets, shares)

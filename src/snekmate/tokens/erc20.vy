@@ -167,24 +167,6 @@ is_minter: public(HashMap[address, bool])
 nonces: public(HashMap[address, uint256])
 
 
-# @dev Emitted when `amount` tokens are moved
-# from one account (`owner`) to another (`to`).
-# Note that the parameter `amount` may be zero.
-event Transfer:
-    owner: indexed(address)
-    to: indexed(address)
-    amount: uint256
-
-
-# @dev Emitted when the allowance of a `spender`
-# for an `owner` is set by a call to `approve`.
-# The parameter `amount` is the new allowance.
-event Approval:
-    owner: indexed(address)
-    spender: indexed(address)
-    amount: uint256
-
-
 # @dev Emitted when the status of a `minter`
 # address is changed.
 event RoleMinterChanged:
@@ -475,7 +457,7 @@ def _transfer(owner: address, to: address, amount: uint256):
     assert owner_balanceOf >= amount, "erc20: transfer amount exceeds balance"
     self.balanceOf[owner] = unsafe_sub(owner_balanceOf, amount)
     self.balanceOf[to] = unsafe_add(self.balanceOf[to], amount)
-    log Transfer(owner, to, amount)
+    log IERC20.Transfer(owner, to, amount)
 
     self._after_token_transfer(owner, to, amount)
 
@@ -498,7 +480,7 @@ def _mint(owner: address, amount: uint256):
 
     self.totalSupply += amount
     self.balanceOf[owner] = unsafe_add(self.balanceOf[owner], amount)
-    log Transfer(empty(address), owner, amount)
+    log IERC20.Transfer(empty(address), owner, amount)
 
     self._after_token_transfer(empty(address), owner, amount)
 
@@ -522,7 +504,7 @@ def _burn(owner: address, amount: uint256):
     assert account_balance >= amount, "erc20: burn amount exceeds balance"
     self.balanceOf[owner] = unsafe_sub(account_balance, amount)
     self.totalSupply = unsafe_sub(self.totalSupply, amount)
-    log Transfer(owner, empty(address), amount)
+    log IERC20.Transfer(owner, empty(address), amount)
 
     self._after_token_transfer(owner, empty(address), amount)
 
@@ -543,7 +525,7 @@ def _approve(owner: address, spender: address, amount: uint256):
     assert spender != empty(address), "erc20: approve to the zero address"
 
     self.allowance[owner][spender] = amount
-    log Approval(owner, spender, amount)
+    log IERC20.Approval(owner, spender, amount)
 
 
 @internal
