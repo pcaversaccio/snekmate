@@ -146,7 +146,7 @@ pnpm add --save-dev snekmate
 > [!IMPORTANT]
 > All 🐍 snekmate contracts are very well documented in the form of general code and [NatSpec](https://docs.vyperlang.org/en/latest/natspec.html) comments. There are no shortcuts – if you are importing specific logic, read the documentation!
 
-Please read [here](https://docs.vyperlang.org/en/latest/using-modules.html) to learn more about using modules.
+Please read [here](https://docs.vyperlang.org/en/latest/using-modules.html) to learn more about using 🐍Vyper modules.
 
 ## 👩🏼‍⚖️ Tests
 
