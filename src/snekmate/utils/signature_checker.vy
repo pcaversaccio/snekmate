@@ -61,6 +61,7 @@ def _is_valid_signature_now(signer: address, hash: bytes32, signature: Bytes[65]
             are revocable and the result of this function
             can therefore change over time. It could return
             `True` in block N and `False` in block N+1 (or the opposite).
+    @param signer The 20-byte signer address.
     @param hash The 32-byte message digest that was signed.
     @param signature The maximum 65-byte signature of `hash`.
     @return bool The verification whether `signature` is valid
@@ -89,6 +90,7 @@ def _is_valid_ERC1271_signature_now(signer: address, hash: bytes32, signature: B
             are revocable and the result of this function
             can therefore change over time. It could return
             `True` in block N and `False` in block N+1 (or the opposite).
+    @param signer The 20-byte signer address.
     @param hash The 32-byte message digest that was signed.
     @param signature The maximum 65-byte signature of `hash`.
     @return bool The verification whether `signature` is valid

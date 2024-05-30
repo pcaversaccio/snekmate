@@ -315,6 +315,7 @@ def mint(owner: address, amount: uint256):
     @dev Creates `amount` tokens and assigns them to `owner`.
     @notice Only authorised minters can access this function.
             Note that `owner` cannot be the zero address.
+    @param owner The 20-byte owner address.
     @param amount The 32-byte token amount to be created.
     """
     assert self.is_minter[msg.sender], "erc20: access is denied"
