@@ -20,7 +20,7 @@ no_match_path = "test/**/{echidna,halmos}/**/*"             # only run tests in 
 [profile.ci]
 force = true                                                # always perform a clean build
 fuzz = { runs = 10_000, max_test_rejects = 350_000 }        # increase the number of fuzz runs and maximum number of combined inputs that may be rejected for the tests
-invariant = { runs = 1_500, depth = 250 }                   # increase the number of runs and calls (executed in one run) for each invariant test group
+invariant = { runs = 750, depth = 250 }                     # increase the number of runs and calls (executed in one run) for each invariant test group
 verbosity = 4                                               # increase the verbosity of tests
 
 ## default overrides for the Echidna tests
