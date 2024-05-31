@@ -1,34 +1,34 @@
-## defaults for all profiles
+# Defaults for all profiles.
 [profile.default]
-src = "src"                                                 # the source directory
-test = "test"                                               # the test directory
-out = "out"                                                 # the output directory (for artifacts)
-libs = ["lib"]                                              # a list of library directories
-cache = true                                                # whether to cache builds or not
-cache_path = "cache"                                        # where the cache is stored if enabled
-force = false                                               # whether to ignore the cache (clean build)
-fuzz = { runs = 256 }                                       # the number of fuzz runs for tests
-invariant = { runs = 256, depth = 15 }                      # the number of runs and calls (executed in one run) for each invariant test group
-ffi = true                                                  # whether to enable foreign function interface (ffi) cheatcodes or not
-verbosity = 3                                               # the verbosity of tests
-fs_permissions = [{ access = "read-write", path = "./" }]   # set read-write access to project root
-solc_version = "0.8.26"                                     # override for the solc version
-evm_version = "cancun"                                      # set the EVM target version
-no_match_path = "test/**/{echidna,halmos}/**/*"             # only run tests in test directory that do not match the specified glob pattern
+src = "src"                                               # Set the source directory.
+test = "test"                                             # Set the test directory.
+out = "out"                                               # Set the output directory for artifacts.
+libs = ["lib"]                                            # Configure an array of library directories.
+cache = true                                              # Enable caching.
+cache_path = "cache"                                      # Set the path to the cache.
+force = false                                             # Do not ignore the cache.
+fuzz = { runs = 256 }                                     # Configure the number of fuzz runs for tests.
+invariant = { runs = 256, depth = 15 }                    # Configure the number of runs and calls (executed in one run) for each invariant test group.
+ffi = true                                                # Enable the foreign function interface (ffi) cheatcode.
+verbosity = 3                                             # Set the verbosity level for the tests.
+fs_permissions = [{ access = "read-write", path = "./" }] # Set read-write access to the project root.
+solc_version = "0.8.26"                                   # Set the Solidity compiler version.
+evm_version = "cancun"                                    # Set the EVM target version.
+no_match_path = "test/**/{echidna,halmos}/**/*"           # Run only tests in the test directory that do not match the specified glob pattern.
 
-## default overrides for the CI runs
+# Default overrides for the CI runs.
 [profile.ci]
-force = true                                                # always perform a clean build
-fuzz = { runs = 10_000, max_test_rejects = 350_000 }        # increase the number of fuzz runs and maximum number of combined inputs that may be rejected for the tests
-invariant = { runs = 375, depth = 500 }                     # increase the number of runs (while preserving the default depth) for each invariant test group
-verbosity = 4                                               # increase the verbosity of tests
+force = true                                              # Perform always a clean build.
+fuzz = { runs = 10_000, max_test_rejects = 350_000 }      # Increase the number of fuzz runs and maximum number of combined inputs that may be rejected for the tests.
+invariant = { runs = 375, depth = 500 }                   # Increase the number of runs (while preserving the default depth) for each invariant test group.
+verbosity = 4                                             # Increase the verbosity level for the tests.
 
-## default overrides for the Echidna tests
+# Default overrides for the Echidna tests.
 [profile.echidna]
-force = true                                                # always perform a clean build
-evm_version = "shanghai"                                    # set the EVM target version to `shanghai`
+force = true                                              # Perform always a clean build.
+evm_version = "shanghai"                                  # Set the EVM target version to `shanghai`.
 
-## default overrides for the Halmos tests
+# Default overrides for the Halmos tests.
 [profile.halmos]
-force = true                                                # always perform a clean build
-evm_version = "shanghai"                                    # set the EVM target version to `shanghai`
+force = true                                              # Perform always a clean build.
+evm_version = "shanghai"                                  # Set the EVM target version to `shanghai`.
