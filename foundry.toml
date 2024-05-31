@@ -11,7 +11,7 @@ fuzz = { runs = 256 }                                     # Configure the number
 invariant = { runs = 256, depth = 15 }                    # Configure the number of runs and calls (executed in one run) for each invariant test group.
 ffi = true                                                # Enable the foreign function interface (ffi) cheatcode.
 verbosity = 3                                             # Set the verbosity level for the tests.
-fs_permissions = [{ access = "read-write", path = "./" }] # Set read-write access to the project root.
+fs_permissions = [{ access = "read-write", path = "./" }] # Configure read-write access to the project root.
 solc_version = "0.8.26"                                   # Set the Solidity compiler version.
 evm_version = "cancun"                                    # Set the EVM target version.
 no_match_path = "test/**/{echidna,halmos}/**/*"           # Run only tests in the test directory that do not match the specified glob pattern.
