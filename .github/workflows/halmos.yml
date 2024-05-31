@@ -5,6 +5,8 @@ on:
     # Run every day at 03:30 UTC.
     - cron: "30 3 * * *"
   workflow_dispatch:
+  # For testing.
+  push:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -22,7 +24,7 @@ jobs:
         architecture:
           - x64
         halmos:
-          - "--function testHalmos --storage-layout generic --solver-command=yices-smt2 --solver-parallel --test-parallel --early-exit --ffi --statistics -v"
+          - "--config test/halmos.toml"
 
     steps:
       - name: Checkout

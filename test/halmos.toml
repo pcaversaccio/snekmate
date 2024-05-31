@@ -1,0 +1,15 @@
+[global]
+# test settings
+function = "testHalmos"
+storage-layout = "generic"
+test-parallel = true
+early-exit = true
+ffi = true
+
+# debugging
+statistics = true
+verbose = 1
+
+# solver settings
+solver-command = "yices-smt2"
+solver-parallel = true

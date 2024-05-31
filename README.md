@@ -185,26 +185,29 @@ Furthermore, the [`echidna`](https://github.com/crytic/echidna)-based [property]
 
 ```console
 # Run Echidna ERC-20 property tests.
-~$ FOUNDRY_PROFILE=echidna echidna test/tokens/echidna/ERC20Properties.sol --contract CryticERC20ExternalHarness --config test/tokens/echidna/echidna-config.yaml
+~$ FOUNDRY_PROFILE=echidna echidna test/tokens/echidna/ERC20Properties.sol --contract CryticERC20ExternalHarness --config test/echidna.yaml
 
 # Run Echidna ERC-721 property tests.
-~$ FOUNDRY_PROFILE=echidna echidna test/tokens/echidna/ERC721Properties.sol --contract CryticERC721ExternalHarness --config test/tokens/echidna/echidna-config.yaml
+~$ FOUNDRY_PROFILE=echidna echidna test/tokens/echidna/ERC721Properties.sol --contract CryticERC721ExternalHarness --config test/echidna.yaml
 ```
 
 Eventually, the [`halmos`](https://github.com/a16z/halmos)-based symbolic tests for the [`erc20`](./src/snekmate/tokens/erc20.vy), [`erc721`](./src/snekmate/tokens/erc721.vy), [`erc1155`](./src/snekmate/tokens/erc1155.vy), and [`math`](./src/snekmate/utils/math.vy) contracts are available in the [`test/tokens/halmos/`](./test/tokens/halmos) and [`test/utils/halmos/`](./test/utils/halmos) directories. You can run the tests by invoking:
 
+> [!IMPORTANT]
+> You must install the [Yices 2 SMT solver](https://github.com/SRI-CSL/yices2) before invoking the [`halmos`](https://github.com/a16z/halmos)-based symbolic tests.
+
 ```console
 # Run Halmos ERC-20 symbolic tests.
-~$ FOUNDRY_PROFILE=halmos halmos --contract ERC20TestHalmos --function testHalmos --storage-layout generic --ffi
+~$ FOUNDRY_PROFILE=halmos halmos --contract ERC20TestHalmos --config test/halmos.toml
 
 # Run Halmos ERC-721 symbolic tests. Be careful, this is a very time-consuming operation.
-~$ FOUNDRY_PROFILE=halmos halmos --contract ERC721TestHalmos --function testHalmos --storage-layout generic --ffi
+~$ FOUNDRY_PROFILE=halmos halmos --contract ERC721TestHalmos --config test/halmos.toml
 
 # Run Halmos ERC-1155 symbolic tests. Be careful, this is a very time-consuming operation.
-~$ FOUNDRY_PROFILE=halmos halmos --contract ERC1155TestHalmos --function testHalmos --storage-layout generic --ffi
+~$ FOUNDRY_PROFILE=halmos halmos --contract ERC1155TestHalmos --config test/halmos.toml
 
 # Run Halmos math symbolic tests.
-~$ FOUNDRY_PROFILE=halmos halmos --contract MathTestHalmos --function testHalmos --storage-layout generic --ffi
+~$ FOUNDRY_PROFILE=halmos halmos --contract MathTestHalmos --config test/halmos.toml
 ```
 
 > [!TIP]
