@@ -1,4 +1,4 @@
-# pragma version ~=0.4.0rc5
+# pragma version ~=0.4.0rc6
 """
 @title `batch_distributor` Module Reference Implementation
 @custom:contract-name batch_distributor_mock

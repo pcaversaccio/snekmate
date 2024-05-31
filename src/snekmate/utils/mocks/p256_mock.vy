@@ -1,4 +1,4 @@
-# pragma version ~=0.4.0rc5
+# pragma version ~=0.4.0rc6
 """
 @title `p256` Module Reference Implementation
 @custom:contract-name p256_mock
