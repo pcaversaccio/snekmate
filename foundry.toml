@@ -7,21 +7,21 @@ libs = ["lib"]                                            # Configure an array o
 cache = true                                              # Enable caching.
 cache_path = "cache"                                      # Set the path to the cache.
 force = false                                             # Do not ignore the cache.
-fuzz = { runs = 256 }                                     # Configure the number of fuzz runs for tests.
-invariant = { runs = 256, depth = 15 }                    # Configure the number of runs and calls (executed in one run) for each invariant test group.
-ffi = true                                                # Enable the foreign function interface (ffi) cheatcode.
-verbosity = 3                                             # Set the verbosity level for the tests.
-fs_permissions = [{ access = "read-write", path = "./" }] # Configure read-write access to the project root.
 solc_version = "0.8.26"                                   # Set the Solidity compiler version.
 evm_version = "cancun"                                    # Set the EVM target version.
+verbosity = 3                                             # Set the verbosity level for the tests.
 no_match_path = "test/**/{echidna,halmos}/**/*"           # Run only tests in the test directory that do not match the specified glob pattern.
+ffi = true                                                # Enable the foreign function interface (ffi) cheatcode.
+fs_permissions = [{ access = "read-write", path = "./" }] # Configure read-write access to the project root.
+fuzz = { runs = 256 }                                     # Configure the number of fuzz runs for tests.
+invariant = { runs = 256, depth = 15 }                    # Configure the number of runs and calls (executed in one run) for each invariant test group.
 
 # Default overrides for the CI runs.
 [profile.ci]
 force = true                                              # Perform always a clean build.
+verbosity = 4                                             # Increase the verbosity level for the tests.
 fuzz = { runs = 10_000, max_test_rejects = 350_000 }      # Increase the number of fuzz runs and maximum number of combined inputs that may be rejected for the tests.
 invariant = { runs = 375, depth = 500 }                   # Increase the number of runs (while preserving the default depth) for each invariant test group.
-verbosity = 4                                             # Increase the verbosity level for the tests.
 
 # Default overrides for the Echidna tests.
 [profile.echidna]
