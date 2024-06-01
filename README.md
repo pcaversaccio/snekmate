@@ -104,7 +104,7 @@ forge install pcaversaccio/snekmate
 ```
 
 > [!NOTE]
-> If you want to leverage 🐍 snekmate's [`VyperDeployer`](./lib/utils/VyperDeployer.sol) contract for your own testing, ensure that you compile the Vyper contracts with the same EVM version as configured in your `foundry.toml` file. The [`VyperDeployer`](./lib/utils/VyperDeployer.sol) contract offers two overloaded `deployContract` functions that allow the configuration of the target EVM version. Please note that since Vyper version [`0.4.0`](https://github.com/vyperlang/vyper/releases/tag/v0.4.0) the default EVM version is set to `cancun`. Furthermore, the [`VyperDeployer`](./lib/utils/VyperDeployer.sol) contract relies on the Python script [`compile.py`](./lib/utils/compile.py) for successful compilation and deployment. Always use the [`VyperDeployer`](./lib/utils/VyperDeployer.sol) contract alongside with the aforementioned script.
+> If you want to leverage 🐍 snekmate's [`VyperDeployer`](./lib/utils/VyperDeployer.sol) contract for your own testing, ensure that you compile the 🐍Vyper contracts with the same EVM version as configured in your `foundry.toml` file. The [`VyperDeployer`](./lib/utils/VyperDeployer.sol) contract offers two overloaded `deployContract` functions that allow the configuration of the target EVM version. Please note that since 🐍Vyper version [`0.4.0`](https://github.com/vyperlang/vyper/releases/tag/v0.4.0) the default EVM version is set to `cancun`. Furthermore, the [`VyperDeployer`](./lib/utils/VyperDeployer.sol) contract relies on the Python script [`compile.py`](./lib/utils/compile.py) for successful compilation and deployment. Always use the [`VyperDeployer`](./lib/utils/VyperDeployer.sol) contract alongside with the aforementioned script.
 
 ### 2️⃣ PyPI
 
@@ -138,6 +138,15 @@ pnpm add --save-dev snekmate
 
 > [!CAUTION]
 > It is possible to install the latest versions of `main` or any other branch locally via `pip install git+https://github.com/pcaversaccio/snekmate.git@<branch>` or `forge install pcaversaccio/snekmate && forge update`. Each branch, **including the `main` branch**, must be understood as a development branch that should be avoided in favour of tagged releases. The release process includes security measures that the repository branches do not guarantee.
+
+## 🔧 Usage
+
+🐍Vyper favours code reuse through composition rather than inheritance (Solidity inheritance makes it easy to break the [Liskov substitution principle](https://en.wikipedia.org/wiki/Liskov_substitution_principle)). A 🐍Vyper module encapsulates everything required for code reuse, from type and function declarations to state. **All 🐍 snekmate contracts are 🐍Vyper modules.** Thus, many of the 🐍 snekmate contracts do not compile independently, but you must `import` and `initializes` them. Please note that if a module is _stateless_, it does not require the keyword `initializes` (or `uses`) for initialisation (or usage). Each module contract has an associated mock contract in the `mock/` directory, which is part of the associated contract subdirectory. These mock contracts are very illustrative of how 🐍 snekmate contracts can be used as 🐍Vyper modules.
+
+> [!IMPORTANT]
+> All 🐍 snekmate contracts are very well documented in the form of general code and [NatSpec](https://docs.vyperlang.org/en/latest/natspec.html) comments. There are no shortcuts – if you are importing specific logic, read the documentation!
+
+Please read [here](https://docs.vyperlang.org/en/latest/using-modules.html) to learn more about using 🐍Vyper modules.
 
 ## 👩🏼‍⚖️ Tests
 
@@ -199,7 +208,7 @@ Eventually, the [`halmos`](https://github.com/a16z/halmos)-based symbolic tests 
 ```
 
 > [!TIP]
-> If you encounter any issues, please ensure that you have the [latest](https://github.com/vyperlang/vyper/releases) Vyper version installed locally.
+> If you encounter any issues, please ensure that you have the [latest](https://github.com/vyperlang/vyper/releases) 🐍Vyper version installed locally.
 
 ## 🙏🏼 Acknowledgements
 

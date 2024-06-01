@@ -1,4 +1,4 @@
-# pragma version ~=0.4.0rc5
+# pragma version ~=0.4.0rc6
 """
 @title Modern and Gas-Efficient ERC-1155 Implementation
 @custom:contract-name erc1155
@@ -93,7 +93,7 @@ _SUPPORTED_INTERFACES: constant(bytes4[3]) = [
 
 
 # @dev Stores the upper bound for batch calls.
-_BATCH_SIZE: constant(uint16) = 255
+_BATCH_SIZE: constant(uint8) = 128
 
 
 # @dev Stores the base URI for computing `uri`.
@@ -130,47 +130,6 @@ is_minter: public(HashMap[address, bool])
 # which implies a maximum character length
 # for `uri` of 512.
 _token_uris: HashMap[uint256, String[432]]
-
-
-# @dev Emitted when `amount` tokens of token type
-# `id` are transferred from `owner` to `to` by
-# `operator`.
-event TransferSingle:
-    operator: indexed(address)
-    owner: indexed(address)
-    to: indexed(address)
-    id: uint256
-    amount: uint256
-
-
-# @dev Equivalent to multiple `TransferSingle` events,
-# where `operator`, `owner`, and `to` are the same
-# for all transfers.
-event TransferBatch:
-    operator: indexed(address)
-    owner: indexed(address)
-    to: indexed(address)
-    ids: DynArray[uint256, _BATCH_SIZE]
-    amounts: DynArray[uint256, _BATCH_SIZE]
-
-
-# @dev Emitted when `owner` grants or revokes permission
-# to `operator` to transfer their tokens, according to
-# `approved`.
-event ApprovalForAll:
-    owner: indexed(address)
-    operator: indexed(address)
-    approved: bool
-
-
-# @dev Emitted when the Uniform Resource Identifier (URI)
-# for token type `id` changes to `value`, if it is a
-# non-programmatic URI. Note that if an `URI` event was
-# emitted for `id`, the EIP-1155 standard guarantees that
-# `value` will equal the value returned by `uri`.
-event URI:
-    value: String[512]
-    id: indexed(uint256)
 
 
 # @dev Emitted when the status of a `minter`
@@ -524,7 +483,7 @@ def _set_approval_for_all(owner: address, operator: address, approved: bool):
     """
     assert owner != operator, "erc1155: setting approval status for self"
     self.isApprovedForAll[owner][operator] = approved
-    log ApprovalForAll(owner, operator, approved)
+    log IERC1155.ApprovalForAll(owner, operator, approved)
 
 
 @internal
@@ -564,7 +523,7 @@ def _safe_transfer_from(owner: address, to: address, id: uint256, amount: uint25
     # due to an arithmetic check of the entire token
     # supply in the functions `_safe_mint` and `_safe_mint_batch`.
     self.balanceOf[to][id] = unsafe_add(self.balanceOf[to][id], amount)
-    log TransferSingle(msg.sender, owner, to, id, amount)
+    log IERC1155.TransferSingle(msg.sender, owner, to, id, amount)
 
     self._after_token_transfer(owner, to, self._as_singleton_array(id), self._as_singleton_array(amount), data)
 
@@ -620,7 +579,7 @@ def _safe_batch_transfer_from(owner: address, to: address, ids: DynArray[uint256
         # maximum value of `uint16`.
         idx = unsafe_add(idx, 1)
 
-    log TransferBatch(msg.sender, owner, to, ids, amounts)
+    log IERC1155.TransferBatch(msg.sender, owner, to, ids, amounts)
 
     self._after_token_transfer(owner, to, ids, amounts, data)
 
@@ -659,7 +618,7 @@ def _safe_mint(owner: address, id: uint256, amount: uint256, data: Bytes[1_024])
     # due to an arithmetic check of the entire token
     # supply in the function `_before_token_transfer`.
     self.balanceOf[owner][id] = unsafe_add(self.balanceOf[owner][id], amount)
-    log TransferSingle(msg.sender, empty(address), owner, id, amount)
+    log IERC1155.TransferSingle(msg.sender, empty(address), owner, id, amount)
 
     self._after_token_transfer(empty(address), owner, self._as_singleton_array(id), self._as_singleton_array(amount), data)
 
@@ -709,7 +668,7 @@ def _safe_mint_batch(owner: address, ids: DynArray[uint256, _BATCH_SIZE], amount
         # maximum value of `uint16`.
         idx = unsafe_add(idx, 1)
 
-    log TransferBatch(msg.sender, empty(address), owner, ids, amounts)
+    log IERC1155.TransferBatch(msg.sender, empty(address), owner, ids, amounts)
 
     self._after_token_transfer(empty(address), owner, ids, amounts, data)
 
@@ -770,7 +729,7 @@ def _set_uri(id: uint256, token_uri: String[432]):
            string URI for computing `uri`.
     """
     self._token_uris[id] = token_uri
-    log URI(self._uri(id), id)
+    log IERC1155.URI(self._uri(id), id)
 
 
 @internal
@@ -792,7 +751,7 @@ def _burn(owner: address, id: uint256, amount: uint256):
     owner_balance: uint256 = self.balanceOf[owner][id]
     assert owner_balance >= amount, "erc1155: burn amount exceeds balance"
     self.balanceOf[owner][id] = unsafe_sub(owner_balance, amount)
-    log TransferSingle(msg.sender, owner, empty(address), id, amount)
+    log IERC1155.TransferSingle(msg.sender, owner, empty(address), id, amount)
 
     self._after_token_transfer(owner, empty(address), self._as_singleton_array(id), self._as_singleton_array(amount), b"")
 
@@ -828,7 +787,7 @@ def _burn_batch(owner: address, ids: DynArray[uint256, _BATCH_SIZE], amounts: Dy
         # maximum value of `uint16`.
         idx = unsafe_add(idx, 1)
 
-    log TransferBatch(msg.sender, owner, empty(address), ids, amounts)
+    log IERC1155.TransferBatch(msg.sender, owner, empty(address), ids, amounts)
 
     self._after_token_transfer(owner, empty(address), ids, amounts, b"")
 

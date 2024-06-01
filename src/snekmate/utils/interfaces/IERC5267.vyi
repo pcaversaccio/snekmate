@@ -1,4 +1,4 @@
-# pragma version ~=0.4.0rc5
+# pragma version ~=0.4.0rc6
 """
 @title EIP-5267 Interface Definition
 @custom:contract-name IERC5267
@@ -33,7 +33,7 @@ event EIP712DomainChanged:
 
 @external
 @view
-def eip712Domain() -> (bytes1, String[50], String[20], uint256, address, bytes32, DynArray[uint256, 128]):
+def eip712Domain() -> (bytes1, String[50], String[20], uint256, address, bytes32, DynArray[uint256, 32]):
     """
     @dev Returns the fields and values that describe the domain
          separator used by this contract for EIP-712 signatures.

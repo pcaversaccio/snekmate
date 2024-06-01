@@ -1,4 +1,4 @@
-# pragma version ~=0.4.0rc5
+# pragma version ~=0.4.0rc6
 """
 @title Merkle Tree Proof Verification Functions
 @custom:contract-name merkle_proof_verification
@@ -33,6 +33,10 @@
 """
 
 
+# @dev Stores the 1-byte upper bound for the dynamic arrays.
+_DYNARRAY_BOUND: constant(uint8) = max_value(uint8)
+
+
 @deploy
 @payable
 def __init__():
@@ -46,7 +50,7 @@ def __init__():
 
 @internal
 @pure
-def _verify(proof: DynArray[bytes32, max_value(uint8)], root: bytes32, leaf: bytes32) -> bool:
+def _verify(proof: DynArray[bytes32, _DYNARRAY_BOUND], root: bytes32, leaf: bytes32) -> bool:
     """
     @dev Returns `True` if it can be proved that a `leaf` is
          part of a Merkle tree defined by `root`.
@@ -65,8 +69,8 @@ def _verify(proof: DynArray[bytes32, max_value(uint8)], root: bytes32, leaf: byt
 
 @internal
 @pure
-def _multi_proof_verify(proof: DynArray[bytes32, max_value(uint8)], proof_flags: DynArray[bool, max_value(uint8)],
-                        root: bytes32, leaves: DynArray[bytes32, max_value(uint8)]) -> bool:
+def _multi_proof_verify(proof: DynArray[bytes32, _DYNARRAY_BOUND], proof_flags: DynArray[bool, _DYNARRAY_BOUND],
+                        root: bytes32, leaves: DynArray[bytes32, _DYNARRAY_BOUND]) -> bool:
     """
     @dev Returns `True` if it can be simultaneously proved that
          `leaves` are part of a Merkle tree defined by `root`
@@ -90,7 +94,7 @@ def _multi_proof_verify(proof: DynArray[bytes32, max_value(uint8)], proof_flags:
 
 @internal
 @pure
-def _process_proof(proof: DynArray[bytes32, max_value(uint8)], leaf: bytes32) -> bytes32:
+def _process_proof(proof: DynArray[bytes32, _DYNARRAY_BOUND], leaf: bytes32) -> bytes32:
     """
     @dev Returns the recovered hash obtained by traversing
          a Merkle tree from `leaf` using `proof`.
@@ -111,8 +115,8 @@ def _process_proof(proof: DynArray[bytes32, max_value(uint8)], leaf: bytes32) ->
 
 @internal
 @pure
-def _process_multi_proof(proof: DynArray[bytes32, max_value(uint8)], proof_flags: DynArray[bool, max_value(uint8)],
-                         leaves: DynArray[bytes32, max_value(uint8)]) -> bytes32:
+def _process_multi_proof(proof: DynArray[bytes32, _DYNARRAY_BOUND], proof_flags: DynArray[bool, _DYNARRAY_BOUND],
+                         leaves: DynArray[bytes32, _DYNARRAY_BOUND]) -> bytes32:
     """
     @dev Returns the recovered hash obtained by traversing
          a Merkle tree from `leaves` using `proof` and a
@@ -155,7 +159,7 @@ def _process_multi_proof(proof: DynArray[bytes32, max_value(uint8)], proof_flags
     # are added together or incremented by `1`.
     assert unsafe_add(leaves_length, len(proof)) == unsafe_add(total_hashes, 1), "merkle_proof_verification: invalid multiproof"
 
-    hashes: DynArray[bytes32, max_value(uint8)] = []
+    hashes: DynArray[bytes32, _DYNARRAY_BOUND] = []
     leaf_pos: uint256 = empty(uint256)
     hash_pos: uint256 = empty(uint256)
     proof_pos: uint256 = empty(uint256)

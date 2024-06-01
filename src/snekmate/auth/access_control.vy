@@ -1,4 +1,4 @@
-# pragma version ~=0.4.0rc5
+# pragma version ~=0.4.0rc6
 """
 @title Multi-Role-Based Access Control Functions
 @custom:contract-name access_control
@@ -98,39 +98,6 @@ hasRole: public(HashMap[bytes32, HashMap[address, bool]])
 
 # @dev Returns the admin role that controls `role`.
 getRoleAdmin: public(HashMap[bytes32, bytes32])
-
-
-# @dev Emitted when `new_admin_role` is set as
-# `role`'s admin role, replacing `previous_admin_role`.
-# Note that `DEFAULT_ADMIN_ROLE` is the starting
-# admin for all roles, despite `RoleAdminChanged`
-# not being emitted signaling this.
-event RoleAdminChanged:
-    role: indexed(bytes32)
-    previous_admin_role: indexed(bytes32)
-    new_admin_role: indexed(bytes32)
-
-
-# @dev Emitted when `account` is granted `role`.
-# Note that `sender` is the account (an admin
-# role bearer) that originated the contract call.
-event RoleGranted:
-    role: indexed(bytes32)
-    account: indexed(address)
-    sender: indexed(address)
-
-
-# @dev Emitted when `account` is revoked `role`.
-# Note that `sender` is the account that originated
-# the contract call:
-#   - if using `revokeRole`, it is the admin role
-#     bearer,
-#   - if using `renounceRole`, it is the role bearer
-#     (i.e. `account`).
-event RoleRevoked:
-    role: indexed(bytes32)
-    account: indexed(address)
-    sender: indexed(address)
 
 
 @deploy
@@ -243,7 +210,7 @@ def _set_role_admin(role: bytes32, admin_role: bytes32):
     """
     previous_admin_role: bytes32 = self.getRoleAdmin[role]
     self.getRoleAdmin[role] = admin_role
-    log RoleAdminChanged(role, previous_admin_role, admin_role)
+    log IAccessControl.RoleAdminChanged(role, previous_admin_role, admin_role)
 
 
 @internal
@@ -257,7 +224,7 @@ def _grant_role(role: bytes32, account: address):
     """
     if (not(self.hasRole[role][account])):
         self.hasRole[role][account] = True
-        log RoleGranted(role, account, msg.sender)
+        log IAccessControl.RoleGranted(role, account, msg.sender)
 
 
 @internal
@@ -271,4 +238,4 @@ def _revoke_role(role: bytes32, account: address):
     """
     if (self.hasRole[role][account]):
         self.hasRole[role][account] = False
-        log RoleRevoked(role, account, msg.sender)
+        log IAccessControl.RoleRevoked(role, account, msg.sender)

@@ -1,4 +1,4 @@
-# pragma version ~=0.4.0rc5
+# pragma version ~=0.4.0rc6
 """
 @title EIP-712 Domain Separator
 @custom:contract-name eip712_domain_separator
@@ -54,12 +54,6 @@ _VERSION: immutable(String[20])
 _HASHED_VERSION: immutable(bytes32)
 
 
-# @dev May be emitted to signal that the domain could
-# have changed.
-event EIP712DomainChanged:
-    pass
-
-
 @deploy
 @payable
 def __init__(name_: String[50], version_: String[20]):
@@ -90,7 +84,7 @@ def __init__(name_: String[50], version_: String[20]):
 
 @external
 @view
-def eip712Domain() -> (bytes1, String[50], String[20], uint256, address, bytes32, DynArray[uint256, 128]):
+def eip712Domain() -> (bytes1, String[50], String[20], uint256, address, bytes32, DynArray[uint256, 32]):
     """
     @dev Returns the fields and values that describe the domain
          separator used by this contract for EIP-712 signatures.
@@ -111,7 +105,7 @@ def eip712Domain() -> (bytes1, String[50], String[20], uint256, address, bytes32
     @return DynArray The 32-byte array of EIP-712 extensions.
     """
     # Note that `\x0f` equals `01111`.
-    return (convert(b"\x0f", bytes1), _NAME, _VERSION, chain.id, self, empty(bytes32), empty(DynArray[uint256, 128]))
+    return (convert(b"\x0f", bytes1), _NAME, _VERSION, chain.id, self, empty(bytes32), empty(DynArray[uint256, 32]))
 
 
 @internal
