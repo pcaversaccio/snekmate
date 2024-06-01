@@ -2,18 +2,21 @@
 [profile.default]
 src = "src"                                               # Set the source directory.
 test = "test"                                             # Set the test directory.
-out = "out"                                               # Set the output directory for artifacts.
+out = "out"                                               # Set the output directory for the artifacts.
 libs = ["lib"]                                            # Configure an array of library directories.
 cache = true                                              # Enable caching.
 cache_path = "cache"                                      # Set the path to the cache.
 force = false                                             # Do not ignore the cache.
 solc_version = "0.8.26"                                   # Set the Solidity compiler version.
 evm_version = "cancun"                                    # Set the EVM target version.
+optimizer = true                                          # Enable the Solidity compiler optimiser.
+optimizer_runs = 200                                      # Configure the number of optimiser runs.
+via_ir = false                                            # Prevent the compilation pipeline from running through the Yul intermediate representation.
 verbosity = 3                                             # Set the verbosity level for the tests.
-no_match_path = "test/**/{echidna,halmos}/**/*"           # Run only tests in the test directory that do not match the specified glob pattern.
 ffi = true                                                # Enable the foreign function interface (ffi) cheatcode.
+no_match_path = "test/**/{echidna,halmos}/**/*"           # Run only tests in the test directory that do not match the specified glob pattern.
 fs_permissions = [{ access = "read-write", path = "./" }] # Configure read-write access to the project root.
-fuzz = { runs = 256 }                                     # Configure the number of fuzz runs for tests.
+fuzz = { runs = 256 }                                     # Configure the number of fuzz runs for the tests.
 invariant = { runs = 256, depth = 15 }                    # Configure the number of runs and calls (executed in one run) for each invariant test group.
 
 # Default overrides for the CI runs.
