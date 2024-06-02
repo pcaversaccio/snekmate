@@ -5,8 +5,6 @@ on:
     # Run every day at 03:30 UTC.
     - cron: "30 3 * * *"
   workflow_dispatch:
-  # For testing. Remove before merging.
-  push:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}

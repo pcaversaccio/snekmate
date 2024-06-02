@@ -16,7 +16,7 @@ verbosity = 3                                             # Set the verbosity le
 ffi = true                                                # Enable the foreign function interface (ffi) cheatcode.
 no_match_path = "test/**/{echidna,halmos}/**/*"           # Run only tests in the test directory that do not match the specified glob pattern.
 fs_permissions = [{ access = "read-write", path = "./" }] # Configure read-write access to the project root.
-fuzz = { runs = 256 }                                     # Configure the number of fuzz runs for the tests.
+fuzz = { runs = 256, max_test_rejects = 65_536 }          # Configure the number of fuzz runs and maximum number of combined inputs that may be rejected for the tests.
 invariant = { runs = 256, depth = 15 }                    # Configure the number of runs and calls (executed in one run) for each invariant test group.
 
 # Default overrides for the CI runs.
