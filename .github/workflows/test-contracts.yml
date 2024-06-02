@@ -20,7 +20,7 @@ jobs:
         node_version:
           - 20
         echidna:
-          - "--config test/tokens/echidna/echidna-config.yaml"
+          - "--config test/echidna.yaml"
 
     steps:
       - name: Checkout

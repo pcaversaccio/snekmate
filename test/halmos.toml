@@ -1,0 +1,15 @@
+[global]
+# Test settings.
+function = "testHalmos"       # Run tests matching the given prefix.
+storage-layout = "generic"    # Set the generic storage layout model.
+test-parallel = true          # Run tests in parallel.
+early-exit = true             # Stop after a counterexample is found.
+ffi = true                    # Enable the foreign function interface (ffi) cheatcode.
+
+# Debugging settings.
+statistics = true             # Print the statistics.
+verbose = 1                   # Set the verbosity level for the tests.
+
+# Solver settings.
+solver-command = "yices-smt2" # Use the Yices 2 SMT solver.
+solver-parallel = true        # Run assertion solvers in parallel.
