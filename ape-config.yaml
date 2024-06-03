@@ -7,4 +7,4 @@ vyper:
   evm_version: cancun
 compile:
   exclude:
-    - "!(*_mock.vy)"
+    - r"(?!.*_mock\.vy$)"
