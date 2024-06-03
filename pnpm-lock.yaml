@@ -20,8 +20,8 @@ importers:
         specifier: ^9.1.0
         version: 9.1.0(eslint@9.4.0)
       ethers:
-        specifier: ^6.12.1
-        version: 6.12.1
+        specifier: ^6.12.2
+        version: 6.12.2
       keccak256:
         specifier: ^1.0.6
         version: 1.0.6
@@ -821,10 +821,10 @@ packages:
         integrity: sha512-BlwbIL7/P45W8FGW2r7LGuvoEZ+7PWsniMvQ4p5s2xCyw9tmaDlpfsN9HjAucbF+t/qpVHwZUisgfK24TCW8aA==,
       }
 
-  ethers@6.12.1:
+  ethers@6.12.2:
     resolution:
       {
-        integrity: sha512-j6wcVoZf06nqEcBbDWkKg8Fp895SS96dSnTCjiXT+8vt2o02raTn4Lo9ERUuIVU5bAjoPYeA+7ytQFexFmLuVw==,
+        integrity: sha512-MNfR2kzZyNF8bRNDSmjM+rT1+yqCgYNqfrXyNnpiNId2MQPiAOOr/7lrgdrdwoBxzKPSnSYZaGb5lcNyvzhuvA==,
       }
     engines: { node: ">=14.0.0" }
 
@@ -2244,7 +2244,7 @@ snapshots:
       "@scure/bip32": 1.3.3
       "@scure/bip39": 1.2.2
 
-  ethers@6.12.1:
+  ethers@6.12.2:
     dependencies:
       "@adraffy/ens-normalize": 1.10.1
       "@noble/curves": 1.2.0
