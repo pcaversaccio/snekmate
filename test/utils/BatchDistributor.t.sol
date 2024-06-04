@@ -365,14 +365,6 @@ contract BatchDistributorTest is Test {
         vm.assume(batch.txns.length <= 50);
         for (uint256 i; i < batch.txns.length; ++i) {
             batch.txns[i].amount = bound(batch.txns[i].amount, 1, 100);
-            /**
-             * Exclude the `LIBRARY_DEPLOYER` address that contains the maximum `uint256` ether balance:
-             * https://github.com/foundry-rs/foundry/pull/8034.
-             */
-            vm.assume(
-                batch.txns[i].recipient !=
-                    0x1F95D37F27EA0dEA9C252FC09D5A6eaA97647353
-            );
             assumePayable(batch.txns[i].recipient);
         }
 
