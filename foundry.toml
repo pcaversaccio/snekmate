@@ -1,6 +1,6 @@
 # Defaults for all profiles.
 [profile.default]
-src = "src"                                               # Set the source directory.
+src = "test"                                              # Set the source directory.
 test = "test"                                             # Set the test directory.
 out = "out"                                               # Set the output directory for the artifacts.
 libs = ["lib"]                                            # Configure an array of library directories.
