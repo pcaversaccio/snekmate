@@ -40,10 +40,10 @@ jobs:
       - name: Show the Vyper version
         run: vyper --version
 
-      - name: Setup Ape
-        uses: ApeWorX/github-action@v2
-        with:
-          python-version: ${{ matrix.python_version }}
+      # - name: Setup Ape
+      #   uses: ApeWorX/github-action@v2
+      #   with:
+      #     python-version: ${{ matrix.python_version }}
 
       - name: Install Ape Vyper4
         run: pip install git+https://github.com/antazoey/ape-vyper.git@feat/vyper4
