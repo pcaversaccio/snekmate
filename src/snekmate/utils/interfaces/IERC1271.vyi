@@ -1,0 +1,29 @@
+# pragma version ~=0.4.0rc6
+"""
+@title EIP-1271 Interface Definition
+@custom:contract-name IERC1271
+@license GNU Affero General Public License v3.0 only
+@author pcaversaccio
+@notice The ERC-1271 standard defines a method by which any
+        contract can verify whether a signature on behalf of
+        a particular contract is valid. The ERC-165 identifier
+        for this interface is `0x1626BA7E`. For more details,
+        please refer to:
+        https://eips.ethereum.org/EIPS/eip-1271#specification.
+
+        On how to use interfaces in Vyper, please visit:
+        https://vyper.readthedocs.io/en/latest/interfaces.html#interfaces.
+"""
+
+
+@external
+@view
+def isValidSignature(_hash: bytes32, _signature: Bytes[65]) -> bytes4:
+    """
+    @dev Returns the 4-byte magic value `0x1626BA7E` if the
+         verification passes.
+    @param _hash The 32-byte message digest that was signed.
+    @param _signature The secp256k1 64/65-byte signature of `_hash`.
+    @return bytes4 The 4-byte magic value.
+    """
+    return ...

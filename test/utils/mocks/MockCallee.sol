@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.25;
+pragma solidity ^0.8.26;
 
 /**
  * @dev Error that occurs when a method reverts.
@@ -16,7 +16,7 @@ error Reverted(address emitter);
  */
 contract MockCallee {
     uint256 public number;
-    address private self = address(this);
+    address private _self = address(this);
 
     /**
      * @dev Stores a uint256 value in the variable `number`.
@@ -43,7 +43,7 @@ contract MockCallee {
      * @dev A function that simply reverts.
      */
     function thisMethodReverts() public view {
-        revert Reverted(self);
+        revert Reverted(_self);
     }
 
     /**
@@ -53,6 +53,6 @@ contract MockCallee {
     function transferEther(address target) public payable {
         // solhint-disable-next-line avoid-low-level-calls
         (bool ok, ) = target.call{value: msg.value}("");
-        if (!ok) revert Reverted(self);
+        if (!ok) revert Reverted(_self);
     }
 }

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.25;
+pragma solidity ^0.8.26;
 
 /**
  * @title CallReceiverMock
@@ -94,7 +94,7 @@ contract CallReceiverMock {
         bytes32 value
     ) public payable returns (string memory) {
         // solhint-disable-next-line no-inline-assembly
-        assembly {
+        assembly ("memory-safe") {
             sstore(slot, value)
         }
         return _retValue;

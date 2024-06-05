@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: WTFPL
-pragma solidity ^0.8.25;
+pragma solidity ^0.8.26;
 
 import {Test} from "forge-std/Test.sol";
 import {VyperDeployer} from "utils/VyperDeployer.sol";
@@ -11,6 +11,7 @@ import {IERC20Extended} from "./interfaces/IERC20Extended.sol";
 contract ERC20Test is Test {
     string private constant _NAME = "MyToken";
     string private constant _SYMBOL = "WAGMI";
+    uint8 private constant _DECIMALS = 18;
     string private constant _NAME_EIP712 = "MyToken";
     string private constant _VERSION_EIP712 = "1";
     uint256 private constant _INITIAL_SUPPLY = type(uint8).max;
@@ -45,12 +46,17 @@ contract ERC20Test is Test {
         bytes memory args = abi.encode(
             _NAME,
             _SYMBOL,
+            _DECIMALS,
             _INITIAL_SUPPLY,
             _NAME_EIP712,
             _VERSION_EIP712
         );
         ERC20Extended = IERC20Extended(
-            vyperDeployer.deployContract("src/snekmate/tokens/", "ERC20", args)
+            vyperDeployer.deployContract(
+                "src/snekmate/tokens/mocks/",
+                "erc20_mock",
+                args
+            )
         );
         ERC20ExtendedAddr = address(ERC20Extended);
         _CACHED_DOMAIN_SEPARATOR = keccak256(
@@ -66,9 +72,9 @@ contract ERC20Test is Test {
 
     function testInitialSetup() public {
         uint256 multiplier = 10 ** uint256(ERC20Extended.decimals());
-        assertEq(ERC20Extended.decimals(), 18);
         assertEq(ERC20Extended.name(), _NAME);
         assertEq(ERC20Extended.symbol(), _SYMBOL);
+        assertEq(ERC20Extended.decimals(), _DECIMALS);
         assertEq(ERC20Extended.totalSupply(), _INITIAL_SUPPLY * multiplier);
         assertEq(
             ERC20Extended.balanceOf(deployer),
@@ -90,16 +96,21 @@ contract ERC20Test is Test {
         bytes memory args = abi.encode(
             _NAME,
             _SYMBOL,
+            _DECIMALS,
             _INITIAL_SUPPLY,
             _NAME_EIP712,
             _VERSION_EIP712
         );
         ERC20ExtendedInitialEvent = IERC20Extended(
-            vyperDeployer.deployContract("src/snekmate/tokens/", "ERC20", args)
+            vyperDeployer.deployContract(
+                "src/snekmate/tokens/mocks/",
+                "erc20_mock",
+                args
+            )
         );
-        assertEq(ERC20ExtendedInitialEvent.decimals(), 18);
         assertEq(ERC20ExtendedInitialEvent.name(), _NAME);
         assertEq(ERC20ExtendedInitialEvent.symbol(), _SYMBOL);
+        assertEq(ERC20ExtendedInitialEvent.decimals(), _DECIMALS);
         assertEq(
             ERC20ExtendedInitialEvent.totalSupply(),
             _INITIAL_SUPPLY * multiplier
@@ -142,7 +153,7 @@ contract ERC20Test is Test {
 
     function testTransferInvalidAmount() public {
         vm.prank(deployer);
-        vm.expectRevert(bytes("ERC20: transfer amount exceeds balance"));
+        vm.expectRevert(bytes("erc20: transfer amount exceeds balance"));
         ERC20Extended.transfer(makeAddr("to"), type(uint256).max);
     }
 
@@ -165,7 +176,7 @@ contract ERC20Test is Test {
         address owner = deployer;
         uint256 amount = ERC20Extended.balanceOf(owner);
         vm.prank(owner);
-        vm.expectRevert(bytes("ERC20: transfer to the zero address"));
+        vm.expectRevert(bytes("erc20: transfer to the zero address"));
         ERC20Extended.transfer(zeroAddress, amount);
     }
 
@@ -175,7 +186,7 @@ contract ERC20Test is Test {
         vm.prank(owner);
         ERC20Extended.burn(amount);
         vm.prank(zeroAddress);
-        vm.expectRevert(bytes("ERC20: transfer from the zero address"));
+        vm.expectRevert(bytes("erc20: transfer from the zero address"));
         ERC20Extended.transfer(makeAddr("to"), amount);
     }
 
@@ -249,13 +260,13 @@ contract ERC20Test is Test {
         address owner = deployer;
         uint256 amount = ERC20Extended.balanceOf(owner);
         vm.prank(owner);
-        vm.expectRevert(bytes("ERC20: approve to the zero address"));
+        vm.expectRevert(bytes("erc20: approve to the zero address"));
         ERC20Extended.approve(zeroAddress, amount);
     }
 
     function testApproveFromZeroAddress() public {
         vm.prank(zeroAddress);
-        vm.expectRevert(bytes("ERC20: approve from the zero address"));
+        vm.expectRevert(bytes("erc20: approve from the zero address"));
         ERC20Extended.approve(makeAddr("spender"), type(uint256).max);
     }
 
@@ -290,7 +301,7 @@ contract ERC20Test is Test {
         vm.prank(owner);
         ERC20Extended.approve(spender, amount);
         vm.prank(spender);
-        vm.expectRevert(bytes("ERC20: transfer amount exceeds balance"));
+        vm.expectRevert(bytes("erc20: transfer amount exceeds balance"));
         ERC20Extended.transferFrom(owner, makeAddr("to"), amount);
     }
 
@@ -301,7 +312,7 @@ contract ERC20Test is Test {
         vm.prank(owner);
         ERC20Extended.approve(spender, amount - 1);
         vm.prank(spender);
-        vm.expectRevert(bytes("ERC20: insufficient allowance"));
+        vm.expectRevert(bytes("erc20: insufficient allowance"));
         ERC20Extended.transferFrom(owner, makeAddr("to"), amount);
     }
 
@@ -312,7 +323,7 @@ contract ERC20Test is Test {
         vm.prank(owner);
         ERC20Extended.approve(spender, amount - 1);
         vm.prank(spender);
-        vm.expectRevert(bytes("ERC20: insufficient allowance"));
+        vm.expectRevert(bytes("erc20: insufficient allowance"));
         ERC20Extended.transferFrom(owner, makeAddr("to"), amount);
     }
 
@@ -342,13 +353,13 @@ contract ERC20Test is Test {
         vm.prank(owner);
         ERC20Extended.approve(spender, amount);
         vm.prank(spender);
-        vm.expectRevert(bytes("ERC20: transfer to the zero address"));
+        vm.expectRevert(bytes("erc20: transfer to the zero address"));
         ERC20Extended.transferFrom(owner, zeroAddress, amount);
     }
 
     function testTransferFromFromZeroAddress() public {
         vm.prank(deployer);
-        vm.expectRevert(bytes("ERC20: approve from the zero address"));
+        vm.expectRevert(bytes("erc20: approve from the zero address"));
         ERC20Extended.transferFrom(zeroAddress, makeAddr("to"), 0);
     }
 
@@ -385,13 +396,13 @@ contract ERC20Test is Test {
         uint256 balance = ERC20Extended.balanceOf(owner);
         uint256 amount = balance + 1;
         vm.prank(owner);
-        vm.expectRevert(bytes("ERC20: burn amount exceeds balance"));
+        vm.expectRevert(bytes("erc20: burn amount exceeds balance"));
         ERC20Extended.burn(amount);
     }
 
     function testBurnFromZeroAddress() public {
         vm.prank(zeroAddress);
-        vm.expectRevert(bytes("ERC20: burn from the zero address"));
+        vm.expectRevert(bytes("erc20: burn from the zero address"));
         ERC20Extended.burn(0);
     }
 
@@ -452,7 +463,7 @@ contract ERC20Test is Test {
         vm.prank(owner);
         ERC20Extended.approve(spender, amount);
         vm.prank(spender);
-        vm.expectRevert(bytes("ERC20: burn amount exceeds balance"));
+        vm.expectRevert(bytes("erc20: burn amount exceeds balance"));
         ERC20Extended.burn_from(owner, amount);
     }
 
@@ -463,7 +474,7 @@ contract ERC20Test is Test {
         vm.prank(owner);
         ERC20Extended.approve(spender, amount - 1);
         vm.prank(spender);
-        vm.expectRevert(bytes("ERC20: insufficient allowance"));
+        vm.expectRevert(bytes("erc20: insufficient allowance"));
         ERC20Extended.burn_from(owner, amount);
     }
 
@@ -474,7 +485,7 @@ contract ERC20Test is Test {
         vm.prank(owner);
         ERC20Extended.approve(spender, amount - 1);
         vm.prank(spender);
-        vm.expectRevert(bytes("ERC20: insufficient allowance"));
+        vm.expectRevert(bytes("erc20: insufficient allowance"));
         ERC20Extended.burn_from(owner, amount);
     }
 
@@ -499,7 +510,7 @@ contract ERC20Test is Test {
 
     function testBurnFromFromZeroAddress() public {
         vm.prank(zeroAddress);
-        vm.expectRevert(bytes("ERC20: approve to the zero address"));
+        vm.expectRevert(bytes("erc20: approve to the zero address"));
         ERC20Extended.burn_from(makeAddr("owner"), 0);
     }
 
@@ -521,13 +532,13 @@ contract ERC20Test is Test {
     }
 
     function testMintNonMinter() public {
-        vm.expectRevert(bytes("AccessControl: access is denied"));
+        vm.expectRevert(bytes("erc20: access is denied"));
         ERC20Extended.mint(makeAddr("owner"), 100);
     }
 
     function testMintToZeroAddress() public {
         vm.prank(deployer);
-        vm.expectRevert(bytes("ERC20: mint to the zero address"));
+        vm.expectRevert(bytes("erc20: mint to the zero address"));
         ERC20Extended.mint(zeroAddress, 100);
     }
 
@@ -554,19 +565,19 @@ contract ERC20Test is Test {
     }
 
     function testSetMinterNonOwner() public {
-        vm.expectRevert(bytes("Ownable: caller is not the owner"));
+        vm.expectRevert(bytes("ownable: caller is not the owner"));
         ERC20Extended.set_minter(makeAddr("minter"), true);
     }
 
     function testSetMinterToZeroAddress() public {
         vm.prank(deployer);
-        vm.expectRevert(bytes("AccessControl: minter is the zero address"));
+        vm.expectRevert(bytes("erc20: minter is the zero address"));
         ERC20Extended.set_minter(zeroAddress, true);
     }
 
     function testSetMinterRemoveOwnerAddress() public {
         vm.prank(deployer);
-        vm.expectRevert(bytes("AccessControl: minter is owner address"));
+        vm.expectRevert(bytes("erc20: minter is owner address"));
         ERC20Extended.set_minter(deployer, false);
     }
 
@@ -632,7 +643,7 @@ contract ERC20Test is Test {
         vm.expectEmit(true, true, false, true);
         emit IERC20.Approval(owner, spender, amount);
         ERC20Extended.permit(owner, spender, amount, deadline, v, r, s);
-        vm.expectRevert(bytes("ERC20Permit: invalid signature"));
+        vm.expectRevert(bytes("erc20: invalid signature"));
         ERC20Extended.permit(owner, spender, amount, deadline, v, r, s);
     }
 
@@ -662,7 +673,7 @@ contract ERC20Test is Test {
                 )
             )
         );
-        vm.expectRevert(bytes("ERC20Permit: invalid signature"));
+        vm.expectRevert(bytes("erc20: invalid signature"));
         ERC20Extended.permit(owner, spender, amount, deadline, v, r, s);
     }
 
@@ -700,7 +711,7 @@ contract ERC20Test is Test {
                 )
             )
         );
-        vm.expectRevert(bytes("ERC20Permit: invalid signature"));
+        vm.expectRevert(bytes("erc20: invalid signature"));
         ERC20Extended.permit(owner, spender, amount, deadline, v, r, s);
     }
 
@@ -730,7 +741,7 @@ contract ERC20Test is Test {
                 )
             )
         );
-        vm.expectRevert(bytes("ERC20Permit: invalid signature"));
+        vm.expectRevert(bytes("erc20: invalid signature"));
         ERC20Extended.permit(owner, spender, amount, deadline, v, r, s);
     }
 
@@ -760,7 +771,7 @@ contract ERC20Test is Test {
                 )
             )
         );
-        vm.expectRevert(bytes("ERC20Permit: expired deadline"));
+        vm.expectRevert(bytes("erc20: expired deadline"));
         ERC20Extended.permit(owner, spender, amount, deadline, v, r, s);
     }
 
@@ -834,13 +845,13 @@ contract ERC20Test is Test {
     }
 
     function testTransferOwnershipNonOwner() public {
-        vm.expectRevert(bytes("Ownable: caller is not the owner"));
+        vm.expectRevert(bytes("ownable: caller is not the owner"));
         ERC20Extended.transfer_ownership(makeAddr("newOwner"));
     }
 
     function testTransferOwnershipToZeroAddress() public {
         vm.prank(deployer);
-        vm.expectRevert(bytes("Ownable: new owner is the zero address"));
+        vm.expectRevert(bytes("erc20: new owner is the zero address"));
         ERC20Extended.transfer_ownership(zeroAddress);
     }
 
@@ -859,7 +870,7 @@ contract ERC20Test is Test {
     }
 
     function testRenounceOwnershipNonOwner() public {
-        vm.expectRevert(bytes("Ownable: caller is not the owner"));
+        vm.expectRevert(bytes("ownable: caller is not the owner"));
         ERC20Extended.renounce_ownership();
     }
 
@@ -888,7 +899,7 @@ contract ERC20Test is Test {
                 amount != 0
         );
         vm.prank(owner);
-        vm.expectRevert(bytes("ERC20: transfer amount exceeds balance"));
+        vm.expectRevert(bytes("erc20: transfer amount exceeds balance"));
         ERC20Extended.transfer(to, amount);
     }
 
@@ -948,7 +959,7 @@ contract ERC20Test is Test {
         ERC20Extended.approve(spender, amount);
         vm.stopPrank();
 
-        vm.expectRevert(bytes("ERC20: insufficient allowance"));
+        vm.expectRevert(bytes("erc20: insufficient allowance"));
         ERC20Extended.transferFrom(owner, to, amount + increment);
     }
 
@@ -970,7 +981,7 @@ contract ERC20Test is Test {
     function testFuzzBurnInvalidAmount(address owner, uint256 amount) public {
         vm.assume(owner != deployer && owner != zeroAddress && amount != 0);
         vm.prank(owner);
-        vm.expectRevert(bytes("ERC20: burn amount exceeds balance"));
+        vm.expectRevert(bytes("erc20: burn amount exceeds balance"));
         ERC20Extended.burn(amount);
     }
 
@@ -1007,7 +1018,7 @@ contract ERC20Test is Test {
         ERC20Extended.approve(spender, amount);
         vm.stopPrank();
 
-        vm.expectRevert(bytes("ERC20: insufficient allowance"));
+        vm.expectRevert(bytes("erc20: insufficient allowance"));
         ERC20Extended.burn_from(owner, amount + increment);
     }
 
@@ -1032,7 +1043,7 @@ contract ERC20Test is Test {
         string calldata owner,
         uint256 amount
     ) public {
-        vm.expectRevert(bytes("AccessControl: access is denied"));
+        vm.expectRevert(bytes("erc20: access is denied"));
         ERC20Extended.mint(makeAddr(owner), amount);
     }
 
@@ -1057,7 +1068,7 @@ contract ERC20Test is Test {
         string calldata minter
     ) public {
         vm.assume(msgSender != deployer);
-        vm.expectRevert(bytes("Ownable: caller is not the owner"));
+        vm.expectRevert(bytes("ownable: caller is not the owner"));
         ERC20Extended.set_minter(makeAddr(minter), true);
     }
 
@@ -1132,7 +1143,7 @@ contract ERC20Test is Test {
                 )
             )
         );
-        vm.expectRevert(bytes("ERC20Permit: invalid signature"));
+        vm.expectRevert(bytes("erc20: invalid signature"));
         ERC20Extended.permit(ownerAddr, spenderAddr, amount, deadline, v, r, s);
     }
 
@@ -1239,7 +1250,7 @@ contract ERC20Test is Test {
     ) public {
         vm.assume(nonOwner != deployer);
         vm.prank(nonOwner);
-        vm.expectRevert(bytes("Ownable: caller is not the owner"));
+        vm.expectRevert(bytes("ownable: caller is not the owner"));
         ERC20Extended.transfer_ownership(newOwner);
     }
 
@@ -1270,7 +1281,7 @@ contract ERC20Test is Test {
     function testFuzzRenounceOwnershipNonOwner(address nonOwner) public {
         vm.assume(nonOwner != deployer);
         vm.prank(nonOwner);
-        vm.expectRevert(bytes("Ownable: caller is not the owner"));
+        vm.expectRevert(bytes("ownable: caller is not the owner"));
         ERC20Extended.renounce_ownership();
     }
 }
@@ -1278,6 +1289,7 @@ contract ERC20Test is Test {
 contract ERC20Invariants is Test {
     string private constant _NAME = "MyToken";
     string private constant _SYMBOL = "WAGMI";
+    uint8 private constant _DECIMALS = 18;
     string private constant _NAME_EIP712 = "MyToken";
     string private constant _VERSION_EIP712 = "1";
     uint256 private constant _INITIAL_SUPPLY = type(uint8).max;
@@ -1294,12 +1306,17 @@ contract ERC20Invariants is Test {
         bytes memory args = abi.encode(
             _NAME,
             _SYMBOL,
+            _DECIMALS,
             _INITIAL_SUPPLY,
             _NAME_EIP712,
             _VERSION_EIP712
         );
         ERC20Extended = IERC20Extended(
-            vyperDeployer.deployContract("src/snekmate/tokens/", "ERC20", args)
+            vyperDeployer.deployContract(
+                "src/snekmate/tokens/mocks/",
+                "erc20_mock",
+                args
+            )
         );
         erc20Handler = new ERC20Handler(
             ERC20Extended,
@@ -1310,11 +1327,11 @@ contract ERC20Invariants is Test {
         targetSender(deployer);
     }
 
-    function invariantTotalSupply() public view {
+    function statefulFuzzTotalSupply() public view {
         assertEq(ERC20Extended.totalSupply(), erc20Handler.totalSupply());
     }
 
-    function invariantOwner() public view {
+    function statefulFuzzOwner() public view {
         assertEq(ERC20Extended.owner(), erc20Handler.owner());
     }
 }

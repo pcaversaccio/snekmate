@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: WTFPL
-pragma solidity ^0.8.25;
+pragma solidity ^0.8.26;
 
 import {Test} from "forge-std/Test.sol";
 import {VyperDeployer} from "utils/VyperDeployer.sol";
@@ -277,8 +277,8 @@ contract MerkleProofVerificationTest is Test {
     function setUp() public {
         merkleProofVerification = IMerkleProofVerification(
             vyperDeployer.deployContract(
-                "src/snekmate/utils/",
-                "MerkleProofVerification"
+                "src/snekmate/utils/mocks/",
+                "merkle_proof_verification_mock"
             )
         );
     }
@@ -447,7 +447,7 @@ contract MerkleProofVerificationTest is Test {
      * https://github.com/OpenZeppelin/openzeppelin-contracts/security/advisories/GHSA-wprv-93r4-jj2p.
      * Note that 🐍 snekmate's implementation is not vulnerable by design,
      * as you cannot consume the out-of-bound `hashes` in Vyper. For further
-     * insights also, see the following Twitter thread:
+     * insights also, see the following X thread:
      * https://x.com/0xDACA/status/1669846430528286722.
      */
     function testMaliciousMultiProofVerify() public {
@@ -522,7 +522,7 @@ contract MerkleProofVerificationTest is Test {
         badLeavesDecodedSliced[0] = badLeavesDecoded[0];
         badLeavesDecodedSliced[1] = badLeavesDecoded[2];
 
-        vm.expectRevert(bytes("MerkleProof: invalid multiproof"));
+        vm.expectRevert(bytes("merkle_proof_verification: invalid multiproof"));
         merkleProofVerification.multi_proof_verify(
             badMultiProofDecodedSliced,
             badProofFlags,
@@ -530,7 +530,7 @@ contract MerkleProofVerificationTest is Test {
             badLeavesDecoded
         );
 
-        vm.expectRevert(bytes("MerkleProof: invalid multiproof"));
+        vm.expectRevert(bytes("merkle_proof_verification: invalid multiproof"));
         merkleProofVerification.multi_proof_verify(
             badMultiProofDecoded,
             badProofFlagsSliced,
@@ -538,7 +538,7 @@ contract MerkleProofVerificationTest is Test {
             badLeavesDecoded
         );
 
-        vm.expectRevert(bytes("MerkleProof: invalid multiproof"));
+        vm.expectRevert(bytes("merkle_proof_verification: invalid multiproof"));
         merkleProofVerification.multi_proof_verify(
             badMultiProofDecoded,
             badProofFlags,

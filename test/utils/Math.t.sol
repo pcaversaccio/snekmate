@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: WTFPL
-pragma solidity ^0.8.25;
+pragma solidity ^0.8.26;
 
 import {Test} from "forge-std/Test.sol";
 import {VyperDeployer} from "utils/VyperDeployer.sol";
@@ -29,7 +29,7 @@ contract MathTest is Test {
         uint256 denominator
     ) internal pure returns (uint256 result) {
         // solhint-disable-next-line no-inline-assembly
-        assembly {
+        assembly ("memory-safe") {
             result := mulmod(x, y, denominator)
         }
     }
@@ -111,7 +111,10 @@ contract MathTest is Test {
 
     function setUp() public {
         math = IMath(
-            vyperDeployer.deployContract("src/snekmate/utils/", "Math")
+            vyperDeployer.deployContract(
+                "src/snekmate/utils/mocks/",
+                "math_mock"
+            )
         );
     }
 
@@ -152,7 +155,7 @@ contract MathTest is Test {
         assertEq(math.ceil_div(123, 17), 8);
         assertEq(math.ceil_div(type(uint256).max, 2), 1 << 255);
         assertEq(math.ceil_div(type(uint256).max, 1), type(uint256).max);
-        vm.expectRevert(bytes("Math: ceil_div division by zero"));
+        vm.expectRevert(bytes("math: ceil_div division by zero"));
         math.ceil_div(1, 0);
     }
 
@@ -169,16 +172,16 @@ contract MathTest is Test {
     }
 
     function testMulDivDivisionByZero() public {
-        vm.expectRevert(bytes("Math: mul_div division by zero"));
+        vm.expectRevert(bytes("math: mul_div division by zero"));
         math.mul_div(1, 1, 0, false);
-        vm.expectRevert(bytes("Math: mul_div division by zero"));
+        vm.expectRevert(bytes("math: mul_div division by zero"));
         math.mul_div(1, 1, 0, true);
     }
 
     function testMulDivOverflow() public {
-        vm.expectRevert(bytes("Math: mul_div overflow"));
+        vm.expectRevert(bytes("math: mul_div overflow"));
         math.mul_div(type(uint256).max, type(uint256).max, 1, false);
-        vm.expectRevert(bytes("Math: mul_div overflow"));
+        vm.expectRevert(bytes("math: mul_div overflow"));
         math.mul_div(type(uint256).max, type(uint256).max, 1, true);
     }
 
@@ -234,89 +237,89 @@ contract MathTest is Test {
     }
 
     function testLog2RoundDown() public view {
-        assertEq(math.log_2(0, false), 0);
-        assertEq(math.log_2(1, false), 0);
-        assertEq(math.log_2(2, false), 1);
-        assertEq(math.log_2(3, false), 1);
-        assertEq(math.log_2(4, false), 2);
-        assertEq(math.log_2(5, false), 2);
-        assertEq(math.log_2(6, false), 2);
-        assertEq(math.log_2(7, false), 2);
-        assertEq(math.log_2(8, false), 3);
-        assertEq(math.log_2(9, false), 3);
-        assertEq(math.log_2(type(uint256).max, false), 255);
+        assertEq(math.log2(0, false), 0);
+        assertEq(math.log2(1, false), 0);
+        assertEq(math.log2(2, false), 1);
+        assertEq(math.log2(3, false), 1);
+        assertEq(math.log2(4, false), 2);
+        assertEq(math.log2(5, false), 2);
+        assertEq(math.log2(6, false), 2);
+        assertEq(math.log2(7, false), 2);
+        assertEq(math.log2(8, false), 3);
+        assertEq(math.log2(9, false), 3);
+        assertEq(math.log2(type(uint256).max, false), 255);
     }
 
     function testLog2RoundUp() public view {
-        assertEq(math.log_2(0, true), 0);
-        assertEq(math.log_2(1, true), 0);
-        assertEq(math.log_2(2, true), 1);
-        assertEq(math.log_2(3, true), 2);
-        assertEq(math.log_2(4, true), 2);
-        assertEq(math.log_2(5, true), 3);
-        assertEq(math.log_2(6, true), 3);
-        assertEq(math.log_2(7, true), 3);
-        assertEq(math.log_2(8, true), 3);
-        assertEq(math.log_2(9, true), 4);
-        assertEq(math.log_2(type(uint256).max, true), 256);
+        assertEq(math.log2(0, true), 0);
+        assertEq(math.log2(1, true), 0);
+        assertEq(math.log2(2, true), 1);
+        assertEq(math.log2(3, true), 2);
+        assertEq(math.log2(4, true), 2);
+        assertEq(math.log2(5, true), 3);
+        assertEq(math.log2(6, true), 3);
+        assertEq(math.log2(7, true), 3);
+        assertEq(math.log2(8, true), 3);
+        assertEq(math.log2(9, true), 4);
+        assertEq(math.log2(type(uint256).max, true), 256);
     }
 
     function testLog10RoundDown() public view {
-        assertEq(math.log_10(0, false), 0);
-        assertEq(math.log_10(1, false), 0);
-        assertEq(math.log_10(2, false), 0);
-        assertEq(math.log_10(9, false), 0);
-        assertEq(math.log_10(10, false), 1);
-        assertEq(math.log_10(11, false), 1);
-        assertEq(math.log_10(99, false), 1);
-        assertEq(math.log_10(100, false), 2);
-        assertEq(math.log_10(101, false), 2);
-        assertEq(math.log_10(999, false), 2);
-        assertEq(math.log_10(1_000, false), 3);
-        assertEq(math.log_10(1_001, false), 3);
-        assertEq(math.log_10(type(uint256).max, false), 77);
+        assertEq(math.log10(0, false), 0);
+        assertEq(math.log10(1, false), 0);
+        assertEq(math.log10(2, false), 0);
+        assertEq(math.log10(9, false), 0);
+        assertEq(math.log10(10, false), 1);
+        assertEq(math.log10(11, false), 1);
+        assertEq(math.log10(99, false), 1);
+        assertEq(math.log10(100, false), 2);
+        assertEq(math.log10(101, false), 2);
+        assertEq(math.log10(999, false), 2);
+        assertEq(math.log10(1_000, false), 3);
+        assertEq(math.log10(1_001, false), 3);
+        assertEq(math.log10(type(uint256).max, false), 77);
     }
 
     function testLog10RoundUp() public view {
-        assertEq(math.log_10(0, true), 0);
-        assertEq(math.log_10(1, true), 0);
-        assertEq(math.log_10(2, true), 1);
-        assertEq(math.log_10(9, true), 1);
-        assertEq(math.log_10(10, true), 1);
-        assertEq(math.log_10(11, true), 2);
-        assertEq(math.log_10(99, true), 2);
-        assertEq(math.log_10(100, true), 2);
-        assertEq(math.log_10(101, true), 3);
-        assertEq(math.log_10(999, true), 3);
-        assertEq(math.log_10(1_000, true), 3);
-        assertEq(math.log_10(1_001, true), 4);
-        assertEq(math.log_10(type(uint256).max, true), 78);
+        assertEq(math.log10(0, true), 0);
+        assertEq(math.log10(1, true), 0);
+        assertEq(math.log10(2, true), 1);
+        assertEq(math.log10(9, true), 1);
+        assertEq(math.log10(10, true), 1);
+        assertEq(math.log10(11, true), 2);
+        assertEq(math.log10(99, true), 2);
+        assertEq(math.log10(100, true), 2);
+        assertEq(math.log10(101, true), 3);
+        assertEq(math.log10(999, true), 3);
+        assertEq(math.log10(1_000, true), 3);
+        assertEq(math.log10(1_001, true), 4);
+        assertEq(math.log10(type(uint256).max, true), 78);
     }
 
     function testLog256RoundDown() public view {
-        assertEq(math.log_256(0, false), 0);
-        assertEq(math.log_256(1, false), 0);
-        assertEq(math.log_256(2, false), 0);
-        assertEq(math.log_256(255, false), 0);
-        assertEq(math.log_256(256, false), 1);
-        assertEq(math.log_256(257, false), 1);
-        assertEq(math.log_256(65_535, false), 1);
-        assertEq(math.log_256(65_536, false), 2);
-        assertEq(math.log_256(65_537, false), 2);
-        assertEq(math.log_256(type(uint256).max, false), 31);
+        assertEq(math.log256(0, false), 0);
+        assertEq(math.log256(1, false), 0);
+        assertEq(math.log256(2, false), 0);
+        assertEq(math.log256(255, false), 0);
+        assertEq(math.log256(256, false), 1);
+        assertEq(math.log256(257, false), 1);
+        assertEq(math.log256(65_535, false), 1);
+        assertEq(math.log256(65_536, false), 2);
+        assertEq(math.log256(65_537, false), 2);
+        assertEq(math.log256(type(uint256).max, false), 31);
     }
 
     function testLog256RoundUp() public view {
-        assertEq(math.log_256(0, true), 0);
-        assertEq(math.log_256(1, true), 0);
-        assertEq(math.log_256(2, true), 1);
-        assertEq(math.log_256(255, true), 1);
-        assertEq(math.log_256(256, true), 1);
-        assertEq(math.log_256(257, true), 2);
-        assertEq(math.log_256(65_535, true), 2);
-        assertEq(math.log_256(65_536, true), 2);
-        assertEq(math.log_256(65_537, true), 3);
-        assertEq(math.log_256(type(uint256).max, true), 32);
+        assertEq(math.log256(0, true), 0);
+        assertEq(math.log256(1, true), 0);
+        assertEq(math.log256(2, true), 1);
+        assertEq(math.log256(255, true), 1);
+        assertEq(math.log256(256, true), 1);
+        assertEq(math.log256(257, true), 2);
+        assertEq(math.log256(65_535, true), 2);
+        assertEq(math.log256(65_536, true), 2);
+        assertEq(math.log256(65_537, true), 3);
+        assertEq(math.log256(type(uint256).max, true), 32);
     }
 
     function testWadLn() public view {
@@ -340,9 +343,9 @@ contract MathTest is Test {
     }
 
     function testWadLnNegativeValues() public {
-        vm.expectRevert(bytes("Math: wad_ln undefined"));
+        vm.expectRevert(bytes("math: wad_ln undefined"));
         math.wad_ln(-1);
-        vm.expectRevert(bytes("Math: wad_ln undefined"));
+        vm.expectRevert(bytes("math: wad_ln undefined"));
         math.wad_ln(type(int256).min);
     }
 
@@ -376,9 +379,9 @@ contract MathTest is Test {
     }
 
     function testWadExpOverflow() public {
-        vm.expectRevert(bytes("Math: wad_exp overflow"));
+        vm.expectRevert(bytes("math: wad_exp overflow"));
         math.wad_exp(135_305_999_368_893_231_589);
-        vm.expectRevert(bytes("Math: wad_exp overflow"));
+        vm.expectRevert(bytes("math: wad_exp overflow"));
         math.wad_exp(type(int256).max);
     }
 
@@ -565,7 +568,7 @@ contract MathTest is Test {
      * https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/test/utils/math/Math.t.sol.
      */
     function testFuzzLog2(uint256 x, bool roundup) public view {
-        uint256 result = math.log_2(x, roundup);
+        uint256 result = math.log2(x, roundup);
         if (x == 0) {
             assertEq(result, 0);
         } else if (result >= 256 || 2 ** result > x) {
@@ -584,7 +587,7 @@ contract MathTest is Test {
      * https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/test/utils/math/Math.t.sol.
      */
     function testFuzzLog10(uint256 x, bool roundup) public view {
-        uint256 result = math.log_10(x, roundup);
+        uint256 result = math.log10(x, roundup);
         if (x == 0) {
             assertEq(result, 0);
         } else if (result >= 78 || 10 ** result > x) {
@@ -603,7 +606,7 @@ contract MathTest is Test {
      * https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/test/utils/math/Math.t.sol.
      */
     function testFuzzLog256(uint256 x, bool roundup) public view {
-        uint256 result = math.log_256(x, roundup);
+        uint256 result = math.log256(x, roundup);
         if (x == 0) {
             assertEq(result, 0);
         } else if (result >= 32 || 256 ** result > x) {

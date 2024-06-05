@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.25;
+pragma solidity ^0.8.26;
 
 import {IERC1271} from "openzeppelin/interfaces/IERC1271.sol";
 
@@ -20,7 +20,7 @@ contract ERC1271MaliciousMock is IERC1271 {
         bytes memory
     ) public pure override returns (bytes4) {
         // solhint-disable-next-line no-inline-assembly
-        assembly {
+        assembly ("memory-safe") {
             mstore(
                 0,
                 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff

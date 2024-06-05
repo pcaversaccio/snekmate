@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: WTFPL
-pragma solidity ^0.8.25;
+pragma solidity ^0.8.26;
 
 import {Test} from "forge-std/Test.sol";
 import {VyperDeployer} from "utils/VyperDeployer.sol";
@@ -21,7 +21,10 @@ contract MulticallTest is Test {
 
     function setUp() public {
         multicall = IMulticall(
-            vyperDeployer.deployContract("src/snekmate/utils/", "Multicall")
+            vyperDeployer.deployContract(
+                "src/snekmate/utils/mocks/",
+                "multicall_mock"
+            )
         );
     }
 
@@ -195,7 +198,7 @@ contract MulticallTest is Test {
             abi.encodeWithSignature("transferEther(address)", etherReceiverAddr)
         );
 
-        vm.expectRevert(bytes("Multicall: value mismatch"));
+        vm.expectRevert(bytes("multicall: value mismatch"));
         /**
          * @dev We don't send any `msg.value`.
          */

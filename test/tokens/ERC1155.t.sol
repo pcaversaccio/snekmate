@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: WTFPL
-pragma solidity ^0.8.25;
+pragma solidity ^0.8.26;
 
 import {Test} from "forge-std/Test.sol";
 import {VyperDeployer} from "utils/VyperDeployer.sol";
@@ -32,8 +32,8 @@ contract ERC1155Test is Test {
         bytes memory args = abi.encode(_BASE_URI);
         ERC1155Extended = IERC1155Extended(
             vyperDeployer.deployContract(
-                "src/snekmate/tokens/",
-                "ERC1155",
+                "src/snekmate/tokens/mocks/",
+                "erc1155_mock",
                 args
             )
         );
@@ -58,8 +58,8 @@ contract ERC1155Test is Test {
         bytes memory args = abi.encode(_BASE_URI);
         ERC1155ExtendedInitialEvent = IERC1155Extended(
             vyperDeployer.deployContract(
-                "src/snekmate/tokens/",
-                "ERC1155",
+                "src/snekmate/tokens/mocks/",
+                "erc1155_mock",
                 args
             )
         );
@@ -136,11 +136,6 @@ contract ERC1155Test is Test {
         assertEq(ERC1155Extended.balanceOf(makeAddr("firstOwner"), 0), 0);
         assertEq(ERC1155Extended.balanceOf(makeAddr("secondOwner"), 1), 0);
         assertEq(ERC1155Extended.balanceOf(makeAddr("thirdOwner"), 2), 0);
-    }
-
-    function testBalanceOfZeroAddress() public {
-        vm.expectRevert(bytes("ERC1155: address zero is not a valid owner"));
-        ERC1155Extended.balanceOf(zeroAddress, 0);
     }
 
     function testBalanceOfBatchCase1() public {
@@ -255,7 +250,7 @@ contract ERC1155Test is Test {
         owners1[0] = makeAddr("firstOwner");
         owners1[1] = makeAddr("secondAddr");
         ids1[0] = 0;
-        vm.expectRevert(bytes("ERC1155: owners and ids length mismatch"));
+        vm.expectRevert(bytes("erc1155: owners and ids length mismatch"));
         ERC1155Extended.balanceOfBatch(owners1, ids1);
 
         address[] memory owners2 = new address[](1);
@@ -263,17 +258,8 @@ contract ERC1155Test is Test {
         owners2[0] = makeAddr("thirdOwner");
         ids2[0] = 0;
         ids2[1] = 1;
-        vm.expectRevert(bytes("ERC1155: owners and ids length mismatch"));
+        vm.expectRevert(bytes("erc1155: owners and ids length mismatch"));
         ERC1155Extended.balanceOfBatch(owners2, ids2);
-    }
-
-    function testBalanceOfBatchZeroAddress() public {
-        address[] memory owners = new address[](1);
-        uint256[] memory ids = new uint256[](1);
-        owners[0] = zeroAddress;
-        ids[0] = 0;
-        vm.expectRevert(bytes("ERC1155: address zero is not a valid owner"));
-        ERC1155Extended.balanceOfBatch(owners, ids);
     }
 
     function testSetApprovalForAllSuccess() public {
@@ -314,7 +300,7 @@ contract ERC1155Test is Test {
 
     function testSetApprovalForAllToSelf() public {
         address owner = makeAddr("owner");
-        vm.expectRevert(bytes("ERC1155: setting approval status for self"));
+        vm.expectRevert(bytes("erc1155: setting approval status for self"));
         vm.prank(owner);
         ERC1155Extended.setApprovalForAll(owner, true);
     }
@@ -393,7 +379,7 @@ contract ERC1155Test is Test {
 
         vm.startPrank(operator);
         vm.expectRevert(
-            bytes("ERC1155: caller is not token owner or approved")
+            bytes("erc1155: caller is not token owner or approved")
         );
         ERC1155Extended.safeTransferFrom(owner, receiver, id1, amount1, data);
         vm.stopPrank();
@@ -544,7 +530,7 @@ contract ERC1155Test is Test {
 
         vm.startPrank(owner);
         vm.expectRevert(
-            bytes("ERC1155: transfer to non-ERC1155Receiver implementer")
+            bytes("erc1155: transfer to non-IERC1155Receiver implementer")
         );
         ERC1155Extended.safeTransferFrom(owner, receiver, id1, amount1, data);
         vm.stopPrank();
@@ -559,7 +545,7 @@ contract ERC1155Test is Test {
 
         vm.startPrank(operator);
         vm.expectRevert(
-            bytes("ERC1155: transfer to non-ERC1155Receiver implementer")
+            bytes("erc1155: transfer to non-IERC1155Receiver implementer")
         );
         ERC1155Extended.safeTransferFrom(owner, receiver, id2, amount2, data);
         vm.stopPrank();
@@ -650,7 +636,7 @@ contract ERC1155Test is Test {
         vm.stopPrank();
 
         vm.startPrank(owner);
-        vm.expectRevert(bytes("ERC1155: insufficient balance for transfer"));
+        vm.expectRevert(bytes("erc1155: insufficient balance for transfer"));
         ERC1155Extended.safeTransferFrom(
             owner,
             makeAddr("to"),
@@ -671,7 +657,7 @@ contract ERC1155Test is Test {
         vm.stopPrank();
 
         vm.startPrank(owner);
-        vm.expectRevert(bytes("ERC1155: transfer to the zero address"));
+        vm.expectRevert(bytes("erc1155: transfer to the zero address"));
         ERC1155Extended.safeTransferFrom(owner, zeroAddress, id, amount, data);
         vm.stopPrank();
     }
@@ -782,7 +768,7 @@ contract ERC1155Test is Test {
 
         vm.startPrank(operator);
         vm.expectRevert(
-            bytes("ERC1155: caller is not token owner or approved")
+            bytes("erc1155: caller is not token owner or approved")
         );
         ERC1155Extended.safeBatchTransferFrom(
             owner,
@@ -940,7 +926,7 @@ contract ERC1155Test is Test {
 
         vm.startPrank(owner);
         vm.expectRevert(
-            bytes("ERC1155: transfer to non-ERC1155Receiver implementer")
+            bytes("erc1155: transfer to non-IERC1155Receiver implementer")
         );
         ERC1155Extended.safeBatchTransferFrom(
             owner,
@@ -1105,7 +1091,7 @@ contract ERC1155Test is Test {
 
         vm.startPrank(owner);
         ++amounts[3];
-        vm.expectRevert(bytes("ERC1155: insufficient balance for transfer"));
+        vm.expectRevert(bytes("erc1155: insufficient balance for transfer"));
         ERC1155Extended.safeBatchTransferFrom(
             owner,
             makeAddr("to"),
@@ -1141,7 +1127,7 @@ contract ERC1155Test is Test {
         amounts2[2] = 20;
 
         vm.startPrank(owner);
-        vm.expectRevert(bytes("ERC1155: ids and amounts length mismatch"));
+        vm.expectRevert(bytes("erc1155: ids and amounts length mismatch"));
         ERC1155Extended.safeBatchTransferFrom(
             owner,
             receiver,
@@ -1149,7 +1135,7 @@ contract ERC1155Test is Test {
             amounts1,
             data
         );
-        vm.expectRevert(bytes("ERC1155: ids and amounts length mismatch"));
+        vm.expectRevert(bytes("erc1155: ids and amounts length mismatch"));
         ERC1155Extended.safeBatchTransferFrom(
             owner,
             receiver,
@@ -1180,7 +1166,7 @@ contract ERC1155Test is Test {
         vm.stopPrank();
 
         vm.startPrank(owner);
-        vm.expectRevert(bytes("ERC1155: transfer to the zero address"));
+        vm.expectRevert(bytes("erc1155: transfer to the zero address"));
         ERC1155Extended.safeBatchTransferFrom(
             owner,
             zeroAddress,
@@ -1206,8 +1192,8 @@ contract ERC1155Test is Test {
         bytes memory args = abi.encode("");
         ERC1155ExtendedNoBaseURI = IERC1155Extended(
             vyperDeployer.deployContract(
-                "src/snekmate/tokens/",
-                "ERC1155",
+                "src/snekmate/tokens/mocks/",
+                "erc1155_mock",
                 args
             )
         );
@@ -1230,8 +1216,8 @@ contract ERC1155Test is Test {
         bytes memory args = abi.encode("");
         ERC1155ExtendedNoBaseURI = IERC1155Extended(
             vyperDeployer.deployContract(
-                "src/snekmate/tokens/",
-                "ERC1155",
+                "src/snekmate/tokens/mocks/",
+                "erc1155_mock",
                 args
             )
         );
@@ -1266,7 +1252,7 @@ contract ERC1155Test is Test {
     }
 
     function testSetUriNonMinter() public {
-        vm.expectRevert(bytes("AccessControl: access is denied"));
+        vm.expectRevert(bytes("erc1155: access is denied"));
         vm.prank(makeAddr("nonOwner"));
         ERC1155Extended.set_uri(1, "my_awesome_uri");
     }
@@ -1515,7 +1501,7 @@ contract ERC1155Test is Test {
 
         vm.startPrank(operator);
         vm.expectRevert(
-            bytes("ERC1155: caller is not token owner or approved")
+            bytes("erc1155: caller is not token owner or approved")
         );
         ERC1155Extended.burn(owner, id1, burnAmount);
         vm.stopPrank();
@@ -1524,7 +1510,7 @@ contract ERC1155Test is Test {
     function testBurnFromZeroAddress() public {
         address owner = zeroAddress;
         vm.prank(owner);
-        vm.expectRevert(bytes("ERC1155: burn from the zero address"));
+        vm.expectRevert(bytes("erc1155: burn from the zero address"));
         ERC1155Extended.burn(owner, 1, 1);
     }
 
@@ -1539,7 +1525,7 @@ contract ERC1155Test is Test {
         vm.stopPrank();
 
         vm.startPrank(firstOwner);
-        vm.expectRevert(bytes("ERC1155: burn amount exceeds balance"));
+        vm.expectRevert(bytes("erc1155: burn amount exceeds balance"));
         ERC1155Extended.burn(firstOwner, id, 16);
         vm.stopPrank();
     }
@@ -1547,7 +1533,7 @@ contract ERC1155Test is Test {
     function testBurnNonExistentTokenId() public {
         address firstOwner = makeAddr("firstOwner");
         vm.prank(firstOwner);
-        vm.expectRevert(bytes("ERC1155: burn amount exceeds total_supply"));
+        vm.expectRevert(bytes("erc1155: burn amount exceeds total_supply"));
         ERC1155Extended.burn(firstOwner, 1, 1);
     }
 
@@ -1645,7 +1631,7 @@ contract ERC1155Test is Test {
 
         vm.startPrank(operator);
         vm.expectRevert(
-            bytes("ERC1155: caller is not token owner or approved")
+            bytes("erc1155: caller is not token owner or approved")
         );
         ERC1155Extended.burn_batch(owner, ids, amounts);
         vm.stopPrank();
@@ -1674,9 +1660,9 @@ contract ERC1155Test is Test {
         amounts2[2] = 20;
 
         vm.startPrank(owner);
-        vm.expectRevert(bytes("ERC1155: ids and amounts length mismatch"));
+        vm.expectRevert(bytes("erc1155: ids and amounts length mismatch"));
         ERC1155Extended.burn_batch(owner, ids1, amounts1);
-        vm.expectRevert(bytes("ERC1155: ids and amounts length mismatch"));
+        vm.expectRevert(bytes("erc1155: ids and amounts length mismatch"));
         ERC1155Extended.burn_batch(owner, ids2, amounts2);
         vm.stopPrank();
     }
@@ -1696,7 +1682,7 @@ contract ERC1155Test is Test {
         amounts[3] = 20;
 
         vm.prank(owner);
-        vm.expectRevert(bytes("ERC1155: burn from the zero address"));
+        vm.expectRevert(bytes("erc1155: burn from the zero address"));
         ERC1155Extended.burn_batch(owner, ids, amounts);
     }
 
@@ -1720,7 +1706,7 @@ contract ERC1155Test is Test {
         vm.stopPrank();
 
         vm.startPrank(nonOwner);
-        vm.expectRevert(bytes("ERC1155: burn amount exceeds balance"));
+        vm.expectRevert(bytes("erc1155: burn amount exceeds balance"));
         ERC1155Extended.burn_batch(nonOwner, ids, amounts);
         vm.stopPrank();
     }
@@ -1740,7 +1726,7 @@ contract ERC1155Test is Test {
         amounts[3] = 20;
 
         vm.prank(owner);
-        vm.expectRevert(bytes("ERC1155: burn amount exceeds total_supply"));
+        vm.expectRevert(bytes("erc1155: burn amount exceeds total_supply"));
         ERC1155Extended.burn_batch(owner, ids, amounts);
     }
 
@@ -1889,12 +1875,12 @@ contract ERC1155Test is Test {
         bytes memory data = new bytes(0);
         vm.startPrank(deployer);
         vm.expectRevert(
-            bytes("ERC1155: transfer to non-ERC1155Receiver implementer")
+            bytes("erc1155: transfer to non-IERC1155Receiver implementer")
         );
         ERC1155Extended.safe_mint(receiver, id1, amount1, data);
 
         vm.expectRevert(
-            bytes("ERC1155: transfer to non-ERC1155Receiver implementer")
+            bytes("erc1155: transfer to non-IERC1155Receiver implementer")
         );
         ERC1155Extended.safe_mint(receiver, id2, amount2, data);
         vm.stopPrank();
@@ -1951,10 +1937,10 @@ contract ERC1155Test is Test {
         uint256 amount2 = 15;
         bytes memory data = new bytes(0);
         vm.startPrank(deployer);
-        vm.expectRevert(bytes("ERC1155: mint to the zero address"));
+        vm.expectRevert(bytes("erc1155: mint to the zero address"));
         ERC1155Extended.safe_mint(receiver, id1, amount1, data);
 
-        vm.expectRevert(bytes("ERC1155: mint to the zero address"));
+        vm.expectRevert(bytes("erc1155: mint to the zero address"));
         ERC1155Extended.safe_mint(receiver, id2, amount2, data);
         vm.stopPrank();
     }
@@ -1967,10 +1953,10 @@ contract ERC1155Test is Test {
         uint256 amount2 = 15;
         bytes memory data = new bytes(0);
         vm.startPrank(makeAddr("nonOwner"));
-        vm.expectRevert(bytes("AccessControl: access is denied"));
+        vm.expectRevert(bytes("erc1155: access is denied"));
         ERC1155Extended.safe_mint(receiver, id1, amount1, data);
 
-        vm.expectRevert(bytes("AccessControl: access is denied"));
+        vm.expectRevert(bytes("erc1155: access is denied"));
         ERC1155Extended.safe_mint(receiver, id2, amount2, data);
         vm.stopPrank();
     }
@@ -2143,7 +2129,7 @@ contract ERC1155Test is Test {
 
         vm.startPrank(deployer);
         vm.expectRevert(
-            bytes("ERC1155: transfer to non-ERC1155Receiver implementer")
+            bytes("erc1155: transfer to non-IERC1155Receiver implementer")
         );
         ERC1155Extended.safe_mint_batch(receiver, ids, amounts, data);
         vm.stopPrank();
@@ -2269,10 +2255,10 @@ contract ERC1155Test is Test {
         amounts2[2] = 10;
 
         vm.startPrank(deployer);
-        vm.expectRevert("ERC1155: ids and amounts length mismatch");
+        vm.expectRevert("erc1155: ids and amounts length mismatch");
         ERC1155Extended.safe_mint_batch(deployer, ids1, amounts1, data);
 
-        vm.expectRevert("ERC1155: ids and amounts length mismatch");
+        vm.expectRevert("erc1155: ids and amounts length mismatch");
         ERC1155Extended.safe_mint_batch(deployer, ids2, amounts2, data);
         vm.stopPrank();
     }
@@ -2292,7 +2278,7 @@ contract ERC1155Test is Test {
         amounts[3] = 20;
 
         vm.startPrank(deployer);
-        vm.expectRevert(bytes("ERC1155: mint to the zero address"));
+        vm.expectRevert(bytes("erc1155: mint to the zero address"));
         ERC1155Extended.safe_mint_batch(zeroAddress, ids, amounts, data);
         vm.stopPrank();
     }
@@ -2312,7 +2298,7 @@ contract ERC1155Test is Test {
         amounts[3] = 20;
 
         vm.startPrank(makeAddr("nonOwner"));
-        vm.expectRevert(bytes("AccessControl: access is denied"));
+        vm.expectRevert(bytes("erc1155: access is denied"));
         ERC1155Extended.safe_mint_batch(makeAddr("owner"), ids, amounts, data);
         vm.stopPrank();
     }
@@ -2365,19 +2351,19 @@ contract ERC1155Test is Test {
     }
 
     function testSetMinterNonOwner() public {
-        vm.expectRevert(bytes("Ownable: caller is not the owner"));
+        vm.expectRevert(bytes("ownable: caller is not the owner"));
         ERC1155Extended.set_minter(makeAddr("minter"), true);
     }
 
     function testSetMinterToZeroAddress() public {
         vm.prank(deployer);
-        vm.expectRevert(bytes("AccessControl: minter is the zero address"));
+        vm.expectRevert(bytes("erc1155: minter is the zero address"));
         ERC1155Extended.set_minter(zeroAddress, true);
     }
 
     function testSetMinterRemoveOwnerAddress() public {
         vm.prank(deployer);
-        vm.expectRevert(bytes("AccessControl: minter is owner address"));
+        vm.expectRevert(bytes("erc1155: minter is owner address"));
         ERC1155Extended.set_minter(deployer, false);
     }
 
@@ -2403,13 +2389,13 @@ contract ERC1155Test is Test {
     }
 
     function testTransferOwnershipNonOwner() public {
-        vm.expectRevert(bytes("Ownable: caller is not the owner"));
+        vm.expectRevert(bytes("ownable: caller is not the owner"));
         ERC1155Extended.transfer_ownership(makeAddr("newOwner"));
     }
 
     function testTransferOwnershipToZeroAddress() public {
         vm.prank(deployer);
-        vm.expectRevert(bytes("Ownable: new owner is the zero address"));
+        vm.expectRevert(bytes("erc1155: new owner is the zero address"));
         ERC1155Extended.transfer_ownership(zeroAddress);
     }
 
@@ -2428,7 +2414,7 @@ contract ERC1155Test is Test {
     }
 
     function testRenounceOwnershipNonOwner() public {
-        vm.expectRevert(bytes("Ownable: caller is not the owner"));
+        vm.expectRevert(bytes("ownable: caller is not the owner"));
         ERC1155Extended.renounce_ownership();
     }
 
@@ -2932,7 +2918,7 @@ contract ERC1155Test is Test {
 
     function testFuzzSetUriNonMinter(address nonOwner) public {
         vm.assume(nonOwner != deployer);
-        vm.expectRevert(bytes("AccessControl: access is denied"));
+        vm.expectRevert(bytes("erc1155: access is denied"));
         vm.prank(nonOwner);
         ERC1155Extended.set_uri(1, "my_awesome_uri");
     }
@@ -3284,10 +3270,10 @@ contract ERC1155Test is Test {
         uint256 amount2 = 15;
         bytes memory data = new bytes(0);
         vm.startPrank(nonOwner);
-        vm.expectRevert(bytes("AccessControl: access is denied"));
+        vm.expectRevert(bytes("erc1155: access is denied"));
         ERC1155Extended.safe_mint(receiver, id1, amount1, data);
 
-        vm.expectRevert(bytes("AccessControl: access is denied"));
+        vm.expectRevert(bytes("erc1155: access is denied"));
         ERC1155Extended.safe_mint(receiver, id2, amount2, data);
         vm.stopPrank();
     }
@@ -3460,7 +3446,7 @@ contract ERC1155Test is Test {
         amounts[3] = 20;
 
         vm.startPrank(nonOwner);
-        vm.expectRevert(bytes("AccessControl: access is denied"));
+        vm.expectRevert(bytes("erc1155: access is denied"));
         ERC1155Extended.safe_mint_batch(makeAddr("owner"), ids, amounts, data);
         vm.stopPrank();
     }
@@ -3486,7 +3472,7 @@ contract ERC1155Test is Test {
         string calldata minter
     ) public {
         vm.assume(msgSender != deployer);
-        vm.expectRevert(bytes("Ownable: caller is not the owner"));
+        vm.expectRevert(bytes("ownable: caller is not the owner"));
         ERC1155Extended.set_minter(makeAddr(minter), true);
     }
 
@@ -3535,7 +3521,7 @@ contract ERC1155Test is Test {
     ) public {
         vm.assume(nonOwner != deployer);
         vm.prank(nonOwner);
-        vm.expectRevert(bytes("Ownable: caller is not the owner"));
+        vm.expectRevert(bytes("ownable: caller is not the owner"));
         ERC1155Extended.transfer_ownership(newOwner);
     }
 
@@ -3566,7 +3552,7 @@ contract ERC1155Test is Test {
     function testFuzzRenounceOwnershipNonOwner(address nonOwner) public {
         vm.assume(nonOwner != deployer);
         vm.prank(nonOwner);
-        vm.expectRevert(bytes("Ownable: caller is not the owner"));
+        vm.expectRevert(bytes("ownable: caller is not the owner"));
         ERC1155Extended.renounce_ownership();
     }
 }
@@ -3586,8 +3572,8 @@ contract ERC1155Invariants is Test {
         bytes memory args = abi.encode(_BASE_URI);
         ERC1155Extended = IERC1155Extended(
             vyperDeployer.deployContract(
-                "src/snekmate/tokens/",
-                "ERC1155",
+                "src/snekmate/tokens/mocks/",
+                "erc1155_mock",
                 args
             )
         );
@@ -3596,7 +3582,7 @@ contract ERC1155Invariants is Test {
         targetSender(deployer);
     }
 
-    function invariantOwner() public view {
+    function statefulFuzzOwner() public view {
         assertEq(ERC1155Extended.owner(), erc1155Handler.owner());
     }
 }

@@ -3,7 +3,7 @@ name: 🕵️‍♂️ Test smart contracts
 on: [push, pull_request, workflow_dispatch]
 
 concurrency:
-  group: ${{github.workflow}}-${{github.ref}}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -13,12 +13,14 @@ jobs:
       matrix:
         os:
           - ubuntu-latest
+        python_version:
+          - 3.12
         architecture:
           - x64
-        python_version:
-          - 3.11
         node_version:
           - 20
+        echidna:
+          - "--config test/echidna.yaml"
 
     steps:
       - name: Checkout
@@ -33,18 +35,18 @@ jobs:
           architecture: ${{ matrix.architecture }}
 
       - name: Install Vyper
-        run: pip install vyper
+        run: pip install git+https://github.com/vyperlang/vyper.git@master
 
-      - name: Check userdoc and devdoc compilation
-        run: python scripts/compile.py
+      - name: Show the Vyper version
+        run: vyper --version
 
-      - name: Setup Ape
-        uses: ApeWorX/github-action@v2
-        with:
-          python-version: ${{ matrix.python_version }}
+      # - name: Setup Ape
+      #   uses: ApeWorX/github-action@v2
+      #   with:
+      #     python-version: ${{ matrix.python_version }}
 
-      - name: Check Ape compilation
-        run: ape compile
+      # - name: Check Ape compilation
+      #   run: ape compile
 
       - name: Install pnpm
         uses: pnpm/action-setup@v3
@@ -97,3 +99,32 @@ jobs:
         run: NO_COLOR=1 forge snapshot >> $GITHUB_STEP_SUMMARY
         env:
           FOUNDRY_PROFILE: default
+
+      - name: Install Homebrew
+        uses: Homebrew/actions/setup-homebrew@master
+
+      - name: Install Echidna
+        run: brew install echidna
+
+      - name: Show the Echidna version
+        run: echidna --version
+
+      - name: Show the Foundry Echidna config
+        run: forge config
+        env:
+          FOUNDRY_PROFILE: echidna
+
+      - name: Compile the Echidna test contracts
+        run: forge build --build-info
+        env:
+          FOUNDRY_PROFILE: echidna
+
+      - name: Run Echidna ERC-20 property tests
+        run: echidna test/tokens/echidna/ERC20Properties.sol --contract CryticERC20ExternalHarness ${{ matrix.echidna }}
+        env:
+          FOUNDRY_PROFILE: echidna
+
+      - name: Run Echidna ERC-721 property tests
+        run: echidna test/tokens/echidna/ERC721Properties.sol --contract CryticERC721ExternalHarness ${{ matrix.echidna }}
+        env:
+          FOUNDRY_PROFILE: echidna

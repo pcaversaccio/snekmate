@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: WTFPL
-pragma solidity ^0.8.25;
+pragma solidity ^0.8.26;
 
 import {Test} from "forge-std/Test.sol";
 import {VyperDeployer} from "utils/VyperDeployer.sol";
@@ -20,8 +20,8 @@ contract Create2AddressTest is Test {
     function setUp() public {
         create2Address = ICreate2Address(
             vyperDeployer.deployContract(
-                "src/snekmate/utils/",
-                "Create2Address"
+                "src/snekmate/utils/mocks/",
+                "create2_address_mock"
             )
         );
         create2AddressAddr = address(create2Address);

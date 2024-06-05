@@ -4,10 +4,15 @@ lib/solady
 lib/solmate
 lib/prb-test
 lib/forge-std
+lib/properties
 lib/create-util
 lib/erc4626-tests
+lib/FreshCryptoLib
+lib/halmos-cheatcodes
 lib/solidity-bytes-utils
 lib/openzeppelin-contracts
+echidna-corpus
+crytic-export
 cache
 out
 dist

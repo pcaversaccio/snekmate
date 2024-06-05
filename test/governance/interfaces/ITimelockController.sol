@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: WTFPL
-pragma solidity ^0.8.25;
+pragma solidity ^0.8.26;
 
 import {IERC721Receiver} from "openzeppelin/token/ERC721/IERC721Receiver.sol";
 import {IERC1155Receiver} from "openzeppelin/token/ERC1155/IERC1155Receiver.sol";
@@ -67,9 +67,10 @@ interface ITimelockController is
     function is_operation_done(bytes32 id) external view returns (bool);
 
     /**
-     * @dev As Enums are handled differently in Vyper and Solidity (see https://x.com/pcaversaccio/status/1626514029094047747),
-     * we directly return the underlying Vyper type `uint256` (instead of `OperationState`)
-     * for Enums for ease of testing.
+     * @dev As Flags (a.k.a. Enums) are handled differently in Vyper and Solidity
+     * (see https://x.com/pcaversaccio/status/1626514029094047747), we directly
+     * return the underlying Vyper type `uint256` (instead of `OperationState`) for
+     * Flags for ease of testing.
      */
     function get_operation_state(bytes32 id) external view returns (uint256);
 

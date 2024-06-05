@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: WTFPL
-pragma solidity ^0.8.25;
+pragma solidity ^0.8.26;
 
 import {Test} from "forge-std/Test.sol";
 import {VyperDeployer} from "utils/VyperDeployer.sol";
@@ -36,8 +36,8 @@ contract EIP712DomainSeparatorTest is Test {
         bytes memory args = abi.encode(_NAME, _VERSION);
         EIP712domainSeparator = IEIP712DomainSeparator(
             vyperDeployer.deployContract(
-                "src/snekmate/utils/",
-                "EIP712DomainSeparator",
+                "src/snekmate/utils/mocks/",
+                "eip712_domain_separator_mock",
                 args
             )
         );

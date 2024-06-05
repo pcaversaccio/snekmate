@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: WTFPL
-pragma solidity ^0.8.25;
+pragma solidity ^0.8.26;
 
 import {Test} from "forge-std/Test.sol";
 import {VyperDeployer} from "utils/VyperDeployer.sol";
@@ -7,6 +7,7 @@ import {VyperDeployer} from "utils/VyperDeployer.sol";
 import {IERC20Errors} from "openzeppelin/interfaces/draft-IERC6093.sol";
 
 import {ERC20Mock} from "./mocks/ERC20Mock.sol";
+import {DistributeEtherReentrancyMock, DistributeTokenReentrancyMock} from "./mocks/ReentrancyMocks.sol";
 
 import {IBatchDistributor} from "./interfaces/IBatchDistributor.sol";
 
@@ -21,8 +22,8 @@ contract BatchDistributorTest is Test {
     function setUp() public {
         batchDistributor = IBatchDistributor(
             vyperDeployer.deployContract(
-                "src/snekmate/utils/",
-                "BatchDistributor"
+                "src/snekmate/utils/mocks/",
+                "batch_distributor_mock"
             )
         );
         batchDistributorAddr = address(batchDistributor);
@@ -205,6 +206,48 @@ contract BatchDistributorTest is Test {
         vm.expectRevert();
         batchDistributor.distribute_ether{value: 1 wei}(batch);
         assertEq(batchDistributorAddr.balance, 0);
+    }
+
+    function testDistributeEtherReentrancy() public {
+        /**
+         * @dev Single-function reentrancy case.
+         */
+        DistributeEtherReentrancyMock distributeEtherReentrancyMock = new DistributeEtherReentrancyMock();
+        address alice = address(distributeEtherReentrancyMock);
+        IBatchDistributor.Transaction[]
+            memory transaction1 = new IBatchDistributor.Transaction[](1);
+        transaction1[0] = IBatchDistributor.Transaction({
+            recipient: alice,
+            amount: 2 wei
+        });
+        IBatchDistributor.Batch memory batch1 = IBatchDistributor.Batch({
+            txns: transaction1
+        });
+
+        vm.expectRevert(
+            bytes("DistributeEtherReentrancyMock: reentrancy unsuccessful")
+        );
+        batchDistributor.distribute_ether{value: 2 wei}(batch1);
+
+        /**
+         * @dev Cross-function reentrancy case.
+         */
+        DistributeTokenReentrancyMock distributeTokenReentrancyMock = new DistributeTokenReentrancyMock();
+        address bob = address(distributeTokenReentrancyMock);
+        IBatchDistributor.Transaction[]
+            memory transaction2 = new IBatchDistributor.Transaction[](1);
+        transaction2[0] = IBatchDistributor.Transaction({
+            recipient: bob,
+            amount: 2 wei
+        });
+        IBatchDistributor.Batch memory batch2 = IBatchDistributor.Batch({
+            txns: transaction2
+        });
+
+        vm.expectRevert(
+            bytes("DistributeTokenReentrancyMock: reentrancy unsuccessful")
+        );
+        batchDistributor.distribute_ether{value: 2 wei}(batch2);
     }
 
     function testDistributeTokenOneAddressSuccess() public {
@@ -444,8 +487,8 @@ contract BatchDistributorInvariants is Test {
     function setUp() public {
         batchDistributor = IBatchDistributor(
             vyperDeployer.deployContract(
-                "src/snekmate/utils/",
-                "BatchDistributor"
+                "src/snekmate/utils/mocks/",
+                "batch_distributor_mock"
             )
         );
         batchDistributorAddr = address(batchDistributor);
@@ -464,11 +507,11 @@ contract BatchDistributorInvariants is Test {
         targetSender(msgSender);
     }
 
-    function invariantNoEtherBalance() public view {
+    function statefulFuzzNoEtherBalance() public view {
         assertEq(batchDistributorAddr.balance, 0);
     }
 
-    function invariantNoTokenBalance() public view {
+    function statefulFuzzNoTokenBalance() public view {
         /**
          * @dev This invariant breaks when tokens are sent directly to `batchDistributor`
          * as part of `distribute_token`. However, this behaviour is acceptable.

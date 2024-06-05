@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: WTFPL
-pragma solidity ^0.8.25;
+pragma solidity ^0.8.26;
 
 interface IMath {
     function uint256_average(
@@ -20,11 +20,11 @@ interface IMath {
         bool roundup
     ) external pure returns (uint256);
 
-    function log_2(uint256 x, bool roundup) external pure returns (uint256);
+    function log2(uint256 x, bool roundup) external pure returns (uint256);
 
-    function log_10(uint256 x, bool roundup) external pure returns (uint256);
+    function log10(uint256 x, bool roundup) external pure returns (uint256);
 
-    function log_256(uint256 x, bool roundup) external pure returns (uint256);
+    function log256(uint256 x, bool roundup) external pure returns (uint256);
 
     function wad_ln(int256 x) external pure returns (int256);
 

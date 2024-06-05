@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: WTFPL
-pragma solidity ^0.8.25;
+pragma solidity ^0.8.26;
 
 import {IERC1155MetadataURI} from "openzeppelin/token/ERC1155/extensions/IERC1155MetadataURI.sol";
 
@@ -33,6 +33,8 @@ interface IERC1155Extended is IERC1155MetadataURI {
         uint256 amount,
         bytes calldata data
     ) external;
+
+    function _customMint(address owner, uint256 id, uint256 amount) external;
 
     function safe_mint_batch(
         address owner,

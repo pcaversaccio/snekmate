@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: WTFPL
-pragma solidity ^0.8.25;
+pragma solidity ^0.8.26;
 
 import {Test} from "forge-std/Test.sol";
 import {VyperDeployer} from "utils/VyperDeployer.sol";
@@ -21,20 +21,23 @@ contract CreateAddressTest is Test {
 
     function setUp() public {
         createAddress = ICreateAddress(
-            vyperDeployer.deployContract("src/snekmate/utils/", "CreateAddress")
+            vyperDeployer.deployContract(
+                "src/snekmate/utils/mocks/",
+                "create_address_mock"
+            )
         );
         createAddressAddr = address(createAddress);
     }
 
     function testComputeAddressRevertTooHighNonce() public {
         uint72 nonce = uint72(type(uint64).max);
-        vm.expectRevert(bytes("RLP: invalid nonce value"));
+        vm.expectRevert(bytes("create_address: invalid nonce value"));
         createAddress.compute_address_rlp(makeAddr("alice"), nonce);
     }
 
     function testComputeAddressSelfRevertTooHighNonce() public {
         uint72 nonce = uint72(type(uint64).max);
-        vm.expectRevert(bytes("RLP: invalid nonce value"));
+        vm.expectRevert(bytes("create_address: invalid nonce value"));
         createAddress.compute_address_rlp_self(nonce);
     }
 
@@ -485,7 +488,7 @@ contract CreateAddressTest is Test {
             uint256(type(uint64).max),
             uint256(type(uint256).max)
         );
-        vm.expectRevert(bytes("RLP: invalid nonce value"));
+        vm.expectRevert(bytes("create_address: invalid nonce value"));
         createAddress.compute_address_rlp(deployer, nonce);
     }
 
@@ -497,7 +500,7 @@ contract CreateAddressTest is Test {
             uint256(type(uint64).max),
             uint256(type(uint256).max)
         );
-        vm.expectRevert(bytes("RLP: invalid nonce value"));
+        vm.expectRevert(bytes("create_address: invalid nonce value"));
         createAddress.compute_address_rlp_self(nonce);
     }
 

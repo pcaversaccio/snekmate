@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: WTFPL
-pragma solidity ^0.8.25;
+pragma solidity ^0.8.26;
 
 import {Test} from "forge-std/Test.sol";
 import {VyperDeployer} from "utils/VyperDeployer.sol";
@@ -17,7 +17,10 @@ contract OwnableTest is Test {
 
     function setUp() public {
         ownable = IOwnable(
-            vyperDeployer.deployContract("src/snekmate/auth/", "Ownable")
+            vyperDeployer.deployContract(
+                "src/snekmate/auth/mocks/",
+                "ownable_mock"
+            )
         );
     }
 
@@ -27,7 +30,10 @@ contract OwnableTest is Test {
         vm.expectEmit(true, true, false, false);
         emit IOwnable.OwnershipTransferred(zeroAddress, deployer);
         ownableInitialEvent = IOwnable(
-            vyperDeployer.deployContract("src/snekmate/auth/", "Ownable")
+            vyperDeployer.deployContract(
+                "src/snekmate/auth/mocks/",
+                "ownable_mock"
+            )
         );
         assertEq(ownableInitialEvent.owner(), deployer);
     }
@@ -48,13 +54,13 @@ contract OwnableTest is Test {
     }
 
     function testTransferOwnershipNonOwner() public {
-        vm.expectRevert(bytes("Ownable: caller is not the owner"));
+        vm.expectRevert(bytes("ownable: caller is not the owner"));
         ownable.transfer_ownership(makeAddr("newOwner"));
     }
 
     function testTransferOwnershipToZeroAddress() public {
         vm.prank(deployer);
-        vm.expectRevert(bytes("Ownable: new owner is the zero address"));
+        vm.expectRevert(bytes("ownable: new owner is the zero address"));
         ownable.transfer_ownership(zeroAddress);
     }
 
@@ -70,7 +76,7 @@ contract OwnableTest is Test {
     }
 
     function testRenounceOwnershipNonOwner() public {
-        vm.expectRevert(bytes("Ownable: caller is not the owner"));
+        vm.expectRevert(bytes("ownable: caller is not the owner"));
         ownable.renounce_ownership();
     }
 
@@ -101,7 +107,7 @@ contract OwnableTest is Test {
     ) public {
         vm.assume(nonOwner != deployer);
         vm.prank(nonOwner);
-        vm.expectRevert(bytes("Ownable: caller is not the owner"));
+        vm.expectRevert(bytes("ownable: caller is not the owner"));
         ownable.transfer_ownership(newOwner);
     }
 
@@ -127,7 +133,7 @@ contract OwnableTest is Test {
     function testFuzzRenounceOwnershipNonOwner(address nonOwner) public {
         vm.assume(nonOwner != deployer);
         vm.prank(nonOwner);
-        vm.expectRevert(bytes("Ownable: caller is not the owner"));
+        vm.expectRevert(bytes("ownable: caller is not the owner"));
         ownable.renounce_ownership();
     }
 }
@@ -142,13 +148,16 @@ contract OwnableInvariants is Test {
 
     function setUp() public {
         ownable = IOwnable(
-            vyperDeployer.deployContract("src/snekmate/auth/", "Ownable")
+            vyperDeployer.deployContract(
+                "src/snekmate/auth/mocks/",
+                "ownable_mock"
+            )
         );
         ownerHandler = new OwnerHandler(ownable, deployer);
         targetContract(address(ownerHandler));
     }
 
-    function invariantOwner() public view {
+    function statefulFuzzOwner() public view {
         assertEq(ownable.owner(), ownerHandler.owner());
     }
 }

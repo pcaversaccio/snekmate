@@ -1,6 +1,6 @@
 {
   "name": "snekmate",
-  "version": "0.0.5",
+  "version": "0.1.0-rc.1",
   "description": "State-of-the-art, highly opinionated, hyper-optimised, and secure 🐍Vyper smart contract building blocks.",
   "author": "Pascal Marco Caversaccio <pascal.caversaccio@hotmail.ch>",
   "license": "AGPL-3.0-only",
@@ -30,7 +30,8 @@
     "lint:fix": "pnpm prettier:fix && pnpm solhint:fix && npx eslint . --fix"
   },
   "files": [
-    "src/snekmate/**/*.vy",
+    "src/snekmate/**/*.{vy,vyi}",
+    "!src/snekmate/**/mocks/**/*.{vy,vyi}",
     "LICENSE",
     "README.md",
     "CHANGELOG.md"

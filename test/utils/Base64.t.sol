@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: WTFPL
-pragma solidity ^0.8.25;
+pragma solidity ^0.8.26;
 
 import {PRBTest} from "prb/test/PRBTest.sol";
 import {VyperDeployer} from "utils/VyperDeployer.sol";
@@ -21,7 +21,10 @@ contract Base64Test is PRBTest {
 
     function setUp() public {
         base64 = IBase64(
-            vyperDeployer.deployContract("src/snekmate/utils/", "Base64")
+            vyperDeployer.deployContract(
+                "src/snekmate/utils/mocks/",
+                "base64_mock"
+            )
         );
     }
 
@@ -184,8 +187,8 @@ contract Base64Test is PRBTest {
     }
 
     function testDecodeSentence() public {
-        string memory text = "Snakes are great animals!";
-        string memory data = "U25ha2VzIGFyZSBncmVhdCBhbmltYWxzIQ==";
+        string memory text = "Long Live Vyper!";
+        string memory data = "TG9uZyBMaXZlIFZ5cGVyIQ==";
         bytes[] memory outputStd = base64.decode(data, false);
         bytes[] memory outputUrl = base64.decode(data, true);
         bytes memory returnDataStd = bytes.concat(
@@ -194,10 +197,7 @@ contract Base64Test is PRBTest {
             outputStd[2],
             outputStd[3],
             outputStd[4],
-            outputStd[5],
-            outputStd[6],
-            outputStd[7],
-            outputStd[8]
+            outputStd[5]
         );
         bytes memory returnDataUrl = bytes.concat(
             outputUrl[0],
@@ -205,10 +205,7 @@ contract Base64Test is PRBTest {
             outputUrl[2],
             outputUrl[3],
             outputUrl[4],
-            outputUrl[5],
-            outputUrl[6],
-            outputUrl[7],
-            outputUrl[8]
+            outputUrl[5]
         );
         /**
          * @dev We remove the two trailing zero bytes that stem from
@@ -227,7 +224,7 @@ contract Base64Test is PRBTest {
     function testDecodeSafeUrl() public {
         string memory text = "[]c!~?[]~";
         string memory data = "W11jIX4_W11-";
-        vm.expectRevert(bytes("Base64: invalid string"));
+        vm.expectRevert(bytes("base64: invalid string"));
         base64.decode(data, false);
         bytes[] memory outputUrl = base64.decode(data, true);
         bytes memory returnDataUrl = bytes.concat(
@@ -240,9 +237,9 @@ contract Base64Test is PRBTest {
 
     function testDataLengthMismatch() public {
         string memory data = "W11jI";
-        vm.expectRevert(bytes("Base64: length mismatch"));
+        vm.expectRevert(bytes("base64: length mismatch"));
         base64.decode(data, false);
-        vm.expectRevert(bytes("Base64: length mismatch"));
+        vm.expectRevert(bytes("base64: length mismatch"));
         base64.decode(data, true);
     }
 }
