@@ -542,11 +542,11 @@ def _mod_inv(u: uint256, f: uint256, minus_2modf: uint256) -> uint256:
     @param minus_2modf The 32-bytes "-2 mod f" constant.
     @return uint256 The 32-byte calculation result.
     """
-    c: uint256 = 32
     modexp: address = 0x0000000000000000000000000000000000000005
+    args: uint256[6] = [32, 32, 32, u, minus_2modf, f]
     success: bool = empty(bool)
     return_data: Bytes[32] = b""
-    success, return_data = raw_call(modexp, _abi_encode(c, c, c, u, minus_2modf, f), max_outsize=32, is_static_call=True, revert_on_failure=False)
+    success, return_data = raw_call(modexp, _abi_encode(args), max_outsize=32, is_static_call=True, revert_on_failure=False)
     # Since the `modexp` precompile cannot revert, we do
     # not assert a successful return.
     return _abi_decode(return_data, (uint256))
