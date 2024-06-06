@@ -83,8 +83,8 @@ def _multicall(data: DynArray[Batch, _DYNARRAY_BOUND]) -> DynArray[Result, _DYNA
     @return DynArray The array of `Result` structs.
     """
     results: DynArray[Result, _DYNARRAY_BOUND] = []
-    return_data: Bytes[max_value(uint8)] = b""
     success: bool = empty(bool)
+    return_data: Bytes[max_value(uint8)] = b""
     for batch: Batch in data:
         if (batch.allow_failure == False):
             return_data = raw_call(batch.target, batch.calldata, max_outsize=255)
@@ -114,8 +114,8 @@ def _multicall_value(data: DynArray[BatchValue, _DYNARRAY_BOUND]) -> DynArray[Re
     """
     value_accumulator: uint256 = empty(uint256)
     results: DynArray[Result, _DYNARRAY_BOUND] = []
-    return_data: Bytes[max_value(uint8)] = b""
     success: bool = empty(bool)
+    return_data: Bytes[max_value(uint8)] = b""
     for batch: BatchValue in data:
         msg_value: uint256 = batch.value
         # WARNING: If you expect to hold any funds in a contract that integrates
@@ -157,8 +157,8 @@ def _multicall_self(data: DynArray[BatchSelf, _DYNARRAY_BOUND]) -> DynArray[Resu
     @return DynArray The array of `Result` structs.
     """
     results: DynArray[Result, _DYNARRAY_BOUND] = []
-    return_data: Bytes[max_value(uint8)] = b""
     success: bool = empty(bool)
+    return_data: Bytes[max_value(uint8)] = b""
     for batch: BatchSelf in data:
         if (batch.allow_failure == False):
             return_data = raw_call(self, batch.calldata, max_outsize=255, is_delegate_call=True)
@@ -184,8 +184,8 @@ def _multistaticcall(data: DynArray[Batch, _DYNARRAY_BOUND]) -> DynArray[Result,
     @return DynArray The array of `Result` structs.
     """
     results: DynArray[Result, _DYNARRAY_BOUND] = []
-    return_data: Bytes[max_value(uint8)] = b""
     success: bool = empty(bool)
+    return_data: Bytes[max_value(uint8)] = b""
     for batch: Batch in data:
         if (batch.allow_failure == False):
             return_data = raw_call(batch.target, batch.calldata, max_outsize=255, is_static_call=True)
