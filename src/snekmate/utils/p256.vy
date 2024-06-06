@@ -15,12 +15,20 @@
 """
 
 
+# @dev The `modexp` precompile address.
+_MODEXP: constant(address) = 0x0000000000000000000000000000000000000005
+# @dev The byte size length of `B` (base), `E` (exponent), and `M`
+# (modulus) in the `modexp` precompile.
+_C: constant(uint256) = 32
+
+
 # @notice All of the constant values defined subsequently are
 # parameters for the elliptical curve secp256r1 (see the standard
 # curve database: https://neuromancer.sk/std/secg/secp256r1).
 
 
-# @dev Malleability threshold used as part of the ECDSA verification function.
+# @dev The malleability threshold used as part of the ECDSA
+# verification function.
 _MALLEABILITY_THRESHOLD: constant(uint256) = 57_896_044_605_178_124_381_348_723_474_703_786_764_998_477_612_067_880_171_211_129_530_534_256_022_184
 
 
@@ -28,11 +36,11 @@ _MALLEABILITY_THRESHOLD: constant(uint256) = 57_896_044_605_178_124_381_348_723_
 _P: constant(uint256) = 115_792_089_210_356_248_762_697_446_949_407_573_530_086_143_415_290_314_195_533_631_308_867_097_853_951
 
 
-# @dev Short Weierstrass first coefficient.
+# @dev The short Weierstrass first coefficient.
 # @notice The assumption "_A == -3 (mod _P)" is used throughout
 # the codebase.
 _A: constant(uint256) = 115_792_089_210_356_248_762_697_446_949_407_573_530_086_143_415_290_314_195_533_631_308_867_097_853_948
-# @dev Short Weierstrass second coefficient.
+# @dev The short Weierstrass second coefficient.
 _B: constant(uint256) = 41_058_363_725_152_142_129_326_129_780_047_268_409_114_441_015_993_725_554_835_256_314_039_467_401_291
 
 
@@ -45,8 +53,8 @@ _GY: constant(uint256) = 36_134_250_956_749_795_798_585_127_919_587_881_956_611_
 _N: constant(uint256) = 115_792_089_210_356_248_762_697_446_949_407_573_529_996_955_224_135_760_342_422_259_061_068_512_044_369
 
 
-# @dev The "-2 mod _P" constant is used to speed up inversion and
-# doubling (avoid negation).
+# @dev The "-2 mod _P" constant is used to speed up inversion
+# and doubling (avoid negation).
 _MINUS_2MODP: constant(uint256) = 115_792_089_210_356_248_762_697_446_949_407_573_530_086_143_415_290_314_195_533_631_308_867_097_853_949
 # @dev The "-2 mod _N" constant is used to speed up inversion.
 _MINUS_2MODN: constant(uint256) = 115_792_089_210_356_248_762_697_446_949_407_573_529_996_955_224_135_760_342_422_259_061_068_512_044_367
@@ -511,10 +519,10 @@ def _ec_affine_point_at_inf() -> (uint256, uint256):
 def _n_mod_inv(u: uint256) -> uint256:
     """
     @dev Computes "u**(-1) mod _N".
-    @param u The 32-byte input parameter.
+    @param u The 32-byte base for the `modexp` precompile.
     @return uint256 The 32-byte calculation result.
     """
-    return self._mod_inv(u, _N, _MINUS_2MODN)
+    return self._mod_inv(u, _MINUS_2MODN, _N)
 
 
 @internal
@@ -522,30 +530,26 @@ def _n_mod_inv(u: uint256) -> uint256:
 def _p_mod_inv(u: uint256) -> uint256:
     """
     @dev Computes "u"**(-1) mod _P".
-    @param u The 32-byte input parameter.
+    @param u The 32-byte base for the `modexp` precompile.
     @return uint256 The 32-byte calculation result.
     """
-    return self._mod_inv(u, _P, _MINUS_2MODP)
+    return self._mod_inv(u, _MINUS_2MODP, _P)
 
 
 @internal
 @view
-def _mod_inv(u: uint256, f: uint256, minus_2modf: uint256) -> uint256:
+def _mod_inv(u: uint256, minus_2modf: uint256, f: uint256) -> uint256:
     """
     @dev Computes "u**(-1) mod f = u**(phi(f) - 1) mod f = u**(f-2) mod f"
          for prime f by Fermat's little theorem, compute "u**(f-2) mod f"
          using the `modexp` precompile. Assumes "f != 0". If `u` is `0`,
          then "u**(-1) mod f" is undefined mathematically, but this function
          returns `0`.
-    @param u The first 32-byte input parameter.
-    @param f The second 32-byte input parameter.
-    @param minus_2modf The 32-bytes "-2 mod f" constant.
+    @param u The 32-byte base for the `modexp` precompile.
+    @param minus_2modf The 32-byte exponent for the `modexp` precompile.
+    @param f The 32-byte modulus for the `modexp` precompile.
     @return uint256 The 32-byte calculation result.
     """
-    c: uint256 = 32
-    modexp: address = 0x0000000000000000000000000000000000000005
     return_data: Bytes[32] = b""
-    return_data = raw_call(modexp, _abi_encode(c, c, c, u, minus_2modf, f), max_outsize=32, is_static_call=True)
-    # Since the `modexp` precompile cannot revert, we do
-    # not assert a successful return.
+    return_data = raw_call(_MODEXP, _abi_encode(_C, _C, _C, u, minus_2modf, f), max_outsize=32, is_static_call=True)
     return _abi_decode(return_data, (uint256))

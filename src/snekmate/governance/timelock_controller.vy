@@ -770,8 +770,8 @@ def _execute(target: address, amount: uint256, payload: Bytes[1_024]):
            with the call.
     @param payload The maximum 1,024-byte ABI-encoded calldata.
     """
-    return_data: Bytes[max_value(uint8)] = b""
     success: bool = empty(bool)
+    return_data: Bytes[max_value(uint8)] = b""
     success, return_data = raw_call(target, payload, max_outsize=255, value=amount, revert_on_failure=False)
     if (not(success)):
         if (len(return_data) != empty(uint256)):
