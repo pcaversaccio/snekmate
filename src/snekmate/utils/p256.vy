@@ -514,7 +514,7 @@ def _n_mod_inv(u: uint256) -> uint256:
     @param u The 32-byte input parameter.
     @return uint256 The 32-byte calculation result.
     """
-    return self._mod_inv(u, _N, _MINUS_2MODN)
+    return self._mod_inv(u, _MINUS_2MODN, _N)
 
 
 @internal
@@ -525,12 +525,12 @@ def _p_mod_inv(u: uint256) -> uint256:
     @param u The 32-byte input parameter.
     @return uint256 The 32-byte calculation result.
     """
-    return self._mod_inv(u, _P, _MINUS_2MODP)
+    return self._mod_inv(u, _MINUS_2MODP, _P)
 
 
 @internal
 @view
-def _mod_inv(u: uint256, f: uint256, minus_2modf: uint256) -> uint256:
+def _mod_inv(u: uint256, minus_2modf: uint256, f: uint256) -> uint256:
     """
     @dev Computes "u**(-1) mod f = u**(phi(f) - 1) mod f = u**(f-2) mod f"
          for prime f by Fermat's little theorem, compute "u**(f-2) mod f"
@@ -538,8 +538,8 @@ def _mod_inv(u: uint256, f: uint256, minus_2modf: uint256) -> uint256:
          then "u**(-1) mod f" is undefined mathematically, but this function
          returns `0`.
     @param u The first 32-byte input parameter.
-    @param f The second 32-byte input parameter.
     @param minus_2modf The 32-bytes "-2 mod f" constant.
+    @param f The second 32-byte input parameter.
     @return uint256 The 32-byte calculation result.
     """
     modexp: address = 0x0000000000000000000000000000000000000005
