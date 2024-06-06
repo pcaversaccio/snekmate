@@ -547,7 +547,7 @@ def _mod_inv(u: uint256, minus_2modf: uint256, f: uint256) -> uint256:
          returns `0`.
     @param u The 32-byte base for the `modexp` precompile.
     @param minus_2modf The 32-byte exponent for the `modexp` precompile.
-    @param f The 32-byte modulo for the `modexp` precompile.
+    @param f The 32-byte modulus for the `modexp` precompile.
     @return uint256 The 32-byte calculation result.
     """
     return_data: Bytes[32] = b""
