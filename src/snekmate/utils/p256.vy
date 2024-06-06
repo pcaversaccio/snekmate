@@ -15,6 +15,12 @@
 """
 
 
+# @dev The `modexp` precompile address.
+_MODEXP: constant(address) = 0x0000000000000000000000000000000000000005
+# @dev The byte size of `B`, `E`, and `M` in the `modexp` precompile.
+_C: constant(uint256) = 32
+
+
 # @notice All of the constant values defined subsequently are
 # parameters for the elliptical curve secp256r1 (see the standard
 # curve database: https://neuromancer.sk/std/secg/secp256r1).
@@ -22,7 +28,6 @@
 
 # @dev Malleability threshold used as part of the ECDSA verification function.
 _MALLEABILITY_THRESHOLD: constant(uint256) = 57_896_044_605_178_124_381_348_723_474_703_786_764_998_477_612_067_880_171_211_129_530_534_256_022_184
-
 
 # @dev The secp256r1 curve prime field modulus.
 _P: constant(uint256) = 115_792_089_210_356_248_762_697_446_949_407_573_530_086_143_415_290_314_195_533_631_308_867_097_853_951
@@ -542,10 +547,6 @@ def _mod_inv(u: uint256, minus_2modf: uint256, f: uint256) -> uint256:
     @param f The second 32-byte input parameter.
     @return uint256 The 32-byte calculation result.
     """
-    modexp: address = 0x0000000000000000000000000000000000000005
-    args: uint256[6] = [32, 32, 32, u, minus_2modf, f]
     return_data: Bytes[32] = b""
-    return_data = raw_call(modexp, _abi_encode(args), max_outsize=32, is_static_call=True)
-    # Since the `modexp` precompile cannot revert, we do
-    # not assert a successful return.
+    return_data = raw_call(_MODEXP, _abi_encode(_C, _C, _C, u, minus_2modf, f), max_outsize=32, is_static_call=True)
     return _abi_decode(return_data, (uint256))
