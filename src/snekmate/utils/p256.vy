@@ -26,7 +26,7 @@ _C: constant(uint256) = 32
 # curve database: https://neuromancer.sk/std/secg/secp256r1).
 
 
-# @dev Malleability threshold used as part of the ECDSA verification function.
+# @dev The malleability threshold used as part of the ECDSA verification function.
 _MALLEABILITY_THRESHOLD: constant(uint256) = 57_896_044_605_178_124_381_348_723_474_703_786_764_998_477_612_067_880_171_211_129_530_534_256_022_184
 
 
@@ -34,11 +34,11 @@ _MALLEABILITY_THRESHOLD: constant(uint256) = 57_896_044_605_178_124_381_348_723_
 _P: constant(uint256) = 115_792_089_210_356_248_762_697_446_949_407_573_530_086_143_415_290_314_195_533_631_308_867_097_853_951
 
 
-# @dev Short Weierstrass first coefficient.
+# @dev The short Weierstrass first coefficient.
 # @notice The assumption "_A == -3 (mod _P)" is used throughout
 # the codebase.
 _A: constant(uint256) = 115_792_089_210_356_248_762_697_446_949_407_573_530_086_143_415_290_314_195_533_631_308_867_097_853_948
-# @dev Short Weierstrass second coefficient.
+# @dev The short Weierstrass second coefficient.
 _B: constant(uint256) = 41_058_363_725_152_142_129_326_129_780_047_268_409_114_441_015_993_725_554_835_256_314_039_467_401_291
 
 
