@@ -29,6 +29,7 @@ _C: constant(uint256) = 32
 # @dev Malleability threshold used as part of the ECDSA verification function.
 _MALLEABILITY_THRESHOLD: constant(uint256) = 57_896_044_605_178_124_381_348_723_474_703_786_764_998_477_612_067_880_171_211_129_530_534_256_022_184
 
+
 # @dev The secp256r1 curve prime field modulus.
 _P: constant(uint256) = 115_792_089_210_356_248_762_697_446_949_407_573_530_086_143_415_290_314_195_533_631_308_867_097_853_951
 
