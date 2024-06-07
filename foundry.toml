@@ -12,7 +12,7 @@ evm_version = "cancun"                                    # Set the EVM target v
 optimizer = true                                          # Enable the Solidity compiler optimiser.
 optimizer_runs = 200                                      # Configure the number of optimiser runs.
 via_ir = false                                            # Prevent the compilation pipeline from running through the Yul intermediate representation.
-vyper = { optimize = "gas" }                              # Configure the compiler optimisation mode.
+vyper = { optimize = "gas" }                              # Configure the Vyper compiler optimisation mode.
 skip = ["**/*{!_mock}.vy"]                                # Skip the compilation of non-mock files.
 verbosity = 3                                             # Set the verbosity level for the tests.
 ffi = true                                                # Enable the foreign function interface (ffi) cheatcode.
