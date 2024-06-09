@@ -253,10 +253,10 @@ packages:
         integrity: sha512-oYclrNgRaM9SsBUBVbb8M6DTV7ZHRTKugureoYEncY5c65HOmRzvSiTE3y5CYaPYJA/GVkrhXEoF0M3Ya9PMnw==,
       }
 
-  "@noble/curves@1.3.0":
+  "@noble/curves@1.4.0":
     resolution:
       {
-        integrity: sha512-t01iSXPuN+Eqzb4eBX0S5oubSqXbK/xXa1Ne18Hj8f9pStxztHCE2gfboSp/dZRLSqfuLpRK2nDXDK+W9puocA==,
+        integrity: sha512-p+4cb332SFCrReJkCYe8Xzm0OWi4Jji5jVdIZRL/PmacmDkFNw6MrrV+gGpiPxLHbV+zKFRywUWbaseT+tZRXg==,
       }
 
   "@noble/hashes@1.2.0":
@@ -269,13 +269,6 @@ packages:
     resolution:
       {
         integrity: sha512-MVC8EAQp7MvEcm30KWENFjgR+Mkmf+D189XJTkFIlwohU5hcBbn1ZkKq7KVTi2Hme3PMGF390DaL52beVrIihQ==,
-      }
-    engines: { node: ">= 16" }
-
-  "@noble/hashes@1.3.3":
-    resolution:
-      {
-        integrity: sha512-V7/fPHgl+jsVPXqqeOzT8egNj2iBIVt+ECeMMG8TdcnTikP3oaBtUVqpT/gYCR68aEBJSF+XbYUxStjbFMqIIA==,
       }
     engines: { node: ">= 16" }
 
@@ -352,10 +345,10 @@ packages:
         integrity: sha512-XyNh1rB0SkEqd3tXcXMi+Xe1fvg+kUIcoRIEujP1Jgv7DqW2r9lg3Ah0NkFaCs9sTkQAQA8kw7xiRXzENi9Rtw==,
       }
 
-  "@scure/bip32@1.3.3":
+  "@scure/bip32@1.4.0":
     resolution:
       {
-        integrity: sha512-LJaN3HwRbfQK0X1xFSi0Q9amqOgzQnnDngIt+ZlsBC3Bm7/nE7K0kwshZHyaru79yIVRv/e1mQAjZyuZG6jOFQ==,
+        integrity: sha512-sVUpc0Vq3tXCkDGYVWGIZTRfnvu8LoTDaev7vbwh0omSvVORONr960MQWdKqJDCReIEmTj3PAr73O3aoxz7OPg==,
       }
 
   "@scure/bip39@1.1.1":
@@ -364,10 +357,10 @@ packages:
         integrity: sha512-t+wDck2rVkh65Hmv280fYdVdY25J9YeEUIgn2LG1WM6gxFkGzcksoDiUkWVpVp3Oex9xGC68JU2dSbUfwZ2jPg==,
       }
 
-  "@scure/bip39@1.2.2":
+  "@scure/bip39@1.3.0":
     resolution:
       {
-        integrity: sha512-HYf9TUXG80beW+hGAt3TRM8wU6pQoYur9iNypTROm42dorCGmLnFe3eWjz3gOq6G62H2WRh0FCzAR1PI+29zIA==,
+        integrity: sha512-disdg7gHuTDZtY+ZdkmLpPCk7fxZSu3gBiEGuoC1XYxv9cGx3Z6cpTggCgW6odSOOIXCiDjuGejW+aJKCY/pIQ==,
       }
 
   "@sindresorhus/is@5.6.0":
@@ -815,10 +808,10 @@ packages:
         integrity: sha512-6yFQC9b5ug6/17CQpCyE3k9eKBMdhyVjzUy1WkiuY/E4vj/SXDBbCw8QEIaXqf0Mf2SnY6RmpDcwlUmBSS0EJw==,
       }
 
-  ethereum-cryptography@2.1.3:
+  ethereum-cryptography@2.2.0:
     resolution:
       {
-        integrity: sha512-BlwbIL7/P45W8FGW2r7LGuvoEZ+7PWsniMvQ4p5s2xCyw9tmaDlpfsN9HjAucbF+t/qpVHwZUisgfK24TCW8aA==,
+        integrity: sha512-hsm9JhfytIf8QME/3B7j4bc8V+VdTU+Vas1aJlvIS96ffoNAosudXvGoEvWmc7QZYdkC8mrMJz9r0fcbw7GyCA==,
       }
 
   ethers@6.13.0:
@@ -1776,7 +1769,7 @@ snapshots:
   "@ethereumjs/util@8.1.0":
     dependencies:
       "@ethereumjs/rlp": 4.0.1
-      ethereum-cryptography: 2.1.3
+      ethereum-cryptography: 2.2.0
       micro-ftch: 0.3.1
 
   "@ethersproject/abi@5.7.0":
@@ -1910,15 +1903,13 @@ snapshots:
     dependencies:
       "@noble/hashes": 1.3.2
 
-  "@noble/curves@1.3.0":
+  "@noble/curves@1.4.0":
     dependencies:
-      "@noble/hashes": 1.3.3
+      "@noble/hashes": 1.4.0
 
   "@noble/hashes@1.2.0": {}
 
   "@noble/hashes@1.3.2": {}
-
-  "@noble/hashes@1.3.3": {}
 
   "@noble/hashes@1.4.0": {}
 
@@ -1961,10 +1952,10 @@ snapshots:
       "@noble/secp256k1": 1.7.1
       "@scure/base": 1.1.6
 
-  "@scure/bip32@1.3.3":
+  "@scure/bip32@1.4.0":
     dependencies:
-      "@noble/curves": 1.3.0
-      "@noble/hashes": 1.3.3
+      "@noble/curves": 1.4.0
+      "@noble/hashes": 1.4.0
       "@scure/base": 1.1.6
 
   "@scure/bip39@1.1.1":
@@ -1972,9 +1963,9 @@ snapshots:
       "@noble/hashes": 1.2.0
       "@scure/base": 1.1.6
 
-  "@scure/bip39@1.2.2":
+  "@scure/bip39@1.3.0":
     dependencies:
-      "@noble/hashes": 1.3.3
+      "@noble/hashes": 1.4.0
       "@scure/base": 1.1.6
 
   "@sindresorhus/is@5.6.0": {}
@@ -2237,12 +2228,12 @@ snapshots:
       "@scure/bip32": 1.1.5
       "@scure/bip39": 1.1.1
 
-  ethereum-cryptography@2.1.3:
+  ethereum-cryptography@2.2.0:
     dependencies:
-      "@noble/curves": 1.3.0
-      "@noble/hashes": 1.3.3
-      "@scure/bip32": 1.3.3
-      "@scure/bip39": 1.2.2
+      "@noble/curves": 1.4.0
+      "@noble/hashes": 1.4.0
+      "@scure/bip32": 1.4.0
+      "@scure/bip39": 1.3.0
 
   ethers@6.13.0:
     dependencies:
@@ -2702,7 +2693,7 @@ snapshots:
       "@ethereumjs/util": 8.1.0
       bn.js: 5.2.1
       ethereum-bloom-filters: 1.1.0
-      ethereum-cryptography: 2.1.3
+      ethereum-cryptography: 2.2.0
       ethjs-unit: 0.1.6
       number-to-bn: 1.7.0
       randombytes: 2.1.0
