@@ -1,17 +1,19 @@
 # Defaults for all profiles.
 [profile.default]
-src = "test"                                              # Set the source directory.
+src = "src/snekmate"                                      # Set the source directory.
 test = "test"                                             # Set the test directory.
 out = "out"                                               # Set the output directory for the artifacts.
 libs = ["lib"]                                            # Configure an array of library directories.
 cache = true                                              # Enable caching.
 cache_path = "cache"                                      # Set the path to the cache.
 force = false                                             # Do not ignore the cache.
+skip = ["src/snekmate/**/*[!_][!m][!o][!c][!k].vy"]       # Skip the compilation of non-mock files.
 solc_version = "0.8.26"                                   # Set the Solidity compiler version.
 evm_version = "cancun"                                    # Set the EVM target version.
 optimizer = true                                          # Enable the Solidity compiler optimiser.
 optimizer_runs = 200                                      # Configure the number of optimiser runs.
 via_ir = false                                            # Prevent the compilation pipeline from running through the Yul intermediate representation.
+vyper = { optimize = "gas" }                              # Configure the Vyper compiler optimisation mode.
 verbosity = 3                                             # Set the verbosity level for the tests.
 ffi = true                                                # Enable the foreign function interface (ffi) cheatcode.
 no_match_path = "test/**/{echidna,halmos}/**/*"           # Run only tests in the test directory that do not match the specified glob pattern.
