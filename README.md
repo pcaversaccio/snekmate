@@ -12,6 +12,19 @@
 > [!WARNING]
 > This is **experimental software** and is provided on an "as is" and "as available" basis. We **do not give any warranties** and **will not be liable for any losses** incurred through any use of this code base.
 
+- [🐍 snekmate](#-snekmate)
+  - [📜 Contracts](#-contracts)
+  - [🎛 Installation](#-installation)
+    - [1️⃣ Foundry](#1️⃣-foundry)
+    - [2️⃣ PyPI](#2️⃣-pypi)
+    - [3️⃣ npm](#3️⃣-npm)
+  - [🔧 Usage](#-usage)
+  - [👩🏼‍⚖️ Tests](#️-tests)
+  - [🙏🏼 Acknowledgements](#-acknowledgements)
+  - [🫡 Contributing](#-contributing)
+  - [💸 Donation](#-donation)
+  - [💢 Disclaimer](#-disclaimer)
+
 ## 📜 Contracts
 
 ```ml
