@@ -719,7 +719,7 @@ def _hash_operation(target: address, amount: uint256, payload: Bytes[1_024], pre
     @param salt The 32-byte salt of the operation.
     @return bytes32 The 32-byte hash of the operation.
     """
-    return keccak256(_abi_encode(target, amount, payload, predecessor, salt))
+    return keccak256(abi_encode(target, amount, payload, predecessor, salt))
 
 
 @internal
@@ -739,7 +739,7 @@ def _hash_operation_batch(targets: DynArray[address, _DYNARRAY_BOUND], amounts: 
     @param salt The 32-byte salt of the operation.
     @return bytes32 The 32-byte hash of the operation.
     """
-    return keccak256(_abi_encode(targets, amounts, payloads, predecessor, salt))
+    return keccak256(abi_encode(targets, amounts, payloads, predecessor, salt))
 
 
 @internal
