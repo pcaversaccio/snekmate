@@ -45,8 +45,10 @@ jobs:
       - name: Check Ape compilation
         run: ape compile
 
-      - name: Install Vyper
-        run: pip install git+https://github.com/vyperlang/vyper.git@master
+      - name: Remove Ape Vyper and install latest Vyper
+        run: |
+          pip uninstall --yes vyper
+          pip install git+https://github.com/vyperlang/vyper.git@master
 
       - name: Show the Vyper version
         run: vyper --version
