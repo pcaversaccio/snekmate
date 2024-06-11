@@ -610,7 +610,7 @@ def permit(spender: address, token_id: uint256, deadline: uint256, v: uint8, r: 
     current_nonce: uint256 = self.nonces[token_id]
     self.nonces[token_id] = unsafe_add(current_nonce, 1)
 
-    struct_hash: bytes32 = keccak256(_abi_encode(_PERMIT_TYPE_HASH, spender, token_id, current_nonce, deadline))
+    struct_hash: bytes32 = keccak256(abi_encode(_PERMIT_TYPE_HASH, spender, token_id, current_nonce, deadline))
     hash: bytes32  = eip712_domain_separator._hash_typed_data_v4(struct_hash)
 
     signer: address = ecdsa._recover_vrs(hash, convert(v, uint256), convert(r, uint256), convert(s, uint256))

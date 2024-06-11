@@ -551,5 +551,5 @@ def _mod_inv(u: uint256, minus_2modf: uint256, f: uint256) -> uint256:
     @return uint256 The 32-byte calculation result.
     """
     return_data: Bytes[32] = b""
-    return_data = raw_call(_MODEXP, _abi_encode(_C, _C, _C, u, minus_2modf, f), max_outsize=32, is_static_call=True)
-    return _abi_decode(return_data, (uint256))
+    return_data = raw_call(_MODEXP, abi_encode(_C, _C, _C, u, minus_2modf, f), max_outsize=32, is_static_call=True)
+    return abi_decode(return_data, (uint256))
