@@ -128,7 +128,7 @@ def _build_domain_separator() -> bytes32:
     @dev Builds the domain separator for the current chain.
     @return bytes32 The 32-byte domain separator.
     """
-    return keccak256(_abi_encode(_TYPE_HASH, _HASHED_NAME, _HASHED_VERSION, chain.id, self))
+    return keccak256(abi_encode(_TYPE_HASH, _HASHED_NAME, _HASHED_VERSION, chain.id, self))
 
 
 @internal
