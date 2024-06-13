@@ -34,21 +34,16 @@ jobs:
           python-version: ${{ matrix.python_version }}
           architecture: ${{ matrix.architecture }}
 
-      # - name: Setup Ape
-      #   uses: ApeWorX/github-action@v2
-      #   with:
-      #     python-version: ${{ matrix.python_version }}
-
-      - name: Install Ape Vyper4
-        run: pip install git+https://github.com/ApeWorX/ape-vyper@main
+      - name: Setup Ape
+        uses: ApeWorX/github-action@v2
+        with:
+          python-version: ${{ matrix.python_version }}
 
       - name: Check Ape compilation
         run: ape compile
 
       - name: Remove Ape Vyper and install latest Vyper
-        run: |
-          pip uninstall --yes vyper
-          pip install git+https://github.com/vyperlang/vyper.git@master
+        run: pip install --force-reinstall git+https://github.com/vyperlang/vyper.git@master
 
       - name: Show the Vyper version
         run: vyper --version
