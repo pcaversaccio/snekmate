@@ -8,17 +8,17 @@ importers:
   .:
     devDependencies:
       "@eslint/js":
-        specifier: ^9.4.0
-        version: 9.4.0
+        specifier: ^9.5.0
+        version: 9.5.0
       "@openzeppelin/merkle-tree":
         specifier: ^1.0.6
         version: 1.0.6
       eslint:
-        specifier: ^9.4.0
-        version: 9.4.0
+        specifier: ^9.5.0
+        version: 9.5.0
       eslint-config-prettier:
         specifier: ^9.1.0
-        version: 9.1.0(eslint@9.4.0)
+        version: 9.1.0(eslint@9.5.0)
       ethers:
         specifier: ^6.13.0
         version: 6.13.0
@@ -29,11 +29,11 @@ importers:
         specifier: ^0.3.11
         version: 0.3.11
       prettier:
-        specifier: ^3.3.1
-        version: 3.3.1
+        specifier: ^3.3.2
+        version: 3.3.2
       prettier-plugin-solidity:
         specifier: ^1.3.1
-        version: 1.3.1(prettier@3.3.1)
+        version: 1.3.1(prettier@3.3.2)
       solhint:
         specifier: ^5.0.1
         version: 5.0.1
@@ -82,10 +82,10 @@ packages:
       }
     engines: { node: ^12.0.0 || ^14.0.0 || >=16.0.0 }
 
-  "@eslint/config-array@0.15.1":
+  "@eslint/config-array@0.16.0":
     resolution:
       {
-        integrity: sha512-K4gzNq+yymn/EVsXYmf+SBcBro8MTf+aXJZUphM96CdzUEr+ClGDvAbpmaEK+cGVigVXIgs9gNmvHAlrzzY5JQ==,
+        integrity: sha512-/jmuSd74i4Czf1XXn7wGRWZCuyaUZ330NH1Bek0Pplatt4Sy1S5haN21SCLLdbeKslQ+S0wEJ+++v5YibSi+Lg==,
       }
     engines: { node: ^18.18.0 || ^20.9.0 || >=21.1.0 }
 
@@ -96,17 +96,17 @@ packages:
       }
     engines: { node: ^18.18.0 || ^20.9.0 || >=21.1.0 }
 
-  "@eslint/js@9.4.0":
+  "@eslint/js@9.5.0":
     resolution:
       {
-        integrity: sha512-fdI7VJjP3Rvc70lC4xkFXHB0fiPeojiL1PxVG6t1ZvXQrarj893PweuBTujxDUFk0Fxj4R7PIIAZ/aiiyZPZcg==,
+        integrity: sha512-A7+AOT2ICkodvtsWnxZP4Xxk3NbZ3VMHd8oihydLRGrJgqqdEz1qSeEgXYyT/Cu8h1TWWsQRejIx48mtjZ5y1w==,
       }
     engines: { node: ^18.18.0 || ^20.9.0 || >=21.1.0 }
 
-  "@eslint/object-schema@2.1.3":
+  "@eslint/object-schema@2.1.4":
     resolution:
       {
-        integrity: sha512-HAbhAYKfsAC2EkTqve00ibWIZlaU74Z1EHwAjYr4PXF0YU2VEA1zSIKSSpKszRLRWwHzzRZXvK632u+uXzvsvw==,
+        integrity: sha512-BsWiH1yFGjXXS2yvrf5LyuoSIIbPrGUWob917o+BTKuZ7qJdxX8aJLRxs1fS9n6r7vESrq1OUqb68dANcFXuQQ==,
       }
     engines: { node: ^18.18.0 || ^20.9.0 || >=21.1.0 }
 
@@ -333,10 +333,10 @@ packages:
       }
     engines: { node: ">=12" }
 
-  "@scure/base@1.1.6":
+  "@scure/base@1.1.7":
     resolution:
       {
-        integrity: sha512-ok9AWwhcgYuGG3Zfhyqg+zwl+Wn5uE+dwC0NV/2qQkx4dABbb/bx96vWu8NSj+BNjjSjno+JRYRjle1jV08k3g==,
+        integrity: sha512-PPNYBslrLNNUQ/Yad37MHYsNQtK67EhWb6WtSvNLLPo7SdVZgkUjD6Dg+5On7zNwmskf8OX7I7Nx5oN+MIWE0g==,
       }
 
   "@scure/bip32@1.1.5":
@@ -409,10 +409,10 @@ packages:
     peerDependencies:
       acorn: ^6.0.0 || ^7.0.0 || ^8.0.0
 
-  acorn@8.11.3:
+  acorn@8.12.0:
     resolution:
       {
-        integrity: sha512-Y9rRfJG5jcKOE0CLisYbojUjIrIEE7AGMzA/Sm4BslANhbS+cDMpgBdcPT91oJ7OuJ9hYJBx59RjbhxVnrF8Xg==,
+        integrity: sha512-RTvkC4w+KNXrM39/lWCUaG0IbRkWdCv7W/IOW9oU6SawyxulvkQy5HQPVTKxEjczcUvapcrw3cFx/60VN/NRNw==,
       }
     engines: { node: ">=0.4.0" }
     hasBin: true
@@ -753,10 +753,10 @@ packages:
       }
     engines: { node: ^18.18.0 || ^20.9.0 || >=21.1.0 }
 
-  eslint@9.4.0:
+  eslint@9.5.0:
     resolution:
       {
-        integrity: sha512-sjc7Y8cUD1IlwYcTS9qPSvGjAC8Ne9LctpxKKu3x/1IC9bnOg98Zy6GxEJUfr1NojMgVPlyANXYns8oE2c1TAA==,
+        integrity: sha512-+NAOZFrW/jFTS3dASCGBxX1pkFD0/fsO+hfAkJ4TyYKwgsXZbqzrw+seCYFCcPCYXvnD67tAnglU7GQTz6kcVw==,
       }
     engines: { node: ^18.18.0 || ^20.9.0 || >=21.1.0 }
     hasBin: true
@@ -1402,10 +1402,10 @@ packages:
     engines: { node: ">=10.13.0" }
     hasBin: true
 
-  prettier@3.3.1:
+  prettier@3.3.2:
     resolution:
       {
-        integrity: sha512-7CAwy5dRsxs8PHXT3twixW9/OEll8MLE0VRPCJyl7CkS6VHGPSlsVaWTiASPTyGyYRyApxlaWTzwUxVNrhcwDg==,
+        integrity: sha512-rAVeHYMcv8ATV5d508CFdn+8/pHPpXeIid1DdrPwXnaAdH7cqjVbpJaT5eq4yRAFU/lsbwYwSF/n5iNrdJHPQA==,
       }
     engines: { node: ">=14" }
     hasBin: true
@@ -1731,16 +1731,16 @@ snapshots:
       js-tokens: 4.0.0
       picocolors: 1.0.1
 
-  "@eslint-community/eslint-utils@4.4.0(eslint@9.4.0)":
+  "@eslint-community/eslint-utils@4.4.0(eslint@9.5.0)":
     dependencies:
-      eslint: 9.4.0
+      eslint: 9.5.0
       eslint-visitor-keys: 3.4.3
 
   "@eslint-community/regexpp@4.10.1": {}
 
-  "@eslint/config-array@0.15.1":
+  "@eslint/config-array@0.16.0":
     dependencies:
-      "@eslint/object-schema": 2.1.3
+      "@eslint/object-schema": 2.1.4
       debug: 4.3.5
       minimatch: 3.1.2
     transitivePeerDependencies:
@@ -1760,9 +1760,9 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  "@eslint/js@9.4.0": {}
+  "@eslint/js@9.5.0": {}
 
-  "@eslint/object-schema@2.1.3": {}
+  "@eslint/object-schema@2.1.4": {}
 
   "@ethereumjs/rlp@4.0.1": {}
 
@@ -1944,29 +1944,29 @@ snapshots:
       "@pnpm/network.ca-file": 1.0.2
       config-chain: 1.1.13
 
-  "@scure/base@1.1.6": {}
+  "@scure/base@1.1.7": {}
 
   "@scure/bip32@1.1.5":
     dependencies:
       "@noble/hashes": 1.2.0
       "@noble/secp256k1": 1.7.1
-      "@scure/base": 1.1.6
+      "@scure/base": 1.1.7
 
   "@scure/bip32@1.4.0":
     dependencies:
       "@noble/curves": 1.4.0
       "@noble/hashes": 1.4.0
-      "@scure/base": 1.1.6
+      "@scure/base": 1.1.7
 
   "@scure/bip39@1.1.1":
     dependencies:
       "@noble/hashes": 1.2.0
-      "@scure/base": 1.1.6
+      "@scure/base": 1.1.7
 
   "@scure/bip39@1.3.0":
     dependencies:
       "@noble/hashes": 1.4.0
-      "@scure/base": 1.1.6
+      "@scure/base": 1.1.7
 
   "@sindresorhus/is@5.6.0": {}
 
@@ -1982,11 +1982,11 @@ snapshots:
 
   "@types/node@18.15.13": {}
 
-  acorn-jsx@5.3.2(acorn@8.11.3):
+  acorn-jsx@5.3.2(acorn@8.12.0):
     dependencies:
-      acorn: 8.11.3
+      acorn: 8.12.0
 
-  acorn@8.11.3: {}
+  acorn@8.12.0: {}
 
   aes-js@4.0.0-beta.5: {}
 
@@ -2147,9 +2147,9 @@ snapshots:
 
   escape-string-regexp@4.0.0: {}
 
-  eslint-config-prettier@9.1.0(eslint@9.4.0):
+  eslint-config-prettier@9.1.0(eslint@9.5.0):
     dependencies:
-      eslint: 9.4.0
+      eslint: 9.5.0
 
   eslint-scope@8.0.1:
     dependencies:
@@ -2160,13 +2160,13 @@ snapshots:
 
   eslint-visitor-keys@4.0.0: {}
 
-  eslint@9.4.0:
+  eslint@9.5.0:
     dependencies:
-      "@eslint-community/eslint-utils": 4.4.0(eslint@9.4.0)
+      "@eslint-community/eslint-utils": 4.4.0(eslint@9.5.0)
       "@eslint-community/regexpp": 4.10.1
-      "@eslint/config-array": 0.15.1
+      "@eslint/config-array": 0.16.0
       "@eslint/eslintrc": 3.1.0
-      "@eslint/js": 9.4.0
+      "@eslint/js": 9.5.0
       "@humanwhocodes/module-importer": 1.0.1
       "@humanwhocodes/retry": 0.3.0
       "@nodelib/fs.walk": 1.2.8
@@ -2201,8 +2201,8 @@ snapshots:
 
   espree@10.0.1:
     dependencies:
-      acorn: 8.11.3
-      acorn-jsx: 5.3.2(acorn@8.11.3)
+      acorn: 8.12.0
+      acorn-jsx: 5.3.2(acorn@8.12.0)
       eslint-visitor-keys: 4.0.0
 
   esquery@1.5.0:
@@ -2528,17 +2528,17 @@ snapshots:
 
   prelude-ls@1.2.1: {}
 
-  prettier-plugin-solidity@1.3.1(prettier@3.3.1):
+  prettier-plugin-solidity@1.3.1(prettier@3.3.2):
     dependencies:
       "@solidity-parser/parser": 0.17.0
-      prettier: 3.3.1
+      prettier: 3.3.2
       semver: 7.6.2
       solidity-comments-extractor: 0.0.8
 
   prettier@2.8.8:
     optional: true
 
-  prettier@3.3.1: {}
+  prettier@3.3.2: {}
 
   proto-list@1.2.4: {}
 
