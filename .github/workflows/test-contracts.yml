@@ -43,7 +43,7 @@ jobs:
         run: ape compile
 
       - name: Remove Ape Vyper and install latest Vyper
-        run: pip install --force-reinstall git+https://github.com/vyperlang/vyper.git@master
+        run: pip install --force-reinstall vyper
 
       - name: Show the Vyper version
         run: vyper --version

@@ -1,4 +1,4 @@
-# pragma version ~=0.4.0rc6
+# pragma version ~=0.4.0
 """
 @title EIP-4494 Interface Definition
 @custom:contract-name IERC721Permit
