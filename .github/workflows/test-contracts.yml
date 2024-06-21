@@ -34,19 +34,19 @@ jobs:
           python-version: ${{ matrix.python_version }}
           architecture: ${{ matrix.architecture }}
 
-      - name: Install Vyper
-        run: pip install git+https://github.com/vyperlang/vyper.git@master
+      - name: Setup Ape
+        uses: ApeWorX/github-action@v2
+        with:
+          python-version: ${{ matrix.python_version }}
+
+      - name: Check Ape compilation
+        run: ape compile
+
+      - name: Remove Ape Vyper and install latest Vyper
+        run: pip install --force-reinstall vyper
 
       - name: Show the Vyper version
         run: vyper --version
-
-      # - name: Setup Ape
-      #   uses: ApeWorX/github-action@v2
-      #   with:
-      #     python-version: ${{ matrix.python_version }}
-
-      # - name: Check Ape compilation
-      #   run: ape compile
 
       - name: Install pnpm
         uses: pnpm/action-setup@v3
@@ -64,8 +64,7 @@ jobs:
         with:
           path: ${{ steps.pnpm-cache-dir-path.outputs.dir }}
           key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
+          restore-keys: ${{ runner.os }}-pnpm-store-
 
       - name: Use Node.js ${{ matrix.node_version }}
         uses: actions/setup-node@v4

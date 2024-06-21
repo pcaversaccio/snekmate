@@ -1,4 +1,4 @@
-# pragma version ~=0.4.0rc6
+# pragma version ~=0.4.0
 """
 @title Multi-Role-Based Access Control Functions
 @custom:contract-name access_control
