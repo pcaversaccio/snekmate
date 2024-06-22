@@ -27,6 +27,10 @@ contract ERC1155TestHalmos is Test, SymTest {
     uint256[] private tokenIds;
     uint256[] private amounts;
 
+    function extcodesize(address addr) internal view returns (uint size) {
+        assembly { size := extcodesize(addr) }
+    }
+
     function setUp() public {
         bytes memory args = abi.encode(_BASE_URI);
         /**
@@ -52,6 +56,15 @@ contract ERC1155TestHalmos is Test, SymTest {
         holders[0] = address(0x1337);
         holders[1] = address(0x31337);
         holders[2] = address(0xbA5eD);
+
+        /**
+         * @dev Assume holders are EOAs to avoid multiple paths that occur due
+         * to safeTransferFrom (specifically `_check_on_erc1155_received`)
+         * depending on contract vs EOA cases.
+         */
+        vm.assume(extcodesize(holders[0]) == 0);
+        vm.assume(extcodesize(holders[1]) == 0);
+        vm.assume(extcodesize(holders[2]) == 0);
 
         tokenIds = new uint256[](5);
         tokenIds[0] = 0;
