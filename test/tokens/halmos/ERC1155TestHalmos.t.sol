@@ -177,22 +177,42 @@ contract ERC1155TestHalmos is Test, SymTest {
                     svm.createBytes(96, "YOLO")
                 )
             );
-        } else if (selector == IERC1155.safeBatchTransferFrom.selector) {
+        } else if (selector == IERC1155.safeBatchTransferFrom.selector
+                || selector == IERC1155Extended.burn_batch.selector
+        ) {
             uint256[] memory ids = new uint256[](5);
             uint256[] memory values = new uint256[](5);
             for (uint256 i = 0; i < ids.length; i++) {
                 ids[i] = svm.createUint256("ids");
                 values[i] = svm.createUint256("values");
             }
-            // solhint-disable-next-line avoid-low-level-calls
-            (success, ) = token.call(
-                abi.encodeWithSelector(
+            bytes memory data;
+            if (selector == IERC1155.safeBatchTransferFrom.selector) {
+                data = abi.encodeWithSelector(
                     selector,
                     svm.createAddress("from"),
                     svm.createAddress("to"),
                     ids,
                     values,
                     svm.createBytes(96, "YOLO")
+                );
+            } else {
+                data = abi.encodeWithSelector(
+                    selector,
+                    svm.createAddress("owner"),
+                    ids,
+                    values
+                );
+            }
+            // solhint-disable-next-line avoid-low-level-calls
+            (success, ) = token.call(data);
+        } else if (selector == IERC1155Extended.set_uri.selector) {
+            // solhint-disable-next-line avoid-low-level-calls
+            (success, ) = token.call(
+                abi.encodeWithSelector(
+                    selector,
+                    svm.createUint256("id"),
+                    svm.createBytes(96, "uri")
                 )
             );
         } else {
