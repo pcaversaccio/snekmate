@@ -147,8 +147,8 @@ contract ERC1155TestHalmos is Test, SymTest {
             vm.assume(!erc1155.isApprovedForAll(holders[i], caller));
         }
 
-        address[] memory callers;
-        address[] memory others;
+        address[] memory callers = new address[](tokenIds.length);
+        address[] memory others = new address[](tokenIds.length);
         for (uint256 i = 0; i < tokenIds.length; i++) {
             callers[i] = caller;
             others[i] = other;
