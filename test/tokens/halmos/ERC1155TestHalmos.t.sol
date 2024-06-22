@@ -143,6 +143,10 @@ contract ERC1155TestHalmos is Test, SymTest {
         vm.assume(selector != IERC1155Extended._customMint.selector);
         vm.assume(selector != IERC1155Extended.safe_mint.selector);
         vm.assume(selector != IERC1155Extended.safe_mint_batch.selector);
+
+        // For convenience, ignore view functions that take dynamic arrays.
+        vm.assume(selector != IERC1155.balanceOfBatch.selector);
+
         for (uint256 i = 0; i < holders.length; i++) {
             vm.assume(!erc1155.isApprovedForAll(holders[i], caller));
         }
