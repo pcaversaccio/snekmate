@@ -46,7 +46,7 @@ def compute_address_rlp(deployer: address, nonce: uint256) -> address:
          For the specification of the Recursive Length Prefix (RLP)
          encoding scheme, please refer to p. 19 of the Ethereum
          Yellow Paper (https://ethereum.github.io/yellowpaper/paper.pdf)
-         and the Ethereum Wiki (https://ethereum.org/en/developers/docs/data-structures-and-encoding/rlp).
+         and the Ethereum Wiki (https://ethereum.org/en/developers/docs/data-structures-and-encoding/rlp/).
          For further insights also, see the following issue:
          https://github.com/transmissions11/solmate/issues/207.
 
