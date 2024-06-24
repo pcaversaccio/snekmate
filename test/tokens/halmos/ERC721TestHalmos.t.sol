@@ -94,7 +94,6 @@ contract ERC721TestHalmos is Test, SymTest {
     }
 
     /**
-     * @dev Currently commented out due to performance and reverting path issues in Halmos.
      * @notice Forked and adjusted accordingly from here:
      * https://github.com/a16z/halmos/blob/main/examples/tokens/ERC721/test/ERC721Test.sol.
      */

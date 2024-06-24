@@ -27,10 +27,6 @@ contract ERC1155TestHalmos is Test, SymTest {
     uint256[] private tokenIds;
     uint256[] private amounts;
 
-    function extcodesize(address addr) internal view returns (uint size) {
-        assembly { size := extcodesize(addr) }
-    }
-
     function setUp() public {
         bytes memory args = abi.encode(_BASE_URI);
         /**
@@ -58,13 +54,16 @@ contract ERC1155TestHalmos is Test, SymTest {
         holders[2] = address(0xbA5eD);
 
         /**
-         * @dev Assume holders are EOAs to avoid multiple paths that occur due
-         * to safeTransferFrom (specifically `_check_on_erc1155_received`)
-         * depending on contract vs EOA cases.
+         * @dev Assume that the holders are EOAs to avoid multiple paths that can
+         * occur due to `safeTransferFrom` and `safeBatchTransferFrom` (specifically
+         * `_check_on_erc1155_received` and `_check_on_erc1155_batch_received`)
+         * depending on whether there is a contract or an EOA. Please note that
+         * using a single `assume` with conjunctions would result in the creation of
+         * multiple paths, negatively impacting performance.
          */
-        vm.assume(extcodesize(holders[0]) == 0);
-        vm.assume(extcodesize(holders[1]) == 0);
-        vm.assume(extcodesize(holders[2]) == 0);
+        vm.assume(holders[0].code.length == 0);
+        vm.assume(holders[1].code.length == 0);
+        vm.assume(holders[2].code.length == 0);
 
         tokenIds = new uint256[](5);
         tokenIds[0] = 0;
@@ -127,9 +126,6 @@ contract ERC1155TestHalmos is Test, SymTest {
         vm.stopPrank();
     }
 
-    /**
-     * @dev Currently commented out due to performance and reverting path issues in Halmos.
-     */
     function testHalmosAssertNoBackdoor(
         bytes4 selector,
         address caller,
@@ -144,7 +140,9 @@ contract ERC1155TestHalmos is Test, SymTest {
         vm.assume(selector != IERC1155Extended.safe_mint.selector);
         vm.assume(selector != IERC1155Extended.safe_mint_batch.selector);
 
-        // For convenience, ignore view functions that take dynamic arrays.
+        /**
+         * @dev For convenience, ignore `view` functions that use dynamic arrays.
+         */
         vm.assume(selector != IERC1155.balanceOfBatch.selector);
 
         for (uint256 i = 0; i < holders.length; i++) {
@@ -181,8 +179,9 @@ contract ERC1155TestHalmos is Test, SymTest {
                     svm.createBytes(96, "YOLO")
                 )
             );
-        } else if (selector == IERC1155.safeBatchTransferFrom.selector
-                || selector == IERC1155Extended.burn_batch.selector
+        } else if (
+            selector == IERC1155.safeBatchTransferFrom.selector ||
+            selector == IERC1155Extended.burn_batch.selector
         ) {
             uint256[] memory ids = new uint256[](5);
             uint256[] memory values = new uint256[](5);
@@ -191,6 +190,7 @@ contract ERC1155TestHalmos is Test, SymTest {
                 values[i] = svm.createUint256("values");
             }
             bytes memory data;
+
             if (selector == IERC1155.safeBatchTransferFrom.selector) {
                 data = abi.encodeWithSelector(
                     selector,
@@ -208,6 +208,7 @@ contract ERC1155TestHalmos is Test, SymTest {
                     values
                 );
             }
+
             // solhint-disable-next-line avoid-low-level-calls
             (success, ) = token.call(data);
         } else if (selector == IERC1155Extended.set_uri.selector) {
