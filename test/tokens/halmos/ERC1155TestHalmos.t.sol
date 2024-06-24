@@ -172,7 +172,7 @@ contract ERC1155TestHalmos is Test, SymTest {
             (success, ) = token.call(
                 abi.encodeWithSelector(
                     selector,
-                    svm.createAddress("from"),
+                    svm.createAddress("owner"),
                     svm.createAddress("to"),
                     svm.createUint256("tokenId"),
                     svm.createUint256("amount"),
@@ -193,7 +193,7 @@ contract ERC1155TestHalmos is Test, SymTest {
                 IERC1155.safeBatchTransferFrom.selector)
                 ? abi.encodeWithSelector(
                     selector,
-                    svm.createAddress("from"),
+                    svm.createAddress("owner"),
                     svm.createAddress("to"),
                     ids,
                     values,

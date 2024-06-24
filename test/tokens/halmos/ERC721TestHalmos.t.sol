@@ -129,7 +129,7 @@ contract ERC721TestHalmos is Test, SymTest {
             (success, ) = token.call(
                 abi.encodeWithSelector(
                     selector,
-                    svm.createAddress("from"),
+                    svm.createAddress("owner"),
                     svm.createAddress("to"),
                     svm.createUint256("tokenId"),
                     svm.createBytes(96, "YOLO")
