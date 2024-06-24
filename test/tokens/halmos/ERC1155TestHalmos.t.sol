@@ -189,26 +189,22 @@ contract ERC1155TestHalmos is Test, SymTest {
                 ids[i] = svm.createUint256("ids");
                 values[i] = svm.createUint256("values");
             }
-            bytes memory data;
-
-            if (selector == IERC1155.safeBatchTransferFrom.selector) {
-                data = abi.encodeWithSelector(
+            bytes memory data = (selector ==
+                IERC1155.safeBatchTransferFrom.selector)
+                ? abi.encodeWithSelector(
                     selector,
                     svm.createAddress("from"),
                     svm.createAddress("to"),
                     ids,
                     values,
                     svm.createBytes(96, "YOLO")
-                );
-            } else {
-                data = abi.encodeWithSelector(
+                )
+                : abi.encodeWithSelector(
                     selector,
                     svm.createAddress("owner"),
                     ids,
                     values
                 );
-            }
-
             // solhint-disable-next-line avoid-low-level-calls
             (success, ) = token.call(data);
         } else if (selector == IERC1155Extended.set_uri.selector) {
