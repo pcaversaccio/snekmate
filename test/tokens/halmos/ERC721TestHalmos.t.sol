@@ -67,6 +67,17 @@ contract ERC721TestHalmos is Test, SymTest {
         holders[1] = address(0x31337);
         holders[2] = address(0xbA5eD);
 
+        /**
+         * @dev Assume that the holders are EOAs to avoid multiple paths that can
+         * occur due to `safeTransferFrom` (specifically `_check_on_erc721_received`)
+         * depending on whether there is a contract or an EOA. Please note that
+         * using a single `assume` with conjunctions would result in the creation of
+         * multiple paths, negatively impacting performance.
+         */
+        vm.assume(holders[0].code.length == 0);
+        vm.assume(holders[1].code.length == 0);
+        vm.assume(holders[2].code.length == 0);
+
         tokenIds = new uint256[](5);
         tokenIds[0] = 0;
         tokenIds[1] = 1;

@@ -212,10 +212,10 @@ Eventually, the [`halmos`](https://github.com/a16z/halmos)-based symbolic tests 
 # Run Halmos ERC-20 symbolic tests.
 ~$ FOUNDRY_PROFILE=halmos halmos --contract ERC20TestHalmos --config test/halmos.toml
 
-# Run Halmos ERC-721 symbolic tests. Be careful, this is a very time-consuming operation.
+# Run Halmos ERC-721 symbolic tests. Be careful, this is a (very!) time-consuming operation.
 ~$ FOUNDRY_PROFILE=halmos halmos --contract ERC721TestHalmos --config test/halmos.toml
 
-# Run Halmos ERC-1155 symbolic tests. Be careful, this is a very time-consuming operation.
+# Run Halmos ERC-1155 symbolic tests. Be careful, this is a time-consuming operation.
 ~$ FOUNDRY_PROFILE=halmos halmos --contract ERC1155TestHalmos --config test/halmos.toml
 
 # Run Halmos math symbolic tests.
