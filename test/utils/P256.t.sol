@@ -112,9 +112,18 @@ contract P256Test is Test {
             uint256 y = uint256(vector.readBytes32(".y"));
             bytes32 hash = vector.readBytes32(".hash");
 
-            if (uint256(s) <= _MALLEABILITY_THRESHOLD) {
+            if (s <= _N) {
                 assertEq(
-                    P256.verify_sig(hash, r, s, x, y),
+                    P256.verify_sig(
+                        hash,
+                        r,
+                        /**
+                         * @dev Flip the `s` parameter if it is higher than the malleability threshold.
+                         */
+                        (s > _MALLEABILITY_THRESHOLD) ? (_N - s) : s,
+                        x,
+                        y
+                    ),
                     vector.readBool(".valid")
                 );
             } else {
@@ -139,14 +148,11 @@ contract P256Test is Test {
         bytes32 hash = keccak256(abi.encode(message));
         (bytes32 r, bytes32 s) = vm.signP256(key, hash);
         (uint256 qx, uint256 qy) = FCL_ecdsa_utils.ecdsa_derivKpub(key);
-        assertTrue(
-            P256.verify_sig(
-                hash,
-                uint256(r),
-                (uint256(s) > _N / 2) ? (_N - uint256(s)) : uint256(s),
-                qx,
-                qy
-            )
-        );
+        if (uint256(s) <= _MALLEABILITY_THRESHOLD) {
+            assertTrue(P256.verify_sig(hash, uint256(r), uint256(s), qx, qy));
+        } else {
+            vm.expectRevert(bytes("p256: invalid signature `s` value"));
+            P256.verify_sig(hash, uint256(r), uint256(s), qx, qy);
+        }
     }
 }
