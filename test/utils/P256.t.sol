@@ -14,6 +14,8 @@ contract P256Test is Test {
     using BytesLib for bytes;
     using stdJson for string;
 
+    uint256 private constant _N =
+        115_792_089_210_356_248_762_697_446_949_407_573_529_996_955_224_135_760_342_422_259_061_068_512_044_369;
     uint256 private constant _MALLEABILITY_THRESHOLD =
         57_896_044_605_178_124_381_348_723_474_703_786_764_998_477_612_067_880_171_211_129_530_534_256_022_184;
     /* solhint-disable const-name-snakecase */
@@ -110,9 +112,18 @@ contract P256Test is Test {
             uint256 y = uint256(vector.readBytes32(".y"));
             bytes32 hash = vector.readBytes32(".hash");
 
-            if (uint256(s) <= _MALLEABILITY_THRESHOLD) {
+            if (s <= _N) {
                 assertEq(
-                    P256.verify_sig(hash, r, s, x, y),
+                    P256.verify_sig(
+                        hash,
+                        r,
+                        /**
+                         * @dev Flip the `s` parameter if it is higher than the malleability threshold.
+                         */
+                        (s > _MALLEABILITY_THRESHOLD) ? (_N - s) : s,
+                        x,
+                        y
+                    ),
                     vector.readBool(".valid")
                 );
             } else {
@@ -133,6 +144,7 @@ contract P256Test is Test {
         string calldata message
     ) public {
         (, uint256 key) = makeAddrAndKey(signer);
+        key = bound(key, 1, _N - 1);
         bytes32 hash = keccak256(abi.encode(message));
         (bytes32 r, bytes32 s) = vm.signP256(key, hash);
         (uint256 qx, uint256 qy) = FCL_ecdsa_utils.ecdsa_derivKpub(key);

@@ -20,9 +20,9 @@
 """
 
 
-# @dev Constants used as part of the ECDSA recovery function.
+# @dev The malleability threshold used as part of the ECDSA
+# verification function.
 _MALLEABILITY_THRESHOLD: constant(uint256) = 57_896_044_618_658_097_711_785_492_504_343_953_926_418_782_139_537_452_191_302_581_570_759_080_747_168
-_SIGNATURE_INCREMENT: constant(uint256) = 57_896_044_618_658_097_711_785_492_504_343_953_926_634_992_332_820_282_019_728_792_003_956_564_819_967
 
 
 @deploy
@@ -102,10 +102,9 @@ def _try_recover_r_vs(hash: bytes32, r: uint256, vs: uint256) -> address:
     @param vs The secp256k1 32-byte short signature field of `v` and `s`.
     @return address The recovered 20-byte signer address.
     """
-    s: uint256 = vs & _SIGNATURE_INCREMENT
-    # We do not check for an overflow here since the shift operation
-    # `vs >> 255` results essentially in a `uint8` type (`0` or `1`) and
-    # we use `uint256` as result type.
+    s: uint256 = vs & convert(max_value(int256), uint256)
+    # We do not check for an overflow here, as the shift operation
+    # `vs >> 255` results in `0` or `1`.
     v: uint256 = unsafe_add(vs >> 255, 27)
     return self._try_recover_vrs(hash, v, r, s)
 

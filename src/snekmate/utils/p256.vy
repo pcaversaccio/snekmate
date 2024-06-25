@@ -27,6 +27,10 @@ _C: constant(uint256) = 32
 # curve database: https://neuromancer.sk/std/secg/secp256r1).
 
 
+# @dev The secp256r1 curve order (number of points).
+_N: constant(uint256) = 115_792_089_210_356_248_762_697_446_949_407_573_529_996_955_224_135_760_342_422_259_061_068_512_044_369
+
+
 # @dev The malleability threshold used as part of the ECDSA
 # verification function.
 _MALLEABILITY_THRESHOLD: constant(uint256) = 57_896_044_605_178_124_381_348_723_474_703_786_764_998_477_612_067_880_171_211_129_530_534_256_022_184
@@ -47,10 +51,6 @@ _B: constant(uint256) = 41_058_363_725_152_142_129_326_129_780_047_268_409_114_4
 # @dev The base generator point for "(qx, qy)".
 _GX: constant(uint256) = 48_439_561_293_906_451_759_052_585_252_797_914_202_762_949_526_041_747_995_844_080_717_082_404_635_286
 _GY: constant(uint256) = 36_134_250_956_749_795_798_585_127_919_587_881_956_611_106_672_985_015_071_877_198_253_568_414_405_109
-
-
-# @dev The secp256r1 curve order (number of points).
-_N: constant(uint256) = 115_792_089_210_356_248_762_697_446_949_407_573_529_996_955_224_135_760_342_422_259_061_068_512_044_369
 
 
 # @dev The "-2 mod _P" constant is used to speed up inversion
