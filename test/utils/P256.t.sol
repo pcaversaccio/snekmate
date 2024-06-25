@@ -16,6 +16,8 @@ contract P256Test is Test {
 
     uint256 private constant _MALLEABILITY_THRESHOLD =
         57_896_044_605_178_124_381_348_723_474_703_786_764_998_477_612_067_880_171_211_129_530_534_256_022_184;
+    uint256 private constant _N =
+        115_792_089_210_356_248_762_697_446_949_407_573_529_996_955_224_135_760_342_422_259_061_068_512_044_369;
     /* solhint-disable const-name-snakecase */
     bytes32 private constant hashValid =
         0xbb5a52f42f9c9261ed4361f59422a1e30036e7c32b270c8807a419feca605023;
@@ -133,14 +135,18 @@ contract P256Test is Test {
         string calldata message
     ) public {
         (, uint256 key) = makeAddrAndKey(signer);
+        key = bound(key, 1, _N - 1);
         bytes32 hash = keccak256(abi.encode(message));
         (bytes32 r, bytes32 s) = vm.signP256(key, hash);
         (uint256 qx, uint256 qy) = FCL_ecdsa_utils.ecdsa_derivKpub(key);
-        if (uint256(s) <= _MALLEABILITY_THRESHOLD) {
-            assertTrue(P256.verify_sig(hash, uint256(r), uint256(s), qx, qy));
-        } else {
-            vm.expectRevert(bytes("p256: invalid signature `s` value"));
-            P256.verify_sig(hash, uint256(r), uint256(s), qx, qy);
-        }
+        assertTrue(
+            P256.verify_sig(
+                hash,
+                uint256(r),
+                (uint256(s) > _N / 2) ? (_N - uint256(s)) : uint256(s),
+                qx,
+                qy
+            )
+        );
     }
 }
