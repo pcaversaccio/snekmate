@@ -666,7 +666,7 @@ SignatureCheckerTest:testFuzzEOAWithInvalidSigner(string,string) (runs: 256, μ:
 SignatureCheckerTest:testFuzzEOAWithValidSignature(string,string) (runs: 256, μ: 20366, ~: 20370)
 SignatureCheckerTest:testInitialSetup() (gas: 8359)
 TimelockControllerInvariants:statefulFuzzExecutedLessThanOrEqualToScheduled() (runs: 256, calls: 3840, reverts: 1260)
-TimelockControllerInvariants:statefulFuzzExecutedProposalCancellation() (runs: 256, calls: 3840, reverts: 1283)
+TimelockControllerInvariants:statefulFuzzExecutedProposalCancellation() (runs: 256, calls: 3840, reverts: 1282)
 TimelockControllerInvariants:statefulFuzzExecutingCancelledProposal() (runs: 256, calls: 3840, reverts: 1210)
 TimelockControllerInvariants:statefulFuzzExecutingNotReadyProposal() (runs: 256, calls: 3840, reverts: 1234)
 TimelockControllerInvariants:statefulFuzzOnceProposalExecution() (runs: 256, calls: 3840, reverts: 1268)

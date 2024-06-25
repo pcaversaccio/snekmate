@@ -14,10 +14,10 @@ contract P256Test is Test {
     using BytesLib for bytes;
     using stdJson for string;
 
-    uint256 private constant _MALLEABILITY_THRESHOLD =
-        57_896_044_605_178_124_381_348_723_474_703_786_764_998_477_612_067_880_171_211_129_530_534_256_022_184;
     uint256 private constant _N =
         115_792_089_210_356_248_762_697_446_949_407_573_529_996_955_224_135_760_342_422_259_061_068_512_044_369;
+    uint256 private constant _MALLEABILITY_THRESHOLD =
+        57_896_044_605_178_124_381_348_723_474_703_786_764_998_477_612_067_880_171_211_129_530_534_256_022_184;
     /* solhint-disable const-name-snakecase */
     bytes32 private constant hashValid =
         0xbb5a52f42f9c9261ed4361f59422a1e30036e7c32b270c8807a419feca605023;
