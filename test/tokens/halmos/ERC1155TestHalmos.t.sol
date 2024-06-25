@@ -53,6 +53,18 @@ contract ERC1155TestHalmos is Test, SymTest {
         holders[1] = address(0x31337);
         holders[2] = address(0xbA5eD);
 
+        /**
+         * @dev Assume that the holders are EOAs to avoid multiple paths that can
+         * occur due to `safeTransferFrom` and `safeBatchTransferFrom` (specifically
+         * `_check_on_erc1155_received` and `_check_on_erc1155_batch_received`)
+         * depending on whether there is a contract or an EOA. Please note that
+         * using a single `assume` with conjunctions would result in the creation of
+         * multiple paths, negatively impacting performance.
+         */
+        vm.assume(holders[0].code.length == 0);
+        vm.assume(holders[1].code.length == 0);
+        vm.assume(holders[2].code.length == 0);
+
         tokenIds = new uint256[](5);
         tokenIds[0] = 0;
         tokenIds[1] = 1;
@@ -114,89 +126,111 @@ contract ERC1155TestHalmos is Test, SymTest {
         vm.stopPrank();
     }
 
-    /**
-     * @dev Currently commented out due to performance and reverting path issues in Halmos.
-     */
-    // function testHalmosAssertNoBackdoor(
-    //     bytes4 selector,
-    //     address caller,
-    //     address other
-    // ) public {
-    //     /**
-    //      * @dev Using a single `assume` with conjunctions would result in the creation of
-    //      * multiple paths, negatively impacting performance.
-    //      */
-    //     vm.assume(caller != other);
-    //     vm.assume(selector != IERC1155Extended._customMint.selector);
-    //     vm.assume(selector != IERC1155Extended.safe_mint.selector);
-    //     vm.assume(selector != IERC1155Extended.safe_mint_batch.selector);
-    //     for (uint256 i = 0; i < holders.length; i++) {
-    //         vm.assume(!erc1155.isApprovedForAll(holders[i], caller));
-    //     }
+    function testHalmosAssertNoBackdoor(
+        bytes4 selector,
+        address caller,
+        address other
+    ) public {
+        /**
+         * @dev Using a single `assume` with conjunctions would result in the creation of
+         * multiple paths, negatively impacting performance.
+         */
+        vm.assume(caller != other);
+        vm.assume(selector != IERC1155Extended._customMint.selector);
+        vm.assume(selector != IERC1155Extended.safe_mint.selector);
+        vm.assume(selector != IERC1155Extended.safe_mint_batch.selector);
 
-    //     address[] memory callers;
-    //     address[] memory others;
-    //     for (uint256 i = 0; i < tokenIds.length; i++) {
-    //         callers[i] = caller;
-    //         others[i] = other;
-    //     }
+        /**
+         * @dev For convenience, ignore `view` functions that use dynamic arrays.
+         */
+        vm.assume(selector != IERC1155.balanceOfBatch.selector);
 
-    //     uint256[] memory oldBalanceCaller = erc1155.balanceOfBatch(
-    //         callers,
-    //         tokenIds
-    //     );
-    //     uint256[] memory oldBalanceOther = erc1155.balanceOfBatch(
-    //         others,
-    //         tokenIds
-    //     );
+        for (uint256 i = 0; i < holders.length; i++) {
+            vm.assume(!erc1155.isApprovedForAll(holders[i], caller));
+        }
 
-    //     vm.startPrank(caller);
-    //     bool success;
-    //     if (selector == IERC1155.safeTransferFrom.selector) {
-    //         // solhint-disable-next-line avoid-low-level-calls
-    //         (success, ) = token.call(
-    //             abi.encodeWithSelector(
-    //                 selector,
-    //                 svm.createAddress("from"),
-    //                 svm.createAddress("to"),
-    //                 svm.createUint256("tokenId"),
-    //                 svm.createUint256("amount"),
-    //                 svm.createBytes(96, "YOLO")
-    //             )
-    //         );
-    //     } else if (selector == IERC1155.safeBatchTransferFrom.selector) {
-    //         uint256[] memory ids = new uint256[](5);
-    //         uint256[] memory values = new uint256[](5);
-    //         for (uint256 i = 0; i < ids.length; i++) {
-    //             ids[i] = svm.createUint256("ids");
-    //             values[i] = svm.createUint256("values");
-    //         }
-    //         // solhint-disable-next-line avoid-low-level-calls
-    //         (success, ) = token.call(
-    //             abi.encodeWithSelector(
-    //                 selector,
-    //                 svm.createAddress("from"),
-    //                 svm.createAddress("to"),
-    //                 ids,
-    //                 values,
-    //                 svm.createBytes(96, "YOLO")
-    //             )
-    //         );
-    //     } else {
-    //         bytes memory args = svm.createBytes(1_024, "WAGMI");
-    //         // solhint-disable-next-line avoid-low-level-calls
-    //         (success, ) = address(token).call(abi.encodePacked(selector, args));
-    //     }
-    //     vm.assume(success);
-    //     vm.stopPrank();
+        address[] memory callers = new address[](tokenIds.length);
+        address[] memory others = new address[](tokenIds.length);
+        for (uint256 i = 0; i < tokenIds.length; i++) {
+            callers[i] = caller;
+            others[i] = other;
+        }
 
-    //     for (uint256 i = 0; i < tokenIds.length; i++) {
-    //         assert(
-    //             erc1155.balanceOf(caller, tokenIds[i]) <= oldBalanceCaller[i]
-    //         );
-    //         assert(erc1155.balanceOf(other, tokenIds[i]) >= oldBalanceOther[i]);
-    //     }
-    // }
+        uint256[] memory oldBalanceCaller = erc1155.balanceOfBatch(
+            callers,
+            tokenIds
+        );
+        uint256[] memory oldBalanceOther = erc1155.balanceOfBatch(
+            others,
+            tokenIds
+        );
+
+        vm.startPrank(caller);
+        bool success;
+        if (selector == IERC1155.safeTransferFrom.selector) {
+            // solhint-disable-next-line avoid-low-level-calls
+            (success, ) = token.call(
+                abi.encodeWithSelector(
+                    selector,
+                    svm.createAddress("owner"),
+                    svm.createAddress("to"),
+                    svm.createUint256("tokenId"),
+                    svm.createUint256("amount"),
+                    svm.createBytes(96, "YOLO")
+                )
+            );
+        } else if (
+            selector == IERC1155.safeBatchTransferFrom.selector ||
+            selector == IERC1155Extended.burn_batch.selector
+        ) {
+            uint256[] memory ids = new uint256[](5);
+            uint256[] memory values = new uint256[](5);
+            for (uint256 i = 0; i < ids.length; i++) {
+                ids[i] = svm.createUint256("ids");
+                values[i] = svm.createUint256("values");
+            }
+            bytes memory data = (selector ==
+                IERC1155.safeBatchTransferFrom.selector)
+                ? abi.encodeWithSelector(
+                    selector,
+                    svm.createAddress("owner"),
+                    svm.createAddress("to"),
+                    ids,
+                    values,
+                    svm.createBytes(96, "YOLO")
+                )
+                : abi.encodeWithSelector(
+                    selector,
+                    svm.createAddress("owner"),
+                    ids,
+                    values
+                );
+            // solhint-disable-next-line avoid-low-level-calls
+            (success, ) = token.call(data);
+        } else if (selector == IERC1155Extended.set_uri.selector) {
+            // solhint-disable-next-line avoid-low-level-calls
+            (success, ) = token.call(
+                abi.encodeWithSelector(
+                    selector,
+                    svm.createUint256("id"),
+                    svm.createBytes(96, "uri")
+                )
+            );
+        } else {
+            bytes memory args = svm.createBytes(1_024, "WAGMI");
+            // solhint-disable-next-line avoid-low-level-calls
+            (success, ) = address(token).call(abi.encodePacked(selector, args));
+        }
+        vm.assume(success);
+        vm.stopPrank();
+
+        for (uint256 i = 0; i < tokenIds.length; i++) {
+            assert(
+                erc1155.balanceOf(caller, tokenIds[i]) <= oldBalanceCaller[i]
+            );
+            assert(erc1155.balanceOf(other, tokenIds[i]) >= oldBalanceOther[i]);
+        }
+    }
 
     function testHalmosSafeTransferFrom(
         address caller,

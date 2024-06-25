@@ -94,62 +94,61 @@ contract ERC721TestHalmos is Test, SymTest {
     }
 
     /**
-     * @dev Currently commented out due to performance and reverting path issues in Halmos.
      * @notice Forked and adjusted accordingly from here:
      * https://github.com/a16z/halmos/blob/main/examples/tokens/ERC721/test/ERC721Test.sol.
      */
-    // function testHalmosAssertNoBackdoor(
-    //     bytes4 selector,
-    //     address caller,
-    //     address other
-    // ) public {
-    //     /**
-    //      * @dev Using a single `assume` with conjunctions would result in the creation of
-    //      * multiple paths, negatively impacting performance.
-    //      */
-    //     vm.assume(caller != other);
-    //     vm.assume(selector != IERC721Extended._customMint.selector);
-    //     vm.assume(selector != IERC721Extended.safe_mint.selector);
-    //     for (uint256 i = 0; i < holders.length; i++) {
-    //         vm.assume(!erc721.isApprovedForAll(holders[i], caller));
-    //     }
-    //     for (uint256 i = 0; i < tokenIds.length; i++) {
-    //         vm.assume(erc721.getApproved(tokenIds[i]) != caller);
-    //     }
+    function testHalmosAssertNoBackdoor(
+        bytes4 selector,
+        address caller,
+        address other
+    ) public {
+        /**
+         * @dev Using a single `assume` with conjunctions would result in the creation of
+         * multiple paths, negatively impacting performance.
+         */
+        vm.assume(caller != other);
+        vm.assume(selector != IERC721Extended._customMint.selector);
+        vm.assume(selector != IERC721Extended.safe_mint.selector);
+        for (uint256 i = 0; i < holders.length; i++) {
+            vm.assume(!erc721.isApprovedForAll(holders[i], caller));
+        }
+        for (uint256 i = 0; i < tokenIds.length; i++) {
+            vm.assume(erc721.getApproved(tokenIds[i]) != caller);
+        }
 
-    //     uint256 oldBalanceCaller = erc721.balanceOf(caller);
-    //     uint256 oldBalanceOther = erc721.balanceOf(other);
+        uint256 oldBalanceCaller = erc721.balanceOf(caller);
+        uint256 oldBalanceOther = erc721.balanceOf(other);
 
-    //     vm.startPrank(caller);
-    //     bool success;
-    //     if (
-    //         selector ==
-    //         bytes4(keccak256("safeTransferFrom(address,address,uint256,bytes)"))
-    //     ) {
-    //         // solhint-disable-next-line avoid-low-level-calls
-    //         (success, ) = token.call(
-    //             abi.encodeWithSelector(
-    //                 selector,
-    //                 svm.createAddress("from"),
-    //                 svm.createAddress("to"),
-    //                 svm.createUint256("tokenId"),
-    //                 svm.createBytes(96, "YOLO")
-    //             )
-    //         );
-    //     } else {
-    //         bytes memory args = svm.createBytes(1_024, "WAGMI");
-    //         // solhint-disable-next-line avoid-low-level-calls
-    //         (success, ) = address(token).call(abi.encodePacked(selector, args));
-    //     }
-    //     vm.assume(success);
-    //     vm.stopPrank();
+        vm.startPrank(caller);
+        bool success;
+        if (
+            selector ==
+            bytes4(keccak256("safeTransferFrom(address,address,uint256,bytes)"))
+        ) {
+            // solhint-disable-next-line avoid-low-level-calls
+            (success, ) = token.call(
+                abi.encodeWithSelector(
+                    selector,
+                    svm.createAddress("owner"),
+                    svm.createAddress("to"),
+                    svm.createUint256("tokenId"),
+                    svm.createBytes(96, "YOLO")
+                )
+            );
+        } else {
+            bytes memory args = svm.createBytes(1_024, "WAGMI");
+            // solhint-disable-next-line avoid-low-level-calls
+            (success, ) = address(token).call(abi.encodePacked(selector, args));
+        }
+        vm.assume(success);
+        vm.stopPrank();
 
-    //     uint256 newBalanceCaller = erc721.balanceOf(caller);
-    //     uint256 newBalanceOther = erc721.balanceOf(other);
+        uint256 newBalanceCaller = erc721.balanceOf(caller);
+        uint256 newBalanceOther = erc721.balanceOf(other);
 
-    //     assert(newBalanceCaller <= oldBalanceCaller);
-    //     assert(newBalanceOther >= oldBalanceOther);
-    // }
+        assert(newBalanceCaller <= oldBalanceCaller);
+        assert(newBalanceOther >= oldBalanceOther);
+    }
 
     /**
      * @notice Forked and adjusted accordingly from here:

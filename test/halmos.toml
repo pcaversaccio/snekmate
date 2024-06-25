@@ -2,7 +2,6 @@
 # Test settings.
 function = "testHalmos"       # Run tests matching the given prefix.
 storage-layout = "generic"    # Set the generic storage layout model.
-test-parallel = true          # Run tests in parallel.
 early-exit = true             # Stop after a counterexample is found.
 ffi = true                    # Enable the foreign function interface (ffi) cheatcode.
 
