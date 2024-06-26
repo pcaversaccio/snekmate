@@ -1,6 +1,6 @@
 # 🕓 Changelog
 
-## [`0.1.0`](https://github.com/pcaversaccio/snekmate/releases/tag/v0.1.0) (Unreleased)
+## [`0.1.0`](https://github.com/pcaversaccio/snekmate/releases/tag/v0.1.0) (26-06-2024)
 
 > [!IMPORTANT]
 > The aggregating pull request used to implement the subsequent changes is [#207](https://github.com/pcaversaccio/snekmate/pull/207).
