@@ -140,6 +140,12 @@ contract TimelockControllerTest is Test {
             )
         );
         assertTrue(
+            !timelockController.hasRole(
+                timelockController.DEFAULT_ADMIN_ROLE(),
+                deployer
+            )
+        );
+        assertTrue(
             timelockController.hasRole(
                 timelockController.PROPOSER_ROLE(),
                 PROPOSER_ONE
@@ -191,6 +197,24 @@ contract TimelockControllerTest is Test {
             !timelockController.hasRole(
                 timelockController.EXECUTOR_ROLE(),
                 self
+            )
+        );
+        assertTrue(
+            !timelockController.hasRole(
+                timelockController.PROPOSER_ROLE(),
+                deployer
+            )
+        );
+        assertTrue(
+            !timelockController.hasRole(
+                timelockController.CANCELLER_ROLE(),
+                deployer
+            )
+        );
+        assertTrue(
+            !timelockController.hasRole(
+                timelockController.EXECUTOR_ROLE(),
+                deployer
             )
         );
         assertTrue(
@@ -256,6 +280,8 @@ contract TimelockControllerTest is Test {
             vm.computeCreateAddress(deployer, vm.getNonce(deployer)),
             deployer
         );
+        vm.expectEmit(true, true, true, false);
+        emit IAccessControl.RoleRevoked(DEFAULT_ADMIN_ROLE, deployer, deployer);
         vm.expectEmit(true, true, true, false);
         emit IAccessControl.RoleGranted(PROPOSER_ROLE, proposers[0], deployer);
         vm.expectEmit(true, true, true, false);
@@ -324,6 +350,12 @@ contract TimelockControllerTest is Test {
             )
         );
         assertTrue(
+            !timelockControllerInitialEventEmptyAdmin.hasRole(
+                timelockControllerInitialEventEmptyAdmin.DEFAULT_ADMIN_ROLE(),
+                deployer
+            )
+        );
+        assertTrue(
             timelockControllerInitialEventEmptyAdmin.hasRole(
                 timelockControllerInitialEventEmptyAdmin.PROPOSER_ROLE(),
                 PROPOSER_ONE
@@ -375,6 +407,24 @@ contract TimelockControllerTest is Test {
             !timelockControllerInitialEventEmptyAdmin.hasRole(
                 timelockControllerInitialEventEmptyAdmin.EXECUTOR_ROLE(),
                 self
+            )
+        );
+        assertTrue(
+            !timelockControllerInitialEventEmptyAdmin.hasRole(
+                timelockControllerInitialEventEmptyAdmin.PROPOSER_ROLE(),
+                deployer
+            )
+        );
+        assertTrue(
+            !timelockControllerInitialEventEmptyAdmin.hasRole(
+                timelockControllerInitialEventEmptyAdmin.CANCELLER_ROLE(),
+                deployer
+            )
+        );
+        assertTrue(
+            !timelockControllerInitialEventEmptyAdmin.hasRole(
+                timelockControllerInitialEventEmptyAdmin.EXECUTOR_ROLE(),
+                deployer
             )
         );
         assertTrue(
@@ -437,6 +487,8 @@ contract TimelockControllerTest is Test {
             vm.computeCreateAddress(deployer, vm.getNonce(deployer)),
             deployer
         );
+        vm.expectEmit(true, true, true, false);
+        emit IAccessControl.RoleRevoked(DEFAULT_ADMIN_ROLE, deployer, deployer);
         vm.expectEmit(true, true, true, false);
         emit IAccessControl.RoleGranted(DEFAULT_ADMIN_ROLE, self, deployer);
         vm.expectEmit(true, true, true, false);
@@ -509,6 +561,13 @@ contract TimelockControllerTest is Test {
             )
         );
         assertTrue(
+            !timelockControllerInitialEventNonEmptyAdmin.hasRole(
+                timelockControllerInitialEventNonEmptyAdmin
+                    .DEFAULT_ADMIN_ROLE(),
+                deployer
+            )
+        );
+        assertTrue(
             timelockControllerInitialEventNonEmptyAdmin.hasRole(
                 timelockControllerInitialEventNonEmptyAdmin.PROPOSER_ROLE(),
                 PROPOSER_ONE
@@ -560,6 +619,24 @@ contract TimelockControllerTest is Test {
             !timelockControllerInitialEventNonEmptyAdmin.hasRole(
                 timelockControllerInitialEventNonEmptyAdmin.EXECUTOR_ROLE(),
                 self
+            )
+        );
+        assertTrue(
+            !timelockControllerInitialEventNonEmptyAdmin.hasRole(
+                timelockControllerInitialEventNonEmptyAdmin.PROPOSER_ROLE(),
+                deployer
+            )
+        );
+        assertTrue(
+            !timelockControllerInitialEventNonEmptyAdmin.hasRole(
+                timelockControllerInitialEventNonEmptyAdmin.CANCELLER_ROLE(),
+                deployer
+            )
+        );
+        assertTrue(
+            !timelockControllerInitialEventNonEmptyAdmin.hasRole(
+                timelockControllerInitialEventNonEmptyAdmin.EXECUTOR_ROLE(),
+                deployer
             )
         );
         assertTrue(

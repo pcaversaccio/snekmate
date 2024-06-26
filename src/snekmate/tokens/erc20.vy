@@ -201,7 +201,6 @@ def __init__(name_: String[25], symbol_: String[5], decimals_: uint8, name_eip71
     symbol = symbol_
     decimals = decimals_
 
-    ownable._transfer_ownership(msg.sender)
     self.is_minter[msg.sender] = True
     log RoleMinterChanged(msg.sender, True)
 
