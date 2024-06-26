@@ -11,4 +11,4 @@ verbose = 1                   # Set the verbosity level for the tests.
 
 # Solver settings.
 solver-command = "yices-smt2" # Use the Yices 2 SMT solver.
-solver-parallel = true        # Run assertion solvers in parallel.
+cache-solver = true           # Cache unsatisfiable queries using unsatisfiable cores.
