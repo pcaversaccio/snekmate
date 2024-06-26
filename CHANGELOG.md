@@ -1,5 +1,11 @@
 # 🕓 Changelog
 
+## [`0.1.1`](https://github.com/pcaversaccio/snekmate/releases/tag/v0.1.1) (Unreleased)
+
+### 👀 Full Changelog
+
+- [`v0.1.0...v0.1.1`](https://github.com/pcaversaccio/snekmate/compare/v0.1.0...v0.1.1)
+
 ## [`0.1.0`](https://github.com/pcaversaccio/snekmate/releases/tag/v0.1.0) (26-06-2024)
 
 > [!IMPORTANT]
