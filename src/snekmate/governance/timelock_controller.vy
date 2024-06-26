@@ -253,6 +253,13 @@ def __init__(minimum_delay_: uint256, proposers_: DynArray[address, _DYNARRAY_BO
     # Configure the contract to be self-administered.
     access_control._grant_role(access_control.DEFAULT_ADMIN_ROLE, self)
 
+    # Revoke the `DEFAULT_ADMIN_ROLE` role from the deployer account.
+    # The underlying reason for this design is that deployer accounts may
+    # forget to revoke the admin rights from the timelock controller contract
+    # after deployment. For further insights also, see the following issue:
+    # https://github.com/OpenZeppelin/openzeppelin-contracts/issues/3720.
+    access_control._revoke_role(access_control.DEFAULT_ADMIN_ROLE, msg.sender)
+
     # Set the optional admin.
     if (admin_ != empty(address)):
         access_control._grant_role(access_control.DEFAULT_ADMIN_ROLE, admin_)

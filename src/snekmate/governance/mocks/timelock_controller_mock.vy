@@ -96,4 +96,6 @@ def __init__(minimum_delay_: uint256, proposers_: DynArray[address, tc._DYNARRAY
     # The following line assigns the `DEFAULT_ADMIN_ROLE`
     # to the `msg.sender`.
     ac.__init__()
+    # The following line revokes the `DEFAULT_ADMIN_ROLE`
+    # from the `msg.sender`.
     tc.__init__(minimum_delay_, proposers_, executors_, admin_)

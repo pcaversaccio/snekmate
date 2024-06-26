@@ -155,7 +155,6 @@ def __init__(base_uri_: String[80]):
     """
     _BASE_URI = base_uri_
 
-    ownable._transfer_ownership(msg.sender)
     self.is_minter[msg.sender] = True
     log RoleMinterChanged(msg.sender, True)
 
