@@ -59,7 +59,7 @@ def hasRole(role: bytes32, account: address) -> bool:
     @return bool The verification whether the role
             `role` has been granted to `account` or not.
     """
-    return ...
+    ...
 
 
 @external
@@ -75,7 +75,7 @@ def getRoleAdmin(role: bytes32) -> bytes32:
     @return bytes32 The 32-byte admin role
             that controls `role`.
     """
-    return ...
+    ...
 
 
 @external

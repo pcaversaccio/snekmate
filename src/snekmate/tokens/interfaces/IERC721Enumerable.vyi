@@ -46,7 +46,7 @@ def supportsInterface(interfaceId: bytes4) -> bool:
     @return bool The verification whether the contract
             implements the interface or not.
     """
-    return ...
+    ...
 
 
 @external
@@ -56,7 +56,7 @@ def totalSupply() -> uint256:
     @dev Returns the amount of tokens in existence.
     @return uint256 The 32-byte token supply.
     """
-    return ...
+    ...
 
 
 @external
@@ -72,7 +72,7 @@ def tokenByIndex(_index: uint256) -> uint256:
     @return uint256 The 32-byte token ID at index
             `_index`.
     """
-    return ...
+    ...
 
 
 @external
@@ -89,4 +89,4 @@ def tokenOfOwnerByIndex(_owner: address, _index: uint256) -> uint256:
     @return uint256 The 32-byte token ID owned by
             `_owner` at index `_index`.
     """
-    return ...
+    ...

@@ -36,7 +36,7 @@ def supportsInterface(interfaceId: bytes4) -> bool:
     @return bool The verification whether the contract
             implements the interface or not.
     """
-    return ...
+    ...
 
 
 @external
@@ -55,4 +55,4 @@ def royaltyInfo(_tokenId: uint256, _salePrice: uint256) -> (address, uint256):
     @return uint256 The 32-byte royalty payment amount for
             `_salePrice`.
     """
-    return ...
+    ...
