@@ -2,6 +2,19 @@
 
 ## [`0.1.1`](https://github.com/pcaversaccio/snekmate/releases/tag/v0.1.1) (Unreleased)
 
+### ♻️ Refactoring
+
+- **Authentication**
+  - [`access_control`](https://github.com/pcaversaccio/snekmate/blob/v0.1.1/src/snekmate/auth/access_control.vy): Use relative `interfaces` `import`s. ([#263](https://github.com/pcaversaccio/snekmate/pull/263))
+- **Extensions**
+  - [`erc2981`](https://github.com/pcaversaccio/snekmate/blob/v0.1.1/src/snekmate/extensions/erc2981.vy): Use relative `interfaces` `import`s. ([#263](https://github.com/pcaversaccio/snekmate/pull/263))
+- **Tokens**
+  - [`erc20`](https://github.com/pcaversaccio/snekmate/blob/v0.1.1/src/snekmate/tokens/erc20.vy): Use relative `interfaces` `import`s. ([#263](https://github.com/pcaversaccio/snekmate/pull/263))
+  - [`erc721`](https://github.com/pcaversaccio/snekmate/blob/v0.1.1/src/snekmate/tokens/erc721.vy): Use relative `interfaces` `import`s. ([#263](https://github.com/pcaversaccio/snekmate/pull/263))
+  - [`erc1155`](https://github.com/pcaversaccio/snekmate/blob/v0.1.1/src/snekmate/tokens/erc1155.vy): Use relative `interfaces` `import`s. ([#263](https://github.com/pcaversaccio/snekmate/pull/263))
+- **Utility Functions**
+  - [`eip712_domain_separator`](https://github.com/pcaversaccio/snekmate/blob/v0.1.1/src/snekmate/utils/eip712_domain_separator.vy): Use relative `interfaces` `import`s. ([#263](https://github.com/pcaversaccio/snekmate/pull/263))
+
 ### 👀 Full Changelog
 
 - [`v0.1.0...v0.1.1`](https://github.com/pcaversaccio/snekmate/compare/v0.1.0...v0.1.1)

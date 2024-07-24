@@ -71,7 +71,7 @@ implements: IERC165
 # @dev We import and implement the `IAccessControl`
 # interface, which is written using standard Vyper
 # syntax.
-import interfaces.IAccessControl as IAccessControl
+from .interfaces import IAccessControl
 implements: IAccessControl
 
 

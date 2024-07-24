@@ -40,20 +40,20 @@ implements: IERC165
 
 # @dev We import and implement the `IERC1155` interface,
 # which is written using standard Vyper syntax.
-import interfaces.IERC1155 as IERC1155
+from .interfaces import IERC1155
 implements: IERC1155
 
 
 # @dev We import and implement the `IERC1155MetadataURI`
 # interface, which is written using standard Vyper
 # syntax.
-import interfaces.IERC1155MetadataURI as IERC1155MetadataURI
+from .interfaces import IERC1155MetadataURI
 implements: IERC1155MetadataURI
 
 
 # @dev We import the `IERC1155Receiver` interface, which
 # is written using standard Vyper syntax.
-import interfaces.IERC1155Receiver as IERC1155Receiver
+from .interfaces import IERC1155Receiver
 
 
 # @dev We import and use the `ownable` module.

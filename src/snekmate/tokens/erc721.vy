@@ -61,27 +61,27 @@ implements: IERC721
 # @dev We import and implement the `IERC721Metadata`
 # interface, which is written using standard Vyper
 # syntax.
-import interfaces.IERC721Metadata as IERC721Metadata
+from .interfaces import IERC721Metadata
 implements: IERC721Metadata
 
 
 # @dev We import and implement the `IERC721Enumerable`
 # interface, which is written using standard Vyper
 # syntax.
-import interfaces.IERC721Enumerable as IERC721Enumerable
+from .interfaces import IERC721Enumerable
 implements: IERC721Enumerable
 
 
 # @dev We import and implement the `IERC721Permit`
 # interface, which is written using standard Vyper
 # syntax.
-import interfaces.IERC721Permit as IERC721Permit
+from .interfaces import IERC721Permit
 implements: IERC721Permit
 
 
 # @dev We import and implement the `IERC4906` interface,
 # which is written using standard Vyper syntax.
-import interfaces.IERC4906 as IERC4906
+from .interfaces import IERC4906
 implements: IERC4906
 
 
@@ -93,7 +93,7 @@ implements: IERC5267
 
 # @dev We import the `IERC721Receiver` interface, which
 # is written using standard Vyper syntax.
-import interfaces.IERC721Receiver as IERC721Receiver
+from .interfaces import IERC721Receiver
 
 
 # @dev We import and use the `ownable` module.
