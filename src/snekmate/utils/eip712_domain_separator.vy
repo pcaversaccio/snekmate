@@ -17,7 +17,7 @@
 
 # @dev We import and implement the `IERC5267` interface,
 # which is written using standard Vyper syntax.
-import interfaces.IERC5267 as IERC5267
+from .interfaces import IERC5267
 implements: IERC5267
 
 

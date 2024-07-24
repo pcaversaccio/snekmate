@@ -67,7 +67,7 @@ implements: IERC165
 
 # @dev We import and implement the `IERC2981` interface,
 # which is written using standard Vyper syntax.
-import interfaces.IERC2981 as IERC2981
+from .interfaces import IERC2981
 implements: IERC2981
 
 

@@ -66,7 +66,7 @@ implements: IERC20Detailed
 # @dev We import and implement the `IERC20Permit`
 # interface, which is written using standard Vyper
 # syntax.
-import interfaces.IERC20Permit as IERC20Permit
+from .interfaces import IERC20Permit
 implements: IERC20Permit
 
 
