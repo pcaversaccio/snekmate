@@ -20,8 +20,8 @@ importers:
         specifier: ^9.1.0
         version: 9.1.0(eslint@9.7.0)
       ethers:
-        specifier: ^6.13.1
-        version: 6.13.1
+        specifier: ^6.13.2
+        version: 6.13.2
       keccak256:
         specifier: ^1.0.6
         version: 1.0.6
@@ -35,8 +35,8 @@ importers:
         specifier: ^1.3.1
         version: 1.3.1(prettier@3.3.3)
       solhint:
-        specifier: ^5.0.1
-        version: 5.0.1
+        specifier: ^5.0.2
+        version: 5.0.2
 
 packages:
   "@adraffy/ens-normalize@1.10.1":
@@ -772,10 +772,10 @@ packages:
       }
     engines: { node: ">=0.10.0" }
 
-  ethereum-bloom-filters@1.1.0:
+  ethereum-bloom-filters@1.2.0:
     resolution:
       {
-        integrity: sha512-J1gDRkLpuGNvWYzWslBQR9cDV4nd4kfvVTE/Wy4Kkm4yb3EYRSlyi0eB/inTsSTTVyA0+HyzHgbr95Fn/Z1fSw==,
+        integrity: sha512-28hyiE7HVsWubqhpVLVmZXFd4ITeHi+BUu05o9isf0GUpMtzBUi+8/gFrGaGYzvGAJQmJ3JKj77Mk9G98T84rA==,
       }
 
   ethereum-cryptography@2.2.1:
@@ -784,10 +784,10 @@ packages:
         integrity: sha512-r/W8lkHSiTLxUxW8Rf3u4HGB0xQweG2RyETjywylKZSzLWoWAijRz8WCuOtJ6wah+avllXBqZuk29HCCvhEIRg==,
       }
 
-  ethers@6.13.1:
+  ethers@6.13.2:
     resolution:
       {
-        integrity: sha512-hdJ2HOxg/xx97Lm9HdCWk949BfYqYWpyw4//78SiwOLgASyfrNszfMUNB2joKjvGUdwhHfaiMMFFwacVVoLR9A==,
+        integrity: sha512-9VkriTTed+/27BGuY1s0hf441kqwHJ1wtN2edksEtiRvXx+soxRX3iSXTfFqq2+YwrOqbDoTHjIhQnjJRlzKmg==,
       }
     engines: { node: ">=14.0.0" }
 
@@ -1521,10 +1521,10 @@ packages:
       }
     engines: { node: ">=10" }
 
-  solhint@5.0.1:
+  solhint@5.0.2:
     resolution:
       {
-        integrity: sha512-QeQLS9HGCnIiibt+xiOa/+MuP7BWz9N7C5+Mj9pLHshdkNhuo3AzCpWmjfWVZBUuwIUO3YyCRVIcYLR3YOKGfg==,
+        integrity: sha512-fDoflGz1jztGRqEDiLI25wSvpjGu0fIqeRXXYKYt4qBOA0EJi8RZwlM11+K2ZAcGFW2K8bevJ2A/wtZ0lDi/bw==,
       }
     hasBin: true
 
@@ -2180,7 +2180,7 @@ snapshots:
 
   esutils@2.0.3: {}
 
-  ethereum-bloom-filters@1.1.0:
+  ethereum-bloom-filters@1.2.0:
     dependencies:
       "@noble/hashes": 1.4.0
 
@@ -2191,7 +2191,7 @@ snapshots:
       "@scure/bip32": 1.4.0
       "@scure/bip39": 1.3.0
 
-  ethers@6.13.1:
+  ethers@6.13.2:
     dependencies:
       "@adraffy/ens-normalize": 1.10.1
       "@noble/curves": 1.2.0
@@ -2563,7 +2563,7 @@ snapshots:
       astral-regex: 2.0.0
       is-fullwidth-code-point: 3.0.0
 
-  solhint@5.0.1:
+  solhint@5.0.2:
     dependencies:
       "@solidity-parser/parser": 0.18.0
       ajv: 6.12.6
@@ -2650,7 +2650,7 @@ snapshots:
     dependencies:
       "@ethereumjs/util": 8.1.0
       bn.js: 5.2.1
-      ethereum-bloom-filters: 1.1.0
+      ethereum-bloom-filters: 1.2.0
       ethereum-cryptography: 2.2.1
       ethjs-unit: 0.1.6
       number-to-bn: 1.7.0
