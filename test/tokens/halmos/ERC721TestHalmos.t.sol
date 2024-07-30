@@ -12,8 +12,6 @@ import {IERC721Extended} from "../interfaces/IERC721Extended.sol";
 /**
  * @dev Sets the timeout (in milliseconds) for solving assertion
  * violation conditions; `0` means no timeout.
- * @notice Halmos currently does not support the new native `assert`
- * cheatcodes in `forge-std` `v1.8.0` and above.
  * @custom:halmos --solver-timeout-assertion 0
  */
 contract ERC721TestHalmos is Test, SymTest {
@@ -146,8 +144,8 @@ contract ERC721TestHalmos is Test, SymTest {
         uint256 newBalanceCaller = erc721.balanceOf(caller);
         uint256 newBalanceOther = erc721.balanceOf(other);
 
-        assert(newBalanceCaller <= oldBalanceCaller);
-        assert(newBalanceOther >= oldBalanceOther);
+        assertTrue(newBalanceCaller <= oldBalanceCaller);
+        assertTrue(newBalanceOther >= oldBalanceOther);
     }
 
     /**
@@ -193,24 +191,24 @@ contract ERC721TestHalmos is Test, SymTest {
         }
         vm.stopPrank();
 
-        assert(from == oldOwner);
-        assert(approved);
-        assert(erc721.ownerOf(tokenId) == to);
-        assert(erc721.getApproved(tokenId) == address(0));
-        assert(erc721.ownerOf(otherTokenId) == oldOtherTokenOwner);
+        assertEq(from, oldOwner);
+        assertTrue(approved);
+        assertEq(erc721.ownerOf(tokenId), to);
+        assertEq(erc721.getApproved(tokenId), address(0));
+        assertEq(erc721.ownerOf(otherTokenId), oldOtherTokenOwner);
 
         uint256 newBalanceFrom = erc721.balanceOf(from);
         uint256 newBalanceTo = erc721.balanceOf(to);
         uint256 newBalanceOther = erc721.balanceOf(other);
 
         if (from != to) {
-            assert(newBalanceFrom == oldBalanceFrom - 1);
-            assert(newBalanceTo == oldBalanceTo + 1);
+            assertEq(newBalanceFrom, oldBalanceFrom - 1);
+            assertEq(newBalanceTo, oldBalanceTo + 1);
         } else {
-            assert(newBalanceFrom == oldBalanceFrom);
-            assert(newBalanceTo == oldBalanceTo);
+            assertEq(newBalanceFrom, oldBalanceFrom);
+            assertEq(newBalanceTo, oldBalanceTo);
         }
 
-        assert(newBalanceOther == oldBalanceOther);
+        assertEq(newBalanceOther, oldBalanceOther);
     }
 }

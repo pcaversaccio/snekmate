@@ -12,8 +12,6 @@ import {IERC1155Extended} from "../interfaces/IERC1155Extended.sol";
 /**
  * @dev Sets the timeout (in milliseconds) for solving assertion
  * violation conditions; `0` means no timeout.
- * @notice Halmos currently does not support the new native `assert`
- * cheatcodes in `forge-std` `v1.8.0` and above.
  * @custom:halmos --solver-timeout-assertion 0
  */
 contract ERC1155TestHalmos is Test, SymTest {
@@ -225,10 +223,12 @@ contract ERC1155TestHalmos is Test, SymTest {
         vm.stopPrank();
 
         for (uint256 i = 0; i < tokenIds.length; i++) {
-            assert(
+            assertTrue(
                 erc1155.balanceOf(caller, tokenIds[i]) <= oldBalanceCaller[i]
             );
-            assert(erc1155.balanceOf(other, tokenIds[i]) >= oldBalanceOther[i]);
+            assertTrue(
+                erc1155.balanceOf(other, tokenIds[i]) >= oldBalanceOther[i]
+            );
         }
     }
 
@@ -270,20 +270,20 @@ contract ERC1155TestHalmos is Test, SymTest {
         }
         vm.stopPrank();
 
-        (from == caller) ? assert(!approved) : assert(approved);
+        (from == caller) ? assertTrue(!approved) : assertTrue(approved);
 
         uint256 newBalanceFrom = erc1155.balanceOf(from, tokenIds[0]);
         uint256 newBalanceTo = erc1155.balanceOf(to, tokenIds[0]);
         uint256 newBalanceOther = erc1155.balanceOf(other, tokenIds[0]);
 
         if (from != to) {
-            assert(newBalanceFrom == oldBalanceFrom - amounts[0]);
-            assert(newBalanceTo == oldBalanceTo + amounts[0]);
+            assertEq(newBalanceFrom, oldBalanceFrom - amounts[0]);
+            assertEq(newBalanceTo, oldBalanceTo + amounts[0]);
         } else {
-            assert(newBalanceFrom == oldBalanceFrom);
-            assert(newBalanceTo == oldBalanceTo);
+            assertEq(newBalanceFrom, oldBalanceFrom);
+            assertEq(newBalanceTo, oldBalanceTo);
         }
 
-        assert(newBalanceOther == oldBalanceOther);
+        assertEq(newBalanceOther, oldBalanceOther);
     }
 }
