@@ -223,11 +223,11 @@ contract ERC1155TestHalmos is Test, SymTest {
         vm.stopPrank();
 
         for (uint256 i = 0; i < tokenIds.length; i++) {
-            assertTrue(
-                erc1155.balanceOf(caller, tokenIds[i]) <= oldBalanceCaller[i]
+            assertLe(
+                erc1155.balanceOf(caller, tokenIds[i]), oldBalanceCaller[i]
             );
-            assertTrue(
-                erc1155.balanceOf(other, tokenIds[i]) >= oldBalanceOther[i]
+            assertGe(
+                erc1155.balanceOf(other, tokenIds[i]), oldBalanceOther[i]
             );
         }
     }

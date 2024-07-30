@@ -4338,8 +4338,8 @@ contract TimelockControllerInvariants is Test {
      * executed transactions.
      */
     function statefulFuzzExecutedLessThanOrEqualToScheduled() public view {
-        assertTrue(
-            timelockControllerHandler.executeCount() <=
+        assertLe(
+            timelockControllerHandler.executeCount(),
                 timelockControllerHandler.scheduleCount()
         );
     }
@@ -4381,9 +4381,9 @@ contract TimelockControllerInvariants is Test {
      * be less than or equal to the number of scheduled proposals.
      */
     function statefulFuzzSumOfProposals() public view {
-        assertTrue(
+        assertLe(
             (timelockControllerHandler.cancelCount() +
-                timelockControllerHandler.executeCount()) <=
+                timelockControllerHandler.executeCount()),
                 timelockControllerHandler.scheduleCount()
         );
     }

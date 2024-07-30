@@ -144,8 +144,8 @@ contract ERC721TestHalmos is Test, SymTest {
         uint256 newBalanceCaller = erc721.balanceOf(caller);
         uint256 newBalanceOther = erc721.balanceOf(other);
 
-        assertTrue(newBalanceCaller <= oldBalanceCaller);
-        assertTrue(newBalanceOther >= oldBalanceOther);
+        assertLe(newBalanceCaller, oldBalanceCaller);
+        assertGe(newBalanceOther, oldBalanceOther);
     }
 
     /**
