@@ -179,7 +179,6 @@ contract ERC20TestHalmos is Test, SymTest {
 
         uint256 newBalanceFrom = erc20.balanceOf(from);
         uint256 newBalanceTo = erc20.balanceOf(to);
-        uint256 newBalanceOther = erc20.balanceOf(other);
 
         if (from != to) {
             assertEq(newBalanceFrom, oldBalanceFrom - amount);
@@ -194,6 +193,6 @@ contract ERC20TestHalmos is Test, SymTest {
             assertEq(newBalanceTo, oldBalanceTo);
         }
 
-        assertEq(newBalanceOther, oldBalanceOther);
+        assertEq(erc20.balanceOf(other), oldBalanceOther);
     }
 }
