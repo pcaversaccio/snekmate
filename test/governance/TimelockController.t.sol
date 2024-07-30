@@ -4340,7 +4340,7 @@ contract TimelockControllerInvariants is Test {
     function statefulFuzzExecutedLessThanOrEqualToScheduled() public view {
         assertLe(
             timelockControllerHandler.executeCount(),
-                timelockControllerHandler.scheduleCount()
+            timelockControllerHandler.scheduleCount()
         );
     }
 
@@ -4382,9 +4382,9 @@ contract TimelockControllerInvariants is Test {
      */
     function statefulFuzzSumOfProposals() public view {
         assertLe(
-            (timelockControllerHandler.cancelCount() +
-                timelockControllerHandler.executeCount()),
-                timelockControllerHandler.scheduleCount()
+            timelockControllerHandler.cancelCount() +
+                timelockControllerHandler.executeCount(),
+            timelockControllerHandler.scheduleCount()
         );
     }
 
