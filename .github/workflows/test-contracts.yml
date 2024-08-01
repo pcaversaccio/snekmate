@@ -35,7 +35,7 @@ jobs:
           architecture: ${{ matrix.architecture }}
 
       - name: Setup Ape
-        uses: ApeWorX/github-action@v2
+        uses: ApeWorX/github-action@v3
         with:
           python-version: ${{ matrix.python_version }}
 
