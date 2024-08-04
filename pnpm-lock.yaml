@@ -35,8 +35,8 @@ importers:
         specifier: ^1.3.1
         version: 1.3.1(prettier@3.3.3)
       solhint:
-        specifier: ^5.0.2
-        version: 5.0.2
+        specifier: ^5.0.3
+        version: 5.0.3
 
 packages:
   "@adraffy/ens-normalize@1.10.1":
@@ -314,10 +314,10 @@ packages:
       }
     engines: { node: ">=12.22.0" }
 
-  "@pnpm/npm-conf@2.2.2":
+  "@pnpm/npm-conf@2.3.0":
     resolution:
       {
-        integrity: sha512-UA91GwWPhFExt3IizW6bOeY/pQ0BkuNwKjk9iQW9KqxluGCrg4VenZ0/L+2Y0+ZOtme72EVvg6v0zo3AMQRCeA==,
+        integrity: sha512-DqrO+oXGR7HCuicNy6quk6ALJSDDPKI7RZz1bP5im8mSL8J2e+9w26LdkjuAfpAjOutYUJVbnXnx4IbTQeIgfw==,
       }
     engines: { node: ">=12" }
 
@@ -432,10 +432,10 @@ packages:
       }
     engines: { node: ">=8" }
 
-  antlr4@4.13.1-patch-1:
+  antlr4@4.13.2:
     resolution:
       {
-        integrity: sha512-OjFLWWLzDMV9rdFhpvroCWR4ooktNg9/nvVYSA5z28wuVpU36QUNuioR1XLnQtcjVlf8npjyz593PxnU/f/Cow==,
+        integrity: sha512-QiVbZhyy4xAZ17UPEuG3YTOt8ZaoeOR1CvEAqrEsDBsOqINslaB147i9xqljZqoyf5S+EUlGStaj+t22LT9MOg==,
       }
     engines: { node: ">=16" }
 
@@ -1521,10 +1521,10 @@ packages:
       }
     engines: { node: ">=10" }
 
-  solhint@5.0.2:
+  solhint@5.0.3:
     resolution:
       {
-        integrity: sha512-fDoflGz1jztGRqEDiLI25wSvpjGu0fIqeRXXYKYt4qBOA0EJi8RZwlM11+K2ZAcGFW2K8bevJ2A/wtZ0lDi/bw==,
+        integrity: sha512-OLCH6qm/mZTCpplTXzXTJGId1zrtNuDYP5c2e6snIv/hdRVxPfBBz/bAlL91bY/Accavkayp2Zp2BaDSrLVXTQ==,
       }
     hasBin: true
 
@@ -1912,7 +1912,7 @@ snapshots:
     dependencies:
       graceful-fs: 4.2.10
 
-  "@pnpm/npm-conf@2.2.2":
+  "@pnpm/npm-conf@2.3.0":
     dependencies:
       "@pnpm/config.env-replace": 1.1.0
       "@pnpm/network.ca-file": 1.0.2
@@ -1977,7 +1977,7 @@ snapshots:
     dependencies:
       color-convert: 2.0.1
 
-  antlr4@4.13.1-patch-1: {}
+  antlr4@4.13.2: {}
 
   argparse@2.0.1: {}
 
@@ -2525,7 +2525,7 @@ snapshots:
 
   registry-auth-token@5.0.2:
     dependencies:
-      "@pnpm/npm-conf": 2.2.2
+      "@pnpm/npm-conf": 2.3.0
 
   registry-url@6.0.1:
     dependencies:
@@ -2563,11 +2563,11 @@ snapshots:
       astral-regex: 2.0.0
       is-fullwidth-code-point: 3.0.0
 
-  solhint@5.0.2:
+  solhint@5.0.3:
     dependencies:
       "@solidity-parser/parser": 0.18.0
       ajv: 6.12.6
-      antlr4: 4.13.1-patch-1
+      antlr4: 4.13.2
       ast-parents: 0.0.1
       chalk: 4.1.2
       commander: 10.0.1
