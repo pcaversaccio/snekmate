@@ -67,7 +67,7 @@ def multi_proof_verify(proof: DynArray[bytes32, mp._DYNARRAY_BOUND], proof_flags
     @return bool The verification whether `leaves` are simultaneously
             part of a Merkle tree defined by `root`.
     @custom:security It's crucial to recognise that the condition where
-                     `((root == proof[0]) and (len(leaves) == 0)` is
+                     `((root == proof[0]) and (len(leaves) == 0))` is
                      effectively treated as a no-op in {mp-_process_multi_proof}
                      (i.e. it simply returns `proof[0]`) and is thus
                      regarded as a valid multiproof. However, if you are
