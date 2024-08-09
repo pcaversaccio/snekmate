@@ -88,6 +88,13 @@ def _multi_proof_verify(proof: DynArray[bytes32, _DYNARRAY_BOUND], proof_flags: 
     @param leaves The 32-byte array containing the leaf hashes.
     @return bool The verification whether `leaves` are simultaneously
             part of a Merkle tree defined by `root`.
+    @custom:security It's crucial to recognise that the condition where
+                     `((root == proof[0]) and (len(leaves) == 0))` is
+                     effectively treated as a no-op in {_process_multi_proof}
+                     (i.e. it simply returns `proof[0]`) and is thus
+                     regarded as a valid multiproof. However, if you are
+                     not validating the leaves in another part of your
+                     code, you may want to consider disallowing this case.
     """
     return self._process_multi_proof(proof, proof_flags, leaves) == root
 
@@ -148,6 +155,13 @@ def _process_multi_proof(proof: DynArray[bytes32, _DYNARRAY_BOUND], proof_flags:
     @param leaves The 32-byte array containing the leaf hashes.
     @return bytes32 The 32-byte recovered hash by using `leaves`
             and `proof` with a given set of `proof_flags`.
+    @custom:security It's crucial to recognise that the condition where
+                     `((len(proof) == 1) and (len(leaves) == 0))` (i.e.
+                     the empty set), is effectively treated as a no-op
+                     and thus is considered a valid multiproof, returning
+                     `proof[0]`. However, if you are not validating the
+                     leaves in another part of your code, you may want to
+                     consider disallowing this case.
     """
     leaves_length: uint256 = len(leaves)
     total_hashes: uint256 = len(proof_flags)
