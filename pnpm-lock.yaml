@@ -8,17 +8,17 @@ importers:
   .:
     devDependencies:
       "@eslint/js":
-        specifier: ^9.8.0
-        version: 9.8.0
+        specifier: ^9.9.0
+        version: 9.9.0
       "@openzeppelin/merkle-tree":
         specifier: ^1.0.7
         version: 1.0.7
       eslint:
-        specifier: ^9.8.0
-        version: 9.8.0
+        specifier: ^9.9.0
+        version: 9.9.0
       eslint-config-prettier:
         specifier: ^9.1.0
-        version: 9.1.0(eslint@9.8.0)
+        version: 9.1.0(eslint@9.9.0)
       ethers:
         specifier: ^6.13.2
         version: 6.13.2
@@ -96,10 +96,10 @@ packages:
       }
     engines: { node: ^18.18.0 || ^20.9.0 || >=21.1.0 }
 
-  "@eslint/js@9.8.0":
+  "@eslint/js@9.9.0":
     resolution:
       {
-        integrity: sha512-MfluB7EUfxXtv3i/++oh89uzAr4PDI4nn201hsp+qaXqsjAWzinlZEHEfPgAX4doIlKvPG/i0A9dpKxOLII8yA==,
+        integrity: sha512-hhetes6ZHP3BlXLxmd8K2SNgkhNSi+UcecbnwWKwpP7kyi/uC75DJ1lOOBO3xrC4jyojtGE3YxKZPHfk4yrgug==,
       }
     engines: { node: ^18.18.0 || ^20.9.0 || >=21.1.0 }
 
@@ -314,10 +314,10 @@ packages:
       }
     engines: { node: ">=12.22.0" }
 
-  "@pnpm/npm-conf@2.3.0":
+  "@pnpm/npm-conf@2.3.1":
     resolution:
       {
-        integrity: sha512-DqrO+oXGR7HCuicNy6quk6ALJSDDPKI7RZz1bP5im8mSL8J2e+9w26LdkjuAfpAjOutYUJVbnXnx4IbTQeIgfw==,
+        integrity: sha512-c83qWb22rNRuB0UaVCI0uRPNRr8Z0FWnEIvT47jiHAmOIUHbBOg5XvV7pM5x+rKn9HRpjxquDbXYSXr3fAKFcw==,
       }
     engines: { node: ">=12" }
 
@@ -729,13 +729,18 @@ packages:
       }
     engines: { node: ^18.18.0 || ^20.9.0 || >=21.1.0 }
 
-  eslint@9.8.0:
+  eslint@9.9.0:
     resolution:
       {
-        integrity: sha512-K8qnZ/QJzT2dLKdZJVX6W4XOwBzutMYmt0lqUS+JdXgd+HTYFlonFgkJ8s44d/zMPPCnOOk0kMWCApCPhiOy9A==,
+        integrity: sha512-JfiKJrbx0506OEerjK2Y1QlldtBxkAlLxT5OEcRF8uaQ86noDe2k31Vw9rnSWv+MXZHj7OOUV/dA0AhdLFcyvA==,
       }
     engines: { node: ^18.18.0 || ^20.9.0 || >=21.1.0 }
     hasBin: true
+    peerDependencies:
+      jiti: "*"
+    peerDependenciesMeta:
+      jiti:
+        optional: true
 
   espree@10.1.0:
     resolution:
@@ -1707,9 +1712,9 @@ snapshots:
       js-tokens: 4.0.0
       picocolors: 1.0.1
 
-  "@eslint-community/eslint-utils@4.4.0(eslint@9.8.0)":
+  "@eslint-community/eslint-utils@4.4.0(eslint@9.9.0)":
     dependencies:
-      eslint: 9.8.0
+      eslint: 9.9.0
       eslint-visitor-keys: 3.4.3
 
   "@eslint-community/regexpp@4.11.0": {}
@@ -1736,7 +1741,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  "@eslint/js@9.8.0": {}
+  "@eslint/js@9.9.0": {}
 
   "@eslint/object-schema@2.1.4": {}
 
@@ -1912,7 +1917,7 @@ snapshots:
     dependencies:
       graceful-fs: 4.2.10
 
-  "@pnpm/npm-conf@2.3.0":
+  "@pnpm/npm-conf@2.3.1":
     dependencies:
       "@pnpm/config.env-replace": 1.1.0
       "@pnpm/network.ca-file": 1.0.2
@@ -2110,9 +2115,9 @@ snapshots:
 
   escape-string-regexp@4.0.0: {}
 
-  eslint-config-prettier@9.1.0(eslint@9.8.0):
+  eslint-config-prettier@9.1.0(eslint@9.9.0):
     dependencies:
-      eslint: 9.8.0
+      eslint: 9.9.0
 
   eslint-scope@8.0.2:
     dependencies:
@@ -2123,13 +2128,13 @@ snapshots:
 
   eslint-visitor-keys@4.0.0: {}
 
-  eslint@9.8.0:
+  eslint@9.9.0:
     dependencies:
-      "@eslint-community/eslint-utils": 4.4.0(eslint@9.8.0)
+      "@eslint-community/eslint-utils": 4.4.0(eslint@9.9.0)
       "@eslint-community/regexpp": 4.11.0
       "@eslint/config-array": 0.17.1
       "@eslint/eslintrc": 3.1.0
-      "@eslint/js": 9.8.0
+      "@eslint/js": 9.9.0
       "@humanwhocodes/module-importer": 1.0.1
       "@humanwhocodes/retry": 0.3.0
       "@nodelib/fs.walk": 1.2.8
@@ -2525,7 +2530,7 @@ snapshots:
 
   registry-auth-token@5.0.2:
     dependencies:
-      "@pnpm/npm-conf": 2.3.0
+      "@pnpm/npm-conf": 2.3.1
 
   registry-url@6.0.1:
     dependencies:
