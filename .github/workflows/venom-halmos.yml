@@ -1,0 +1,92 @@
+name: ⚗️ Venom-based Halmos symbolic tests
+
+on:
+  schedule:
+    - cron: "30 3 * * *"
+  workflow_dispatch:
+  # To be removed before merging.
+  push:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  halmos:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os:
+          - ubuntu-latest
+        python_version:
+          - 3.12
+        architecture:
+          - x64
+        halmos:
+          - "--config test/halmos.toml"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python_version }}
+          architecture: ${{ matrix.architecture }}
+
+      - name: Activate `venom` backend
+        run: python scripts/insert_venom_pragma.py
+
+      - name: Install Vyper
+        run: pip install vyper
+
+      - name: Show the Vyper version
+        run: vyper --version
+
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: nightly
+
+      - name: Install `setuptools`
+        run: pip install setuptools
+
+      - name: Install Halmos
+        run: pip install git+https://github.com/a16z/halmos.git@main
+
+      - name: Show the Halmos version
+        run: halmos --version
+
+      - name: Install Yices 2 SMT solver
+        run: |
+          wget -q https://github.com/SRI-CSL/yices2/releases/download/Yices-2.6.4/yices-2.6.4-x86_64-pc-linux-gnu.tar.gz
+          sudo tar -xzf yices-2.6.4-x86_64-pc-linux-gnu.tar.gz -C /usr/local --strip-components=1
+          sudo rm yices-2.6.4-x86_64-pc-linux-gnu.tar.gz
+
+      - name: Show the Foundry Halmos config
+        run: forge config
+        env:
+          FOUNDRY_PROFILE: halmos
+
+      - name: Run Halmos ERC-20 symbolic tests
+        run: halmos --contract ERC20TestHalmos ${{ matrix.halmos }}
+        env:
+          FOUNDRY_PROFILE: halmos
+
+      - name: Run Halmos ERC-721 symbolic tests
+        run: halmos --contract ERC721TestHalmos ${{ matrix.halmos }}
+        env:
+          FOUNDRY_PROFILE: halmos
+
+      - name: Run Halmos ERC-1155 symbolic tests
+        run: halmos --contract ERC1155TestHalmos ${{ matrix.halmos }}
+        env:
+          FOUNDRY_PROFILE: halmos
+
+      - name: Run Halmos math symbolic tests
+        run: halmos --contract MathTestHalmos ${{ matrix.halmos }}
+        env:
+          FOUNDRY_PROFILE: halmos
