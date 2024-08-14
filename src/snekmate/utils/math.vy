@@ -243,39 +243,32 @@ def _log2(x: uint256, roundup: bool) -> uint256:
 
     value: uint256 = x
     result: uint256 = empty(uint256)
-    exp: uint256 = empty(uint256)
 
     # The following lines cannot overflow because we have the well-known
     # decay behaviour of `log2(max_value(uint256)) < max_value(uint256)`.
-    exp = unsafe_mul(128, convert(x > ((1 << 128) - 1), uint256))
-    x >>= exp
-    result = exp
-
-    exp = unsafe_mul(64, convert(x > ((1 << 64) - 1), uint256))
-    x >>= exp
-    result = unsafe_add(result, exp)
-
-    exp = unsafe_mul(32, convert(x > ((1 << 32) - 1), uint256))
-    x >>= exp
-    result = unsafe_add(result, exp)
-
-    exp = unsafe_mul(16, convert(x > ((1 << 16) - 1), uint256))
-    x >>= exp
-    result = unsafe_add(result, exp)
-
-    exp = unsafe_mul(8, convert(x > ((1 << 8) - 1), uint256))
-    x >>= exp
-    result = unsafe_add(result, exp)
-
-    exp = unsafe_mul(4, convert(x > ((1 << 4) - 1), uint256))
-    x >>= exp
-    result = unsafe_add(result, exp)
-
-    exp = unsafe_mul(2, convert(x > ((1 << 2) - 1), uint256))
-    x >>= exp
-    result = unsafe_add(result, exp)
-
-    result = unsafe_add(result, convert(x > 1, uint256))
+    if (x >> 128 != empty(uint256)):
+        x >>= 128
+        result = 128
+    if (x >> 64 != empty(uint256)):
+        x >>= 64
+        result = unsafe_add(result, 64)
+    if (x >> 32 != empty(uint256)):
+        x >>= 32
+        result = unsafe_add(result, 32)
+    if (x >> 16 != empty(uint256)):
+        x >>= 16
+        result = unsafe_add(result, 16)
+    if (x >> 8 != empty(uint256)):
+        x >>= 8
+        result = unsafe_add(result, 8)
+    if (x >> 4 != empty(uint256)):
+        x >>= 4
+        result = unsafe_add(result, 4)
+    if (x >> 2 != empty(uint256)):
+        x >>= 2
+        result = unsafe_add(result, 2)
+    if (x >> 1 != empty(uint256)):
+        result = unsafe_add(result, 1)
 
     if ((roundup) and ((1 << result) < value)):
         result = unsafe_add(result, 1)
@@ -357,27 +350,23 @@ def _log256(x: uint256, roundup: bool) -> uint256:
 
     value: uint256 = x
     result: uint256 = empty(uint256)
-    is_gt: uint256 = empty(uint256)
 
     # The following lines cannot overflow because we have the well-known
     # decay behaviour of `log256(max_value(uint256)) < max_value(uint256)`.
-    is_gt = convert(x > ((1 << 128) - 1), uint256)
-    x >>= unsafe_mul(is_gt, 128)
-    result = unsafe_mul(is_gt, 16)
-
-    is_gt = convert(x > ((1 << 64) - 1), uint256)
-    x >>= unsafe_mul(is_gt, 64)
-    result = unsafe_add(result, unsafe_mul(is_gt, 8))
-
-    is_gt = convert(x > ((1 << 32) - 1), uint256)
-    x >>= unsafe_mul(is_gt, 32)
-    result = unsafe_add(result, unsafe_mul(is_gt, 4))
-
-    is_gt = convert(x > ((1 << 16) - 1), uint256)
-    x >>= unsafe_mul(is_gt, 16)
-    result = unsafe_add(result, unsafe_mul(is_gt, 2))
-
-    result = unsafe_add(result, convert(x > ((1 << 8) - 1), uint256))
+    if (x >> 128 != empty(uint256)):
+        x >>= 128
+        result = 16
+    if (x >> 64 != empty(uint256)):
+        x >>= 64
+        result = unsafe_add(result, 8)
+    if (x >> 32 != empty(uint256)):
+        x >>= 32
+        result = unsafe_add(result, 4)
+    if (x >> 16 != empty(uint256)):
+        x >>= 16
+        result = unsafe_add(result, 2)
+    if (x >> 8 != empty(uint256)):
+        result = unsafe_add(result, 1)
 
     if ((roundup) and ((1 << (result << 3)) < value)):
         result = unsafe_add(result, 1)
