@@ -241,7 +241,7 @@ def approve(spender: address, amount: uint256) -> bool:
             may use both the old and the new allowance by
             unfortunate transaction ordering. One possible
             solution to mitigate this race condition is to
-            first reduce the spender's allowance to 0 and
+            first reduce the spender's allowance to `0` and
             set the desired amount afterwards:
             https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729.
     @param spender The 20-byte spender address.
@@ -547,7 +547,7 @@ def _spend_allowance(owner: address, spender: address, amount: uint256):
         # The following line allows the commonly known address
         # poisoning attack, where `transferFrom` instructions
         # are executed from arbitrary addresses with an `amount`
-        # of 0. However, this poisoning attack is not an on-chain
+        # of `0`. However, this poisoning attack is not an on-chain
         # vulnerability. All assets are safe. It is an off-chain
         # log interpretation issue.
         assert current_allowance >= amount, "erc20: insufficient allowance"

@@ -299,5 +299,5 @@ def _index_of(char: String[1], base64_url: bool) -> uint256:
     # If no matching character is found, it is an
     # invalid input.
     assert pos < len(_TABLE_URL_CHARS), "base64: invalid string"
-    
+
     return pos

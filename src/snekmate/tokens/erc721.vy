@@ -954,7 +954,7 @@ def _burn(token_id: uint256):
 
     self._token_approvals[token_id] = empty(address)
     # Overflow is not possible, as in this case more tokens would
-    # have to be burnt/transferred than the owner originally
+    # have to be burned/transferred than the owner originally
     # received through minting and transfer.
     self._balances[owner] = unsafe_sub(self._balances[owner], 1)
     self._owners[token_id] = empty(address)
@@ -1120,9 +1120,9 @@ def _remove_token_from_all_tokens_enumeration(token_id: uint256):
     # When the token to delete is the last token,
     # the swap operation is unnecessary. However,
     # since this occurs so rarely (when the last
-    # minted token is burnt) that we still do the
+    # minted token is burned) that we still do the
     # swap here to avoid the gas cost of adding
-    # an 'if' statement (like in `_remove_token_from_owner_enumeration`).
+    # an `if` statement (like in `_remove_token_from_owner_enumeration`).
     last_token_id: uint256  = self._all_tokens[last_token_index]
 
     # Moves the last token to the slot of the to-delete token.

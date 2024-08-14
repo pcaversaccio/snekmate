@@ -858,7 +858,7 @@ def _before_token_transfer(owner: address, to: address, ids: DynArray[uint256, _
     @notice Note that the same hook is called on both
             single and batched variants. For single transfers,
             the length of the `ids` and `amounts` arrays will
-            be 1. The calling conditions for each `id` and
+            be `1`. The calling conditions for each `id` and
             `amount` pair are:
             - when `owner` and `to` are both non-zero, `amount` of
               `owner`'s tokens of token type `id` will be transferred
@@ -918,7 +918,7 @@ def _after_token_transfer(owner: address, to: address, ids: DynArray[uint256, _B
     @notice Note that the same hook is called on both
             single and batched variants. For single transfers,
             the length of the `ids` and `amounts` arrays will
-            be 1. The calling conditions for each `id` and
+            be `1`. The calling conditions for each `id` and
             `amount` pair are:
             - when `owner` and `to` are both non-zero, `amount` of
               `owner`'s tokens of token type `id` will be transferred
@@ -949,8 +949,8 @@ def _after_token_transfer(owner: address, to: address, ids: DynArray[uint256, _B
 def _as_singleton_array(element: uint256) -> DynArray[uint256, 1]:
     """
     @dev An `internal` helper function that converts a 32-byte
-         element into an array of length 1.
+         element into an array of length `1`.
     @param element The 32-byte non-array element.
-    @return DynArray The array of length 1 containing `element`.
+    @return DynArray The array of length `1` containing `element`.
     """
     return [element]

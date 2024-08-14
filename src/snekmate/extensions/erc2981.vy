@@ -274,8 +274,7 @@ def _set_default_royalty(receiver: address, fee_numerator: uint96):
     @param fee_numerator The 12-byte fee numerator used to calculate
            the royalty fraction.
     """
-    denominator: uint256 = self._fee_denominator
-    assert convert(fee_numerator, uint256) <= denominator, "erc2981: royalty fee will exceed sale_price"
+    assert convert(fee_numerator, uint256) <= self._fee_denominator, "erc2981: royalty fee will exceed sale_price"
     assert receiver != empty(address), "erc2981: invalid receiver"
     self._default_royalty_info = RoyaltyInfo(receiver=receiver, royalty_fraction=fee_numerator)
 
@@ -304,8 +303,7 @@ def _set_token_royalty(token_id: uint256, receiver: address, fee_numerator: uint
     @param fee_numerator The 12-byte fee numerator used to calculate
            the royalty fraction.
     """
-    denominator: uint256 = self._fee_denominator
-    assert convert(fee_numerator, uint256) <= denominator, "erc2981: royalty fee will exceed sale_price"
+    assert convert(fee_numerator, uint256) <= self._fee_denominator, "erc2981: royalty fee will exceed sale_price"
     assert receiver != empty(address), "erc2981: invalid receiver"
     self._token_royalty_info[token_id] = RoyaltyInfo(receiver=receiver, royalty_fraction=fee_numerator)
 
