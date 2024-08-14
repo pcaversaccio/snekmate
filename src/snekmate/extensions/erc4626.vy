@@ -222,7 +222,7 @@ def convertToShares(assets: uint256) -> uint256:
     @dev Returns the amount of shares that the vault would
          exchange for the amount of assets provided, in an
          ideal scenario where all the conditions are met.
-    @notice Note that the conversion must round down to 0.
+    @notice Note that the conversion must round down to `0`.
             For the to be fulfilled conditions, please refer to:
             https://eips.ethereum.org/EIPS/eip-4626#converttoshares.
     @param assets The 32-byte assets amount.
@@ -238,7 +238,7 @@ def convertToAssets(shares: uint256) -> uint256:
     @dev Returns the amount of assets that the vault would
          exchange for the amount of shares provided, in an
          ideal scenario where all the conditions are met.
-    @notice Note that the conversion must round down to 0.
+    @notice Note that the conversion must round down to `0`.
             For the to be fulfilled conditions, please refer to:
             https://eips.ethereum.org/EIPS/eip-4626#converttoassets.
     @param shares The 32-byte shares amount.

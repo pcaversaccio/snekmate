@@ -41,7 +41,7 @@ def eip712Domain() -> (bytes1, String[50], String[20], uint256, address, bytes32
             significant to the most significant, and fields are indexed
             in the order that is specified by EIP-712, identical to the
             order in which they are listed in the function type.
-    @return bytes1 The 1-byte bit map where bit `i` is set to 1
+    @return bytes1 The 1-byte bit map where bit `i` is set to `1`
             if and only if domain field `i` is present (`0 ≤ i ≤ 4`).
     @return String The maximum 50-character user-readable string name
             of the signing domain, i.e. the name of the dApp or protocol.

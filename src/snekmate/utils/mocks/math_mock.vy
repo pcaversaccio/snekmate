@@ -117,8 +117,8 @@ def log2(x: uint256, roundup: bool) -> uint256:
     """
     @dev Returns the log in base 2 of `x`, following the selected
          rounding direction.
-    @notice Note that it returns 0 if given 0. The implementation is
-            inspired by OpenZeppelin's implementation here:
+    @notice Note that it returns `0` if given `0`. The implementation
+            is inspired by OpenZeppelin's implementation here:
             https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/math/Math.sol.
     @param x The 32-byte variable.
     @param roundup The Boolean variable that specifies whether
@@ -134,8 +134,8 @@ def log10(x: uint256, roundup: bool) -> uint256:
     """
     @dev Returns the log in base 10 of `x`, following the selected
          rounding direction.
-    @notice Note that it returns 0 if given 0. The implementation is
-            inspired by OpenZeppelin's implementation here:
+    @notice Note that it returns `0` if given `0`. The implementation
+            is inspired by OpenZeppelin's implementation here:
             https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/math/Math.sol.
     @param x The 32-byte variable.
     @param roundup The Boolean variable that specifies whether
@@ -151,7 +151,7 @@ def log256(x: uint256, roundup: bool) -> uint256:
     """
     @dev Returns the log in base 256 of `x`, following the selected
          rounding direction.
-    @notice Note that it returns 0 if given 0. Also, adding one to the
+    @notice Note that it returns `0` if given `0`. Also, adding one to the
             rounded down result gives the number of pairs of hex symbols
             needed to represent `x` as a hex string. The implementation is
             inspired by OpenZeppelin's implementation here:
@@ -170,7 +170,7 @@ def wad_ln(x: int256) -> int256:
     """
     @dev Calculates the natural logarithm of a signed integer with a
          precision of 1e18.
-    @notice Note that it returns 0 if given 0. Furthermore, this function
+    @notice Note that it returns `0` if given `0`. Furthermore, this function
             consumes about 1,400 to 1,650 gas units depending on the value
             of `x`. The implementation is inspired by Remco Bloemen's
             implementation under the MIT license here:
