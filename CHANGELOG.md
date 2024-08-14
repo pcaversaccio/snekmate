@@ -14,7 +14,7 @@
   - [`erc1155`](https://github.com/pcaversaccio/snekmate/blob/v0.1.1/src/snekmate/tokens/erc1155.vy): Use relative `interfaces` `import`s. ([#263](https://github.com/pcaversaccio/snekmate/pull/263))
 - **Utility Functions**
   - [`eip712_domain_separator`](https://github.com/pcaversaccio/snekmate/blob/v0.1.1/src/snekmate/utils/eip712_domain_separator.vy): Use relative `interfaces` `import`s. ([#263](https://github.com/pcaversaccio/snekmate/pull/263))
-  - [`math`](https://github.com/pcaversaccio/snekmate/blob/v0.1.1/src/snekmate/utils/math.vy): Make `_log2` and `_log256` branchless. ([#267](https://github.com/pcaversaccio/snekmate/pull/267))
+  - [`math`](https://github.com/pcaversaccio/snekmate/blob/v0.1.1/src/snekmate/utils/math.vy): Use mutable `internal` function parameters. ([#267](https://github.com/pcaversaccio/snekmate/pull/267))
 
 ### 👀 Full Changelog
 
