@@ -7,7 +7,9 @@
 - **Authentication**
   - [`access_control`](https://github.com/pcaversaccio/snekmate/blob/v0.1.1/src/snekmate/auth/access_control.vy): Use relative `interfaces` `import`s. ([#263](https://github.com/pcaversaccio/snekmate/pull/263))
 - **Extensions**
-  - [`erc2981`](https://github.com/pcaversaccio/snekmate/blob/v0.1.1/src/snekmate/extensions/erc2981.vy): Use relative `interfaces` `import`s. ([#263](https://github.com/pcaversaccio/snekmate/pull/263))
+  - [`erc2981`](https://github.com/pcaversaccio/snekmate/blob/v0.1.1/src/snekmate/extensions/erc2981.vy):
+    - Use relative `interfaces` `import`s. ([#263](https://github.com/pcaversaccio/snekmate/pull/263))
+    - Remove unnecessary `denominator` variable declaration. ([#267](https://github.com/pcaversaccio/snekmate/pull/267))
 - **Tokens**
   - [`erc20`](https://github.com/pcaversaccio/snekmate/blob/v0.1.1/src/snekmate/tokens/erc20.vy): Use relative `interfaces` `import`s. ([#263](https://github.com/pcaversaccio/snekmate/pull/263))
   - [`erc721`](https://github.com/pcaversaccio/snekmate/blob/v0.1.1/src/snekmate/tokens/erc721.vy): Use relative `interfaces` `import`s. ([#263](https://github.com/pcaversaccio/snekmate/pull/263))
