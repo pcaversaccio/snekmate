@@ -69,24 +69,24 @@ jobs:
       - name: Show the Foundry Halmos config
         run: forge config
         env:
-          FOUNDRY_PROFILE: halmos
+          FOUNDRY_PROFILE: venom-halmos
 
       - name: Run Halmos ERC-20 symbolic tests
         run: halmos --contract ERC20TestHalmos ${{ matrix.halmos }}
         env:
-          FOUNDRY_PROFILE: halmos
+          FOUNDRY_PROFILE: venom-halmos
 
       - name: Run Halmos ERC-721 symbolic tests
         run: halmos --contract ERC721TestHalmos ${{ matrix.halmos }}
         env:
-          FOUNDRY_PROFILE: halmos
+          FOUNDRY_PROFILE: venom-halmos
 
       - name: Run Halmos ERC-1155 symbolic tests
         run: halmos --contract ERC1155TestHalmos ${{ matrix.halmos }}
         env:
-          FOUNDRY_PROFILE: halmos
+          FOUNDRY_PROFILE: venom-halmos
 
       - name: Run Halmos math symbolic tests
         run: halmos --contract MathTestHalmos ${{ matrix.halmos }}
         env:
-          FOUNDRY_PROFILE: halmos
+          FOUNDRY_PROFILE: venom-halmos
