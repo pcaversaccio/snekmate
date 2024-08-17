@@ -6,7 +6,6 @@ import {stdJson} from "forge-std/StdJson.sol";
 import {VyperDeployer} from "utils/VyperDeployer.sol";
 
 import {BytesLib} from "solidity-bytes-utils/BytesLib.sol";
-import {FCL_ecdsa_utils} from "fresh-crypto-lib/FCL_ecdsa_utils.sol";
 
 import {IP256} from "./interfaces/IP256.sol";
 
@@ -147,7 +146,7 @@ contract P256Test is Test {
         key = bound(key, 1, _N - 1);
         bytes32 hash = keccak256(abi.encode(message));
         (bytes32 r, bytes32 s) = vm.signP256(key, hash);
-        (uint256 qx, uint256 qy) = FCL_ecdsa_utils.ecdsa_derivKpub(key);
+        (uint256 qx, uint256 qy) = vm.publicKeyP256(key);
         if (uint256(s) <= _MALLEABILITY_THRESHOLD) {
             assertTrue(P256.verify_sig(hash, uint256(r), uint256(s), qx, qy));
         } else {
