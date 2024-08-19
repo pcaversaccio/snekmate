@@ -14,6 +14,7 @@ module.exports = [
   {
     ignores: [
       "node_modules/**",
+      "pnpm-lock.yaml",
       "lib/murky/**",
       "lib/solady/**",
       "lib/solmate/**",
