@@ -34,7 +34,7 @@ jobs:
           python-version: ${{ matrix.python_version }}
           architecture: ${{ matrix.architecture }}
 
-      - name: Activate `venom` backend
+      - name: Activate Venom backend
         run: python scripts/insert_venom_pragma.py
 
       - name: Install Vyper
@@ -74,12 +74,12 @@ jobs:
       - name: Show the Foundry CI config
         run: forge config
         env:
-          FOUNDRY_PROFILE: venom
+          FOUNDRY_PROFILE: ci-venom
 
       - name: Foundry tests
         run: forge test
         env:
-          FOUNDRY_PROFILE: venom
+          FOUNDRY_PROFILE: ci-venom
 
       - name: Show the Foundry default config
         run: forge config
@@ -103,19 +103,19 @@ jobs:
       - name: Show the Foundry Echidna config
         run: forge config
         env:
-          FOUNDRY_PROFILE: venom-echidna
+          FOUNDRY_PROFILE: echidna-venom
 
       - name: Compile the Echidna test contracts
         run: forge build --build-info
         env:
-          FOUNDRY_PROFILE: venom-echidna
+          FOUNDRY_PROFILE: echidna-venom
 
       - name: Run Echidna ERC-20 property tests
         run: echidna test/tokens/echidna/ERC20Properties.sol --contract CryticERC20ExternalHarness ${{ matrix.echidna }}
         env:
-          FOUNDRY_PROFILE: venom-echidna
+          FOUNDRY_PROFILE: echidna-venom
 
       - name: Run Echidna ERC-721 property tests
         run: echidna test/tokens/echidna/ERC721Properties.sol --contract CryticERC721ExternalHarness ${{ matrix.echidna }}
         env:
-          FOUNDRY_PROFILE: venom-echidna
+          FOUNDRY_PROFILE: echidna-venom

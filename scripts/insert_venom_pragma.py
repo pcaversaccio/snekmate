@@ -6,7 +6,7 @@ def insert_venom_pragma(filepath):
         lines = f.readlines()
         if len(lines) < 2:
             lines.append("")
-        # Insert `pragma experimental-codegen` on the second line to activate the `venom` backend.
+        # Insert `pragma experimental-codegen` on the second line to activate the Venom backend.
         lines.insert(1, "# pragma experimental-codegen\n")
         # Move the file pointer back to the beginning of the file.
         f.seek(0)

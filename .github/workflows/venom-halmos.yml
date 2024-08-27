@@ -4,7 +4,7 @@ on:
   schedule:
     - cron: "30 3 * * *"
   workflow_dispatch:
-  # To be removed before merging.
+  # To be removed before merging!
   push:
 
 concurrency:
@@ -37,7 +37,7 @@ jobs:
           python-version: ${{ matrix.python_version }}
           architecture: ${{ matrix.architecture }}
 
-      - name: Activate `venom` backend
+      - name: Activate Venom backend
         run: python scripts/insert_venom_pragma.py
 
       - name: Install Vyper
@@ -69,24 +69,24 @@ jobs:
       - name: Show the Foundry Halmos config
         run: forge config
         env:
-          FOUNDRY_PROFILE: venom-halmos
+          FOUNDRY_PROFILE: halmos-venom
 
       - name: Run Halmos ERC-20 symbolic tests
         run: halmos --contract ERC20TestHalmos ${{ matrix.halmos }}
         env:
-          FOUNDRY_PROFILE: venom-halmos
+          FOUNDRY_PROFILE: halmos-venom
 
       - name: Run Halmos ERC-721 symbolic tests
         run: halmos --contract ERC721TestHalmos ${{ matrix.halmos }}
         env:
-          FOUNDRY_PROFILE: venom-halmos
+          FOUNDRY_PROFILE: halmos-venom
 
       - name: Run Halmos ERC-1155 symbolic tests
         run: halmos --contract ERC1155TestHalmos ${{ matrix.halmos }}
         env:
-          FOUNDRY_PROFILE: venom-halmos
+          FOUNDRY_PROFILE: halmos-venom
 
       - name: Run Halmos math symbolic tests
         run: halmos --contract MathTestHalmos ${{ matrix.halmos }}
         env:
-          FOUNDRY_PROFILE: venom-halmos
+          FOUNDRY_PROFILE: halmos-venom
