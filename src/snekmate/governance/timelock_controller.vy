@@ -13,7 +13,7 @@
           3. canceller (`CANCELLER_ROLE`).
         The proposer role is responsible for proposing operations, the
         executor role is responsible for executing scheduled proposal(s),
-        and the canceller is responsible for cancelling proposal(s). This
+        and the canceller is responsible for canceling proposal(s). This
         contract is self-administered by default (unless an optional admin
         account is granted at construction), meaning administration tasks
         (e.g. grant or revoke roles) have to go through the timelock process.
@@ -207,7 +207,7 @@ event CallSalt:
     salt: bytes32
 
 
-# @dev Emitted when operation `id` is cancelled.
+# @dev Emitted when operation `id` is canceled.
 event Cancelled:
     id: indexed(bytes32)
 
