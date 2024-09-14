@@ -7,8 +7,6 @@ import {VyperDeployer} from "utils/VyperDeployer.sol";
 
 import {IERC20} from "openzeppelin/token/ERC20/IERC20.sol";
 
-import {IERC20Extended} from "../interfaces/IERC20Extended.sol";
-
 /**
  * @dev Sets the timeout (in milliseconds) for solving assertion
  * violation conditions; `0` means no timeout.

@@ -124,11 +124,7 @@ contract ERC1155TestHalmos is Test, SymTest {
         vm.stopPrank();
     }
 
-    function testHalmosAssertNoBackdoor(
-        bytes4 selector,
-        address caller,
-        address other
-    ) public {
+    function testHalmosAssertNoBackdoor(address caller, address other) public {
         bytes memory data = svm.createCalldata("IERC1155Extended");
         bytes4 selector = bytes4(data);
 
