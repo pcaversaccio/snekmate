@@ -95,11 +95,10 @@ contract ERC721TestHalmos is Test, SymTest {
      * @notice Forked and adjusted accordingly from here:
      * https://github.com/a16z/halmos/blob/main/examples/tokens/ERC721/test/ERC721Test.sol.
      */
-    function testHalmosAssertNoBackdoor(
-        bytes4 selector,
-        address caller,
-        address other
-    ) public {
+    function testHalmosAssertNoBackdoor(address caller, address other) public {
+        bytes memory data = svm.createCalldata("IERC721Extended");
+        bytes4 selector = bytes4(data);
+
         /**
          * @dev Using a single `assume` with conjunctions would result in the creation of
          * multiple paths, negatively impacting performance.
@@ -118,26 +117,8 @@ contract ERC721TestHalmos is Test, SymTest {
         uint256 oldBalanceOther = erc721.balanceOf(other);
 
         vm.startPrank(caller);
-        bool success;
-        if (
-            selector ==
-            bytes4(keccak256("safeTransferFrom(address,address,uint256,bytes)"))
-        ) {
-            // solhint-disable-next-line avoid-low-level-calls
-            (success, ) = token.call(
-                abi.encodeWithSelector(
-                    selector,
-                    svm.createAddress("owner"),
-                    svm.createAddress("to"),
-                    svm.createUint256("tokenId"),
-                    svm.createBytes(96, "YOLO")
-                )
-            );
-        } else {
-            bytes memory args = svm.createBytes(1_024, "WAGMI");
-            // solhint-disable-next-line avoid-low-level-calls
-            (success, ) = address(token).call(abi.encodePacked(selector, args));
-        }
+        // solhint-disable-next-line avoid-low-level-calls
+        (bool success, ) = token.call(data);
         vm.assume(success);
         vm.stopPrank();
 

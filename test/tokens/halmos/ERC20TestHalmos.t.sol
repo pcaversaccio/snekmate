@@ -7,6 +7,8 @@ import {VyperDeployer} from "utils/VyperDeployer.sol";
 
 import {IERC20} from "openzeppelin/token/ERC20/IERC20.sol";
 
+import {IERC20Extended} from "../interfaces/IERC20Extended.sol";
+
 /**
  * @dev Sets the timeout (in milliseconds) for solving assertion
  * violation conditions; `0` means no timeout.
@@ -86,12 +88,7 @@ contract ERC20TestHalmos is Test, SymTest {
      * @notice Forked and adjusted accordingly from here:
      * https://github.com/a16z/halmos/blob/main/examples/tokens/ERC20/test/ERC20Test.sol.
      */
-    function testHalmosAssertNoBackdoor(
-        bytes4 selector,
-        address caller,
-        address other
-    ) public {
-        bytes memory args = svm.createBytes(1_024, "WAGMI");
+    function testHalmosAssertNoBackdoor(address caller, address other) public {
         vm.assume(other != caller);
 
         uint256 oldBalanceOther = erc20.balanceOf(other);
@@ -99,7 +96,7 @@ contract ERC20TestHalmos is Test, SymTest {
 
         vm.startPrank(caller);
         // solhint-disable-next-line avoid-low-level-calls
-        (bool success, ) = token.call(abi.encodePacked(selector, args));
+        (bool success, ) = token.call(svm.createCalldata("IERC20Extended"));
         vm.assume(success);
         vm.stopPrank();
 

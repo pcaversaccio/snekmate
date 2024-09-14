@@ -129,6 +129,9 @@ contract ERC1155TestHalmos is Test, SymTest {
         address caller,
         address other
     ) public {
+        bytes memory data = svm.createCalldata("IERC1155Extended");
+        bytes4 selector = bytes4(data);
+
         /**
          * @dev Using a single `assume` with conjunctions would result in the creation of
          * multiple paths, negatively impacting performance.
@@ -164,61 +167,8 @@ contract ERC1155TestHalmos is Test, SymTest {
         );
 
         vm.startPrank(caller);
-        bool success;
-        if (selector == IERC1155.safeTransferFrom.selector) {
-            // solhint-disable-next-line avoid-low-level-calls
-            (success, ) = token.call(
-                abi.encodeWithSelector(
-                    selector,
-                    svm.createAddress("owner"),
-                    svm.createAddress("to"),
-                    svm.createUint256("tokenId"),
-                    svm.createUint256("amount"),
-                    svm.createBytes(96, "YOLO")
-                )
-            );
-        } else if (
-            selector == IERC1155.safeBatchTransferFrom.selector ||
-            selector == IERC1155Extended.burn_batch.selector
-        ) {
-            uint256[] memory ids = new uint256[](5);
-            uint256[] memory values = new uint256[](5);
-            for (uint256 i = 0; i < ids.length; i++) {
-                ids[i] = svm.createUint256("ids");
-                values[i] = svm.createUint256("values");
-            }
-            bytes memory data = (selector ==
-                IERC1155.safeBatchTransferFrom.selector)
-                ? abi.encodeWithSelector(
-                    selector,
-                    svm.createAddress("owner"),
-                    svm.createAddress("to"),
-                    ids,
-                    values,
-                    svm.createBytes(96, "YOLO")
-                )
-                : abi.encodeWithSelector(
-                    selector,
-                    svm.createAddress("owner"),
-                    ids,
-                    values
-                );
-            // solhint-disable-next-line avoid-low-level-calls
-            (success, ) = token.call(data);
-        } else if (selector == IERC1155Extended.set_uri.selector) {
-            // solhint-disable-next-line avoid-low-level-calls
-            (success, ) = token.call(
-                abi.encodeWithSelector(
-                    selector,
-                    svm.createUint256("id"),
-                    svm.createBytes(96, "uri")
-                )
-            );
-        } else {
-            bytes memory args = svm.createBytes(1_024, "WAGMI");
-            // solhint-disable-next-line avoid-low-level-calls
-            (success, ) = address(token).call(abi.encodePacked(selector, args));
-        }
+        // solhint-disable-next-line avoid-low-level-calls
+        (bool success, ) = token.call(data);
         vm.assume(success);
         vm.stopPrank();
 
