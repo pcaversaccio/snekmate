@@ -96,9 +96,6 @@ contract ERC721TestHalmos is Test, SymTest {
      * https://github.com/a16z/halmos/blob/main/examples/tokens/ERC721/test/ERC721Test.sol.
      */
     function testHalmosAssertNoBackdoor(address caller, address other) public {
-        bytes memory data = svm.createCalldata("IERC721");
-        bytes4 selector = bytes4(data);
-
         vm.assume(caller != other);
         for (uint256 i = 0; i < holders.length; i++) {
             vm.assume(!erc721.isApprovedForAll(holders[i], caller));
@@ -112,7 +109,7 @@ contract ERC721TestHalmos is Test, SymTest {
 
         vm.startPrank(caller);
         // solhint-disable-next-line avoid-low-level-calls
-        (bool success, ) = token.call(data);
+        (bool success, ) = token.call(svm.createCalldata("IERC721Metadata"));
         vm.assume(success);
         vm.stopPrank();
 

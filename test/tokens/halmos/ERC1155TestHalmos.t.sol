@@ -129,9 +129,6 @@ contract ERC1155TestHalmos is Test, SymTest {
      * @custom:halmos --array-lengths ids=5,values=5
      */
     function testHalmosAssertNoBackdoor(address caller, address other) public {
-        bytes memory data = svm.createCalldata("IERC1155");
-        bytes4 selector = bytes4(data);
-
         vm.assume(caller != other);
         for (uint256 i = 0; i < holders.length; i++) {
             vm.assume(!erc1155.isApprovedForAll(holders[i], caller));
@@ -155,7 +152,9 @@ contract ERC1155TestHalmos is Test, SymTest {
 
         vm.startPrank(caller);
         // solhint-disable-next-line avoid-low-level-calls
-        (bool success, ) = token.call(data);
+        (bool success, ) = token.call(
+            svm.createCalldata("IERC1155MetadataURI")
+        );
         vm.assume(success);
         vm.stopPrank();
 
