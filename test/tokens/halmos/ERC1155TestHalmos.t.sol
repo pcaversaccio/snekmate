@@ -125,6 +125,9 @@ contract ERC1155TestHalmos is Test, SymTest {
     }
 
     function testHalmosAssertNoBackdoor(address caller, address other) public {
+        /**
+         * @custom:halmos --array-lengths ids=5,values=5,amounts=5
+         */
         bytes memory data = svm.createCalldata("IERC1155Extended");
         bytes4 selector = bytes4(data);
 

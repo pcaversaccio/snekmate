@@ -1,14 +1,15 @@
 [global]
 # Test settings.
-function = "testHalmos"       # Run tests matching the given prefix.
-storage-layout = "generic"    # Set the generic storage layout model.
-early-exit = true             # Stop after a counterexample is found.
-ffi = true                    # Enable the foreign function interface (ffi) cheatcode.
+function = "testHalmos"                # Run tests matching the given prefix.
+default-bytes-lengths = "0,32,96,1024" # Set the default length candidates for `bytes` and `string` types.
+storage-layout = "generic"             # Set the generic storage layout model.
+ffi = true                             # Enable the foreign function interface (ffi) cheatcode.
 
 # Debugging settings.
-statistics = true             # Print the statistics.
-verbose = 1                   # Set the verbosity level for the tests.
+verbose = 2                            # Set the verbosity level for the tests.
+statistics = true                      # Print the statistics.
+early-exit = true                      # Stop after a counterexample is found.
 
 # Solver settings.
-solver-command = "yices-smt2" # Use the Yices 2 SMT solver.
-cache-solver = true           # Cache unsatisfiable queries using unsatisfiable cores.
+solver-command = "yices-smt2"          # Use the Yices 2 SMT solver.
+cache-solver = true                    # Cache unsatisfiable queries using unsatisfiable cores.
