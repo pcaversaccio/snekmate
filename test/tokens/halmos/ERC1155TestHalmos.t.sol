@@ -124,27 +124,15 @@ contract ERC1155TestHalmos is Test, SymTest {
         vm.stopPrank();
     }
 
+    /**
+     * Sets the length of the dynamically-sized arrays in the `IERC1155` interface.
+     * @custom:halmos --array-lengths ids=5,values=5
+     */
     function testHalmosAssertNoBackdoor(address caller, address other) public {
-        /**
-         * @custom:halmos --array-lengths ids=5,values=5,amounts=5
-         */
-        bytes memory data = svm.createCalldata("IERC1155Extended");
+        bytes memory data = svm.createCalldata("IERC1155");
         bytes4 selector = bytes4(data);
 
-        /**
-         * @dev Using a single `assume` with conjunctions would result in the creation of
-         * multiple paths, negatively impacting performance.
-         */
         vm.assume(caller != other);
-        vm.assume(selector != IERC1155Extended._customMint.selector);
-        vm.assume(selector != IERC1155Extended.safe_mint.selector);
-        vm.assume(selector != IERC1155Extended.safe_mint_batch.selector);
-
-        /**
-         * @dev For convenience, ignore `view` functions that use dynamic arrays.
-         */
-        vm.assume(selector != IERC1155.balanceOfBatch.selector);
-
         for (uint256 i = 0; i < holders.length; i++) {
             vm.assume(!erc1155.isApprovedForAll(holders[i], caller));
         }

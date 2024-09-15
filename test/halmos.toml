@@ -1,12 +1,13 @@
 [global]
 # Test settings.
 function = "testHalmos"                # Run tests matching the given prefix.
+loop = 5                               # Set the loop unrolling bounds.
 default-bytes-lengths = "0,32,96,1024" # Set the default length candidates for `bytes` and `string` types.
 storage-layout = "generic"             # Set the generic storage layout model.
 ffi = true                             # Enable the foreign function interface (ffi) cheatcode.
 
 # Debugging settings.
-verbose = 2                            # Set the verbosity level for the tests.
+verbose = 1                            # Set the verbosity level for the tests.
 statistics = true                      # Print the statistics.
 early-exit = true                      # Stop after a counterexample is found.
 

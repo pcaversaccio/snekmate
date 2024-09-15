@@ -96,16 +96,10 @@ contract ERC721TestHalmos is Test, SymTest {
      * https://github.com/a16z/halmos/blob/main/examples/tokens/ERC721/test/ERC721Test.sol.
      */
     function testHalmosAssertNoBackdoor(address caller, address other) public {
-        bytes memory data = svm.createCalldata("IERC721Extended");
+        bytes memory data = svm.createCalldata("IERC721");
         bytes4 selector = bytes4(data);
 
-        /**
-         * @dev Using a single `assume` with conjunctions would result in the creation of
-         * multiple paths, negatively impacting performance.
-         */
         vm.assume(caller != other);
-        vm.assume(selector != IERC721Extended._customMint.selector);
-        vm.assume(selector != IERC721Extended.safe_mint.selector);
         for (uint256 i = 0; i < holders.length; i++) {
             vm.assume(!erc721.isApprovedForAll(holders[i], caller));
         }
