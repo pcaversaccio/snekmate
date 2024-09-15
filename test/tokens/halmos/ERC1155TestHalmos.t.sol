@@ -153,7 +153,7 @@ contract ERC1155TestHalmos is Test, SymTest {
         vm.startPrank(caller);
         // solhint-disable-next-line avoid-low-level-calls
         (bool success, ) = token.call(
-            svm.createCalldata("IERC1155MetadataURI", "IERC1155MetadataURI")
+            svm.createCalldata("IERC1155MetadataURI.sol", "IERC1155MetadataURI")
         );
         vm.assume(success);
         vm.stopPrank();
