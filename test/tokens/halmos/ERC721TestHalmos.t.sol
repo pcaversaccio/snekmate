@@ -109,7 +109,9 @@ contract ERC721TestHalmos is Test, SymTest {
 
         vm.startPrank(caller);
         // solhint-disable-next-line avoid-low-level-calls
-        (bool success, ) = token.call(svm.createCalldata("IERC721Metadata"));
+        (bool success, ) = token.call(
+            svm.createCalldata("IERC721Metadata", "IERC721Metadata")
+        );
         vm.assume(success);
         vm.stopPrank();
 

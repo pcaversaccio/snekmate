@@ -94,7 +94,9 @@ contract ERC20TestHalmos is Test, SymTest {
 
         vm.startPrank(caller);
         // solhint-disable-next-line avoid-low-level-calls
-        (bool success, ) = token.call(svm.createCalldata("IERC20Metadata"));
+        (bool success, ) = token.call(
+            svm.createCalldata("IERC20Metadata", "IERC20Metadata")
+        );
         vm.assume(success);
         vm.stopPrank();
 
