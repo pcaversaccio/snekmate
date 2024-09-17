@@ -182,6 +182,11 @@ def royaltyInfo(token_id: uint256, sale_price: uint256) -> (address, uint256):
          on a sale price that may be denominated in any unit
          of exchange. The royalty amount is denominated and
          should be paid in that same unit of exchange.
+    @notice The ERC-2981 allows the royalty to be set at 100%
+            of the price. In that case, the entire price would
+            be transferred to the royalty receiver and `0` tokens
+            to the seller. Hence, for contracts involving royalty
+            payments, empty transfers should be taken into account.
     @param token_id The 32-byte identifier of the token.
     @param sale_price The 32-byte sale price of the NFT asset
            specified by `token_id`.
