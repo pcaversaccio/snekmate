@@ -73,7 +73,6 @@ jobs:
 
       - name: Add Vyper path to `ci-venom` Foundry profile
         run: |
-          VYPER_PATH=$(which vyper)
           sed -i -e '/\[profile.ci-venom\]/,/^$/ { /^vyper/ d; }' -e '/\[profile.ci-venom\]/a vyper = { experimental_codegen = true, path = "'"$(which vyper)"'" }' foundry.toml
 
       - name: Show the Foundry CI config
@@ -88,7 +87,6 @@ jobs:
 
       - name: Add Vyper path to `default-venom` Foundry profile
         run: |
-          VYPER_PATH=$(which vyper)
           sed -i -e '/\[profile.default-venom\]/,/^$/ { /^vyper/ d; }' -e '/\[profile.default-venom\]/a vyper = { experimental_codegen = true, path = "'"$(which vyper)"'" }' foundry.toml
 
       - name: Show the Foundry default config
@@ -112,7 +110,6 @@ jobs:
 
       - name: Add Vyper path to `echidna-venom` Foundry profile
         run: |
-          VYPER_PATH=$(which vyper)
           sed -i -e '/\[profile.echidna-venom\]/,/^$/ { /^vyper/ d; }' -e '/\[profile.echidna-venom\]/a vyper = { experimental_codegen = true, path = "'"$(which vyper)"'" }' foundry.toml
 
       - name: Show the Foundry Echidna config

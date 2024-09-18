@@ -68,8 +68,7 @@ jobs:
 
       - name: Add Vyper path to `halmos-venom` Foundry profile
         run: |
-          VYPER_PATH=$(which vyper)
-          sed -i -e '/\[profile.halmos-venom\]/,/^$/ { /^vyper/ d; }' -e '/\[profile.halmos-venom\]/a vyper = { experimental_codegen = true, path = "'"$VYPER_PATH"'" }' foundry.toml
+          sed -i -e '/\[profile.halmos-venom\]/,/^$/ { /^vyper/ d; }' -e '/\[profile.halmos-venom\]/a vyper = { experimental_codegen = true, path = "'"$(which vyper)"'" }' foundry.toml
 
       - name: Show the Foundry Halmos config
         run: forge config

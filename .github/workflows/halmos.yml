@@ -63,8 +63,7 @@ jobs:
 
       - name: Add Vyper path to `halmos` Foundry profile
         run: |
-          VYPER_PATH=$(which vyper)
-          sed -i '/\[profile.halmos\]/a vyper = { path = "'"$VYPER_PATH"'" }' foundry.toml
+          sed -i '/\[profile.halmos\]/a vyper = { path = "'"$(which vyper)"'" }' foundry.toml
 
       - name: Show the Foundry Halmos config
         run: forge config
