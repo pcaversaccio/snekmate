@@ -43,9 +43,6 @@ jobs:
       - name: Install Vyper
         run: pip install git+https://github.com/vyperlang/vyper@master
 
-      - name: Vyper location
-        run: which vyper
-
       - name: Show the Vyper version
         run: vyper --version
 
@@ -68,6 +65,11 @@ jobs:
           wget -q https://github.com/SRI-CSL/yices2/releases/download/Yices-2.6.4/yices-2.6.4-x86_64-pc-linux-gnu.tar.gz
           sudo tar -xzf yices-2.6.4-x86_64-pc-linux-gnu.tar.gz -C /usr/local --strip-components=1
           sudo rm yices-2.6.4-x86_64-pc-linux-gnu.tar.gz
+
+      - name: Add Vyper path to `halmos-venom` Foundry profile
+        run: |
+          VYPER_PATH=$(which vyper)
+          sed -i -e '/\[profile.halmos-venom\]/,/^$/ { /^vyper/ d; }' -e '/\[profile.halmos-venom\]/a vyper = { experimental_codegen = true, path = "'"$VYPER_PATH"'" }' foundry.toml
 
       - name: Show the Foundry Halmos config
         run: forge config

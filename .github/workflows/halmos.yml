@@ -61,6 +61,11 @@ jobs:
           sudo tar -xzf yices-2.6.4-x86_64-pc-linux-gnu.tar.gz -C /usr/local --strip-components=1
           sudo rm yices-2.6.4-x86_64-pc-linux-gnu.tar.gz
 
+      - name: Add Vyper path to `halmos` Foundry profile
+        run: |
+          VYPER_PATH=$(which vyper)
+          sed -i '/\[profile.halmos\]/a vyper = { path = "'"$VYPER_PATH"'" }' foundry.toml
+
       - name: Show the Foundry Halmos config
         run: forge config
         env:
