@@ -43,6 +43,9 @@ jobs:
       - name: Install Vyper
         run: pip install git+https://github.com/vyperlang/vyper@master
 
+      - name: Vyper location
+        run: which vyper
+
       - name: Show the Vyper version
         run: vyper --version
 
