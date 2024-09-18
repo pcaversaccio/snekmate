@@ -95,7 +95,11 @@ contract ERC20TestHalmos is Test, SymTest {
         vm.startPrank(caller);
         // solhint-disable-next-line avoid-low-level-calls
         (bool success, ) = token.call(
-            svm.createCalldata("IERC20Metadata.sol", "IERC20Metadata")
+            /**
+             * @dev To verify the correct behaviour of the Vyper compiler for `view` and `pure`
+             * functions, we include read-only functions in the calldata creation.
+             */
+            svm.createCalldata("IERC20Extended.sol", "IERC20Extended", true)
         );
         vm.assume(success);
         vm.stopPrank();

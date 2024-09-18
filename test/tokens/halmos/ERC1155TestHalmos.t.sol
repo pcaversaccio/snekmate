@@ -129,7 +129,25 @@ contract ERC1155TestHalmos is Test, SymTest {
      * @custom:halmos --array-lengths ids=5,values=5
      */
     function testHalmosAssertNoBackdoor(address caller, address other) public {
+        /**
+         * @dev To verify the correct behaviour of the Vyper compiler for `view` and `pure`
+         * functions, we include read-only functions in the calldata creation.
+         */
+        bytes memory data = svm.createCalldata(
+            "IERC1155Extended.sol",
+            "IERC1155Extended",
+            true
+        );
+        bytes4 selector = bytes4(data);
+
+        /**
+         * @dev Using a single `assume` with conjunctions would result in the creation of
+         * multiple paths, negatively impacting performance.
+         */
         vm.assume(caller != other);
+        vm.assume(selector != IERC1155Extended._customMint.selector);
+        vm.assume(selector != IERC1155Extended.safe_mint.selector);
+        vm.assume(selector != IERC1155Extended.safe_mint_batch.selector);
         for (uint256 i = 0; i < holders.length; i++) {
             vm.assume(!erc1155.isApprovedForAll(holders[i], caller));
         }
@@ -152,9 +170,7 @@ contract ERC1155TestHalmos is Test, SymTest {
 
         vm.startPrank(caller);
         // solhint-disable-next-line avoid-low-level-calls
-        (bool success, ) = token.call(
-            svm.createCalldata("IERC1155MetadataURI.sol", "IERC1155MetadataURI")
-        );
+        (bool success, ) = token.call(data);
         vm.assume(success);
         vm.stopPrank();
 

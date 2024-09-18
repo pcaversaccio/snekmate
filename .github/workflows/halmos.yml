@@ -50,7 +50,7 @@ jobs:
         run: pip install setuptools
 
       - name: Install Halmos
-        run: pip install git+https://github.com/a16z/halmos.git@main
+        run: pip install git+https://github.com/a16z/halmos.git@fix/concretize-calldatacopy
 
       - name: Show the Halmos version
         run: halmos --version
