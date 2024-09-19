@@ -18,6 +18,13 @@
   - [`eip712_domain_separator`](https://github.com/pcaversaccio/snekmate/blob/v0.1.1/src/snekmate/utils/eip712_domain_separator.vy): Use relative `interfaces` `import`s. ([#263](https://github.com/pcaversaccio/snekmate/pull/263))
   - [`math`](https://github.com/pcaversaccio/snekmate/blob/v0.1.1/src/snekmate/utils/math.vy): Use mutable `internal` function parameters. ([#267](https://github.com/pcaversaccio/snekmate/pull/267))
 
+### 🥢 Test Coverage
+
+- **Tokens**
+  - [`erc20`](https://github.com/pcaversaccio/snekmate/blob/v0.1.1/src/snekmate/tokens/erc20.vy): Use native `halmos` `createCalldata` cheat code. ([#273](https://github.com/pcaversaccio/snekmate/pull/273))
+  - [`erc721`](https://github.com/pcaversaccio/snekmate/blob/v0.1.1/src/snekmate/tokens/erc721.vy): Use native `halmos` `createCalldata` cheat code. ([#273](https://github.com/pcaversaccio/snekmate/pull/273))
+  - [`erc1155`](https://github.com/pcaversaccio/snekmate/blob/v0.1.1/src/snekmate/tokens/erc1155.vy): Use native `halmos` `createCalldata` cheat code. ([#273](https://github.com/pcaversaccio/snekmate/pull/273))
+
 ### 👀 Full Changelog
 
 - [`v0.1.0...v0.1.1`](https://github.com/pcaversaccio/snekmate/compare/v0.1.0...v0.1.1)

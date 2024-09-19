@@ -8,8 +8,8 @@ import {VyperDeployer} from "utils/VyperDeployer.sol";
 import {IERC20} from "openzeppelin/token/ERC20/IERC20.sol";
 
 /**
- * @dev Sets the timeout (in milliseconds) for solving assertion
- * violation conditions; `0` means no timeout.
+ * @dev Set the timeout (in milliseconds) for solving assertion violation
+ * conditions; `0` means no timeout.
  * @custom:halmos --solver-timeout-assertion 0
  */
 contract ERC20TestHalmos is Test, SymTest {
@@ -25,8 +25,8 @@ contract ERC20TestHalmos is Test, SymTest {
     address[] private holders;
 
     /**
-     * @dev Sets timeout (in milliseconds) for solving branching
-     * conditions; `0` means no timeout.
+     * @dev Set the timeout (in milliseconds) for solving branching conditions;
+     * `0` means no timeout.
      * @custom:halmos --solver-timeout-branching 1000
      */
     function setUpSymbolic(uint256 initialSupply_) public {
@@ -86,12 +86,7 @@ contract ERC20TestHalmos is Test, SymTest {
      * @notice Forked and adjusted accordingly from here:
      * https://github.com/a16z/halmos/blob/main/examples/tokens/ERC20/test/ERC20Test.sol.
      */
-    function testHalmosAssertNoBackdoor(
-        bytes4 selector,
-        address caller,
-        address other
-    ) public {
-        bytes memory args = svm.createBytes(1_024, "WAGMI");
+    function testHalmosAssertNoBackdoor(address caller, address other) public {
         vm.assume(other != caller);
 
         uint256 oldBalanceOther = erc20.balanceOf(other);
@@ -99,7 +94,13 @@ contract ERC20TestHalmos is Test, SymTest {
 
         vm.startPrank(caller);
         // solhint-disable-next-line avoid-low-level-calls
-        (bool success, ) = token.call(abi.encodePacked(selector, args));
+        (bool success, ) = token.call(
+            /**
+             * @dev To verify the correct behaviour of the Vyper compiler for `view` and `pure`
+             * functions, we include read-only functions in the calldata creation.
+             */
+            svm.createCalldata("IERC20Extended.sol", "IERC20Extended", true)
+        );
         vm.assume(success);
         vm.stopPrank();
 

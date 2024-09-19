@@ -6,12 +6,13 @@ import {SymTest} from "halmos-cheatcodes/SymTest.sol";
 import {VyperDeployer} from "utils/VyperDeployer.sol";
 
 import {IERC721} from "openzeppelin/token/ERC721/IERC721.sol";
+import {IERC721Metadata} from "openzeppelin/token/ERC721/extensions/IERC721Metadata.sol";
 
 import {IERC721Extended} from "../interfaces/IERC721Extended.sol";
 
 /**
- * @dev Sets the timeout (in milliseconds) for solving assertion
- * violation conditions; `0` means no timeout.
+ * @dev Set the timeout (in milliseconds) for solving assertion violation
+ * conditions; `0` means no timeout.
  * @custom:halmos --solver-timeout-assertion 0
  */
 contract ERC721TestHalmos is Test, SymTest {
@@ -29,8 +30,8 @@ contract ERC721TestHalmos is Test, SymTest {
     uint256[] private tokenIds;
 
     /**
-     * @dev Sets timeout (in milliseconds) for solving branching
-     * conditions; `0` means no timeout.
+     * @dev Set the timeout (in milliseconds) for solving branching conditions;
+     * `0` means no timeout.
      * @custom:halmos --solver-timeout-branching 1000
      */
     function setUp() public {
@@ -95,16 +96,24 @@ contract ERC721TestHalmos is Test, SymTest {
      * @notice Forked and adjusted accordingly from here:
      * https://github.com/a16z/halmos/blob/main/examples/tokens/ERC721/test/ERC721Test.sol.
      */
-    function testHalmosAssertNoBackdoor(
-        bytes4 selector,
-        address caller,
-        address other
-    ) public {
+    function testHalmosAssertNoBackdoor(address caller, address other) public {
+        /**
+         * @dev To verify the correct behaviour of the Vyper compiler for `view` and `pure`
+         * functions, we include read-only functions in the calldata creation.
+         */
+        bytes memory data = svm.createCalldata(
+            "IERC721Extended.sol",
+            "IERC721Extended",
+            true
+        );
+        bytes4 selector = bytes4(data);
+
         /**
          * @dev Using a single `assume` with conjunctions would result in the creation of
          * multiple paths, negatively impacting performance.
          */
         vm.assume(caller != other);
+        vm.assume(selector != IERC721Metadata.tokenURI.selector);
         vm.assume(selector != IERC721Extended._customMint.selector);
         vm.assume(selector != IERC721Extended.safe_mint.selector);
         for (uint256 i = 0; i < holders.length; i++) {
@@ -118,26 +127,8 @@ contract ERC721TestHalmos is Test, SymTest {
         uint256 oldBalanceOther = erc721.balanceOf(other);
 
         vm.startPrank(caller);
-        bool success;
-        if (
-            selector ==
-            bytes4(keccak256("safeTransferFrom(address,address,uint256,bytes)"))
-        ) {
-            // solhint-disable-next-line avoid-low-level-calls
-            (success, ) = token.call(
-                abi.encodeWithSelector(
-                    selector,
-                    svm.createAddress("owner"),
-                    svm.createAddress("to"),
-                    svm.createUint256("tokenId"),
-                    svm.createBytes(96, "YOLO")
-                )
-            );
-        } else {
-            bytes memory args = svm.createBytes(1_024, "WAGMI");
-            // solhint-disable-next-line avoid-low-level-calls
-            (success, ) = address(token).call(abi.encodePacked(selector, args));
-        }
+        // solhint-disable-next-line avoid-low-level-calls
+        (bool success, ) = token.call(data);
         vm.assume(success);
         vm.stopPrank();
 

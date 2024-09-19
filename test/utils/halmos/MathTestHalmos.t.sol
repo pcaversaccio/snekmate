@@ -11,8 +11,8 @@ import {FixedPointMathLib} from "solady/utils/FixedPointMathLib.sol";
 import {IMath} from "../interfaces/IMath.sol";
 
 /**
- * @dev Sets the timeout (in milliseconds) for solving assertion
- * violation conditions; `0` means no timeout.
+ * @dev Set the timeout (in milliseconds) for solving assertion violation
+ * conditions; `0` means no timeout.
  * @custom:halmos --solver-timeout-assertion 0
  */
 contract MathTestHalmos is Test, SymTest {
@@ -21,8 +21,8 @@ contract MathTestHalmos is Test, SymTest {
     IMath private math;
 
     /**
-     * @dev Sets timeout (in milliseconds) for solving branching
-     * conditions; `0` means no timeout.
+     * @dev Set the timeout (in milliseconds) for solving branching conditions;
+     * `0` means no timeout.
      * @custom:halmos --solver-timeout-branching 1000
      */
     function setUp() public {
@@ -65,9 +65,9 @@ contract MathTestHalmos is Test, SymTest {
     }
 
     /**
-     * @dev Currently commented out, as the timeout for the Z3 solver does not work for
-     * the queries of this test, where the Z3 solver is constantly running and consumes
-     * a lot of memory, causing the CI to crash due to out of memory.
+     * @dev Currently commented out, as the timeout for the Yices 2 SMT solver does not
+     * work for the queries of this test, where the Yices 2 SMT solver is constantly
+     * running and consumes a lot of memory, causing the CI to crash due to out of memory.
      */
     // function testHalmosAssertMulDiv(
     //     uint256 x,
@@ -112,27 +112,27 @@ contract MathTestHalmos is Test, SymTest {
     }
 
     /**
-     * @dev Currently commented out, as the timeout for the Z3 solver does not work for
-     * the queries of this test, where the Z3 solver is constantly running and consumes
-     * a lot of memory, causing the CI to crash due to out of memory.
+     * @dev Currently commented out, as the timeout for the Yices 2 SMT solver does not
+     * work for the queries of this test, where the Yices 2 SMT solver is constantly
+     * running and consumes a lot of memory, causing the CI to crash due to out of memory.
      */
     // function testHalmosAssertWadLn(int256 x) public view {
     //     assertEq(math.wad_ln(x), FixedPointMathLib.lnWad(x));
     // }
 
     /**
-     * @dev Currently commented out, as the timeout for the Z3 solver does not work for
-     * the queries of this test, where the Z3 solver is constantly running and consumes
-     * a lot of memory, causing the CI to crash due to out of memory.
+     * @dev Currently commented out, as the timeout for the Yices 2 SMT solver does not
+     * work for the queries of this test, where the Yices 2 SMT solver is constantly
+     * running and consumes a lot of memory, causing the CI to crash due to out of memory.
      */
     // function testHalmosAssertWadExp(int256 x) public view {
     //     assertEq(math.wad_exp(x), FixedPointMathLib.expWad(x));
     // }
 
     /**
-     * @dev Currently commented out, as the timeout for the Z3 solver does not work for
-     * the queries of this test, where the Z3 solver is constantly running and consumes
-     * a lot of memory, causing the CI to crash due to out of memory.
+     * @dev Currently commented out, as the timeout for the Yices 2 SMT solver does not
+     * work for the queries of this test, where the Yices 2 SMT solver is constantly
+     * running and consumes a lot of memory, causing the CI to crash due to out of memory.
      */
     // function testHalmosAssertCbrt(uint256 x, bool roundup) public view {
     //     if (!roundup) {
@@ -146,9 +146,9 @@ contract MathTestHalmos is Test, SymTest {
     // }
 
     /**
-     * @dev Currently commented out, as the timeout for the Z3 solver does not work for
-     * the queries of this test, where the Z3 solver is constantly running and consumes
-     * a lot of memory, causing the CI to crash due to out of memory.
+     * @dev Currently commented out, as the timeout for the Yices 2 SMT solver does not
+     * work for the queries of this test, where the Yices 2 SMT solver is constantly
+     * running and consumes a lot of memory, causing the CI to crash due to out of memory.
      */
     // function testHalmosAssertWadCbrt(uint256 x) public view {
     //     assertEq(math.wad_cbrt(x), FixedPointMathLib.cbrtWad(x));
