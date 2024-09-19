@@ -6,6 +6,7 @@ import {SymTest} from "halmos-cheatcodes/SymTest.sol";
 import {VyperDeployer} from "utils/VyperDeployer.sol";
 
 import {IERC1155} from "openzeppelin/token/ERC1155/IERC1155.sol";
+import {IERC1155MetadataURI} from "openzeppelin/token/ERC1155/extensions/IERC1155MetadataURI.sol";
 
 import {IERC1155Extended} from "../interfaces/IERC1155Extended.sol";
 
@@ -126,7 +127,7 @@ contract ERC1155TestHalmos is Test, SymTest {
 
     /**
      * Sets the length of the dynamically-sized arrays in the `IERC1155` interface.
-     * @custom:halmos --array-lengths ids=5,values=5
+     * @custom:halmos --array-lengths ids=5,values=5,amounts=5
      */
     function testHalmosAssertNoBackdoor(address caller, address other) public {
         /**
@@ -145,6 +146,8 @@ contract ERC1155TestHalmos is Test, SymTest {
          * multiple paths, negatively impacting performance.
          */
         vm.assume(caller != other);
+        vm.assume(selector != IERC1155Extended.set_uri.selector);
+        vm.assume(selector != IERC1155Extended.uri.selector);
         vm.assume(selector != IERC1155Extended._customMint.selector);
         vm.assume(selector != IERC1155Extended.safe_mint.selector);
         vm.assume(selector != IERC1155Extended.safe_mint_batch.selector);

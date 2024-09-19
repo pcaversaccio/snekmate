@@ -6,6 +6,7 @@ import {SymTest} from "halmos-cheatcodes/SymTest.sol";
 import {VyperDeployer} from "utils/VyperDeployer.sol";
 
 import {IERC721} from "openzeppelin/token/ERC721/IERC721.sol";
+import {IERC721Metadata} from "openzeppelin/token/ERC721/extensions/IERC721Metadata.sol";
 
 import {IERC721Extended} from "../interfaces/IERC721Extended.sol";
 
@@ -112,6 +113,7 @@ contract ERC721TestHalmos is Test, SymTest {
          * multiple paths, negatively impacting performance.
          */
         vm.assume(caller != other);
+        vm.assume(selector != IERC721Metadata.tokenURI.selector);
         vm.assume(selector != IERC721Extended._customMint.selector);
         vm.assume(selector != IERC721Extended.safe_mint.selector);
         for (uint256 i = 0; i < holders.length; i++) {
