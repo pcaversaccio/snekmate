@@ -66,8 +66,8 @@ contract MathTestHalmos is Test, SymTest {
 
     /**
      * @dev Currently commented out, as the timeout for the Yices 2 SMT solver does not
-     * work for the queries of this test, where the Yices 2 SMT solver is constantly running
-     * and consumes a lot of memory, causing the CI to crash due to out of memory.
+     * work for the queries of this test, where the Yices 2 SMT solver is constantly
+     * running and consumes a lot of memory, causing the CI to crash due to out of memory.
      */
     // function testHalmosAssertMulDiv(
     //     uint256 x,
@@ -113,8 +113,8 @@ contract MathTestHalmos is Test, SymTest {
 
     /**
      * @dev Currently commented out, as the timeout for the Yices 2 SMT solver does not
-     * work for the queries of this test, where the Yices 2 SMT solver is constantly running
-     * and consumes a lot of memory, causing the CI to crash due to out of memory.
+     * work for the queries of this test, where the Yices 2 SMT solver is constantly
+     * running and consumes a lot of memory, causing the CI to crash due to out of memory.
      */
     // function testHalmosAssertWadLn(int256 x) public view {
     //     assertEq(math.wad_ln(x), FixedPointMathLib.lnWad(x));
@@ -122,8 +122,8 @@ contract MathTestHalmos is Test, SymTest {
 
     /**
      * @dev Currently commented out, as the timeout for the Yices 2 SMT solver does not
-     * work for the queries of this test, where the Yices 2 SMT solver is constantly running
-     * and consumes a lot of memory, causing the CI to crash due to out of memory.
+     * work for the queries of this test, where the Yices 2 SMT solver is constantly
+     * running and consumes a lot of memory, causing the CI to crash due to out of memory.
      */
     // function testHalmosAssertWadExp(int256 x) public view {
     //     assertEq(math.wad_exp(x), FixedPointMathLib.expWad(x));
@@ -131,8 +131,8 @@ contract MathTestHalmos is Test, SymTest {
 
     /**
      * @dev Currently commented out, as the timeout for the Yices 2 SMT solver does not
-     * work for the queries of this test, where the Yices 2 SMT solver is constantly running
-     * and consumes a lot of memory, causing the CI to crash due to out of memory.
+     * work for the queries of this test, where the Yices 2 SMT solver is constantly
+     * running and consumes a lot of memory, causing the CI to crash due to out of memory.
      */
     // function testHalmosAssertCbrt(uint256 x, bool roundup) public view {
     //     if (!roundup) {
@@ -147,8 +147,8 @@ contract MathTestHalmos is Test, SymTest {
 
     /**
      * @dev Currently commented out, as the timeout for the Yices 2 SMT solver does not
-     * work for the queries of this test, where the Yices 2 SMT solver is constantly running
-     * and consumes a lot of memory, causing the CI to crash due to out of memory.
+     * work for the queries of this test, where the Yices 2 SMT solver is constantly
+     * running and consumes a lot of memory, causing the CI to crash due to out of memory.
      */
     // function testHalmosAssertWadCbrt(uint256 x) public view {
     //     assertEq(math.wad_cbrt(x), FixedPointMathLib.cbrtWad(x));
