@@ -6,12 +6,13 @@ import {SymTest} from "halmos-cheatcodes/SymTest.sol";
 import {VyperDeployer} from "utils/VyperDeployer.sol";
 
 import {IERC1155} from "openzeppelin/token/ERC1155/IERC1155.sol";
+import {IERC1155MetadataURI} from "openzeppelin/token/ERC1155/extensions/IERC1155MetadataURI.sol";
 
 import {IERC1155Extended} from "../interfaces/IERC1155Extended.sol";
 
 /**
- * @dev Sets the timeout (in milliseconds) for solving assertion
- * violation conditions; `0` means no timeout.
+ * @dev Set the timeout (in milliseconds) for solving assertion violation
+ * conditions; `0` means no timeout.
  * @custom:halmos --solver-timeout-assertion 0
  */
 contract ERC1155TestHalmos is Test, SymTest {
@@ -25,6 +26,11 @@ contract ERC1155TestHalmos is Test, SymTest {
     uint256[] private tokenIds;
     uint256[] private amounts;
 
+    /**
+     * @dev Set the timeout (in milliseconds) for solving branching conditions;
+     * `0` means no timeout.
+     * @custom:halmos --solver-timeout-branching 1000
+     */
     function setUp() public {
         bytes memory args = abi.encode(_BASE_URI);
         /**
@@ -124,25 +130,32 @@ contract ERC1155TestHalmos is Test, SymTest {
         vm.stopPrank();
     }
 
-    function testHalmosAssertNoBackdoor(
-        bytes4 selector,
-        address caller,
-        address other
-    ) public {
+    /**
+     * Set the length of the dynamically-sized arrays in the `IERC1155` interface.
+     * @custom:halmos --array-lengths ids=5,values=5,amounts=5
+     */
+    function testHalmosAssertNoBackdoor(address caller, address other) public {
+        /**
+         * @dev To verify the correct behaviour of the Vyper compiler for `view` and `pure`
+         * functions, we include read-only functions in the calldata creation.
+         */
+        bytes memory data = svm.createCalldata(
+            "IERC1155Extended.sol",
+            "IERC1155Extended",
+            true
+        );
+        bytes4 selector = bytes4(data);
+
         /**
          * @dev Using a single `assume` with conjunctions would result in the creation of
          * multiple paths, negatively impacting performance.
          */
         vm.assume(caller != other);
+        vm.assume(selector != IERC1155MetadataURI.uri.selector);
+        vm.assume(selector != IERC1155Extended.set_uri.selector);
         vm.assume(selector != IERC1155Extended._customMint.selector);
         vm.assume(selector != IERC1155Extended.safe_mint.selector);
         vm.assume(selector != IERC1155Extended.safe_mint_batch.selector);
-
-        /**
-         * @dev For convenience, ignore `view` functions that use dynamic arrays.
-         */
-        vm.assume(selector != IERC1155.balanceOfBatch.selector);
-
         for (uint256 i = 0; i < holders.length; i++) {
             vm.assume(!erc1155.isApprovedForAll(holders[i], caller));
         }
@@ -164,61 +177,8 @@ contract ERC1155TestHalmos is Test, SymTest {
         );
 
         vm.startPrank(caller);
-        bool success;
-        if (selector == IERC1155.safeTransferFrom.selector) {
-            // solhint-disable-next-line avoid-low-level-calls
-            (success, ) = token.call(
-                abi.encodeWithSelector(
-                    selector,
-                    svm.createAddress("owner"),
-                    svm.createAddress("to"),
-                    svm.createUint256("tokenId"),
-                    svm.createUint256("amount"),
-                    svm.createBytes(96, "YOLO")
-                )
-            );
-        } else if (
-            selector == IERC1155.safeBatchTransferFrom.selector ||
-            selector == IERC1155Extended.burn_batch.selector
-        ) {
-            uint256[] memory ids = new uint256[](5);
-            uint256[] memory values = new uint256[](5);
-            for (uint256 i = 0; i < ids.length; i++) {
-                ids[i] = svm.createUint256("ids");
-                values[i] = svm.createUint256("values");
-            }
-            bytes memory data = (selector ==
-                IERC1155.safeBatchTransferFrom.selector)
-                ? abi.encodeWithSelector(
-                    selector,
-                    svm.createAddress("owner"),
-                    svm.createAddress("to"),
-                    ids,
-                    values,
-                    svm.createBytes(96, "YOLO")
-                )
-                : abi.encodeWithSelector(
-                    selector,
-                    svm.createAddress("owner"),
-                    ids,
-                    values
-                );
-            // solhint-disable-next-line avoid-low-level-calls
-            (success, ) = token.call(data);
-        } else if (selector == IERC1155Extended.set_uri.selector) {
-            // solhint-disable-next-line avoid-low-level-calls
-            (success, ) = token.call(
-                abi.encodeWithSelector(
-                    selector,
-                    svm.createUint256("id"),
-                    svm.createBytes(96, "uri")
-                )
-            );
-        } else {
-            bytes memory args = svm.createBytes(1_024, "WAGMI");
-            // solhint-disable-next-line avoid-low-level-calls
-            (success, ) = address(token).call(abi.encodePacked(selector, args));
-        }
+        // solhint-disable-next-line avoid-low-level-calls
+        (bool success, ) = token.call(data);
         vm.assume(success);
         vm.stopPrank();
 
