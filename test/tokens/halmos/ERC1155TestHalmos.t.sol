@@ -11,8 +11,8 @@ import {IERC1155MetadataURI} from "openzeppelin/token/ERC1155/extensions/IERC115
 import {IERC1155Extended} from "../interfaces/IERC1155Extended.sol";
 
 /**
- * @dev Sets the timeout (in milliseconds) for solving assertion
- * violation conditions; `0` means no timeout.
+ * @dev Set the timeout (in milliseconds) for solving assertion violation
+ * conditions; `0` means no timeout.
  * @custom:halmos --solver-timeout-assertion 0
  */
 contract ERC1155TestHalmos is Test, SymTest {
@@ -26,6 +26,11 @@ contract ERC1155TestHalmos is Test, SymTest {
     uint256[] private tokenIds;
     uint256[] private amounts;
 
+    /**
+     * @dev Set the timeout (in milliseconds) for solving branching conditions;
+     * `0` means no timeout.
+     * @custom:halmos --solver-timeout-branching 1000
+     */
     function setUp() public {
         bytes memory args = abi.encode(_BASE_URI);
         /**
@@ -126,7 +131,7 @@ contract ERC1155TestHalmos is Test, SymTest {
     }
 
     /**
-     * Sets the length of the dynamically-sized arrays in the `IERC1155` interface.
+     * Set the length of the dynamically-sized arrays in the `IERC1155` interface.
      * @custom:halmos --array-lengths ids=5,values=5,amounts=5
      */
     function testHalmosAssertNoBackdoor(address caller, address other) public {

@@ -8,8 +8,8 @@ import {VyperDeployer} from "utils/VyperDeployer.sol";
 import {IERC20} from "openzeppelin/token/ERC20/IERC20.sol";
 
 /**
- * @dev Sets the timeout (in milliseconds) for solving assertion
- * violation conditions; `0` means no timeout.
+ * @dev Set the timeout (in milliseconds) for solving assertion violation
+ * conditions; `0` means no timeout.
  * @custom:halmos --solver-timeout-assertion 0
  */
 contract ERC20TestHalmos is Test, SymTest {
@@ -25,8 +25,8 @@ contract ERC20TestHalmos is Test, SymTest {
     address[] private holders;
 
     /**
-     * @dev Sets timeout (in milliseconds) for solving branching
-     * conditions; `0` means no timeout.
+     * @dev Set the timeout (in milliseconds) for solving branching conditions;
+     * `0` means no timeout.
      * @custom:halmos --solver-timeout-branching 1000
      */
     function setUpSymbolic(uint256 initialSupply_) public {

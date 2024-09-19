@@ -11,8 +11,8 @@ import {IERC721Metadata} from "openzeppelin/token/ERC721/extensions/IERC721Metad
 import {IERC721Extended} from "../interfaces/IERC721Extended.sol";
 
 /**
- * @dev Sets the timeout (in milliseconds) for solving assertion
- * violation conditions; `0` means no timeout.
+ * @dev Set the timeout (in milliseconds) for solving assertion violation
+ * conditions; `0` means no timeout.
  * @custom:halmos --solver-timeout-assertion 0
  */
 contract ERC721TestHalmos is Test, SymTest {
@@ -30,8 +30,8 @@ contract ERC721TestHalmos is Test, SymTest {
     uint256[] private tokenIds;
 
     /**
-     * @dev Sets timeout (in milliseconds) for solving branching
-     * conditions; `0` means no timeout.
+     * @dev Set the timeout (in milliseconds) for solving branching conditions;
+     * `0` means no timeout.
      * @custom:halmos --solver-timeout-branching 1000
      */
     function setUp() public {
