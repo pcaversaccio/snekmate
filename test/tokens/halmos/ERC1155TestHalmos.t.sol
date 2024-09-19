@@ -146,8 +146,8 @@ contract ERC1155TestHalmos is Test, SymTest {
          * multiple paths, negatively impacting performance.
          */
         vm.assume(caller != other);
+        vm.assume(selector != IERC1155MetadataURI.uri.selector);
         vm.assume(selector != IERC1155Extended.set_uri.selector);
-        vm.assume(selector != IERC1155Extended.uri.selector);
         vm.assume(selector != IERC1155Extended._customMint.selector);
         vm.assume(selector != IERC1155Extended.safe_mint.selector);
         vm.assume(selector != IERC1155Extended.safe_mint_batch.selector);
