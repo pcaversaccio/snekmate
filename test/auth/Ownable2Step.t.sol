@@ -98,6 +98,44 @@ contract Ownable2StepTest is Test {
         vm.stopPrank();
     }
 
+    function testCancelTransferOwnership() public {
+        address oldOwner = deployer;
+        address newOwner1 = makeAddr("newOwner1");
+        address newOwner2 = makeAddr("newOwner2");
+        vm.startPrank(oldOwner);
+        assertEq(ownable2Step.pending_owner(), zeroAddress);
+        vm.expectEmit(true, true, false, false);
+        emit IOwnable2Step.OwnershipTransferStarted(oldOwner, newOwner1);
+        ownable2Step.transfer_ownership(newOwner1);
+        assertEq(ownable2Step.owner(), oldOwner);
+        assertEq(ownable2Step.pending_owner(), newOwner1);
+
+        vm.expectEmit(true, true, false, false);
+        emit IOwnable2Step.OwnershipTransferStarted(oldOwner, newOwner2);
+        ownable2Step.transfer_ownership(newOwner2);
+        assertEq(ownable2Step.owner(), oldOwner);
+        assertEq(ownable2Step.pending_owner(), newOwner2);
+        vm.stopPrank();
+
+        vm.startPrank(newOwner1);
+        vm.expectRevert(bytes("ownable_2step: caller is not the new owner"));
+        ownable2Step.accept_ownership();
+        vm.stopPrank();
+
+        vm.startPrank(oldOwner);
+        vm.expectEmit(true, true, false, false);
+        emit IOwnable2Step.OwnershipTransferStarted(oldOwner, zeroAddress);
+        ownable2Step.transfer_ownership(zeroAddress);
+        assertEq(ownable2Step.owner(), oldOwner);
+        assertEq(ownable2Step.pending_owner(), zeroAddress);
+        vm.stopPrank();
+
+        vm.startPrank(newOwner2);
+        vm.expectRevert(bytes("ownable_2step: caller is not the new owner"));
+        ownable2Step.accept_ownership();
+        vm.stopPrank();
+    }
+
     function testRenounceOwnershipSuccess() public {
         address oldOwner = deployer;
         address newOwner = zeroAddress;
