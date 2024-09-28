@@ -70,14 +70,15 @@ def transfer_ownership(new_owner: address):
     """
     @dev Starts the ownership transfer of the contract
          to a new account `new_owner`.
-    @notice Note that this function can only be
-            called by the current `owner`. Also, there is
-            no security risk in setting `new_owner` to the
-            zero address as the default value of `pending_owner`
-            is in fact already the zero address and the zero
-            address cannot call `accept_ownership`. Eventually,
-            the function replaces the pending transfer if
-            there is one.
+    @notice Note that this function can only be called by
+            the current `owner`. Importantly, there is no
+            security risk in assigning `new_owner` to the
+            zero address, as the default value of `pending_owner`
+            is already set to the zero address, and the zero
+            address cannot invoke `accept_ownership`. In fact,
+            this can serve as a method to cancel an ongoing
+            ownership transfer. Eventually, the function
+            replaces the pending transfer if there is one.
     @param new_owner The 20-byte address of the new owner.
     """
     ownable._check_owner()
