@@ -221,7 +221,7 @@ contract ERC721Test is Test {
         bool withData,
         bytes memory data
     ) internal {
-        uint256 snapshot = vm.snapshot();
+        uint256 snapshot = vm.snapshotState();
         vm.startPrank(owner);
         vm.expectEmit(true, true, true, false);
         emit IERC721.Transfer(owner, receiver, tokenId);
@@ -249,9 +249,9 @@ contract ERC721Test is Test {
         }
         _transferSuccess(owner, tokenId, receiver);
         vm.stopPrank();
-        vm.revertTo(snapshot);
+        vm.revertToState(snapshot);
 
-        snapshot = vm.snapshot();
+        snapshot = vm.snapshotState();
         vm.startPrank(approved);
         vm.expectEmit(true, true, true, false);
         emit IERC721.Transfer(owner, receiver, tokenId);
@@ -279,9 +279,9 @@ contract ERC721Test is Test {
         }
         _transferSuccess(owner, tokenId, receiver);
         vm.stopPrank();
-        vm.revertTo(snapshot);
+        vm.revertToState(snapshot);
 
-        snapshot = vm.snapshot();
+        snapshot = vm.snapshotState();
         vm.startPrank(operator);
         vm.expectEmit(true, true, true, false);
         emit IERC721.Transfer(owner, receiver, tokenId);
@@ -309,9 +309,9 @@ contract ERC721Test is Test {
         }
         _transferSuccess(owner, tokenId, receiver);
         vm.stopPrank();
-        vm.revertTo(snapshot);
+        vm.revertToState(snapshot);
 
-        snapshot = vm.snapshot();
+        snapshot = vm.snapshotState();
         vm.startPrank(owner);
         ERC721Extended.approve(zeroAddress, tokenId);
         vm.stopPrank();
@@ -342,9 +342,9 @@ contract ERC721Test is Test {
         }
         _transferSuccess(owner, tokenId, receiver);
         vm.stopPrank();
-        vm.revertTo(snapshot);
+        vm.revertToState(snapshot);
 
-        snapshot = vm.snapshot();
+        snapshot = vm.snapshotState();
         vm.startPrank(owner);
         vm.expectEmit(true, true, true, false);
         emit IERC721.Transfer(owner, owner, tokenId);
@@ -371,7 +371,7 @@ contract ERC721Test is Test {
         assertEq(ERC721Extended.tokenOfOwnerByIndex(owner, 0), tokenId);
         assertTrue(ERC721Extended.tokenOfOwnerByIndex(owner, 1) == tokenId + 1);
         vm.stopPrank();
-        vm.revertTo(snapshot);
+        vm.revertToState(snapshot);
 
         /**
          * @dev Validates all possible reverts.
@@ -408,7 +408,7 @@ contract ERC721Test is Test {
         address receiver,
         bytes memory data
     ) internal {
-        uint256 snapshot = vm.snapshot();
+        uint256 snapshot = vm.snapshotState();
         _shouldTransferTokensByUsers(
             transferFunction,
             owner,
@@ -419,9 +419,9 @@ contract ERC721Test is Test {
             true,
             data
         );
-        vm.revertTo(snapshot);
+        vm.revertToState(snapshot);
 
-        snapshot = vm.snapshot();
+        snapshot = vm.snapshotState();
         _shouldTransferTokensByUsers(
             transferFunction,
             owner,
@@ -432,9 +432,9 @@ contract ERC721Test is Test {
             true,
             data
         );
-        vm.revertTo(snapshot);
+        vm.revertToState(snapshot);
 
-        snapshot = vm.snapshot();
+        snapshot = vm.snapshotState();
         vm.startPrank(owner);
         vm.expectEmit(true, true, true, true, receiver);
         emit ERC721ReceiverMock.Received(owner, owner, tokenId, data);
@@ -450,9 +450,9 @@ contract ERC721Test is Test {
         );
         _transferSuccess(owner, tokenId, receiver);
         vm.stopPrank();
-        vm.revertTo(snapshot);
+        vm.revertToState(snapshot);
 
-        snapshot = vm.snapshot();
+        snapshot = vm.snapshotState();
         vm.startPrank(approved);
         vm.expectEmit(true, true, true, true, receiver);
         emit ERC721ReceiverMock.Received(approved, owner, tokenId, data);
@@ -468,7 +468,7 @@ contract ERC721Test is Test {
         );
         _transferSuccess(owner, tokenId, receiver);
         vm.stopPrank();
-        vm.revertTo(snapshot);
+        vm.revertToState(snapshot);
 
         vm.startPrank(owner);
         vm.expectRevert(bytes("erc721: invalid token ID"));
