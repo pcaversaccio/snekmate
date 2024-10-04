@@ -19,7 +19,7 @@
   - [3️⃣ npm](#3️⃣-npm)
 - [🔧 Usage](#-usage)
 - [👩🏼‍⚖️ Tests](#️-tests)
-- [👩‍✈️ Audits](#️-audits)
+- [👮‍♀️ Audits](#️-audits)
 - [🙏🏼 Acknowledgements](#-acknowledgements)
 - [🫡 Contributing](#-contributing)
 - [💸 Donation](#-donation)
@@ -226,7 +226,7 @@ Eventually, the [`halmos`](https://github.com/a16z/halmos)-based symbolic tests 
 > [!TIP]
 > If you encounter any issues, please ensure that you have the [latest](https://github.com/vyperlang/vyper/releases) 🐍Vyper version installed locally.
 
-## 👩‍✈️ Audits
+## 👮‍♀️ Audits
 
 Though the 🐍 snekmate contracts have not undergone a comprehensive audit in their entirety, the library modules integrated into the protocols have been carefully reviewed within the scope of previous audits. The corresponding audit reports are available [here](./audits).
 
