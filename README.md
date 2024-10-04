@@ -228,7 +228,7 @@ Eventually, the [`halmos`](https://github.com/a16z/halmos)-based symbolic tests 
 
 ## 👮‍♀️ Audits
 
-Though the 🐍 snekmate contracts have not undergone a comprehensive audit in their entirety, the library modules integrated into the protocols have been carefully reviewed within the scope of previous audits. The corresponding audit reports are available [here](./audits).
+Although the 🐍 snekmate contracts have not (yet) undergone a full comprehensive audit, selected library modules integrated into specific protocols (such as Curve) have been thoroughly reviewed within the scope of prior audits. The corresponding audit reports are available [here](./audits).
 
 ## 🙏🏼 Acknowledgements
 
