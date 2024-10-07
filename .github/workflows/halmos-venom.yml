@@ -37,9 +37,6 @@ jobs:
           python-version: ${{ matrix.python_version }}
           architecture: ${{ matrix.architecture }}
 
-      - name: Activate Venom backend
-        run: python scripts/insert_venom_pragma.py
-
       - name: Install Vyper
         run: pip install git+https://github.com/vyperlang/vyper@master
 
