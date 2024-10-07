@@ -72,7 +72,7 @@ jobs:
           FOUNDRY_PROFILE: halmos-venom
 
       - name: Run Halmos ERC-20 symbolic tests
-        run: RUST_LOG=trace halmos --contract ERC20TestHalmos ${{ matrix.halmos }}
+        run: halmos --contract ERC20TestHalmos ${{ matrix.halmos }}
         env:
           FOUNDRY_PROFILE: halmos-venom
 
