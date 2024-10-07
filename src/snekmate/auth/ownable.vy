@@ -90,4 +90,4 @@ def _transfer_ownership(new_owner: address):
     """
     old_owner: address = self.owner
     self.owner = new_owner
-    log OwnershipTransferred(old_owner, new_owner)
+    log OwnershipTransferred(previous_owner=old_owner, new_owner=new_owner)

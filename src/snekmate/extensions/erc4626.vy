@@ -658,7 +658,7 @@ def _deposit(sender: address, receiver: address, assets: uint256, shares: uint25
     # the target address is an EOA), the call reverts.
     assert extcall _ASSET.transferFrom(sender, self, assets, default_return_value=True), "erc4626: transferFrom operation did not succeed"
     erc20._mint(receiver, shares)
-    log IERC4626.Deposit(sender, receiver, assets, shares)
+    log IERC4626.Deposit(sender=sender, owner=receiver, assets=assets, shares=shares)
 
 
 @internal
@@ -697,4 +697,4 @@ def _withdraw(sender: address, receiver: address, owner: address, assets: uint25
     # you add the kwarg `skip_contract_check=True`. If the check fails (i.e.
     # the target address is an EOA), the call reverts.
     assert extcall _ASSET.transfer(receiver, assets, default_return_value=True), "erc4626: transfer operation did not succeed"
-    log IERC4626.Withdraw(sender, receiver, owner, assets, shares)
+    log IERC4626.Withdraw(sender=sender, receiver=receiver, owner=owner, assets=assets, shares=shares)

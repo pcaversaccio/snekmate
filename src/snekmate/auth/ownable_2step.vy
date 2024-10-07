@@ -83,7 +83,7 @@ def transfer_ownership(new_owner: address):
     """
     ownable._check_owner()
     self.pending_owner = new_owner
-    log OwnershipTransferStarted(ownable.owner, new_owner)
+    log OwnershipTransferStarted(previous_owner=ownable.owner, new_owner=new_owner)
 
 
 @external

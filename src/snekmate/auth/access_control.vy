@@ -210,7 +210,7 @@ def _set_role_admin(role: bytes32, admin_role: bytes32):
     """
     previous_admin_role: bytes32 = self.getRoleAdmin[role]
     self.getRoleAdmin[role] = admin_role
-    log IAccessControl.RoleAdminChanged(role, previous_admin_role, admin_role)
+    log IAccessControl.RoleAdminChanged(role=role, previousAdminRole=previous_admin_role, newAdminRole=admin_role)
 
 
 @internal
@@ -224,7 +224,7 @@ def _grant_role(role: bytes32, account: address):
     """
     if (not(self.hasRole[role][account])):
         self.hasRole[role][account] = True
-        log IAccessControl.RoleGranted(role, account, msg.sender)
+        log IAccessControl.RoleGranted(role=role, account=account, sender=msg.sender)
 
 
 @internal
@@ -238,4 +238,4 @@ def _revoke_role(role: bytes32, account: address):
     """
     if (self.hasRole[role][account]):
         self.hasRole[role][account] = False
-        log IAccessControl.RoleRevoked(role, account, msg.sender)
+        log IAccessControl.RoleRevoked(role=role, account=account, sender=msg.sender)
