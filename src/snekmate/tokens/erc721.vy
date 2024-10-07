@@ -1,4 +1,4 @@
-# pragma version ~=0.4.0
+# pragma version ~=0.4.1
 """
 @title Modern and Gas-Efficient ERC-721 + EIP-4494 Implementation
 @custom:contract-name erc721
@@ -274,7 +274,7 @@ def __init__(name_: String[25], symbol_: String[5], base_uri_: String[80], name_
     _BASE_URI = base_uri_
 
     self.is_minter[msg.sender] = True
-    log RoleMinterChanged(msg.sender, True)
+    log RoleMinterChanged(minter=msg.sender, status=True)
 
     eip712_domain_separator.__init__(name_eip712_, version_eip712_)
 
@@ -405,7 +405,7 @@ def transferFrom(owner: address, to: address, token_id: uint256):
 
 @external
 @payable
-def safeTransferFrom(owner: address, to: address, token_id: uint256, data: Bytes[1_024]=b""):
+def safeTransferFrom(owner: address, to: address, token_id: uint256, data: Bytes[1_024] = b""):
     """
     @dev Safely transfers `token_id` token from `owner`
          to `to`.
@@ -426,7 +426,8 @@ def safeTransferFrom(owner: address, to: address, token_id: uint256, data: Bytes
             compatible with the function overloading of `safeTransferFrom`
             in the standard ERC-721 interface. You can find more
             information here:
-            https://github.com/vyperlang/vyper/issues/903.
+            - https://github.com/vyperlang/vyper/issues/903,
+            - https://github.com/vyperlang/vyper/pull/987.
 
             IMPORTANT: The function is declared as `payable`
             to comply with the EIP-721 standard definition:
@@ -581,7 +582,7 @@ def set_minter(minter: address, status: bool):
     # that `msg.sender` is the `owner`.
     assert minter != msg.sender, "erc721: minter is owner address"
     self.is_minter[minter] = status
-    log RoleMinterChanged(minter, status)
+    log RoleMinterChanged(minter=minter, status=status)
 
 
 @external
@@ -646,11 +647,11 @@ def transfer_ownership(new_owner: address):
     assert new_owner != empty(address), "erc721: new owner is the zero address"
 
     self.is_minter[msg.sender] = False
-    log RoleMinterChanged(msg.sender, False)
+    log RoleMinterChanged(minter=msg.sender, status=False)
 
     ownable._transfer_ownership(new_owner)
     self.is_minter[new_owner] = True
-    log RoleMinterChanged(new_owner, True)
+    log RoleMinterChanged(minter=new_owner, status=True)
 
 
 @external
@@ -672,7 +673,7 @@ def renounce_ownership():
     """
     ownable._check_owner()
     self.is_minter[msg.sender] = False
-    log RoleMinterChanged(msg.sender, False)
+    log RoleMinterChanged(minter=msg.sender, status=False)
     ownable._transfer_ownership(empty(address))
 
 
@@ -740,7 +741,7 @@ def _approve(to: address, token_id: uint256):
     @param token_id The 32-byte identifier of the token.
     """
     self._token_approvals[token_id] = to
-    log IERC721.Approval(self._owner_of(token_id), to, token_id)
+    log IERC721.Approval(owner=self._owner_of(token_id), approved=to, token_id=token_id)
 
 
 @internal
@@ -768,7 +769,7 @@ def _set_approval_for_all(owner: address, operator: address, approved: bool):
     """
     assert owner != operator, "erc721: approve to caller"
     self.isApprovedForAll[owner][operator] = approved
-    log IERC721.ApprovalForAll(owner, operator, approved)
+    log IERC721.ApprovalForAll(owner=owner, operator=operator, approved=approved)
 
 
 @internal
@@ -837,7 +838,7 @@ def _mint(owner: address, token_id: uint256):
     # this is no longer even theoretically possible.
     self._balances[owner] = unsafe_add(self._balances[owner], 1)
     self._owners[token_id] = owner
-    log IERC721.Transfer(empty(address), owner, token_id)
+    log IERC721.Transfer(sender=empty(address), receiver=owner, token_id=token_id)
 
     self._after_token_transfer(empty(address), owner, token_id)
 
@@ -905,7 +906,7 @@ def _transfer(owner: address, to: address, token_id: uint256):
     self._balances[owner] = unsafe_sub(self._balances[owner], 1)
     self._balances[to] = unsafe_add(self._balances[to], 1)
     self._owners[token_id] = to
-    log IERC721.Transfer(owner, to, token_id)
+    log IERC721.Transfer(sender=owner, receiver=to, token_id=token_id)
 
     self._after_token_transfer(owner, to, token_id)
 
@@ -921,7 +922,7 @@ def _set_token_uri(token_id: uint256, token_uri: String[432]):
     """
     assert self._exists(token_id), "erc721: URI set of nonexistent token"
     self._token_uris[token_id] = token_uri
-    log IERC4906.MetadataUpdate(token_id)
+    log IERC4906.MetadataUpdate(_tokenId=token_id)
 
 
 @internal
@@ -958,7 +959,7 @@ def _burn(token_id: uint256):
     # received through minting and transfer.
     self._balances[owner] = unsafe_sub(self._balances[owner], 1)
     self._owners[token_id] = empty(address)
-    log IERC721.Transfer(owner, empty(address), token_id)
+    log IERC721.Transfer(sender=owner, receiver=empty(address), token_id=token_id)
 
     self._after_token_transfer(owner, empty(address), token_id)
 

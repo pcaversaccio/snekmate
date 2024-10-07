@@ -1,4 +1,4 @@
-# pragma version ~=0.4.0
+# pragma version ~=0.4.1
 """
 @title `erc1155` Module Reference Implementation
 @custom:contract-name erc1155_mock
@@ -114,6 +114,6 @@ def _customMint(owner: address, id: uint256, amount: uint256):
     # due to an arithmetic check of the entire token
     # supply in the function `_before_token_transfer`.
     erc1155.balanceOf[owner][id] = unsafe_add(erc1155.balanceOf[owner][id], amount)
-    log IERC1155.TransferSingle(msg.sender, empty(address), owner, id, amount)
+    log IERC1155.TransferSingle(_operator=msg.sender, _from=empty(address), _to=owner, _id=id, _value=amount)
 
     erc1155._after_token_transfer(empty(address), owner, erc1155._as_singleton_array(id), erc1155._as_singleton_array(amount), b"")

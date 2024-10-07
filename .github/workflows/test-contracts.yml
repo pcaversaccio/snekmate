@@ -34,6 +34,12 @@ jobs:
           python-version: ${{ matrix.python_version }}
           architecture: ${{ matrix.architecture }}
 
+      - name: Install Vyper
+        run: pip install git+https://github.com/vyperlang/vyper@master
+
+      - name: Show the Vyper version
+        run: vyper --version
+
       - name: Setup Ape
         uses: ApeWorX/github-action@v3
         with:
@@ -41,12 +47,6 @@ jobs:
 
       - name: Check Ape compilation
         run: ape compile
-
-      - name: Remove Ape Vyper and install latest Vyper
-        run: pip install --force-reinstall vyper
-
-      - name: Show the Vyper version
-        run: vyper --version
 
       - name: Install pnpm
         uses: pnpm/action-setup@v3

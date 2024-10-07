@@ -1,4 +1,4 @@
-# pragma version ~=0.4.0
+# pragma version ~=0.4.1
 """
 @title Multi-Role-Based Timelock Controller Reference Implementation
 @custom:contract-name timelock_controller
@@ -275,7 +275,7 @@ def __init__(minimum_delay_: uint256, proposers_: DynArray[address, _DYNARRAY_BO
 
     # Set the minimum delay.
     self.get_minimum_delay = minimum_delay_
-    log MinimumDelayChange(empty(uint256), minimum_delay_)
+    log MinimumDelayChange(old_duration=empty(uint256), new_duration=minimum_delay_)
 
 
 @external
@@ -425,9 +425,9 @@ def schedule(target: address, amount: uint256, payload: Bytes[1_024], predecesso
     id: bytes32 = self._hash_operation(target, amount, payload, predecessor, salt)
 
     self._schedule(id, delay)
-    log CallScheduled(id, empty(uint256), target, amount, payload, predecessor, delay)
+    log CallScheduled(id=id, index=empty(uint256), target=target, amount=amount, payload=payload, predecessor=predecessor, delay=delay)
     if (salt != empty(bytes32)):
-        log CallSalt(id, salt)
+        log CallSalt(id=id, salt=salt)
 
 
 @external
@@ -456,14 +456,14 @@ def schedule_batch(targets: DynArray[address, _DYNARRAY_BOUND], amounts: DynArra
     self._schedule(id, delay)
     idx: uint256 = empty(uint256)
     for target: address in targets:
-        log CallScheduled(id, idx, target, amounts[idx], payloads[idx], predecessor, delay)
+        log CallScheduled(id=id, index=idx, target=target, amount=amounts[idx], payload=payloads[idx], predecessor=predecessor, delay=delay)
         # The following line cannot overflow because we have
         # limited the dynamic array `targets` by the `constant`
         # parameter `_DYNARRAY_BOUND`, which is bounded by the
         # maximum value of `uint8`.
         idx = unsafe_add(idx, 1)
     if (salt != empty(bytes32)):
-        log CallSalt(id, salt)
+        log CallSalt(id=id, salt=salt)
 
 
 @external
@@ -476,7 +476,7 @@ def cancel(id: bytes32):
     access_control._check_role(CANCELLER_ROLE, msg.sender)
     assert self._is_operation_pending(id), "timelock_controller: operation cannot be cancelled"
     self.get_timestamp[id] = empty(uint256)
-    log Cancelled(id)
+    log Cancelled(id=id)
 
 
 @external
@@ -503,7 +503,7 @@ def execute(target: address, amount: uint256, payload: Bytes[1_024], predecessor
 
     self._before_call(id, predecessor)
     self._execute(target, amount, payload)
-    log CallExecuted(id, empty(uint256), target, amount, payload)
+    log CallExecuted(id=id, index=empty(uint256), target=target, amount=amount, payload=payload)
     self._after_call(id)
 
 
@@ -536,7 +536,7 @@ def execute_batch(targets: DynArray[address, _DYNARRAY_BOUND], amounts: DynArray
     idx: uint256 = empty(uint256)
     for target: address in targets:
         self._execute(target, amounts[idx], payloads[idx])
-        log CallExecuted(id, idx, target, amounts[idx], payloads[idx])
+        log CallExecuted(id=id, index=idx, target=target, amount=amounts[idx], payload=payloads[idx])
         # The following line cannot overflow because we have
         # limited the dynamic array `targets` by the `constant`
         # parameter `_DYNARRAY_BOUND`, which is bounded by the
@@ -558,7 +558,7 @@ def update_delay(new_delay: uint256):
     @param new_delay The new 32-byte minimum delay in seconds.
     """
     assert msg.sender == self, "timelock_controller: caller must be timelock"
-    log MinimumDelayChange(self.get_minimum_delay, new_delay)
+    log MinimumDelayChange(old_duration=self.get_minimum_delay, new_duration=new_delay)
     self.get_minimum_delay = new_delay
 
 
