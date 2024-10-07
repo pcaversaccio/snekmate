@@ -1,4 +1,4 @@
-# pragma version ~=0.4.0
+# pragma version ~=0.4.1
 """
 @title `multicall` Module Reference Implementation
 @custom:contract-name multicall_mock

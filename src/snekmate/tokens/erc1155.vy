@@ -1,4 +1,4 @@
-# pragma version ~=0.4.0
+# pragma version ~=0.4.1
 """
 @title Modern and Gas-Efficient ERC-1155 Implementation
 @custom:contract-name erc1155
@@ -156,7 +156,7 @@ def __init__(base_uri_: String[80]):
     _BASE_URI = base_uri_
 
     self.is_minter[msg.sender] = True
-    log RoleMinterChanged(msg.sender, True)
+    log RoleMinterChanged(minter=msg.sender, status=True)
 
 
 @external
@@ -419,7 +419,7 @@ def set_minter(minter: address, status: bool):
     # that `msg.sender` is the `owner`.
     assert minter != msg.sender, "erc1155: minter is owner address"
     self.is_minter[minter] = status
-    log RoleMinterChanged(minter, status)
+    log RoleMinterChanged(minter=minter, status=status)
 
 
 @external
@@ -440,11 +440,11 @@ def transfer_ownership(new_owner: address):
     assert new_owner != empty(address), "erc1155: new owner is the zero address"
 
     self.is_minter[msg.sender] = False
-    log RoleMinterChanged(msg.sender, False)
+    log RoleMinterChanged(minter=msg.sender, status=False)
 
     ownable._transfer_ownership(new_owner)
     self.is_minter[new_owner] = True
-    log RoleMinterChanged(new_owner, True)
+    log RoleMinterChanged(minter=new_owner, status=True)
 
 
 @external
@@ -466,7 +466,7 @@ def renounce_ownership():
     """
     ownable._check_owner()
     self.is_minter[msg.sender] = False
-    log RoleMinterChanged(msg.sender, False)
+    log RoleMinterChanged(minter=msg.sender, status=False)
     ownable._transfer_ownership(empty(address))
 
 
@@ -482,7 +482,7 @@ def _set_approval_for_all(owner: address, operator: address, approved: bool):
     """
     assert owner != operator, "erc1155: setting approval status for self"
     self.isApprovedForAll[owner][operator] = approved
-    log IERC1155.ApprovalForAll(owner, operator, approved)
+    log IERC1155.ApprovalForAll(_owner=owner, _operator=operator, _approved=approved)
 
 
 @internal
@@ -522,7 +522,7 @@ def _safe_transfer_from(owner: address, to: address, id: uint256, amount: uint25
     # due to an arithmetic check of the entire token
     # supply in the functions `_safe_mint` and `_safe_mint_batch`.
     self.balanceOf[to][id] = unsafe_add(self.balanceOf[to][id], amount)
-    log IERC1155.TransferSingle(msg.sender, owner, to, id, amount)
+    log IERC1155.TransferSingle(_operator=msg.sender, _from=owner, _to=to, _id=id, _value=amount)
 
     self._after_token_transfer(owner, to, self._as_singleton_array(id), self._as_singleton_array(amount), data)
 
@@ -578,7 +578,7 @@ def _safe_batch_transfer_from(owner: address, to: address, ids: DynArray[uint256
         # maximum value of `uint16`.
         idx = unsafe_add(idx, 1)
 
-    log IERC1155.TransferBatch(msg.sender, owner, to, ids, amounts)
+    log IERC1155.TransferBatch(_operator=msg.sender, _from=owner, _to=to, _ids=ids, _values=amounts)
 
     self._after_token_transfer(owner, to, ids, amounts, data)
 
@@ -617,7 +617,7 @@ def _safe_mint(owner: address, id: uint256, amount: uint256, data: Bytes[1_024])
     # due to an arithmetic check of the entire token
     # supply in the function `_before_token_transfer`.
     self.balanceOf[owner][id] = unsafe_add(self.balanceOf[owner][id], amount)
-    log IERC1155.TransferSingle(msg.sender, empty(address), owner, id, amount)
+    log IERC1155.TransferSingle(_operator=msg.sender, _from=empty(address), _to=owner, _id=id, _value=amount)
 
     self._after_token_transfer(empty(address), owner, self._as_singleton_array(id), self._as_singleton_array(amount), data)
 
@@ -667,7 +667,7 @@ def _safe_mint_batch(owner: address, ids: DynArray[uint256, _BATCH_SIZE], amount
         # maximum value of `uint16`.
         idx = unsafe_add(idx, 1)
 
-    log IERC1155.TransferBatch(msg.sender, empty(address), owner, ids, amounts)
+    log IERC1155.TransferBatch(_operator=msg.sender, _from=empty(address), _to=owner, _ids=ids, _values=amounts)
 
     self._after_token_transfer(empty(address), owner, ids, amounts, data)
 
@@ -728,7 +728,7 @@ def _set_uri(id: uint256, token_uri: String[432]):
            string URI for computing `uri`.
     """
     self._token_uris[id] = token_uri
-    log IERC1155.URI(self._uri(id), id)
+    log IERC1155.URI(_value=self._uri(id), _id=id)
 
 
 @internal
@@ -750,7 +750,7 @@ def _burn(owner: address, id: uint256, amount: uint256):
     owner_balance: uint256 = self.balanceOf[owner][id]
     assert owner_balance >= amount, "erc1155: burn amount exceeds balance"
     self.balanceOf[owner][id] = unsafe_sub(owner_balance, amount)
-    log IERC1155.TransferSingle(msg.sender, owner, empty(address), id, amount)
+    log IERC1155.TransferSingle(_operator=msg.sender, _from=owner, _to=empty(address), _id=id, _value=amount)
 
     self._after_token_transfer(owner, empty(address), self._as_singleton_array(id), self._as_singleton_array(amount), b"")
 
@@ -786,7 +786,7 @@ def _burn_batch(owner: address, ids: DynArray[uint256, _BATCH_SIZE], amounts: Dy
         # maximum value of `uint16`.
         idx = unsafe_add(idx, 1)
 
-    log IERC1155.TransferBatch(msg.sender, owner, empty(address), ids, amounts)
+    log IERC1155.TransferBatch(_operator=msg.sender, _from=owner, _to=empty(address), _ids=ids, _values=amounts)
 
     self._after_token_transfer(owner, empty(address), ids, amounts, b"")
 

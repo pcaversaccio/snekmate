@@ -14,11 +14,12 @@
 
 - [📜 Contracts](#-contracts)
 - [🎛 Installation](#-installation)
-  - [1️⃣ Foundry](#1️⃣-foundry)
-  - [2️⃣ PyPI](#2️⃣-pypi)
+  - [1️⃣ PyPI](#1️⃣-pypi)
+  - [2️⃣ Foundry](#2️⃣-foundry)
   - [3️⃣ npm](#3️⃣-npm)
 - [🔧 Usage](#-usage)
 - [👩🏼‍⚖️ Tests](#️-tests)
+- [👮‍♀️ Audits](#️-audits)
 - [🙏🏼 Acknowledgements](#-acknowledgements)
 - [🫡 Contributing](#-contributing)
 - [💸 Donation](#-donation)
@@ -107,7 +108,17 @@ src
 
 We offer three convenient ways to install the 🐍 snekmate contracts:
 
-### 1️⃣ Foundry
+### 1️⃣ PyPI
+
+You can install 🐍 snekmate from [PyPI](https://pypi.org/project/snekmate) with:
+
+```console
+pip install snekmate
+```
+
+> When using the 🐍Vyper CLI, the search path [defaults](https://docs.vyperlang.org/en/latest/structure-of-a-contract.html#searching-for-imports) to the current working directory and the Python [`sys.path`](https://docs.python.org/3.12/library/sys.html#sys.path). As a result, all imported 🐍 snekmate contracts (e.g. `from snekmate.tokens import erc20`) are seamlessly located during compilation.
+
+### 2️⃣ Foundry
 
 You can install 🐍 snekmate via submodules using [Foundry](https://github.com/foundry-rs/foundry) with:
 
@@ -117,16 +128,6 @@ forge install pcaversaccio/snekmate
 
 > [!NOTE]
 > If you want to leverage 🐍 snekmate's [`VyperDeployer`](./lib/utils/VyperDeployer.sol) contract for your own testing, ensure that you compile the 🐍Vyper contracts with the same EVM version as configured in your `foundry.toml` file. The [`VyperDeployer`](./lib/utils/VyperDeployer.sol) contract offers two overloaded `deployContract` functions that allow the configuration of the target EVM version. Please note that since 🐍Vyper version [`0.4.0`](https://github.com/vyperlang/vyper/releases/tag/v0.4.0) the default EVM version is set to `cancun`. Furthermore, the [`VyperDeployer`](./lib/utils/VyperDeployer.sol) contract relies on the Python script [`compile.py`](./lib/utils/compile.py) for successful compilation and deployment. Always use the [`VyperDeployer`](./lib/utils/VyperDeployer.sol) contract alongside with the aforementioned script.
-
-### 2️⃣ PyPI
-
-You can install 🐍 snekmate from [PyPI](https://pypi.org/project/snekmate) with:
-
-```console
-pip install snekmate
-```
-
-> When using the 🐍Vyper CLI, the search path [defaults](https://docs.vyperlang.org/en/latest/structure-of-a-contract.html#searching-for-imports) to the current working directory and the Python [`sys.path`](https://docs.python.org/3.12/library/sys.html#sys.path). As a result, all imported 🐍 snekmate contracts (e.g. `from snekmate.tokens import erc20`) are seamlessly located during compilation.
 
 ### 3️⃣ npm
 
@@ -224,6 +225,10 @@ Eventually, the [`halmos`](https://github.com/a16z/halmos)-based symbolic tests 
 
 > [!TIP]
 > If you encounter any issues, please ensure that you have the [latest](https://github.com/vyperlang/vyper/releases) 🐍Vyper version installed locally.
+
+## 👮‍♀️ Audits
+
+Although the 🐍 snekmate contracts have not (yet) undergone a full comprehensive audit, selected library modules integrated into specific protocols (such as Curve) have been thoroughly reviewed within the scope of prior audits. The corresponding audit reports are available [here](./audits).
 
 ## 🙏🏼 Acknowledgements
 

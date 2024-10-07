@@ -1,4 +1,4 @@
-# pragma version ~=0.4.0
+# pragma version ~=0.4.1
 """
 @title Modern and Gas-Efficient ERC-20 + EIP-2612 Implementation
 @custom:contract-name erc20
@@ -202,7 +202,7 @@ def __init__(name_: String[25], symbol_: String[5], decimals_: uint8, name_eip71
     decimals = decimals_
 
     self.is_minter[msg.sender] = True
-    log RoleMinterChanged(msg.sender, True)
+    log RoleMinterChanged(minter=msg.sender, status=True)
 
     eip712_domain_separator.__init__(name_eip712_, version_eip712_)
 
@@ -339,7 +339,7 @@ def set_minter(minter: address, status: bool):
     # that `msg.sender` is the `owner`.
     assert minter != msg.sender, "erc20: minter is owner address"
     self.is_minter[minter] = status
-    log RoleMinterChanged(minter, status)
+    log RoleMinterChanged(minter=minter, status=status)
 
 
 @external
@@ -406,11 +406,11 @@ def transfer_ownership(new_owner: address):
     assert new_owner != empty(address), "erc20: new owner is the zero address"
 
     self.is_minter[msg.sender] = False
-    log RoleMinterChanged(msg.sender, False)
+    log RoleMinterChanged(minter=msg.sender, status=False)
 
     ownable._transfer_ownership(new_owner)
     self.is_minter[new_owner] = True
-    log RoleMinterChanged(new_owner, True)
+    log RoleMinterChanged(minter=new_owner, status=True)
 
 
 @external
@@ -432,7 +432,7 @@ def renounce_ownership():
     """
     ownable._check_owner()
     self.is_minter[msg.sender] = False
-    log RoleMinterChanged(msg.sender, False)
+    log RoleMinterChanged(minter=msg.sender, status=False)
     ownable._transfer_ownership(empty(address))
 
 
@@ -457,7 +457,7 @@ def _transfer(owner: address, to: address, amount: uint256):
     assert owner_balanceOf >= amount, "erc20: transfer amount exceeds balance"
     self.balanceOf[owner] = unsafe_sub(owner_balanceOf, amount)
     self.balanceOf[to] = unsafe_add(self.balanceOf[to], amount)
-    log IERC20.Transfer(owner, to, amount)
+    log IERC20.Transfer(sender=owner, receiver=to, value=amount)
 
     self._after_token_transfer(owner, to, amount)
 
@@ -480,7 +480,7 @@ def _mint(owner: address, amount: uint256):
 
     self.totalSupply += amount
     self.balanceOf[owner] = unsafe_add(self.balanceOf[owner], amount)
-    log IERC20.Transfer(empty(address), owner, amount)
+    log IERC20.Transfer(sender=empty(address), receiver=owner, value=amount)
 
     self._after_token_transfer(empty(address), owner, amount)
 
@@ -504,7 +504,7 @@ def _burn(owner: address, amount: uint256):
     assert account_balance >= amount, "erc20: burn amount exceeds balance"
     self.balanceOf[owner] = unsafe_sub(account_balance, amount)
     self.totalSupply = unsafe_sub(self.totalSupply, amount)
-    log IERC20.Transfer(owner, empty(address), amount)
+    log IERC20.Transfer(sender=owner, receiver=empty(address), value=amount)
 
     self._after_token_transfer(owner, empty(address), amount)
 
@@ -525,7 +525,7 @@ def _approve(owner: address, spender: address, amount: uint256):
     assert spender != empty(address), "erc20: approve to the zero address"
 
     self.allowance[owner][spender] = amount
-    log IERC20.Approval(owner, spender, amount)
+    log IERC20.Approval(owner=owner, spender=spender, value=amount)
 
 
 @internal
