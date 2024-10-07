@@ -405,7 +405,7 @@ def transferFrom(owner: address, to: address, token_id: uint256):
 
 @external
 @payable
-def safeTransferFrom(owner: address, to: address, token_id: uint256, data: Bytes[1_024]=b""):
+def safeTransferFrom(owner: address, to: address, token_id: uint256, data: Bytes[1_024] = b""):
     """
     @dev Safely transfers `token_id` token from `owner`
          to `to`.
@@ -426,7 +426,8 @@ def safeTransferFrom(owner: address, to: address, token_id: uint256, data: Bytes
             compatible with the function overloading of `safeTransferFrom`
             in the standard ERC-721 interface. You can find more
             information here:
-            https://github.com/vyperlang/vyper/issues/903.
+            - https://github.com/vyperlang/vyper/issues/903,
+            - https://github.com/vyperlang/vyper/pull/987.
 
             IMPORTANT: The function is declared as `payable`
             to comply with the EIP-721 standard definition:
