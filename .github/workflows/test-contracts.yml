@@ -48,9 +48,6 @@ jobs:
       - name: Check Ape compilation
         run: ape compile
 
-      - name: Show the Vyper version
-        run: vyper --version
-
       - name: Install pnpm
         uses: pnpm/action-setup@v3
         with:
