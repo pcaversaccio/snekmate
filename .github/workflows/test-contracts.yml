@@ -82,10 +82,6 @@ jobs:
         with:
           version: nightly
 
-      - name: Add Vyper path to `ci` Foundry profile
-        run: |
-          sed -i '/\[profile.ci\]/a vyper = { path = "'"$(which vyper)"'" }' foundry.toml
-
       - name: Show the Foundry CI config
         run: forge config
         env:
@@ -95,10 +91,6 @@ jobs:
         run: forge test
         env:
           FOUNDRY_PROFILE: ci
-
-      - name: Add Vyper path to `default` Foundry profile
-        run: |
-          sed -i -e '/\[profile.default\]/,/^$/ { /^vyper/ d; }' -e '/\[profile.default\]/a vyper = { optimize = "gas", path = "'"$(which vyper)"'" }' foundry.toml
 
       - name: Show the Foundry default config
         run: forge config
@@ -118,10 +110,6 @@ jobs:
 
       - name: Show the Echidna version
         run: echidna --version
-
-      - name: Add Vyper path to `echidna` Foundry profile
-        run: |
-          sed -i '/\[profile.echidna\]/a vyper = { path = "'"$(which vyper)"'" }' foundry.toml
 
       - name: Show the Foundry Echidna config
         run: forge config
