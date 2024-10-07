@@ -466,7 +466,7 @@ def renounce_ownership():
     """
     ownable._check_owner()
     self.is_minter[msg.sender] = False
-    log RoleMinterChanged(minter=msg.sender, statusFalse)
+    log RoleMinterChanged(minter=msg.sender, status=False)
     ownable._transfer_ownership(empty(address))
 
 
