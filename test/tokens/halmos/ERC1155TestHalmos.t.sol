@@ -132,7 +132,7 @@ contract ERC1155TestHalmos is Test, SymTest {
 
     /**
      * Set the length of the dynamically-sized arrays in the `IERC1155` interface.
-     * @custom:halmos --array-lengths ids=5,values=5,amounts=5
+     * @custom:halmos --array-lengths ids={5},values={5},amounts={5}
      */
     function testHalmosAssertNoBackdoor(address caller, address other) public {
         /**
