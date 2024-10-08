@@ -1,19 +1,17 @@
-import sys, subprocess
+import sys, subprocess, json
 
 
 # Check if `experimental_codegen` is enabled in the
 # Foundry profile.
 def is_experimental_codegen():
-    return (
-        subprocess.run(
-            ["bash", "-c", 'forge config --json | jq -r ".vyper.experimental_codegen"'],
-            capture_output=True,
-            text=True,
+    try:
+        result = subprocess.run(
+            ["forge", "config", "--json"], capture_output=True, text=True, check=True
         )
-        .stdout.strip()
-        .lower()
-        == "true"
-    )
+        config = json.loads(result.stdout)
+        return config.get("vyper", {}).get("experimental_codegen", False) == True
+    except (subprocess.CalledProcessError, json.JSONDecodeError, KeyError):
+        return False
 
 
 # Build the Vyper command.
