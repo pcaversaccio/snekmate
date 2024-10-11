@@ -6,9 +6,8 @@ Please report any security issues you find to [pascal.caversaccio@hotmail.ch](ma
 
 ```sh
 -----BEGIN PGP PUBLIC KEY BLOCK-----
-Comment: Type:          3,072-bit RSA
-Comment: Fingerprint:   063E966C93AB4356492FE0327C3B4B4B7725111F
-
+Comment: Type: 3,072-bit RSA
+Comment: Fingerprint: 063E966C93AB4356492FE0327C3B4B4B7725111F
 
 mQGNBGBUv08BDADTYA0GjLhbKbCezlVAubakXh0jcIbkqZPF1wueSbSgDjlS6+d8
 67V6ft4hNXJhpNxqr07LrcbUEDdB7WK8EUA9qsLtVRznR/B8y2HwrFs7jbYAUzl6

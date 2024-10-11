@@ -36,7 +36,7 @@ jobs:
           architecture: ${{ matrix.architecture }}
 
       - name: Install Vyper
-        run: pip install git+https://github.com/vyperlang/vyper@master
+        run: pip install git+https://github.com/vyperlang/vyper@d8f4032355773cd5e57e8902bd50808490de39b5
 
       - name: Show the Vyper version
         run: vyper --version
