@@ -95,13 +95,7 @@ jobs:
           FOUNDRY_PROFILE: default
 
       - name: Run snapshot
-        run: |
-          echo "Vyper version: $(vyper --version)" >> $GITHUB_STEP_SUMMARY
-          echo "Forge version: $(forge --version)" >> $GITHUB_STEP_SUMMARY
-          echo "Vyper config:" >> $GITHUB_STEP_SUMMARY
-          forge config --json | jq -r ".vyper" >> $GITHUB_STEP_SUMMARY
-          echo "---------------------------" >> $GITHUB_STEP_SUMMARY
-          NO_COLOR=1 forge snapshot >> $GITHUB_STEP_SUMMARY
+        run: NO_COLOR=1 forge snapshot >> $GITHUB_STEP_SUMMARY
         env:
           FOUNDRY_PROFILE: default
 
