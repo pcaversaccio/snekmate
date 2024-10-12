@@ -37,7 +37,7 @@ contract MessageHashUtilsTest is Test {
         bytes32 digest1 = messageHashUtils
             .to_data_with_intended_validator_hash_self(data);
         bytes32 digest2 = keccak256(
-            abi.encodePacked("\x19\x00", messageHashUtilsAddr, data)
+            abi.encodePacked(hex"19_00", messageHashUtilsAddr, data)
         );
         assertEq(digest1, digest2);
     }
@@ -50,7 +50,7 @@ contract MessageHashUtilsTest is Test {
             data
         );
         bytes32 digest2 = keccak256(
-            abi.encodePacked("\x19\x00", validator, data)
+            abi.encodePacked(hex"19_00", validator, data)
         );
         assertEq(digest1, digest2);
     }
@@ -63,7 +63,7 @@ contract MessageHashUtilsTest is Test {
             structHash
         );
         bytes32 digest2 = keccak256(
-            abi.encodePacked("\x19\x01", domainSeparator, structHash)
+            abi.encodePacked(hex"19_01", domainSeparator, structHash)
         );
         assertEq(digest1, digest2);
     }
@@ -83,7 +83,7 @@ contract MessageHashUtilsTest is Test {
         bytes32 digest1 = messageHashUtils
             .to_data_with_intended_validator_hash_self(data);
         bytes32 digest2 = keccak256(
-            abi.encodePacked("\x19\x00", messageHashUtilsAddr, data)
+            abi.encodePacked(hex"19_00", messageHashUtilsAddr, data)
         );
         assertEq(digest1, digest2);
     }
@@ -97,7 +97,7 @@ contract MessageHashUtilsTest is Test {
             data
         );
         bytes32 digest2 = keccak256(
-            abi.encodePacked("\x19\x00", validator, data)
+            abi.encodePacked(hex"19_00", validator, data)
         );
         assertEq(digest1, digest2);
     }
@@ -113,7 +113,7 @@ contract MessageHashUtilsTest is Test {
             structHash
         );
         bytes32 digest2 = keccak256(
-            abi.encodePacked("\x19\x01", domainSeparator, structHash)
+            abi.encodePacked(hex"19_01", domainSeparator, structHash)
         );
         assertEq(digest1, digest2);
     }

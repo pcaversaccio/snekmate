@@ -104,8 +104,8 @@ def eip712Domain() -> (bytes1, String[50], String[20], uint256, address, bytes32
     @return bytes32 The 32-byte disambiguation salt for the protocol.
     @return DynArray The 32-byte array of EIP-712 extensions.
     """
-    # Note that `\x0f` equals `01111`.
-    return (convert(b"\x0f", bytes1), _NAME, _VERSION, chain.id, self, empty(bytes32), empty(DynArray[uint256, 32]))
+    # Note that `x"0f"` equals `01111`.
+    return (convert(x"0f", bytes1), _NAME, _VERSION, chain.id, self, empty(bytes32), empty(DynArray[uint256, 32]))
 
 
 @internal
