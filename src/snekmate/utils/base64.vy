@@ -73,9 +73,9 @@ def _encode(data: Bytes[_DATA_INPUT_BOUND], base64_url: bool) -> DynArray[String
     padding: uint256 = data_length % 3
     data_padded: Bytes[_DATA_INPUT_BOUND + 2] = b""
     if (padding == 1):
-        data_padded = concat(data, b"\x00\x00")
+        data_padded = concat(data, x"0000")
     elif (padding == 2):
-        data_padded = concat(data, b"\x00")
+        data_padded = concat(data, x"00")
     else:
         data_padded = data
 
@@ -205,11 +205,11 @@ def _decode(data: String[_DATA_OUTPUT_BOUND], base64_url: bool) -> DynArray[Byte
             # Case 1: padding of "=" as part of the
             # encoded input.
             if (c4 == 64):
-                result.append(concat(b1, b2, b"\x00"))
+                result.append(concat(b1, b2, x"00"))
             # Case 2: padding of "==" as part of the
             # encoded input.
             elif (c3 == 63):
-                result.append(concat(b1, b"\x00\x00"))
+                result.append(concat(b1, x"0000"))
             # Case 3: no padding as part of the encoded
             # input.
             else:
@@ -242,11 +242,11 @@ def _decode(data: String[_DATA_OUTPUT_BOUND], base64_url: bool) -> DynArray[Byte
             # Case 1: padding of "=" as part of the
             # encoded input.
             if (c4 == 64):
-                result.append(concat(b1, b2, b"\x00"))
+                result.append(concat(b1, b2, x"00"))
             # Case 2: padding of "==" as part of the
             # encoded input.
             elif (c3 == 63):
-                result.append(concat(b1, b"\x00\x00"))
+                result.append(concat(b1, x"0000"))
             # Case 3: no padding as part of the encoded
             # input.
             else:

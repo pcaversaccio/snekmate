@@ -97,7 +97,7 @@ contract EIP712DomainSeparatorTest is Test {
         bytes32 digest1 = EIP712domainSeparator.hash_typed_data_v4(structHash);
         bytes32 digest2 = keccak256(
             abi.encodePacked(
-                "\x19\x01",
+                hex"19_01",
                 EIP712domainSeparator.domain_separator_v4(),
                 structHash
             )
@@ -174,7 +174,7 @@ contract EIP712DomainSeparatorTest is Test {
         bytes32 digest1 = EIP712domainSeparator.hash_typed_data_v4(structHash);
         bytes32 digest2 = keccak256(
             abi.encodePacked(
-                "\x19\x01",
+                hex"19_01",
                 EIP712domainSeparator.domain_separator_v4(),
                 structHash
             )
