@@ -1,4 +1,4 @@
-# pragma version ~=0.4.1
+# pragma version ~=0.4.1b1
 """
 @title `ecdsa` Module Reference Implementation
 @custom:contract-name ecdsa_mock
