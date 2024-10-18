@@ -592,7 +592,7 @@ contract ERC20Test is Test {
             key,
             keccak256(
                 abi.encodePacked(
-                    "\x19\x01",
+                    hex"19_01",
                     domainSeparator,
                     keccak256(
                         abi.encode(
@@ -625,7 +625,7 @@ contract ERC20Test is Test {
             key,
             keccak256(
                 abi.encodePacked(
-                    "\x19\x01",
+                    hex"19_01",
                     domainSeparator,
                     keccak256(
                         abi.encode(
@@ -658,7 +658,7 @@ contract ERC20Test is Test {
             key + 1,
             keccak256(
                 abi.encodePacked(
-                    "\x19\x01",
+                    hex"19_01",
                     domainSeparator,
                     keccak256(
                         abi.encode(
@@ -696,7 +696,7 @@ contract ERC20Test is Test {
             key,
             keccak256(
                 abi.encodePacked(
-                    "\x19\x01",
+                    hex"19_01",
                     domainSeparator,
                     keccak256(
                         abi.encode(
@@ -726,7 +726,7 @@ contract ERC20Test is Test {
             key,
             keccak256(
                 abi.encodePacked(
-                    "\x19\x01",
+                    hex"19_01",
                     domainSeparator,
                     keccak256(
                         abi.encode(
@@ -756,7 +756,7 @@ contract ERC20Test is Test {
             key,
             keccak256(
                 abi.encodePacked(
-                    "\x19\x01",
+                    hex"19_01",
                     domainSeparator,
                     keccak256(
                         abi.encode(
@@ -1087,7 +1087,7 @@ contract ERC20Test is Test {
             key,
             keccak256(
                 abi.encodePacked(
-                    "\x19\x01",
+                    hex"19_01",
                     domainSeparator,
                     keccak256(
                         abi.encode(
@@ -1128,7 +1128,7 @@ contract ERC20Test is Test {
             keyWrong,
             keccak256(
                 abi.encodePacked(
-                    "\x19\x01",
+                    hex"19_01",
                     domainSeparator,
                     keccak256(
                         abi.encode(

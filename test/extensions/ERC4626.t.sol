@@ -1603,7 +1603,7 @@ contract ERC4626VaultTest is ERC4626Test {
             key,
             keccak256(
                 abi.encodePacked(
-                    "\x19\x01",
+                    hex"19_01",
                     domainSeparator,
                     keccak256(
                         abi.encode(
@@ -1648,7 +1648,7 @@ contract ERC4626VaultTest is ERC4626Test {
             key,
             keccak256(
                 abi.encodePacked(
-                    "\x19\x01",
+                    hex"19_01",
                     domainSeparator,
                     keccak256(
                         abi.encode(
@@ -1698,7 +1698,7 @@ contract ERC4626VaultTest is ERC4626Test {
             key + 1,
             keccak256(
                 abi.encodePacked(
-                    "\x19\x01",
+                    hex"19_01",
                     domainSeparator,
                     keccak256(
                         abi.encode(
@@ -1744,7 +1744,7 @@ contract ERC4626VaultTest is ERC4626Test {
             key,
             keccak256(
                 abi.encodePacked(
-                    "\x19\x01",
+                    hex"19_01",
                     domainSeparator,
                     keccak256(
                         abi.encode(
@@ -1783,7 +1783,7 @@ contract ERC4626VaultTest is ERC4626Test {
             key,
             keccak256(
                 abi.encodePacked(
-                    "\x19\x01",
+                    hex"19_01",
                     domainSeparator,
                     keccak256(
                         abi.encode(
@@ -1822,7 +1822,7 @@ contract ERC4626VaultTest is ERC4626Test {
             key,
             keccak256(
                 abi.encodePacked(
-                    "\x19\x01",
+                    hex"19_01",
                     domainSeparator,
                     keccak256(
                         abi.encode(
@@ -1916,7 +1916,7 @@ contract ERC4626VaultTest is ERC4626Test {
             key,
             keccak256(
                 abi.encodePacked(
-                    "\x19\x01",
+                    hex"19_01",
                     domainSeparator,
                     keccak256(
                         abi.encode(
@@ -1969,7 +1969,7 @@ contract ERC4626VaultTest is ERC4626Test {
             keyWrong,
             keccak256(
                 abi.encodePacked(
-                    "\x19\x01",
+                    hex"19_01",
                     domainSeparator,
                     keccak256(
                         abi.encode(

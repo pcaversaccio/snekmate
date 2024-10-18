@@ -70,7 +70,7 @@ def _to_data_with_intended_validator_hash(validator: address, data: Bytes[1_024]
     @param data The maximum 1,024-byte data to be signed.
     @return bytes32 The 32-byte Ethereum signed data.
     """
-    return keccak256(concat(b"\x19\x00", convert(validator, bytes20), data))
+    return keccak256(concat(x"1900", convert(validator, bytes20), data))
 
 
 @internal
@@ -91,4 +91,4 @@ def _to_typed_data_hash(domain_separator: bytes32, struct_hash: bytes32) -> byte
            https://eips.ethereum.org/EIPS/eip-712#definition-of-hashstruct.
     @return bytes32 The 32-byte Ethereum signed typed data.
     """
-    return keccak256(concat(b"\x19\x01", domain_separator, struct_hash))
+    return keccak256(concat(x"1901", domain_separator, struct_hash))

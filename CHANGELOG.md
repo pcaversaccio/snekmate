@@ -28,7 +28,11 @@
     - Use relative `interfaces` `import`s. ([#263](https://github.com/pcaversaccio/snekmate/pull/263))
     - Use keyword arguments for event instantiation. ([#280](https://github.com/pcaversaccio/snekmate/pull/280))
 - **Utility Functions**
-  - [`eip712_domain_separator`](https://github.com/pcaversaccio/snekmate/blob/v0.1.1/src/snekmate/utils/eip712_domain_separator.vy): Use relative `interfaces` `import`s. ([#263](https://github.com/pcaversaccio/snekmate/pull/263))
+  - [`base64`](https://github.com/pcaversaccio/snekmate/blob/v0.1.1/src/snekmate/utils/base64.vy): Use native hex string `x"..."` literals. ([#283](https://github.com/pcaversaccio/snekmate/pull/283))
+  - [`message_hash_utils`](https://github.com/pcaversaccio/snekmate/blob/v0.1.1/src/snekmate/utils/message_hash_utils.vy): Use native hex string `x"..."` literals. ([#283](https://github.com/pcaversaccio/snekmate/pull/283))
+  - [`eip712_domain_separator`](https://github.com/pcaversaccio/snekmate/blob/v0.1.1/src/snekmate/utils/eip712_domain_separator.vy):
+    - Use relative `interfaces` `import`s. ([#263](https://github.com/pcaversaccio/snekmate/pull/263))
+    - Use `bytes1` literal in `eip712Domain` function. ([#283](https://github.com/pcaversaccio/snekmate/pull/283))
   - [`math`](https://github.com/pcaversaccio/snekmate/blob/v0.1.1/src/snekmate/utils/math.vy): Use mutable `internal` function parameters. ([#267](https://github.com/pcaversaccio/snekmate/pull/267))
 
 ### 🥢 Test Coverage
