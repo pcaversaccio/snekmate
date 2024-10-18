@@ -1,4 +1,4 @@
-# pragma version ~=0.4.1
+# pragma version ~=0.4.1b2
 """
 @title `ownable` Module Reference Implementation
 @custom:contract-name ownable_mock
