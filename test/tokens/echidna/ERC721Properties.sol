@@ -31,18 +31,11 @@ contract CryticERC721ExternalHarness is
             _NAME_EIP712,
             _VERSION_EIP712
         );
-        /**
-         * @dev `hevm` does not currently work with the EVM version `cancun`:
-         * https://github.com/ethereum/hevm/issues/469. For Echidna-based tests,
-         * we therefore use the EVM version `shanghai`.
-         */
         token = IERC721Internal(
             vyperDeployer.deployContract(
                 "src/snekmate/tokens/mocks/",
                 "erc721_mock",
-                args,
-                "shanghai",
-                "gas"
+                args
             )
         );
         mockSafeReceiver = new MockReceiver(true);

@@ -40,8 +40,12 @@
 - All 🐍 snekmate contract tests, i.e. unit tests, stateless and stateful fuzzing tests (including Echidna), and Halmos-based symbolic tests, are now also run against the experimental Venom backend. ([#268](https://github.com/pcaversaccio/snekmate/pull/268))
 
 - **Tokens**
-  - [`erc20`](https://github.com/pcaversaccio/snekmate/blob/v0.1.1/src/snekmate/tokens/erc20.vy): Use native `halmos` `createCalldata` cheat code. ([#273](https://github.com/pcaversaccio/snekmate/pull/273))
-  - [`erc721`](https://github.com/pcaversaccio/snekmate/blob/v0.1.1/src/snekmate/tokens/erc721.vy): Use native `halmos` `createCalldata` cheat code. ([#273](https://github.com/pcaversaccio/snekmate/pull/273))
+  - [`erc20`](https://github.com/pcaversaccio/snekmate/blob/v0.1.1/src/snekmate/tokens/erc20.vy):
+    - Use native `halmos` `createCalldata` cheat code. ([#273](https://github.com/pcaversaccio/snekmate/pull/273))
+    - Use the EVM version `cancun` in `echidna`-based tests. ([#286](https://github.com/pcaversaccio/snekmate/pull/286))
+  - [`erc721`](https://github.com/pcaversaccio/snekmate/blob/v0.1.1/src/snekmate/tokens/erc721.vy):
+    - Use native `halmos` `createCalldata` cheat code. ([#273](https://github.com/pcaversaccio/snekmate/pull/273))
+    - Use the EVM version `cancun` in `echidna`-based tests. ([#286](https://github.com/pcaversaccio/snekmate/pull/286))
   - [`erc1155`](https://github.com/pcaversaccio/snekmate/blob/v0.1.1/src/snekmate/tokens/erc1155.vy): Use native `halmos` `createCalldata` cheat code. ([#273](https://github.com/pcaversaccio/snekmate/pull/273))
 
 ### 👀 Full Changelog
