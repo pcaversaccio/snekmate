@@ -31,7 +31,6 @@ invariant = { runs = 375, depth = 500 }                          # Increase the 
 # Default overrides for the Echidna tests.
 [profile.echidna]
 force = true                                                     # Perform always a clean build.
-evm_version = "shanghai"                                         # Set the EVM target version to `shanghai`.
 
 # Default overrides for the Halmos tests.
 [profile.halmos]
@@ -53,7 +52,6 @@ vyper = { experimental_codegen = true }                          # Enable experi
 # Default overrides for the the Venom-based Echidna tests.
 [profile.echidna-venom]
 force = true                                                     # Perform always a clean build.
-evm_version = "shanghai"                                         # Set the EVM target version to `shanghai`.
 vyper = { experimental_codegen = true }                          # Enable experimental code generation using the Venom backend.
 
 # Default overrides for the Venom-based Halmos tests.

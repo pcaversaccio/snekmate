@@ -32,18 +32,11 @@ contract CryticERC20ExternalHarness is
             _NAME_EIP712,
             _VERSION_EIP712
         );
-        /**
-         * @dev `hevm` does not currently work with the EVM version `cancun`:
-         * https://github.com/ethereum/hevm/issues/469. For Echidna-based tests,
-         * we therefore use the EVM version `shanghai`.
-         */
         token = ITokenMock(
             vyperDeployer.deployContract(
                 "src/snekmate/tokens/mocks/",
                 "erc20_mock",
-                args,
-                "shanghai",
-                "gas"
+                args
             )
         );
     }
