@@ -543,7 +543,7 @@ def _spend_allowance(owner: address, spender: address, amount: uint256):
            allowed to be spent by the `spender`.
     """
     current_allowance: uint256 = self.allowance[owner][spender]
-    if (current_allowance != max_value(uint256)):
+    if (current_allowance < max_value(uint256)):
         # The following line allows the commonly known address
         # poisoning attack, where `transferFrom` instructions
         # are executed from arbitrary addresses with an `amount`
