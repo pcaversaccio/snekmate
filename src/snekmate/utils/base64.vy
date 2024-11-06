@@ -63,7 +63,7 @@ def _encode(data: Bytes[_DATA_INPUT_BOUND], base64_url: bool) -> DynArray[String
             encoding of `data`.
     """
     data_length: uint256 = len(data)
-    if (data_length == empty(uint256)):
+    if data_length == empty(uint256):
         return empty(DynArray[String[4], _DATA_OUTPUT_BOUND])
 
     # If the length of the unencoded input is not
@@ -72,9 +72,9 @@ def _encode(data: Bytes[_DATA_INPUT_BOUND], base64_url: bool) -> DynArray[String
     # multiple of four.
     padding: uint256 = data_length % 3
     data_padded: Bytes[_DATA_INPUT_BOUND + 2] = b""
-    if (padding == 1):
+    if padding == 1:
         data_padded = concat(data, x"0000")
-    elif (padding == 2):
+    elif padding == 2:
         data_padded = concat(data, x"00")
     else:
         data_padded = data
@@ -113,13 +113,25 @@ def _encode(data: Bytes[_DATA_INPUT_BOUND], base64_url: bool) -> DynArray[String
 
         # Base64 encoding with an URL and filename-safe
         # alphabet.
-        if (base64_url):
-            char_chunks.append(concat(slice(_TABLE_URL_CHARS, c1, 1), slice(_TABLE_URL_CHARS, c2, 1), slice(_TABLE_URL_CHARS, c3, 1),\
-                                      slice(_TABLE_URL_CHARS, c4, 1)))
+        if base64_url:
+            char_chunks.append(
+                concat(
+                    slice(_TABLE_URL_CHARS, c1, 1),
+                    slice(_TABLE_URL_CHARS, c2, 1),
+                    slice(_TABLE_URL_CHARS, c3, 1),
+                    slice(_TABLE_URL_CHARS, c4, 1),
+                )
+            )
         # Base64 encoding using the standard characters.
         else:
-            char_chunks.append(concat(slice(_TABLE_STD_CHARS, c1, 1), slice(_TABLE_STD_CHARS, c2, 1), slice(_TABLE_STD_CHARS, c3, 1),\
-                                      slice(_TABLE_STD_CHARS, c4, 1)))
+            char_chunks.append(
+                concat(
+                    slice(_TABLE_STD_CHARS, c1, 1),
+                    slice(_TABLE_STD_CHARS, c2, 1),
+                    slice(_TABLE_STD_CHARS, c3, 1),
+                    slice(_TABLE_STD_CHARS, c4, 1),
+                )
+            )
 
         # The following line cannot overflow because we have
         # limited the for loop by the `constant` parameter
@@ -129,15 +141,15 @@ def _encode(data: Bytes[_DATA_INPUT_BOUND], base64_url: bool) -> DynArray[String
 
         # We break the loop once we reach the end of `data`
         # (including padding).
-        if (idx == len(data_padded)):
+        if idx == len(data_padded):
             break
 
     # Case 1: padding of "==" added.
-    if (padding == 1):
+    if padding == 1:
         last_chunk: String[2] = slice(char_chunks.pop(), empty(uint256), 2)
         char_chunks.append(concat(last_chunk, "=="))
     # Case 2: padding of "=" added.
-    elif (padding == 2):
+    elif padding == 2:
         last_chunk: String[3] = slice(char_chunks.pop(), empty(uint256), 3)
         char_chunks.append(concat(last_chunk, "="))
 
@@ -167,7 +179,7 @@ def _decode(data: String[_DATA_OUTPUT_BOUND], base64_url: bool) -> DynArray[Byte
             results in the Base64 decoding of `data`.
     """
     data_length: uint256 = len(data)
-    if (data_length == empty(uint256)):
+    if data_length == empty(uint256):
         return empty(DynArray[Bytes[3], _DATA_INPUT_BOUND])
 
     # If the length of the encoded input is not a
@@ -185,7 +197,7 @@ def _decode(data: String[_DATA_OUTPUT_BOUND], base64_url: bool) -> DynArray[Byte
 
         # Base64 encoding with an URL and filename-safe
         # alphabet.
-        if (base64_url):
+        if base64_url:
             c1: uint256 = self._index_of(slice(chunk, empty(uint256), 1), True)
             c2: uint256 = self._index_of(slice(chunk, 1, 1), True)
             c3: uint256 = self._index_of(slice(chunk, 2, 1), True)
@@ -204,11 +216,11 @@ def _decode(data: String[_DATA_OUTPUT_BOUND], base64_url: bool) -> DynArray[Byte
 
             # Case 1: padding of "=" as part of the
             # encoded input.
-            if (c4 == 64):
+            if c4 == 64:
                 result.append(concat(b1, b2, x"00"))
             # Case 2: padding of "==" as part of the
             # encoded input.
-            elif (c3 == 63):
+            elif c3 == 63:
                 result.append(concat(b1, x"0000"))
             # Case 3: no padding as part of the encoded
             # input.
@@ -222,7 +234,7 @@ def _decode(data: String[_DATA_OUTPUT_BOUND], base64_url: bool) -> DynArray[Byte
             idx = unsafe_add(idx, 4)
 
             # We break the loop once we reach the end of `data`.
-            if (idx == data_length):
+            if idx == data_length:
                 break
         # Base64 encoding using the standard characters.
         else:
@@ -241,11 +253,11 @@ def _decode(data: String[_DATA_OUTPUT_BOUND], base64_url: bool) -> DynArray[Byte
 
             # Case 1: padding of "=" as part of the
             # encoded input.
-            if (c4 == 64):
+            if c4 == 64:
                 result.append(concat(b1, b2, x"00"))
             # Case 2: padding of "==" as part of the
             # encoded input.
-            elif (c3 == 63):
+            elif c3 == 63:
                 result.append(concat(b1, x"0000"))
             # Case 3: no padding as part of the encoded
             # input.
@@ -259,7 +271,7 @@ def _decode(data: String[_DATA_OUTPUT_BOUND], base64_url: bool) -> DynArray[Byte
             idx = unsafe_add(idx, 4)
 
             # We break the loop once we reach the end of `data`.
-            if (idx == data_length):
+            if idx == data_length:
                 break
 
     return result
@@ -282,12 +294,12 @@ def _index_of(char: String[1], base64_url: bool) -> uint256:
     for _: uint256 in range(len(_TABLE_URL_CHARS)):
         # Base64 encoding with an URL and filename-safe
         # alphabet.
-        if (base64_url):
-            if (char == slice(_TABLE_URL_CHARS, pos, 1)):
+        if base64_url:
+            if char == slice(_TABLE_URL_CHARS, pos, 1):
                 break
         # Base64 encoding using the standard characters.
         else:
-            if (char == slice(_TABLE_STD_CHARS, pos, 1)):
+            if char == slice(_TABLE_STD_CHARS, pos, 1):
                 break
 
         # The following line cannot overflow because we have

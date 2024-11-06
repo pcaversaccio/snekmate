@@ -68,7 +68,14 @@ initialSupply: public(uint256)
 
 @deploy
 @payable
-def __init__(name_: String[25], symbol_: String[5], decimals_: uint8, initial_supply_: uint256, name_eip712_: String[50], version_eip712_: String[20]):
+def __init__(
+    name_: String[25],
+    symbol_: String[5],
+    decimals_: uint8,
+    initial_supply_: uint256,
+    name_eip712_: String[50],
+    version_eip712_: String[20],
+):
     """
     @dev To omit the opcodes for checking the `msg.value`
          in the creation-time EVM bytecode, the constructor

@@ -28,36 +28,54 @@ _C: constant(uint256) = 32
 
 
 # @dev The secp256r1 curve order (number of points).
-_N: constant(uint256) = 115_792_089_210_356_248_762_697_446_949_407_573_529_996_955_224_135_760_342_422_259_061_068_512_044_369
+_N: constant(uint256) = (
+    115_792_089_210_356_248_762_697_446_949_407_573_529_996_955_224_135_760_342_422_259_061_068_512_044_369
+)
 
 
 # @dev The malleability threshold used as part of the ECDSA
 # verification function.
-_MALLEABILITY_THRESHOLD: constant(uint256) = 57_896_044_605_178_124_381_348_723_474_703_786_764_998_477_612_067_880_171_211_129_530_534_256_022_184
+_MALLEABILITY_THRESHOLD: constant(uint256) = (
+    57_896_044_605_178_124_381_348_723_474_703_786_764_998_477_612_067_880_171_211_129_530_534_256_022_184
+)
 
 
 # @dev The secp256r1 curve prime field modulus.
-_P: constant(uint256) = 115_792_089_210_356_248_762_697_446_949_407_573_530_086_143_415_290_314_195_533_631_308_867_097_853_951
+_P: constant(uint256) = (
+    115_792_089_210_356_248_762_697_446_949_407_573_530_086_143_415_290_314_195_533_631_308_867_097_853_951
+)
 
 
 # @dev The short Weierstrass first coefficient.
 # @notice The assumption "_A == -3 (mod _P)" is used throughout
 # the codebase.
-_A: constant(uint256) = 115_792_089_210_356_248_762_697_446_949_407_573_530_086_143_415_290_314_195_533_631_308_867_097_853_948
+_A: constant(uint256) = (
+    115_792_089_210_356_248_762_697_446_949_407_573_530_086_143_415_290_314_195_533_631_308_867_097_853_948
+)
 # @dev The short Weierstrass second coefficient.
-_B: constant(uint256) = 41_058_363_725_152_142_129_326_129_780_047_268_409_114_441_015_993_725_554_835_256_314_039_467_401_291
+_B: constant(uint256) = (
+    41_058_363_725_152_142_129_326_129_780_047_268_409_114_441_015_993_725_554_835_256_314_039_467_401_291
+)
 
 
 # @dev The base generator point for "(qx, qy)".
-_GX: constant(uint256) = 48_439_561_293_906_451_759_052_585_252_797_914_202_762_949_526_041_747_995_844_080_717_082_404_635_286
-_GY: constant(uint256) = 36_134_250_956_749_795_798_585_127_919_587_881_956_611_106_672_985_015_071_877_198_253_568_414_405_109
+_GX: constant(uint256) = (
+    48_439_561_293_906_451_759_052_585_252_797_914_202_762_949_526_041_747_995_844_080_717_082_404_635_286
+)
+_GY: constant(uint256) = (
+    36_134_250_956_749_795_798_585_127_919_587_881_956_611_106_672_985_015_071_877_198_253_568_414_405_109
+)
 
 
 # @dev The "-2 mod _P" constant is used to speed up inversion
 # and doubling (avoid negation).
-_MINUS_2MODP: constant(uint256) = 115_792_089_210_356_248_762_697_446_949_407_573_530_086_143_415_290_314_195_533_631_308_867_097_853_949
+_MINUS_2MODP: constant(uint256) = (
+    115_792_089_210_356_248_762_697_446_949_407_573_530_086_143_415_290_314_195_533_631_308_867_097_853_949
+)
 # @dev The "-2 mod _N" constant is used to speed up inversion.
-_MINUS_2MODN: constant(uint256) = 115_792_089_210_356_248_762_697_446_949_407_573_529_996_955_224_135_760_342_422_259_061_068_512_044_367
+_MINUS_2MODN: constant(uint256) = (
+    115_792_089_210_356_248_762_697_446_949_407_573_529_996_955_224_135_760_342_422_259_061_068_512_044_367
+)
 
 
 @deploy
@@ -89,10 +107,10 @@ def _verify_sig(hash: bytes32, r: uint256, s: uint256, qx: uint256, qy: uint256)
     assert s <= _MALLEABILITY_THRESHOLD, "p256: invalid signature `s` value"
 
     # Check if `r` and `s` are in the scalar field.
-    if ((r == empty(uint256)) or (r >= _N) or (s == empty(uint256)) or (s >= _N)):
+    if r == empty(uint256) or r >= _N or s == empty(uint256) or s >= _N:
         return False
 
-    if (not(self._ec_aff_is_valid_pubkey(qx, qy))):
+    if not self._ec_aff_is_valid_pubkey(qx, qy):
         return False
 
     s_inv: uint256 = self._n_mod_inv(s)
@@ -117,7 +135,7 @@ def _ec_aff_is_valid_pubkey(qx: uint256, qy: uint256) -> bool:
     @return bool The verification whether the point is
             on the curve or not.
     """
-    if ((qx >= _P) or (qy >= _P) or ((qx == empty(uint256)) and (qy == empty(uint256)))):
+    if qx >= _P or qy >= _P or (qx == empty(uint256) and qy == empty(uint256)):
         return False
 
     return self._ec_aff_satisfies_curve_eqn(qx, qy)
@@ -137,7 +155,9 @@ def _ec_aff_satisfies_curve_eqn(qx: uint256, qy: uint256) -> bool:
     # "qy**2".
     lhs: uint256 = uint256_mulmod(qy, qy, _P)
     # "qx**3 + _A*qx + _B".
-    rhs: uint256 = uint256_addmod(uint256_addmod(uint256_mulmod(uint256_mulmod(qx, qx, _P), qx, _P), uint256_mulmod(_A, qx, _P), _P), _B, _P)
+    rhs: uint256 = uint256_addmod(
+        uint256_addmod(uint256_mulmod(uint256_mulmod(qx, qx, _P), qx, _P), uint256_mulmod(_A, qx, _P), _P), _B, _P
+    )
     return lhs == rhs
 
 
@@ -162,7 +182,7 @@ def _ec_zz_mulmuladd(qx: uint256, qy: uint256, scalar_u: uint256, scalar_v: uint
     hx: uint256 = empty(uint256)
     hy: uint256 = empty(uint256)
 
-    if ((scalar_u == empty(uint256)) and (scalar_v == empty(uint256))):
+    if scalar_u == empty(uint256) and scalar_v == empty(uint256):
         return empty(uint256)
 
     # "H = G + Q".
@@ -180,16 +200,16 @@ def _ec_zz_mulmuladd(qx: uint256, qy: uint256, scalar_u: uint256, scalar_v: uint
         # constant value `255`. The theoretically maximum
         # achievable value is therefore `-1`.
         index = unsafe_sub(index, 1)
-        if (bitpair != empty(uint256)):
+        if bitpair != empty(uint256):
             break
 
-    if (bitpair == 1):
+    if bitpair == 1:
         qx1 = _GX
         qy1 = _GY
-    elif (bitpair == 2):
+    elif bitpair == 2:
         qx1 = qx
         qy1 = qy
-    elif (bitpair == 3):
+    elif bitpair == 3:
         qx1 = hx
         qy1 = hy
 
@@ -197,7 +217,7 @@ def _ec_zz_mulmuladd(qx: uint256, qy: uint256, scalar_u: uint256, scalar_v: uint
     qy2: uint256 = empty(uint256)
 
     for _: uint256 in range(255):
-        if (index < empty(int256)):
+        if index < empty(int256):
             break
 
         (qx1, qy1, zz1, zzz1) = self._ec_zz_double_zz(qx1, qy1, zz1, zzz1)
@@ -208,12 +228,12 @@ def _ec_zz_mulmuladd(qx: uint256, qy: uint256, scalar_u: uint256, scalar_v: uint
         # achievable value is therefore `-1`.
         index = unsafe_sub(index, 1)
 
-        if (bitpair == empty(uint256)):
+        if bitpair == empty(uint256):
             continue
-        elif (bitpair == 1):
+        elif bitpair == 1:
             qx2 = _GX
             qy2 = _GY
-        elif (bitpair == 2):
+        elif bitpair == 2:
             qx2 = qx
             qy2 = qy
         else:
@@ -265,10 +285,10 @@ def _ec_aff_add(qx1: uint256, qy1: uint256, qx2: uint256, qy2: uint256) -> (uint
     zz1: uint256 = empty(uint256)
     zzz1: uint256 = empty(uint256)
 
-    if (self._ec_aff_is_inf(qx1, qy1)):
+    if self._ec_aff_is_inf(qx1, qy1):
         return (qx2, qy2)
 
-    if (self._ec_aff_is_inf(qx2, qy2)):
+    if self._ec_aff_is_inf(qx2, qy2):
         return (qx1, qy1)
 
     (qx1, qy1, zz1, zzz1) = self._ec_zz_dadd_affine(qx1, qy1, 1, 1, qx2, qy2)
@@ -309,7 +329,9 @@ def _ec_zz_is_inf(zz: uint256, zzz: uint256) -> bool:
 
 @internal
 @view
-def _ec_zz_dadd_affine(qx1: uint256, qy1: uint256, zz1: uint256, zzz1: uint256, qx2: uint256, qy2: uint256) -> (uint256, uint256, uint256, uint256):
+def _ec_zz_dadd_affine(
+    qx1: uint256, qy1: uint256, zz1: uint256, zzz1: uint256, qx2: uint256, qy2: uint256
+) -> (uint256, uint256, uint256, uint256):
     """
     @dev Adds a ZZ point to an affine point and returns as
          ZZ representation. Uses "madd-2008-s" and "mdbl-2008-s"
@@ -339,12 +361,12 @@ def _ec_zz_dadd_affine(qx1: uint256, qy1: uint256, zz1: uint256, zzz1: uint256, 
     zzz3: uint256 = empty(uint256)
 
     # `(qx2, qy2)` is point at infinity.
-    if (self._ec_aff_is_inf(qx2, qy2)):
-        if (self._ec_zz_is_inf(zz1, zzz1)):
+    if self._ec_aff_is_inf(qx2, qy2):
+        if self._ec_zz_is_inf(zz1, zzz1):
             return self._ec_zz_point_at_inf()
         return (qx1, qy1, zz1, zzz1)
     # `(qx1, qy1)` is point at infinity.
-    elif (self._ec_zz_is_inf(zz1, zzz1)):
+    elif self._ec_zz_is_inf(zz1, zzz1):
         return (qx2, qy2, 1, 1)
 
     # "r = s2 - qy1 = qy2*zzz1 - qy1".
@@ -353,7 +375,7 @@ def _ec_zz_dadd_affine(qx1: uint256, qy1: uint256, zz1: uint256, zzz1: uint256, 
     comp_p: uint256 = uint256_addmod(uint256_mulmod(qx2, zz1, _P), unsafe_sub(_P, qx1), _P)
 
     # "qx1 != qx2".
-    if (comp_p != empty(uint256)):
+    if comp_p != empty(uint256):
         # "pp = p**2".
         comp_pp: uint256 = uint256_mulmod(comp_p, comp_p, _P)
         # "ppp = p*pp".
@@ -365,13 +387,24 @@ def _ec_zz_dadd_affine(qx1: uint256, qy1: uint256, zz1: uint256, zzz1: uint256, 
         # "q = qx1*pp".
         comp_q: uint256 = uint256_mulmod(qx1, comp_pp, _P)
         # "r**2 - ppp - 2*q".
-        qx3 = uint256_addmod(uint256_addmod(uint256_mulmod(comp_r, comp_r, _P), unsafe_sub(_P, comp_ppp), _P),\
-              uint256_mulmod(_MINUS_2MODP, comp_q, _P), _P)
+        qx3 = uint256_addmod(
+            uint256_addmod(uint256_mulmod(comp_r, comp_r, _P), unsafe_sub(_P, comp_ppp), _P),
+            uint256_mulmod(_MINUS_2MODP, comp_q, _P),
+            _P,
+        )
         # "qy3 = r*(q-qx3) - qy1*ppp".
-        return (qx3, uint256_addmod(uint256_mulmod(uint256_addmod(comp_q, unsafe_sub(_P, qx3), _P), comp_r, _P),\
-                uint256_mulmod(unsafe_sub(_P, qy1), comp_ppp, _P), _P), zz3, zzz3)
+        return (
+            qx3,
+            uint256_addmod(
+                uint256_mulmod(uint256_addmod(comp_q, unsafe_sub(_P, qx3), _P), comp_r, _P),
+                uint256_mulmod(unsafe_sub(_P, qy1), comp_ppp, _P),
+                _P,
+            ),
+            zz3,
+            zzz3,
+        )
     # "qx1 == qx2 and qy1 == qy2".
-    elif (comp_r == empty(uint256)):
+    elif comp_r == empty(uint256):
         return self._ec_zz_double_affine(qx2, qy2)
 
     # "qx1 == qx2 and qy1 == -qy2".
@@ -397,7 +430,7 @@ def _ec_zz_double_zz(qx: uint256, qy: uint256, zz: uint256, zzz: uint256) -> (ui
     @return uint256 The computed 32-byte public key coordinate `qy`
             in ZZ representation.
     """
-    if (self._ec_zz_is_inf(zz, zzz)):
+    if self._ec_zz_is_inf(zz, zzz):
         return self._ec_zz_point_at_inf()
 
     # "u = 2*qy".
@@ -409,14 +442,23 @@ def _ec_zz_double_zz(qx: uint256, qy: uint256, zz: uint256, zzz: uint256) -> (ui
     # "s = qx*v".
     comp_s: uint256 = uint256_mulmod(qx, comp_v, _P)
     # "m = 3*(qx)**2 + _A*(zz)**2".
-    comp_m: uint256 = uint256_addmod(uint256_mulmod(3, uint256_mulmod(qx, qx, _P), _P), uint256_mulmod(_A,\
-                      uint256_mulmod(zz, zz, _P), _P), _P)
+    comp_m: uint256 = uint256_addmod(
+        uint256_mulmod(3, uint256_mulmod(qx, qx, _P), _P), uint256_mulmod(_A, uint256_mulmod(zz, zz, _P), _P), _P
+    )
 
     # "m**2 + (-2)*s".
     qx3: uint256 = uint256_addmod(uint256_mulmod(comp_m, comp_m, _P), uint256_mulmod(_MINUS_2MODP, comp_s, _P), _P)
     # "qy3 = m*(s+(-qx3)) + (-w)*qy, zz3 = v*zz, zzz3 = w*zzz".
-    return (qx3, uint256_addmod(uint256_mulmod(comp_m, uint256_addmod(comp_s, unsafe_sub(_P, qx3), _P), _P),\
-            uint256_mulmod(unsafe_sub(_P, comp_w), qy, _P), _P), uint256_mulmod(comp_v, zz, _P), uint256_mulmod(comp_w, zzz, _P))
+    return (
+        qx3,
+        uint256_addmod(
+            uint256_mulmod(comp_m, uint256_addmod(comp_s, unsafe_sub(_P, qx3), _P), _P),
+            uint256_mulmod(unsafe_sub(_P, comp_w), qy, _P),
+            _P,
+        ),
+        uint256_mulmod(comp_v, zz, _P),
+        uint256_mulmod(comp_w, zzz, _P),
+    )
 
 
 @internal
@@ -435,7 +477,7 @@ def _ec_zz_double_affine(qx: uint256, qy: uint256) -> (uint256, uint256, uint256
     @return uint256 The computed 32-byte public key coordinate `qy`
             in ZZ representation.
     """
-    if (self._ec_aff_is_inf(qx, qy)):
+    if self._ec_aff_is_inf(qx, qy):
         return self._ec_zz_point_at_inf()
 
     # "u = 2*qy".
@@ -452,8 +494,16 @@ def _ec_zz_double_affine(qx: uint256, qy: uint256) -> (uint256, uint256, uint256
     # "m**2 + (-2)*s".
     qx3: uint256 = uint256_addmod(uint256_mulmod(comp_m, comp_m, _P), uint256_mulmod(_MINUS_2MODP, comp_s, _P), _P)
     # "qy3 = m*(s+(-qx3)) + (-w)*qy".
-    return (qx3, uint256_addmod(uint256_mulmod(comp_m, uint256_addmod(comp_s, unsafe_sub(_P, qx3), _P), _P),\
-            uint256_mulmod(unsafe_sub(_P, zzz3), qy, _P), _P), zz3, zzz3)
+    return (
+        qx3,
+        uint256_addmod(
+            uint256_mulmod(comp_m, uint256_addmod(comp_s, unsafe_sub(_P, qx3), _P), _P),
+            uint256_mulmod(unsafe_sub(_P, zzz3), qy, _P),
+            _P,
+        ),
+        zz3,
+        zzz3,
+    )
 
 
 @internal
@@ -474,7 +524,7 @@ def _ec_zz_set_aff(qx: uint256, qy: uint256, zz: uint256, zzz: uint256) -> (uint
     """
     qx1: uint256 = empty(uint256)
     qy1: uint256 = empty(uint256)
-    if (self._ec_zz_is_inf(zz, zzz)):
+    if self._ec_zz_is_inf(zz, zzz):
         return self._ec_affine_point_at_inf()
 
     # "1/zzz".

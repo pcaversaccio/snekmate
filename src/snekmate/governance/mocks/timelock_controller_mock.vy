@@ -64,7 +64,12 @@ exports: tc.__interface__
 
 @deploy
 @payable
-def __init__(minimum_delay_: uint256, proposers_: DynArray[address, tc._DYNARRAY_BOUND], executors_: DynArray[address, tc._DYNARRAY_BOUND], admin_: address):
+def __init__(
+    minimum_delay_: uint256,
+    proposers_: DynArray[address, tc._DYNARRAY_BOUND],
+    executors_: DynArray[address, tc._DYNARRAY_BOUND],
+    admin_: address,
+):
     """
     @dev Initialises the contract with the following parameters:
            - `minimum_delay_`: The initial minimum delay in seconds

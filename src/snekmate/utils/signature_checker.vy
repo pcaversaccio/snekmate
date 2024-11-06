@@ -72,7 +72,7 @@ def _is_valid_signature_now(signer: address, hash: bytes32, signature: Bytes[65]
                      should be deployed one day.
     """
     # First check: ECDSA case.
-    if (not(signer.is_contract)):
+    if not signer.is_contract:
         return ecdsa._recover_sig(hash, signature) == signer
 
     # Second check: EIP-1271 case.
@@ -108,6 +108,15 @@ def _is_valid_ERC1271_signature_now(signer: address, hash: bytes32, signature: B
     # it is important to note that an external call via `raw_call`
     # does not perform an external code size check on the target
     # address.
-    success, return_data =\
-        raw_call(signer, abi_encode(hash, signature, method_id=IERC1271_ISVALIDSIGNATURE_SELECTOR), max_outsize=32, is_static_call=True, revert_on_failure=False)
-    return ((success) and (len(return_data) == 32) and (convert(return_data, bytes32) == convert(IERC1271_ISVALIDSIGNATURE_SELECTOR, bytes32)))
+    success, return_data = raw_call(
+        signer,
+        abi_encode(hash, signature, method_id=IERC1271_ISVALIDSIGNATURE_SELECTOR),
+        max_outsize=32,
+        is_static_call=True,
+        revert_on_failure=False,
+    )
+    return (
+        success
+        and len(return_data) == 32
+        and convert(return_data, bytes32) == convert(IERC1271_ISVALIDSIGNATURE_SELECTOR, bytes32)
+    )

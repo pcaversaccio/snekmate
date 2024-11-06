@@ -151,7 +151,9 @@ _SUPPORTED_INTERFACES: constant(bytes4[6]) = [
 
 
 # @dev The 32-byte type hash of the `permit` function.
-_PERMIT_TYPE_HASH: constant(bytes32) = keccak256("Permit(address spender,uint256 tokenId,uint256 nonce,uint256 deadline)")
+_PERMIT_TYPE_HASH: constant(bytes32) = keccak256(
+    "Permit(address spender,uint256 tokenId,uint256 nonce,uint256 deadline)"
+)
 
 
 # @dev Returns the token collection name.
@@ -245,7 +247,9 @@ event RoleMinterChanged:
 
 @deploy
 @payable
-def __init__(name_: String[25], symbol_: String[5], base_uri_: String[80], name_eip712_: String[50], version_eip712_: String[20]):
+def __init__(
+    name_: String[25], symbol_: String[5], base_uri_: String[80], name_eip712_: String[50], version_eip712_: String[20]
+):
     """
     @dev To omit the opcodes for checking the `msg.value`
          in the creation-time EVM bytecode, the constructor
@@ -341,7 +345,9 @@ def approve(to: address, token_id: uint256):
     """
     owner: address = self._owner_of(token_id)
     assert to != owner, "erc721: approval to current owner"
-    assert ((msg.sender == owner) or (self.isApprovedForAll[owner][msg.sender])), "erc721: approve caller is not token owner or approved for all"
+    assert (
+        msg.sender == owner or self.isApprovedForAll[owner][msg.sender]
+    ), "erc721: approve caller is not token owner or approved for all"
     self._approve(to, token_id)
 
 
@@ -456,7 +462,7 @@ def tokenURI(token_id: uint256) -> String[512]:
     """
     @dev Returns the Uniform Resource Identifier (URI)
          for `token_id` token.
-    @notice Throws if `token_id` is not a valid ERC-721 token.  
+    @notice Throws if `token_id` is not a valid ERC-721 token.
     @param token_id The 32-byte identifier of the token.
     @return String The maximum 512-character user-readable
             string token URI of the `token_id` token.
@@ -466,15 +472,15 @@ def tokenURI(token_id: uint256) -> String[512]:
 
     base_uri_length: uint256 = len(_BASE_URI)
     # If there is no base URI, return the token URI.
-    if (base_uri_length == empty(uint256)):
+    if base_uri_length == empty(uint256):
         return token_uri
     # If both are set, concatenate the base URI
     # and token URI.
-    elif (len(token_uri) != empty(uint256)):
+    elif len(token_uri) != empty(uint256):
         return concat(_BASE_URI, token_uri)
     # If there is no token URI but a base URI,
     # concatenate the base URI and token ID.
-    elif (base_uri_length != empty(uint256)):
+    elif base_uri_length != empty(uint256):
         return concat(_BASE_URI, uint2str(token_id))
 
     return ""
@@ -611,7 +617,7 @@ def permit(spender: address, token_id: uint256, deadline: uint256, v: uint8, r: 
     self.nonces[token_id] = unsafe_add(current_nonce, 1)
 
     struct_hash: bytes32 = keccak256(abi_encode(_PERMIT_TYPE_HASH, spender, token_id, current_nonce, deadline))
-    hash: bytes32  = eip712_domain_separator._hash_typed_data_v4(struct_hash)
+    hash: bytes32 = eip712_domain_separator._hash_typed_data_v4(struct_hash)
 
     signer: address = ecdsa._recover_vrs(hash, convert(v, uint256), convert(r, uint256), convert(s, uint256))
     assert signer == self._owner_of(token_id), "erc721: invalid signature"
@@ -808,7 +814,9 @@ def _safe_mint(owner: address, token_id: uint256, data: Bytes[1_024]):
            to `owner`.
     """
     self._mint(owner, token_id)
-    assert self._check_on_erc721_received(empty(address), owner, token_id, data), "erc721: transfer to non-IERC721Receiver implementer"
+    assert self._check_on_erc721_received(
+        empty(address), owner, token_id, data
+    ), "erc721: transfer to non-IERC721Receiver implementer"
 
 
 @internal
@@ -824,12 +832,12 @@ def _mint(owner: address, token_id: uint256):
     @param token_id The 32-byte identifier of the token.
     """
     assert owner != empty(address), "erc721: mint to the zero address"
-    assert not(self._exists(token_id)), "erc721: token already minted"
+    assert not self._exists(token_id), "erc721: token already minted"
 
     self._before_token_transfer(empty(address), owner, token_id)
     # Checks that the `token_id` was not minted by the
     # `_before_token_transfer` hook.
-    assert not(self._exists(token_id)), "erc721: token already minted"
+    assert not self._exists(token_id), "erc721: token already minted"
 
     # Theoretically, the following line could overflow
     # if all 2**256 token IDs were minted to the same owner.
@@ -876,7 +884,9 @@ def _safe_transfer(owner: address, to: address, token_id: uint256, data: Bytes[1
            to `to`.
     """
     self._transfer(owner, to, token_id)
-    assert self._check_on_erc721_received(owner, to, token_id, data), "erc721: transfer to non-IERC721Receiver implementer"
+    assert self._check_on_erc721_received(
+        owner, to, token_id, data
+    ), "erc721: transfer to non-IERC721Receiver implementer"
 
 
 @internal
@@ -965,7 +975,7 @@ def _burn(token_id: uint256):
 
     # Checks whether a token-specific URI has been set for the token
     # and deletes the token URI from the storage mapping.
-    if (len(self._token_uris[token_id]) != empty(uint256)):
+    if len(self._token_uris[token_id]) != empty(uint256):
         self._token_uris[token_id] = ""
 
 
@@ -985,9 +995,11 @@ def _check_on_erc721_received(owner: address, to: address, token_id: uint256, da
             returned the expected magic value.
     """
     # Contract case.
-    if (to.is_contract):
+    if to.is_contract:
         return_value: bytes4 = extcall IERC721Receiver(to).onERC721Received(msg.sender, owner, token_id, data)
-        assert return_value == method_id("onERC721Received(address,address,uint256,bytes)", output_type=bytes4), "erc721: transfer to non-IERC721Receiver implementer"
+        assert return_value == method_id(
+            "onERC721Received(address,address,uint256,bytes)", output_type=bytes4
+        ), "erc721: transfer to non-IERC721Receiver implementer"
         return True
 
     # EOA case.
@@ -1011,14 +1023,14 @@ def _before_token_transfer(owner: address, to: address, token_id: uint256):
     @param to The 20-byte receiver address.
     @param token_id The 32-byte identifier of the token.
     """
-    if (owner == empty(address)):
+    if owner == empty(address):
         self._add_token_to_all_tokens_enumeration(token_id)
-    elif (owner != to):
+    elif owner != to:
         self._remove_token_from_owner_enumeration(owner, token_id)
 
-    if (to == empty(address)):
+    if to == empty(address):
         self._remove_token_from_all_tokens_enumeration(token_id)
-    elif (to != owner):
+    elif to != owner:
         self._add_token_to_owner_enumeration(to, token_id)
 
 
@@ -1067,7 +1079,7 @@ def _add_token_to_all_tokens_enumeration(token_id: uint256):
 
 
 @internal
-def _remove_token_from_owner_enumeration(owner: address, token_id:uint256):
+def _remove_token_from_owner_enumeration(owner: address, token_id: uint256):
     """
     @dev This is an `internal` function that removes a token
          from the ownership-tracking data structures.
@@ -1089,7 +1101,7 @@ def _remove_token_from_owner_enumeration(owner: address, token_id:uint256):
 
     # When the token to delete is the last token,
     # the swap operation is unnecessary.
-    if (token_index != last_token_index):
+    if token_index != last_token_index:
         last_token_id: uint256 = self._owned_tokens[owner][last_token_index]
         # Moves the last token to the slot of the to-delete token.
         self._owned_tokens[owner][token_index] = last_token_id
@@ -1124,7 +1136,7 @@ def _remove_token_from_all_tokens_enumeration(token_id: uint256):
     # minted token is burned) that we still do the
     # swap here to avoid the gas cost of adding
     # an `if` statement (like in `_remove_token_from_owner_enumeration`).
-    last_token_id: uint256  = self._all_tokens[last_token_index]
+    last_token_id: uint256 = self._all_tokens[last_token_index]
 
     # Moves the last token to the slot of the to-delete token.
     self._all_tokens[token_index] = last_token_id

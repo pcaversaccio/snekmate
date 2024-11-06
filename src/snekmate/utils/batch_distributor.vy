@@ -66,7 +66,7 @@ def _distribute_ether(data: Batch):
         # safety measure, a reentrancy guard is used.
         raw_call(txn.recipient, b"", value=txn.amount)
 
-    if (self.balance != empty(uint256)):
+    if self.balance != empty(uint256):
         # IMPORTANT: Any wei amount previously forced into this
         # contract (e.g. by using the `SELFDESTRUCT` opcode) will
         # be part of the refund transaction.
@@ -106,7 +106,11 @@ def _distribute_token(token: IERC20, data: Batch):
     # always performs an external code size check on the target address unless
     # you add the kwarg `skip_contract_check=True`. If the check fails (i.e.
     # the target address is an EOA), the call reverts.
-    assert extcall token.transferFrom(msg.sender, self, total, default_return_value=True), "batch_distributor: transferFrom operation did not succeed"
+    assert extcall token.transferFrom(
+        msg.sender, self, total, default_return_value=True
+    ), "batch_distributor: transferFrom operation did not succeed"
 
     for txn: Transaction in data.txns:
-        assert extcall token.transfer(txn.recipient, txn.amount, default_return_value=True), "batch_distributor: transfer operation did not succeed"
+        assert extcall token.transfer(
+            txn.recipient, txn.amount, default_return_value=True
+        ), "batch_distributor: transfer operation did not succeed"

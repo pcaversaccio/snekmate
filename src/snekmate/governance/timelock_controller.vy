@@ -119,7 +119,7 @@ IERC1155_TOKENRECEIVER_SINGLE_SELECTOR: public(constant(bytes4)) = 0xF23A6E61
 
 
 # @dev The 4-byte function selector of `onERC1155BatchReceived(address,address,uint256[],uint256[],bytes)`.
-IERC1155_TOKENRECEIVER_BATCH_SELECTOR:  public(constant(bytes4)) = 0xBC197C81
+IERC1155_TOKENRECEIVER_BATCH_SELECTOR: public(constant(bytes4)) = 0xBC197C81
 
 
 # @dev Stores the ERC-165 interface identifier for each
@@ -221,7 +221,12 @@ event MinimumDelayChange:
 
 @deploy
 @payable
-def __init__(minimum_delay_: uint256, proposers_: DynArray[address, _DYNARRAY_BOUND], executors_: DynArray[address, _DYNARRAY_BOUND], admin_: address):
+def __init__(
+    minimum_delay_: uint256,
+    proposers_: DynArray[address, _DYNARRAY_BOUND],
+    executors_: DynArray[address, _DYNARRAY_BOUND],
+    admin_: address,
+):
     """
     @dev Initialises the contract with the following parameters:
            - `minimum_delay_`: The initial minimum delay in seconds
@@ -261,7 +266,7 @@ def __init__(minimum_delay_: uint256, proposers_: DynArray[address, _DYNARRAY_BO
     access_control._revoke_role(access_control.DEFAULT_ADMIN_ROLE, msg.sender)
 
     # Set the optional admin.
-    if (admin_ != empty(address)):
+    if admin_ != empty(address):
         access_control._grant_role(access_control.DEFAULT_ADMIN_ROLE, admin_)
 
     # Register the proposers and cancellers.
@@ -369,7 +374,9 @@ def get_operation_state(id: bytes32) -> OperationState:
 
 @external
 @pure
-def hash_operation(target: address, amount: uint256, payload: Bytes[1_024], predecessor: bytes32, salt: bytes32) -> bytes32:
+def hash_operation(
+    target: address, amount: uint256, payload: Bytes[1_024], predecessor: bytes32, salt: bytes32
+) -> bytes32:
     """
     @dev Returns the identifier of an operation containing
          a single transaction.
@@ -387,8 +394,13 @@ def hash_operation(target: address, amount: uint256, payload: Bytes[1_024], pred
 
 @external
 @pure
-def hash_operation_batch(targets: DynArray[address, _DYNARRAY_BOUND], amounts: DynArray[uint256, _DYNARRAY_BOUND], payloads: DynArray[Bytes[1_024], _DYNARRAY_BOUND],
-                         predecessor: bytes32, salt: bytes32) -> bytes32:
+def hash_operation_batch(
+    targets: DynArray[address, _DYNARRAY_BOUND],
+    amounts: DynArray[uint256, _DYNARRAY_BOUND],
+    payloads: DynArray[Bytes[1_024], _DYNARRAY_BOUND],
+    predecessor: bytes32,
+    salt: bytes32,
+) -> bytes32:
     """
     @dev Returns the identifier of an operation containing
          a batch of transactions.
@@ -406,7 +418,9 @@ def hash_operation_batch(targets: DynArray[address, _DYNARRAY_BOUND], amounts: D
 
 
 @external
-def schedule(target: address, amount: uint256, payload: Bytes[1_024], predecessor: bytes32, salt: bytes32, delay: uint256):
+def schedule(
+    target: address, amount: uint256, payload: Bytes[1_024], predecessor: bytes32, salt: bytes32, delay: uint256
+):
     """
     @dev Schedules an operation containing a single transaction.
          Emits `CallScheduled` and `CallSalt` if the salt is non-zero.
@@ -425,14 +439,22 @@ def schedule(target: address, amount: uint256, payload: Bytes[1_024], predecesso
     id: bytes32 = self._hash_operation(target, amount, payload, predecessor, salt)
 
     self._schedule(id, delay)
-    log CallScheduled(id=id, index=empty(uint256), target=target, amount=amount, payload=payload, predecessor=predecessor, delay=delay)
-    if (salt != empty(bytes32)):
+    log CallScheduled(
+        id=id, index=empty(uint256), target=target, amount=amount, payload=payload, predecessor=predecessor, delay=delay
+    )
+    if salt != empty(bytes32):
         log CallSalt(id=id, salt=salt)
 
 
 @external
-def schedule_batch(targets: DynArray[address, _DYNARRAY_BOUND], amounts: DynArray[uint256, _DYNARRAY_BOUND], payloads: DynArray[Bytes[1_024], _DYNARRAY_BOUND],
-                   predecessor: bytes32, salt: bytes32, delay: uint256):
+def schedule_batch(
+    targets: DynArray[address, _DYNARRAY_BOUND],
+    amounts: DynArray[uint256, _DYNARRAY_BOUND],
+    payloads: DynArray[Bytes[1_024], _DYNARRAY_BOUND],
+    predecessor: bytes32,
+    salt: bytes32,
+    delay: uint256,
+):
     """
     @dev Schedules an operation containing a batch of transactions.
          Emits one `CallScheduled` event per transaction in the
@@ -456,13 +478,21 @@ def schedule_batch(targets: DynArray[address, _DYNARRAY_BOUND], amounts: DynArra
     self._schedule(id, delay)
     idx: uint256 = empty(uint256)
     for target: address in targets:
-        log CallScheduled(id=id, index=idx, target=target, amount=amounts[idx], payload=payloads[idx], predecessor=predecessor, delay=delay)
+        log CallScheduled(
+            id=id,
+            index=idx,
+            target=target,
+            amount=amounts[idx],
+            payload=payloads[idx],
+            predecessor=predecessor,
+            delay=delay,
+        )
         # The following line cannot overflow because we have
         # limited the dynamic array `targets` by the `constant`
         # parameter `_DYNARRAY_BOUND`, which is bounded by the
         # maximum value of `uint8`.
         idx = unsafe_add(idx, 1)
-    if (salt != empty(bytes32)):
+    if salt != empty(bytes32):
         log CallSalt(id=id, salt=salt)
 
 
@@ -509,8 +539,13 @@ def execute(target: address, amount: uint256, payload: Bytes[1_024], predecessor
 
 @external
 @payable
-def execute_batch(targets: DynArray[address, _DYNARRAY_BOUND], amounts: DynArray[uint256, _DYNARRAY_BOUND], payloads: DynArray[Bytes[1_024], _DYNARRAY_BOUND],
-                  predecessor: bytes32, salt: bytes32):
+def execute_batch(
+    targets: DynArray[address, _DYNARRAY_BOUND],
+    amounts: DynArray[uint256, _DYNARRAY_BOUND],
+    payloads: DynArray[Bytes[1_024], _DYNARRAY_BOUND],
+    predecessor: bytes32,
+    salt: bytes32,
+):
     """
     @dev Executes a ready operation containing a batch of transactions.
          Emits one `CallExecuted` event per transaction in the batch.
@@ -609,8 +644,13 @@ def onERC1155Received(operator: address, owner: address, id: uint256, amount: ui
 
 
 @external
-def onERC1155BatchReceived(operator: address, owner: address, ids: DynArray[uint256, 65_535], amounts: DynArray[uint256, 65_535],
-                           data: Bytes[1_024]) -> bytes4:
+def onERC1155BatchReceived(
+    operator: address,
+    owner: address,
+    ids: DynArray[uint256, 65_535],
+    amounts: DynArray[uint256, 65_535],
+    data: Bytes[1_024],
+) -> bytes4:
     """
     @dev Handles the receipt of multiple ERC-1155 token types.
          This function is called at the end of a `safeBatchTransferFrom`
@@ -701,11 +741,11 @@ def _get_operation_state(id: bytes32) -> OperationState:
             operation.
     """
     timestamp: uint256 = self.get_timestamp[id]
-    if (timestamp == empty(uint256)):
+    if timestamp == empty(uint256):
         return OperationState.UNSET
-    elif (timestamp == _DONE_TIMESTAMP):
+    elif timestamp == _DONE_TIMESTAMP:
         return OperationState.DONE
-    elif (timestamp > block.timestamp):
+    elif timestamp > block.timestamp:
         return OperationState.WAITING
 
     return OperationState.READY
@@ -713,7 +753,9 @@ def _get_operation_state(id: bytes32) -> OperationState:
 
 @internal
 @pure
-def _hash_operation(target: address, amount: uint256, payload: Bytes[1_024], predecessor: bytes32, salt: bytes32) -> bytes32:
+def _hash_operation(
+    target: address, amount: uint256, payload: Bytes[1_024], predecessor: bytes32, salt: bytes32
+) -> bytes32:
     """
     @dev Returns the identifier of an operation containing
          a single transaction.
@@ -731,8 +773,13 @@ def _hash_operation(target: address, amount: uint256, payload: Bytes[1_024], pre
 
 @internal
 @pure
-def _hash_operation_batch(targets: DynArray[address, _DYNARRAY_BOUND], amounts: DynArray[uint256, _DYNARRAY_BOUND], payloads: DynArray[Bytes[1_024], _DYNARRAY_BOUND],
-                          predecessor: bytes32, salt: bytes32) -> bytes32:
+def _hash_operation_batch(
+    targets: DynArray[address, _DYNARRAY_BOUND],
+    amounts: DynArray[uint256, _DYNARRAY_BOUND],
+    payloads: DynArray[Bytes[1_024], _DYNARRAY_BOUND],
+    predecessor: bytes32,
+    salt: bytes32,
+) -> bytes32:
     """
     @dev Returns the identifier of an operation containing
          a batch of transactions.
@@ -761,7 +808,7 @@ def _schedule(id: bytes32, delay: uint256):
            becomes valid. Must be greater than or equal
            to the minimum delay.
     """
-    assert not(self._is_operation(id)), "timelock_controller: operation already scheduled"
+    assert not self._is_operation(id), "timelock_controller: operation already scheduled"
     assert delay >= self.get_minimum_delay, "timelock_controller: insufficient delay"
     self.get_timestamp[id] = block.timestamp + delay
 
@@ -780,8 +827,8 @@ def _execute(target: address, amount: uint256, payload: Bytes[1_024]):
     success: bool = empty(bool)
     return_data: Bytes[max_value(uint8)] = b""
     success, return_data = raw_call(target, payload, max_outsize=255, value=amount, revert_on_failure=False)
-    if (not(success)):
-        if (len(return_data) != empty(uint256)):
+    if not success:
+        if len(return_data) != empty(uint256):
             # Bubble up the revert reason.
             raw_revert(return_data)
 
@@ -799,7 +846,9 @@ def _before_call(id: bytes32, predecessor: bytes32):
            operation.
     """
     assert self._is_operation_ready(id), "timelock_controller: operation is not ready"
-    assert ((predecessor == empty(bytes32)) or (self._is_operation_done(predecessor))), "timelock_controller: missing dependency"
+    assert (
+        predecessor == empty(bytes32) or self._is_operation_done(predecessor)
+    ), "timelock_controller: missing dependency"
 
 
 @internal
@@ -824,5 +873,5 @@ def _only_role_or_open_role(role: bytes32):
          enabling this role for everyone.
     @param role The 32-byte role definition.
     """
-    if (not(access_control.hasRole[role][empty(address)])):
+    if not access_control.hasRole[role][empty(address)]:
         access_control._check_role(role, msg.sender)

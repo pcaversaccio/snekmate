@@ -222,7 +222,7 @@ def _grant_role(role: bytes32, account: address):
     @param role The 32-byte role definition.
     @param account The 20-byte address of the account.
     """
-    if (not(self.hasRole[role][account])):
+    if not self.hasRole[role][account]:
         self.hasRole[role][account] = True
         log IAccessControl.RoleGranted(role=role, account=account, sender=msg.sender)
 
@@ -236,6 +236,6 @@ def _revoke_role(role: bytes32, account: address):
     @param role The 32-byte role definition.
     @param account The 20-byte address of the account.
     """
-    if (self.hasRole[role][account]):
+    if self.hasRole[role][account]:
         self.hasRole[role][account] = False
         log IAccessControl.RoleRevoked(role=role, account=account, sender=msg.sender)

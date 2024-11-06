@@ -114,7 +114,9 @@ exports: (
 
 
 # @dev The 32-byte type hash of the `permit` function.
-_PERMIT_TYPE_HASH: constant(bytes32) = keccak256("Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)")
+_PERMIT_TYPE_HASH: constant(bytes32) = keccak256(
+    "Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)"
+)
 
 
 # @dev Returns the name of the token.
@@ -176,7 +178,9 @@ event RoleMinterChanged:
 
 @deploy
 @payable
-def __init__(name_: String[25], symbol_: String[5], decimals_: uint8, name_eip712_: String[50], version_eip712_: String[20]):
+def __init__(
+    name_: String[25], symbol_: String[5], decimals_: uint8, name_eip712_: String[50], version_eip712_: String[20]
+):
     """
     @dev To omit the opcodes for checking the `msg.value`
          in the creation-time EVM bytecode, the constructor
@@ -370,7 +374,7 @@ def permit(owner: address, spender: address, amount: uint256, deadline: uint256,
     self.nonces[owner] = unsafe_add(current_nonce, 1)
 
     struct_hash: bytes32 = keccak256(abi_encode(_PERMIT_TYPE_HASH, owner, spender, amount, current_nonce, deadline))
-    hash: bytes32  = eip712_domain_separator._hash_typed_data_v4(struct_hash)
+    hash: bytes32 = eip712_domain_separator._hash_typed_data_v4(struct_hash)
 
     signer: address = ecdsa._recover_vrs(hash, convert(v, uint256), convert(r, uint256), convert(s, uint256))
     assert signer == owner, "erc20: invalid signature"
@@ -543,7 +547,7 @@ def _spend_allowance(owner: address, spender: address, amount: uint256):
            allowed to be spent by the `spender`.
     """
     current_allowance: uint256 = self.allowance[owner][spender]
-    if (current_allowance < max_value(uint256)):
+    if current_allowance < max_value(uint256):
         # The following line allows the commonly known address
         # poisoning attack, where `transferFrom` instructions
         # are executed from arbitrary addresses with an `amount`

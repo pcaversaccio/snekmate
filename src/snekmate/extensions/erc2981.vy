@@ -196,7 +196,7 @@ def royaltyInfo(token_id: uint256, sale_price: uint256) -> (address, uint256):
             `sale_price`.
     """
     royalty: RoyaltyInfo = self._token_royalty_info[token_id]
-    if (royalty.receiver == empty(address)):
+    if royalty.receiver == empty(address):
         royalty = self._default_royalty_info
 
     # The following line uses intentionally checked arithmetic to
