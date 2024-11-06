@@ -28,7 +28,7 @@ When you propose a new feature, you should provide as much detail as possible, e
 
 ## 🛠 Submitting a Pull Request (PR)
 
-As a contributor, you are expected to fork the `main` branch of this repository, work on your own fork, and then submit pull requests. The pull requests are reviewed and eventually merged into the `main` repository. See ["Fork-a-Repo"](https://help.github.com/articles/fork-a-repo) for how this works.
+As a contributor, you are expected to fork the `main` branch of this repository, work on your own fork, and then submit pull requests. The pull requests are reviewed and eventually merged into the `main` repository. See ["Fork a repository"](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/fork-a-repo) for how this works.
 
 Ensure you read and follow our [Engineering Guidelines](./GUIDELINES.md). Run prettier, linter, and tests to make sure your PR is sound before submitting it.
 

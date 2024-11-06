@@ -69,8 +69,12 @@ def _verify(proof: DynArray[bytes32, _DYNARRAY_BOUND], root: bytes32, leaf: byte
 
 @internal
 @pure
-def _multi_proof_verify(proof: DynArray[bytes32, _DYNARRAY_BOUND], proof_flags: DynArray[bool, _DYNARRAY_BOUND],
-                        root: bytes32, leaves: DynArray[bytes32, _DYNARRAY_BOUND]) -> bool:
+def _multi_proof_verify(
+    proof: DynArray[bytes32, _DYNARRAY_BOUND],
+    proof_flags: DynArray[bool, _DYNARRAY_BOUND],
+    root: bytes32,
+    leaves: DynArray[bytes32, _DYNARRAY_BOUND],
+) -> bool:
     """
     @dev Returns `True` if it can be simultaneously proved that
          `leaves` are part of a Merkle tree defined by `root`
@@ -122,8 +126,11 @@ def _process_proof(proof: DynArray[bytes32, _DYNARRAY_BOUND], leaf: bytes32) -> 
 
 @internal
 @pure
-def _process_multi_proof(proof: DynArray[bytes32, _DYNARRAY_BOUND], proof_flags: DynArray[bool, _DYNARRAY_BOUND],
-                         leaves: DynArray[bytes32, _DYNARRAY_BOUND]) -> bytes32:
+def _process_multi_proof(
+    proof: DynArray[bytes32, _DYNARRAY_BOUND],
+    proof_flags: DynArray[bool, _DYNARRAY_BOUND],
+    leaves: DynArray[bytes32, _DYNARRAY_BOUND],
+) -> bytes32:
     """
     @dev Returns the recovered hash obtained by traversing
          a Merkle tree from `leaves` using `proof` and a
@@ -171,7 +178,9 @@ def _process_multi_proof(proof: DynArray[bytes32, _DYNARRAY_BOUND], proof_flags:
     # `total_hashes` are bounded by the value `max_value(uint8)`
     # and therefore cannot overflow the `uint256` type when they
     # are added together or incremented by `1`.
-    assert unsafe_add(leaves_length, len(proof)) == unsafe_add(total_hashes, 1), "merkle_proof_verification: invalid multiproof"
+    assert unsafe_add(leaves_length, len(proof)) == unsafe_add(
+        total_hashes, 1
+    ), "merkle_proof_verification: invalid multiproof"
 
     hashes: DynArray[bytes32, _DYNARRAY_BOUND] = []
     leaf_pos: uint256 = empty(uint256)
@@ -186,14 +195,14 @@ def _process_multi_proof(proof: DynArray[bytes32, _DYNARRAY_BOUND], proof_flags:
     # - depending on the flag, either another value from the "main queue"
     #   (merging branches) or an element from the `proof` array.
     for flag: bool in proof_flags:
-        if (leaf_pos < leaves_length):
+        if leaf_pos < leaves_length:
             a = leaves[leaf_pos]
             leaf_pos = unsafe_add(leaf_pos, 1)
         else:
             a = hashes[hash_pos]
             hash_pos = unsafe_add(hash_pos, 1)
-        if (flag):
-            if (leaf_pos < leaves_length):
+        if flag:
+            if leaf_pos < leaves_length:
                 b = leaves[leaf_pos]
                 leaf_pos = unsafe_add(leaf_pos, 1)
             else:
@@ -204,12 +213,12 @@ def _process_multi_proof(proof: DynArray[bytes32, _DYNARRAY_BOUND], proof_flags:
             proof_pos = unsafe_add(proof_pos, 1)
         hashes.append(self._hash_pair(a, b))
 
-    if (total_hashes != empty(uint256)):
+    if total_hashes != empty(uint256):
         # Vyper, unlike Python, does not support negative
         # indexing and would revert in such a case. In any event,
         # the array index cannot become negative here by design.
         return hashes[unsafe_sub(total_hashes, 1)]
-    elif (leaves_length != empty(uint256)):
+    elif leaves_length != empty(uint256):
         return leaves[empty(uint256)]
 
     return proof[empty(uint256)]
@@ -226,7 +235,7 @@ def _hash_pair(a: bytes32, b: bytes32) -> bytes32:
     @param b The second 32-byte hash value to be concatenated and hashed.
     @return bytes32 The 32-byte keccak256 hash of `a` and `b`.
     """
-    if (convert(a, uint256) < convert(b, uint256)):
+    if convert(a, uint256) < convert(b, uint256):
         return keccak256(concat(a, b))
 
     return keccak256(concat(b, a))

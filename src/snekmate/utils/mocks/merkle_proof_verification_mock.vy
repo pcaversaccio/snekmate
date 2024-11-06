@@ -46,8 +46,12 @@ def verify(proof: DynArray[bytes32, mp._DYNARRAY_BOUND], root: bytes32, leaf: by
 
 @external
 @pure
-def multi_proof_verify(proof: DynArray[bytes32, mp._DYNARRAY_BOUND], proof_flags: DynArray[bool, mp._DYNARRAY_BOUND],
-                       root: bytes32, leaves: DynArray[bytes32, mp._DYNARRAY_BOUND]) -> bool:
+def multi_proof_verify(
+    proof: DynArray[bytes32, mp._DYNARRAY_BOUND],
+    proof_flags: DynArray[bool, mp._DYNARRAY_BOUND],
+    root: bytes32,
+    leaves: DynArray[bytes32, mp._DYNARRAY_BOUND],
+) -> bool:
     """
     @dev Returns `True` if it can be simultaneously proved that
          `leaves` are part of a Merkle tree defined by `root`

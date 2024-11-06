@@ -107,7 +107,9 @@ usedId: public(HashMap[uint256, bool])
 
 @deploy
 @payable
-def __init__(name_: String[25], symbol_: String[5], base_uri_: String[80], name_eip712_: String[50], version_eip712_: String[20]):
+def __init__(
+    name_: String[25], symbol_: String[5], base_uri_: String[80], name_eip712_: String[50], version_eip712_: String[20]
+):
     """
     @dev To omit the opcodes for checking the `msg.value`
          in the creation-time EVM bytecode, the constructor

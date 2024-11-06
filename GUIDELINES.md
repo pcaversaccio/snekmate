@@ -88,5 +88,6 @@ def _as_singleton_array(element: uint256) -> DynArray[uint256, 1]:
   - `external` functions
   - `internal` functions
 - There should be two line breaks between each variable or event declaration or function.
-- Code comments should have a maximum line length of 80 characters including blank spaces.
+- Each line of code should be limited to a maximum of 120 characters, including spaces.
+- Code comments should be confined to a maximum of 80 characters per line, including spaces, with an allowed exception for comments with long URL links.
 - For any undocumented behavior, please refer to [🐍Vyper's Official Style Guide](https://docs.vyperlang.org/en/latest/style-guide.html) and/or [PEP 8 – Style Guide for Python Code](https://peps.python.org/pep-0008).

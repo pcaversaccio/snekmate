@@ -201,13 +201,20 @@ def safeTransferFrom(owner: address, to: address, id: uint256, amount: uint256, 
     @param data The maximum 1,024-byte additional data
            with no specified format.
     """
-    assert ((owner == msg.sender) or (self.isApprovedForAll[owner][msg.sender])), "erc1155: caller is not token owner or approved"
+    assert (
+        owner == msg.sender or self.isApprovedForAll[owner][msg.sender]
+    ), "erc1155: caller is not token owner or approved"
     self._safe_transfer_from(owner, to, id, amount, data)
 
 
 @external
-def safeBatchTransferFrom(owner: address, to: address, ids: DynArray[uint256, _BATCH_SIZE], amounts: DynArray[uint256, _BATCH_SIZE],
-                          data: Bytes[1_024]):
+def safeBatchTransferFrom(
+    owner: address,
+    to: address,
+    ids: DynArray[uint256, _BATCH_SIZE],
+    amounts: DynArray[uint256, _BATCH_SIZE],
+    data: Bytes[1_024],
+):
     """
     @dev Batched version of `safeTransferFrom`.
     @notice Note that `ids` and `amounts` must have the
@@ -233,13 +240,17 @@ def safeBatchTransferFrom(owner: address, to: address, ids: DynArray[uint256, _B
     @param data The maximum 1,024-byte additional data
            with no specified format.
     """
-    assert ((owner == msg.sender) or (self.isApprovedForAll[owner][msg.sender])), "erc1155: caller is not token owner or approved"
+    assert (
+        owner == msg.sender or self.isApprovedForAll[owner][msg.sender]
+    ), "erc1155: caller is not token owner or approved"
     self._safe_batch_transfer_from(owner, to, ids, amounts, data)
 
 
 @external
 @view
-def balanceOfBatch(owners: DynArray[address, _BATCH_SIZE], ids: DynArray[uint256, _BATCH_SIZE]) -> DynArray[uint256, _BATCH_SIZE]:
+def balanceOfBatch(
+    owners: DynArray[address, _BATCH_SIZE], ids: DynArray[uint256, _BATCH_SIZE]
+) -> DynArray[uint256, _BATCH_SIZE]:
     """
     @dev Batched version of `balanceOf`.
     @notice Note that `owners` and `ids` must have the
@@ -337,7 +348,9 @@ def burn(owner: address, id: uint256, amount: uint256):
     @param id The 32-byte identifier of the token.
     @param amount The 32-byte token amount to be destroyed.
     """
-    assert ((owner == msg.sender) or (self.isApprovedForAll[owner][msg.sender])), "erc1155: caller is not token owner or approved"
+    assert (
+        owner == msg.sender or self.isApprovedForAll[owner][msg.sender]
+    ), "erc1155: caller is not token owner or approved"
     self._burn(owner, id, amount)
 
 
@@ -355,7 +368,9 @@ def burn_batch(owner: address, ids: DynArray[uint256, _BATCH_SIZE], amounts: Dyn
            being destroyed. Note that the order and length must
            match the 32-byte `ids` array.
     """
-    assert ((owner == msg.sender) or (self.isApprovedForAll[owner][msg.sender])), "erc1155: caller is not token owner or approved"
+    assert (
+        owner == msg.sender or self.isApprovedForAll[owner][msg.sender]
+    ), "erc1155: caller is not token owner or approved"
     self._burn_batch(owner, ids, amounts)
 
 
@@ -380,7 +395,9 @@ def safe_mint(owner: address, id: uint256, amount: uint256, data: Bytes[1_024]):
 
 
 @external
-def safe_mint_batch(owner: address, ids: DynArray[uint256, _BATCH_SIZE], amounts: DynArray[uint256, _BATCH_SIZE], data: Bytes[1_024]):
+def safe_mint_batch(
+    owner: address, ids: DynArray[uint256, _BATCH_SIZE], amounts: DynArray[uint256, _BATCH_SIZE], data: Bytes[1_024]
+):
     """
     @dev Batched version of `safe_mint`.
     @notice Note that `ids` and `amounts` must have the
@@ -526,12 +543,19 @@ def _safe_transfer_from(owner: address, to: address, id: uint256, amount: uint25
 
     self._after_token_transfer(owner, to, self._as_singleton_array(id), self._as_singleton_array(amount), data)
 
-    assert self._check_on_erc1155_received(owner, to, id, amount, data), "erc1155: transfer to non-IERC1155Receiver implementer"
+    assert self._check_on_erc1155_received(
+        owner, to, id, amount, data
+    ), "erc1155: transfer to non-IERC1155Receiver implementer"
 
 
 @internal
-def _safe_batch_transfer_from(owner: address, to: address, ids: DynArray[uint256, _BATCH_SIZE], amounts: DynArray[uint256, _BATCH_SIZE],
-                              data: Bytes[1_024]):
+def _safe_batch_transfer_from(
+    owner: address,
+    to: address,
+    ids: DynArray[uint256, _BATCH_SIZE],
+    amounts: DynArray[uint256, _BATCH_SIZE],
+    data: Bytes[1_024],
+):
     """
     @dev Batched version of `_safe_transfer_from`.
     @notice Note that `ids` and `amounts` must have the
@@ -582,7 +606,9 @@ def _safe_batch_transfer_from(owner: address, to: address, ids: DynArray[uint256
 
     self._after_token_transfer(owner, to, ids, amounts, data)
 
-    assert self._check_on_erc1155_batch_received(owner, to, ids, amounts, data), "erc1155: transfer to non-IERC1155Receiver implementer"
+    assert self._check_on_erc1155_batch_received(
+        owner, to, ids, amounts, data
+    ), "erc1155: transfer to non-IERC1155Receiver implementer"
 
 
 @internal
@@ -611,7 +637,9 @@ def _safe_mint(owner: address, id: uint256, amount: uint256, data: Bytes[1_024])
     """
     assert owner != empty(address), "erc1155: mint to the zero address"
 
-    self._before_token_transfer(empty(address), owner, self._as_singleton_array(id), self._as_singleton_array(amount), data)
+    self._before_token_transfer(
+        empty(address), owner, self._as_singleton_array(id), self._as_singleton_array(amount), data
+    )
 
     # In the next line, an overflow is not possible
     # due to an arithmetic check of the entire token
@@ -619,13 +647,19 @@ def _safe_mint(owner: address, id: uint256, amount: uint256, data: Bytes[1_024])
     self.balanceOf[owner][id] = unsafe_add(self.balanceOf[owner][id], amount)
     log IERC1155.TransferSingle(_operator=msg.sender, _from=empty(address), _to=owner, _id=id, _value=amount)
 
-    self._after_token_transfer(empty(address), owner, self._as_singleton_array(id), self._as_singleton_array(amount), data)
+    self._after_token_transfer(
+        empty(address), owner, self._as_singleton_array(id), self._as_singleton_array(amount), data
+    )
 
-    assert self._check_on_erc1155_received(empty(address), owner, id, amount, data), "erc1155: mint to non-IERC1155Receiver implementer"
+    assert self._check_on_erc1155_received(
+        empty(address), owner, id, amount, data
+    ), "erc1155: mint to non-IERC1155Receiver implementer"
 
 
 @internal
-def _safe_mint_batch(owner: address, ids: DynArray[uint256, _BATCH_SIZE], amounts: DynArray[uint256, _BATCH_SIZE], data: Bytes[1_024]):
+def _safe_mint_batch(
+    owner: address, ids: DynArray[uint256, _BATCH_SIZE], amounts: DynArray[uint256, _BATCH_SIZE], data: Bytes[1_024]
+):
     """
     @dev Batched version of `_safe_mint`.
     @notice Note that `ids` and `amounts` must have the
@@ -671,7 +705,9 @@ def _safe_mint_batch(owner: address, ids: DynArray[uint256, _BATCH_SIZE], amount
 
     self._after_token_transfer(empty(address), owner, ids, amounts, data)
 
-    assert self._check_on_erc1155_batch_received(empty(address), owner, ids, amounts, data), "erc1155: transfer to non-IERC1155Receiver implementer"
+    assert self._check_on_erc1155_batch_received(
+        empty(address), owner, ids, amounts, data
+    ), "erc1155: transfer to non-IERC1155Receiver implementer"
 
 
 @internal
@@ -694,15 +730,15 @@ def _uri(id: uint256) -> String[512]:
 
     base_uri_length: uint256 = len(_BASE_URI)
     # If there is no base URI, return the token URI.
-    if (base_uri_length == empty(uint256)):
+    if base_uri_length == empty(uint256):
         return token_uri
     # If both are set, concatenate the base URI
     # and token URI.
-    elif (len(token_uri) != empty(uint256)):
+    elif len(token_uri) != empty(uint256):
         return concat(_BASE_URI, token_uri)
     # If there is no token URI but a base URI,
     # concatenate the base URI and token ID.
-    elif (base_uri_length != empty(uint256)):
+    elif base_uri_length != empty(uint256):
         # Please note that for projects where the
         # substring `{id}` is present in the URI
         # and this URI is to be set as `_BASE_URI`,
@@ -745,14 +781,18 @@ def _burn(owner: address, id: uint256, amount: uint256):
     """
     assert owner != empty(address), "erc1155: burn from the zero address"
 
-    self._before_token_transfer(owner, empty(address), self._as_singleton_array(id), self._as_singleton_array(amount), b"")
+    self._before_token_transfer(
+        owner, empty(address), self._as_singleton_array(id), self._as_singleton_array(amount), b""
+    )
 
     owner_balance: uint256 = self.balanceOf[owner][id]
     assert owner_balance >= amount, "erc1155: burn amount exceeds balance"
     self.balanceOf[owner][id] = unsafe_sub(owner_balance, amount)
     log IERC1155.TransferSingle(_operator=msg.sender, _from=owner, _to=empty(address), _id=id, _value=amount)
 
-    self._after_token_transfer(owner, empty(address), self._as_singleton_array(id), self._as_singleton_array(amount), b"")
+    self._after_token_transfer(
+        owner, empty(address), self._as_singleton_array(id), self._as_singleton_array(amount), b""
+    )
 
 
 @internal
@@ -809,10 +849,11 @@ def _check_on_erc1155_received(owner: address, to: address, id: uint256, amount:
             returned the expected magic value.
     """
     # Contract case.
-    if (to.is_contract):
+    if to.is_contract:
         return_value: bytes4 = extcall IERC1155Receiver(to).onERC1155Received(msg.sender, owner, id, amount, data)
-        assert return_value == method_id("onERC1155Received(address,address,uint256,uint256,bytes)", output_type=bytes4),\
-                                         "erc1155: transfer to non-IERC1155Receiver implementer"
+        assert return_value == method_id(
+            "onERC1155Received(address,address,uint256,uint256,bytes)", output_type=bytes4
+        ), "erc1155: transfer to non-IERC1155Receiver implementer"
         return True
 
     # EOA case.
@@ -820,8 +861,13 @@ def _check_on_erc1155_received(owner: address, to: address, id: uint256, amount:
 
 
 @internal
-def _check_on_erc1155_batch_received(owner: address, to: address, ids: DynArray[uint256, _BATCH_SIZE], amounts: DynArray[uint256, _BATCH_SIZE],
-                                     data: Bytes[1_024]) -> bool:
+def _check_on_erc1155_batch_received(
+    owner: address,
+    to: address,
+    ids: DynArray[uint256, _BATCH_SIZE],
+    amounts: DynArray[uint256, _BATCH_SIZE],
+    data: Bytes[1_024],
+) -> bool:
     """
     @dev An `internal` function that invokes {IERC1155Receiver-onERC1155BatchReceived}
          on a target address. The call is not executed
@@ -838,10 +884,13 @@ def _check_on_erc1155_batch_received(owner: address, to: address, ids: DynArray[
             returned the expected magic value.
     """
     # Contract case.
-    if (to.is_contract):
-        return_value: bytes4 = extcall IERC1155Receiver(to).onERC1155BatchReceived(msg.sender, owner, ids, amounts, data)
-        assert return_value == method_id("onERC1155BatchReceived(address,address,uint256[],uint256[],bytes)", output_type=bytes4),\
-                                         "erc1155: transfer to non-IERC1155Receiver implementer"
+    if to.is_contract:
+        return_value: bytes4 = extcall IERC1155Receiver(to).onERC1155BatchReceived(
+            msg.sender, owner, ids, amounts, data
+        )
+        assert return_value == method_id(
+            "onERC1155BatchReceived(address,address,uint256[],uint256[],bytes)", output_type=bytes4
+        ), "erc1155: transfer to non-IERC1155Receiver implementer"
         return True
 
     # EOA case.
@@ -849,8 +898,13 @@ def _check_on_erc1155_batch_received(owner: address, to: address, ids: DynArray[
 
 
 @internal
-def _before_token_transfer(owner: address, to: address, ids: DynArray[uint256, _BATCH_SIZE], amounts: DynArray[uint256, _BATCH_SIZE],
-                           data: Bytes[1_024]):
+def _before_token_transfer(
+    owner: address,
+    to: address,
+    ids: DynArray[uint256, _BATCH_SIZE],
+    amounts: DynArray[uint256, _BATCH_SIZE],
+    data: Bytes[1_024],
+):
     """
     @dev Hook that is called before any token transfer.
          This includes minting and burning, as well as
@@ -881,7 +935,7 @@ def _before_token_transfer(owner: address, to: address, ids: DynArray[uint256, _
     @param data The maximum 1,024-byte additional data
            with no specified format.
     """
-    if (owner == empty(address)):
+    if owner == empty(address):
         idx: uint256 = empty(uint256)
         for id: uint256 in ids:
             # The following line uses intentionally checked arithmetic
@@ -894,7 +948,7 @@ def _before_token_transfer(owner: address, to: address, ids: DynArray[uint256, _
             # maximum value of `uint16`.
             idx = unsafe_add(idx, 1)
 
-    if (to == empty(address)):
+    if to == empty(address):
         idx: uint256 = empty(uint256)
         for id: uint256 in ids:
             amount: uint256 = amounts[idx]
@@ -909,8 +963,13 @@ def _before_token_transfer(owner: address, to: address, ids: DynArray[uint256, _
 
 
 @internal
-def _after_token_transfer(owner: address, to: address, ids: DynArray[uint256, _BATCH_SIZE], amounts: DynArray[uint256, _BATCH_SIZE],
-                          data: Bytes[1_024]):
+def _after_token_transfer(
+    owner: address,
+    to: address,
+    ids: DynArray[uint256, _BATCH_SIZE],
+    amounts: DynArray[uint256, _BATCH_SIZE],
+    data: Bytes[1_024],
+):
     """
     @dev Hook that is called after any token transfer.
          This includes minting and burning, as well as

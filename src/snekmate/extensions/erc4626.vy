@@ -159,7 +159,14 @@ _UNDERLYING_DECIMALS: immutable(uint8)
 
 @deploy
 @payable
-def __init__(name_: String[25], symbol_: String[5], asset_: IERC20, decimals_offset_: uint8, name_eip712_: String[50], version_eip712_: String[20]):
+def __init__(
+    name_: String[25],
+    symbol_: String[5],
+    asset_: IERC20,
+    decimals_offset_: uint8,
+    name_eip712_: String[50],
+    version_eip712_: String[20],
+):
     """
     @dev To omit the opcodes for checking the `msg.value`
          in the creation-time EVM bytecode, the constructor
@@ -324,7 +331,7 @@ def previewMint(shares: uint256) -> uint256:
 
 
 @external
-def mint(shares: uint256, receiver:address) -> uint256:
+def mint(shares: uint256, receiver: address) -> uint256:
     """
     @dev Mints exactly `shares` vault shares to `receiver` by
          depositing `assets` of underlying tokens.
@@ -459,8 +466,10 @@ def _try_get_underlying_decimals(underlying: IERC20) -> (bool, uint8):
     # successful with return data `0x`). Furthermore, it is important
     # to note that an external call via `raw_call` does not perform an
     # external code size check on the target address.
-    success, return_data = raw_call(underlying.address, method_id("decimals()"), max_outsize=32, is_static_call=True, revert_on_failure=False)
-    if (success and (len(return_data) == 32) and (convert(return_data, uint256) <= convert(max_value(uint8), uint256))):
+    success, return_data = raw_call(
+        underlying.address, method_id("decimals()"), max_outsize=32, is_static_call=True, revert_on_failure=False
+    )
+    if success and len(return_data) == 32 and convert(return_data, uint256) <= convert(max_value(uint8), uint256):
         return (True, convert(return_data, uint8))
     return (False, empty(uint8))
 
@@ -489,7 +498,9 @@ def _convert_to_shares(assets: uint256, roundup: bool) -> uint256:
            to round up or not. The default `False` is round down.
     @return uint256 The converted 32-byte shares amount.
     """
-    return math._mul_div(assets, erc20.totalSupply + 10 ** convert(_DECIMALS_OFFSET, uint256), self._total_assets() + 1, roundup)
+    return math._mul_div(
+        assets, erc20.totalSupply + 10 ** convert(_DECIMALS_OFFSET, uint256), self._total_assets() + 1, roundup
+    )
 
 
 @internal
@@ -503,7 +514,9 @@ def _convert_to_assets(shares: uint256, roundup: bool) -> uint256:
            to round up or not. The default `False` is round down.
     @return uint256 The converted 32-byte assets amount.
     """
-    return math._mul_div(shares, self._total_assets() + 1, erc20.totalSupply + 10 ** convert(_DECIMALS_OFFSET, uint256), roundup)
+    return math._mul_div(
+        shares, self._total_assets() + 1, erc20.totalSupply + 10 ** convert(_DECIMALS_OFFSET, uint256), roundup
+    )
 
 
 @internal
@@ -656,7 +669,9 @@ def _deposit(sender: address, receiver: address, assets: uint256, shares: uint25
     # always performs an external code size check on the target address unless
     # you add the kwarg `skip_contract_check=True`. If the check fails (i.e.
     # the target address is an EOA), the call reverts.
-    assert extcall _ASSET.transferFrom(sender, self, assets, default_return_value=True), "erc4626: transferFrom operation did not succeed"
+    assert extcall _ASSET.transferFrom(
+        sender, self, assets, default_return_value=True
+    ), "erc4626: transferFrom operation did not succeed"
     erc20._mint(receiver, shares)
     log IERC4626.Deposit(sender=sender, owner=receiver, assets=assets, shares=shares)
 
@@ -672,7 +687,7 @@ def _withdraw(sender: address, receiver: address, owner: address, assets: uint25
     @param assets The 32-byte assets amount.
     @param shares The 32-byte shares amount.
     """
-    if (sender != owner):
+    if sender != owner:
         erc20._spend_allowance(owner, sender, shares)
 
     # If `asset` is an ERC-777, `transfer` can trigger a reentrancy
@@ -696,5 +711,7 @@ def _withdraw(sender: address, receiver: address, owner: address, assets: uint25
     # always performs an external code size check on the target address unless
     # you add the kwarg `skip_contract_check=True`. If the check fails (i.e.
     # the target address is an EOA), the call reverts.
-    assert extcall _ASSET.transfer(receiver, assets, default_return_value=True), "erc4626: transfer operation did not succeed"
+    assert extcall _ASSET.transfer(
+        receiver, assets, default_return_value=True
+    ), "erc4626: transfer operation did not succeed"
     log IERC4626.Withdraw(sender=sender, receiver=receiver, owner=owner, assets=assets, shares=shares)

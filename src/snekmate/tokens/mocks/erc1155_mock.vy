@@ -108,7 +108,9 @@ def _customMint(owner: address, id: uint256, amount: uint256):
     """
     assert owner != empty(address), "ERC1155Mock: mint to the zero address"
 
-    erc1155._before_token_transfer(empty(address), owner, erc1155._as_singleton_array(id), erc1155._as_singleton_array(amount), b"")
+    erc1155._before_token_transfer(
+        empty(address), owner, erc1155._as_singleton_array(id), erc1155._as_singleton_array(amount), b""
+    )
 
     # In the next line, an overflow is not possible
     # due to an arithmetic check of the entire token
@@ -116,4 +118,6 @@ def _customMint(owner: address, id: uint256, amount: uint256):
     erc1155.balanceOf[owner][id] = unsafe_add(erc1155.balanceOf[owner][id], amount)
     log IERC1155.TransferSingle(_operator=msg.sender, _from=empty(address), _to=owner, _id=id, _value=amount)
 
-    erc1155._after_token_transfer(empty(address), owner, erc1155._as_singleton_array(id), erc1155._as_singleton_array(amount), b"")
+    erc1155._after_token_transfer(
+        empty(address), owner, erc1155._as_singleton_array(id), erc1155._as_singleton_array(amount), b""
+    )

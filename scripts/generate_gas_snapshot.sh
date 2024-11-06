@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Set the default values.
 OUTPUT_FILE=".gas-snapshot"

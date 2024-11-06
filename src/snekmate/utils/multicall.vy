@@ -86,14 +86,12 @@ def _multicall(data: DynArray[Batch, _DYNARRAY_BOUND]) -> DynArray[Result, _DYNA
     success: bool = empty(bool)
     return_data: Bytes[max_value(uint8)] = b""
     for batch: Batch in data:
-        if (batch.allow_failure == False):
-            return_data = raw_call(batch.target, batch.calldata, max_outsize=255)
-            success = True
-            results.append(Result(success=success, return_data=return_data))
+        if batch.allow_failure:
+            success, return_data = raw_call(batch.target, batch.calldata, max_outsize=255, revert_on_failure=False)
         else:
-            success, return_data =\
-                raw_call(batch.target, batch.calldata, max_outsize=255, revert_on_failure=False)
-            results.append(Result(success=success, return_data=return_data))
+            success = True
+            return_data = raw_call(batch.target, batch.calldata, max_outsize=255)
+        results.append(Result(success=success, return_data=return_data))
     return results
 
 
@@ -124,14 +122,14 @@ def _multicall_value(data: DynArray[BatchValue, _DYNARRAY_BOUND]) -> DynArray[Re
         # insights also, see the following X thread:
         # https://x.com/Guhu95/status/1736983530343981307.
         value_accumulator = unsafe_add(value_accumulator, msg_value)
-        if (batch.allow_failure == False):
-            return_data = raw_call(batch.target, batch.calldata, max_outsize=255, value=msg_value)
-            success = True
-            results.append(Result(success=success, return_data=return_data))
+        if batch.allow_failure:
+            success, return_data = raw_call(
+                batch.target, batch.calldata, max_outsize=255, value=msg_value, revert_on_failure=False
+            )
         else:
-            success, return_data =\
-                raw_call(batch.target, batch.calldata, max_outsize=255, value=msg_value, revert_on_failure=False)
-            results.append(Result(success=success, return_data=return_data))
+            success = True
+            return_data = raw_call(batch.target, batch.calldata, max_outsize=255, value=msg_value)
+        results.append(Result(success=success, return_data=return_data))
     assert msg.value == value_accumulator, "multicall: value mismatch"
     return results
 
@@ -160,14 +158,14 @@ def _multicall_self(data: DynArray[BatchSelf, _DYNARRAY_BOUND]) -> DynArray[Resu
     success: bool = empty(bool)
     return_data: Bytes[max_value(uint8)] = b""
     for batch: BatchSelf in data:
-        if (batch.allow_failure == False):
-            return_data = raw_call(self, batch.calldata, max_outsize=255, is_delegate_call=True)
-            success = True
-            results.append(Result(success=success, return_data=return_data))
+        if batch.allow_failure:
+            success, return_data = raw_call(
+                self, batch.calldata, max_outsize=255, is_delegate_call=True, revert_on_failure=False
+            )
         else:
-            success, return_data =\
-                raw_call(self, batch.calldata, max_outsize=255, is_delegate_call=True, revert_on_failure=False)
-            results.append(Result(success=success, return_data=return_data))
+            success = True
+            return_data = raw_call(self, batch.calldata, max_outsize=255, is_delegate_call=True)
+        results.append(Result(success=success, return_data=return_data))
     return results
 
 
@@ -187,12 +185,12 @@ def _multistaticcall(data: DynArray[Batch, _DYNARRAY_BOUND]) -> DynArray[Result,
     success: bool = empty(bool)
     return_data: Bytes[max_value(uint8)] = b""
     for batch: Batch in data:
-        if (batch.allow_failure == False):
-            return_data = raw_call(batch.target, batch.calldata, max_outsize=255, is_static_call=True)
-            success = True
-            results.append(Result(success=success, return_data=return_data))
+        if batch.allow_failure:
+            success, return_data = raw_call(
+                batch.target, batch.calldata, max_outsize=255, is_static_call=True, revert_on_failure=False
+            )
         else:
-            success, return_data =\
-                raw_call(batch.target, batch.calldata, max_outsize=255, is_static_call=True, revert_on_failure=False)
-            results.append(Result(success=success, return_data=return_data))
+            success = True
+            return_data = raw_call(batch.target, batch.calldata, max_outsize=255, is_static_call=True)
+        results.append(Result(success=success, return_data=return_data))
     return results

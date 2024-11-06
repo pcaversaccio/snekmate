@@ -34,6 +34,7 @@
     - Use relative `interfaces` `import`s. ([#263](https://github.com/pcaversaccio/snekmate/pull/263))
     - Use `bytes1` literal in `eip712Domain` function. ([#283](https://github.com/pcaversaccio/snekmate/pull/283))
   - [`math`](https://github.com/pcaversaccio/snekmate/blob/v0.1.1/src/snekmate/utils/math.vy): Use mutable `internal` function parameters. ([#267](https://github.com/pcaversaccio/snekmate/pull/267))
+  - [`multicall`](https://github.com/pcaversaccio/snekmate/blob/v0.1.1/src/snekmate/utils/multicall.vy): Optimise `Batch`-based `for` loops. ([#287](https://github.com/pcaversaccio/snekmate/pull/287))
 
 ### 🥢 Test Coverage
 
