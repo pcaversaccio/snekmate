@@ -1,4 +1,4 @@
-# pragma version ~=0.4.1b2
+# pragma version ~=0.4.1b3
 """
 @title ERC-721 and ERC-1155 Compatible ERC-2981 Reference Implementation
 @custom:contract-name erc2981

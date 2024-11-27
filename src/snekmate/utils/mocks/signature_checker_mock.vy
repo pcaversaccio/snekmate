@@ -1,4 +1,4 @@
-# pragma version ~=0.4.1b2
+# pragma version ~=0.4.1b3
 """
 @title `signature_checker` Module Reference Implementation
 @custom:contract-name signature_checker_mock
