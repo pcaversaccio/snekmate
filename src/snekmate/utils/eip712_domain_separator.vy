@@ -1,4 +1,4 @@
-# pragma version ~=0.4.1b2
+# pragma version ~=0.4.1b3
 """
 @title EIP-712 Domain Separator
 @custom:contract-name eip712_domain_separator
