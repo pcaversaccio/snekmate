@@ -50,7 +50,7 @@ You will need the following dependencies:
 ## ⚙️ Installation
 
 > [!IMPORTANT]
-> All 🐍 snekmate contracts in the `main` branch are designed to work with the latest `master` branch of 🐍 Vyper, which can be installed via `pip install git+https://github.com/vyperlang/vyper@master` (note that Python version `3.10` or higher is required).
+> All 🐍 snekmate contracts in the `main` branch are designed to work with the latest `master` branch commit of 🐍Vyper, which can be installed via `pip install git+https://github.com/vyperlang/vyper@master` (note that Python version `3.10` or higher is required).
 
 ```bash
 pip install git+https://github.com/vyperlang/vyper@master
