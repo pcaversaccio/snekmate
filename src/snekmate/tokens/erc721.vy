@@ -108,7 +108,7 @@ uses: ownable
 from ..utils import ecdsa
 
 
-# @dev We import and use the `eip712_domain_separator` module.
+# @dev We import and initialise the `eip712_domain_separator` module.
 from ..utils import eip712_domain_separator
 initializes: eip712_domain_separator
 
