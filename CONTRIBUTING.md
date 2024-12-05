@@ -43,10 +43,14 @@ You will need the following dependencies:
 - [Git](https://git-scm.com)
 - [Node.js](https://nodejs.org)
 - [pnpm](https://pnpm.io)
+- [Python](https://www.python.org)
 - [🐍Vyper](https://github.com/vyperlang/vyper)
 - [Foundry](https://github.com/foundry-rs/foundry)
 
 ## ⚙️ Installation
+
+> [!IMPORTANT]
+> All 🐍 snekmate contracts in the `main` branch are designed to work with the latest `master` branch commit of 🐍Vyper, which can be installed via `pip install git+https://github.com/vyperlang/vyper.git@master` (note that Python version `3.10` or higher is required).
 
 It is recommended to install [`pnpm`](https://pnpm.io) through the `npm` package manager, which comes bundled with [Node.js](https://nodejs.org/en) when you install it on your system. It is recommended to use a Node.js version `>= 22.0.0`.
 

@@ -15,7 +15,7 @@ jobs:
         os:
           - ubuntu-latest
         python_version:
-          - 3.12
+          - 3.13
         architecture:
           - x64
 
