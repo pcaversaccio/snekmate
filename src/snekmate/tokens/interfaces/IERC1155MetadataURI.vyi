@@ -1,4 +1,4 @@
-# pragma version ~=0.4.1b3
+# pragma version ~=0.4.1b4
 """
 @title EIP-1155 Optional Metadata Interface Definition
 @custom:contract-name IERC1155MetadataURI
@@ -38,7 +38,7 @@ implements: IERC165
 # compatible. If you want to use this interface as a stand-alone
 # interface, you must add `implements: IERC1155` to this interface
 # and implement all required events and functions accordingly.
-import IERC1155 as IERC1155
+from . import IERC1155
 
 
 @external

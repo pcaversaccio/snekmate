@@ -1,4 +1,4 @@
-# pragma version ~=0.4.1b3
+# pragma version ~=0.4.1b4
 """
 @title Multicall Functions
 @custom:contract-name multicall
