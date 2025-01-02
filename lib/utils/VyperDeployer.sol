@@ -22,7 +22,7 @@ error DeploymentFailed(address emitter);
  * https://book.getfoundry.sh/cheatcodes/?highlight=CheatCodes#cheatcode-types)
  * in other test files without errors.
  */
-// solhint-disable-next-line contract-name-camelcase
+// solhint-disable-next-line contract-name-capwords
 interface _CheatCodes {
     function ffi(string[] calldata) external returns (bytes memory);
 }
