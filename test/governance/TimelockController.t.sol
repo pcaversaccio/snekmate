@@ -805,7 +805,7 @@ contract TimelockControllerTest is Test {
         vm.stopPrank();
 
         assertEq(timelockController.get_operation_state(operationId), 2);
-        vm.warp(block.timestamp + MIN_DELAY);
+        vm.warp(vm.getBlockTimestamp() + MIN_DELAY);
         assertEq(timelockController.get_operation_state(operationId), 4);
         vm.startPrank(EXECUTOR_ONE);
         vm.expectEmit(true, true, false, true);
@@ -880,7 +880,7 @@ contract TimelockControllerTest is Test {
         vm.stopPrank();
 
         assertEq(timelockController.get_operation_state(operationId), 2);
-        vm.warp(block.timestamp + MIN_DELAY);
+        vm.warp(vm.getBlockTimestamp() + MIN_DELAY);
         assertEq(timelockController.get_operation_state(operationId), 4);
         vm.startPrank(EXECUTOR_ONE);
         vm.expectEmit(true, true, false, true);
@@ -1107,7 +1107,7 @@ contract TimelockControllerTest is Test {
         );
         vm.stopPrank();
 
-        vm.warp(block.timestamp + MIN_DELAY);
+        vm.warp(vm.getBlockTimestamp() + MIN_DELAY);
         vm.startPrank(EXECUTOR_ONE);
         vm.expectEmit(true, true, false, true);
         emit ITimelockController.CallExecuted(
@@ -1160,7 +1160,7 @@ contract TimelockControllerTest is Test {
         );
         vm.stopPrank();
 
-        vm.warp(block.timestamp + MIN_DELAY - 2 days);
+        vm.warp(vm.getBlockTimestamp() + MIN_DELAY - 2 days);
         vm.expectRevert("timelock_controller: operation is not ready");
         vm.prank(EXECUTOR_ONE);
         timelockController.execute(
@@ -1235,7 +1235,7 @@ contract TimelockControllerTest is Test {
         );
         vm.stopPrank();
 
-        vm.warp(block.timestamp + MIN_DELAY + 2 days);
+        vm.warp(vm.getBlockTimestamp() + MIN_DELAY + 2 days);
         vm.expectRevert("timelock_controller: missing dependency");
         vm.prank(EXECUTOR_ONE);
         timelockController.execute(target, amount, payload, operationId1, SALT);
@@ -1286,7 +1286,7 @@ contract TimelockControllerTest is Test {
         );
         vm.stopPrank();
 
-        vm.warp(block.timestamp + MIN_DELAY + 2 days);
+        vm.warp(vm.getBlockTimestamp() + MIN_DELAY + 2 days);
         vm.expectRevert("timelock_controller: missing dependency");
         vm.prank(EXECUTOR_ONE);
         timelockController.execute(target, amount, payload, operationId1, SALT);
@@ -1331,7 +1331,7 @@ contract TimelockControllerTest is Test {
         );
         vm.stopPrank();
 
-        vm.warp(block.timestamp + MIN_DELAY + 2 days);
+        vm.warp(vm.getBlockTimestamp() + MIN_DELAY + 2 days);
         vm.expectRevert("timelock_controller: missing dependency");
         vm.prank(EXECUTOR_ONE);
         timelockController.execute(
@@ -1405,7 +1405,7 @@ contract TimelockControllerTest is Test {
         );
         vm.stopPrank();
 
-        vm.warp(block.timestamp + MIN_DELAY + 2 days);
+        vm.warp(vm.getBlockTimestamp() + MIN_DELAY + 2 days);
         vm.expectRevert("CallReceiverMock: reverting");
         vm.startPrank(EXECUTOR_ONE);
         timelockController.execute(
@@ -1478,7 +1478,7 @@ contract TimelockControllerTest is Test {
         );
         vm.stopPrank();
 
-        vm.warp(block.timestamp + MIN_DELAY + 2 days);
+        vm.warp(vm.getBlockTimestamp() + MIN_DELAY + 2 days);
         vm.expectRevert("timelock_controller: missing dependency");
         vm.prank(EXECUTOR_ONE);
         timelockController.execute(
@@ -1528,7 +1528,7 @@ contract TimelockControllerTest is Test {
         );
         vm.stopPrank();
 
-        vm.warp(block.timestamp + MIN_DELAY + 1);
+        vm.warp(vm.getBlockTimestamp() + MIN_DELAY + 1);
         vm.startPrank(EXECUTOR_ONE);
         vm.expectEmit(true, true, false, true);
         emit ITimelockController.CallExecuted(
@@ -1630,7 +1630,7 @@ contract TimelockControllerTest is Test {
         );
         vm.stopPrank();
 
-        vm.warp(block.timestamp + MIN_DELAY);
+        vm.warp(vm.getBlockTimestamp() + MIN_DELAY);
         vm.startPrank(EXECUTOR_ONE);
         vm.expectEmit(true, true, false, true);
         emit ITimelockController.CallExecuted(
@@ -1687,7 +1687,7 @@ contract TimelockControllerTest is Test {
             EMPTY_SALT,
             MIN_DELAY
         );
-        vm.warp(block.timestamp + MIN_DELAY);
+        vm.warp(vm.getBlockTimestamp() + MIN_DELAY);
         assertTrue(timelockController.is_operation_ready(operationId));
         vm.stopPrank();
     }
@@ -1728,7 +1728,7 @@ contract TimelockControllerTest is Test {
             EMPTY_SALT,
             MIN_DELAY
         );
-        vm.warp(block.timestamp + MIN_DELAY + 1 days);
+        vm.warp(vm.getBlockTimestamp() + MIN_DELAY + 1 days);
         assertTrue(timelockController.is_operation_ready(operationId));
         vm.stopPrank();
     }
@@ -1769,7 +1769,7 @@ contract TimelockControllerTest is Test {
             EMPTY_SALT,
             MIN_DELAY
         );
-        vm.warp(block.timestamp + MIN_DELAY - 1 days);
+        vm.warp(vm.getBlockTimestamp() + MIN_DELAY - 1 days);
         assertTrue(!timelockController.is_operation_ready(operationId));
         vm.stopPrank();
     }
@@ -1812,7 +1812,7 @@ contract TimelockControllerTest is Test {
         );
         vm.stopPrank();
 
-        vm.warp(block.timestamp + MIN_DELAY);
+        vm.warp(vm.getBlockTimestamp() + MIN_DELAY);
         vm.startPrank(EXECUTOR_ONE);
         vm.expectEmit(true, true, false, true);
         emit ITimelockController.CallExecuted(
@@ -1955,7 +1955,7 @@ contract TimelockControllerTest is Test {
         );
         vm.stopPrank();
 
-        vm.warp(block.timestamp + MIN_DELAY);
+        vm.warp(vm.getBlockTimestamp() + MIN_DELAY);
         vm.startPrank(EXECUTOR_ONE);
         vm.expectEmit(true, true, false, true);
         emit ITimelockController.CallExecuted(
@@ -2064,7 +2064,7 @@ contract TimelockControllerTest is Test {
         vm.stopPrank();
 
         assertEq(timelockController.get_operation_state(batchedOperationId), 2);
-        vm.warp(block.timestamp + MIN_DELAY);
+        vm.warp(vm.getBlockTimestamp() + MIN_DELAY);
         assertEq(timelockController.get_operation_state(batchedOperationId), 4);
         vm.startPrank(EXECUTOR_ONE);
         for (uint256 i = 0; i < targets.length; ++i) {
@@ -2150,7 +2150,7 @@ contract TimelockControllerTest is Test {
         vm.stopPrank();
 
         assertEq(timelockController.get_operation_state(batchedOperationId), 2);
-        vm.warp(block.timestamp + MIN_DELAY);
+        vm.warp(vm.getBlockTimestamp() + MIN_DELAY);
         assertEq(timelockController.get_operation_state(batchedOperationId), 4);
         vm.startPrank(EXECUTOR_ONE);
         for (uint256 i = 0; i < targets.length; ++i) {
@@ -2437,7 +2437,7 @@ contract TimelockControllerTest is Test {
         );
         vm.stopPrank();
 
-        vm.warp(block.timestamp + MIN_DELAY - 2 days);
+        vm.warp(vm.getBlockTimestamp() + MIN_DELAY - 2 days);
         vm.expectRevert("timelock_controller: operation is not ready");
         vm.prank(EXECUTOR_ONE);
         timelockController.execute_batch(
@@ -2520,7 +2520,7 @@ contract TimelockControllerTest is Test {
         );
         vm.stopPrank();
 
-        vm.warp(block.timestamp + MIN_DELAY + 2 days);
+        vm.warp(vm.getBlockTimestamp() + MIN_DELAY + 2 days);
         vm.expectRevert("timelock_controller: missing dependency");
         vm.prank(EXECUTOR_ONE);
         timelockController.execute_batch(
@@ -2583,7 +2583,7 @@ contract TimelockControllerTest is Test {
         );
         vm.stopPrank();
 
-        vm.warp(block.timestamp + MIN_DELAY + 2 days);
+        vm.warp(vm.getBlockTimestamp() + MIN_DELAY + 2 days);
         vm.expectRevert("timelock_controller: missing dependency");
         vm.prank(EXECUTOR_ONE);
         timelockController.execute_batch(
@@ -2640,7 +2640,7 @@ contract TimelockControllerTest is Test {
         );
         vm.stopPrank();
 
-        vm.warp(block.timestamp + MIN_DELAY + 2 days);
+        vm.warp(vm.getBlockTimestamp() + MIN_DELAY + 2 days);
         vm.expectRevert("timelock_controller: missing dependency");
         vm.prank(EXECUTOR_ONE);
         timelockController.execute_batch(
@@ -2723,7 +2723,7 @@ contract TimelockControllerTest is Test {
         );
         vm.stopPrank();
 
-        vm.warp(block.timestamp + MIN_DELAY + 2 days);
+        vm.warp(vm.getBlockTimestamp() + MIN_DELAY + 2 days);
         vm.expectRevert("CallReceiverMock: reverting");
         vm.startPrank(EXECUTOR_ONE);
         timelockController.execute_batch(
@@ -2801,7 +2801,7 @@ contract TimelockControllerTest is Test {
         );
         vm.stopPrank();
 
-        vm.warp(block.timestamp + MIN_DELAY + 2 days);
+        vm.warp(vm.getBlockTimestamp() + MIN_DELAY + 2 days);
         vm.expectRevert("timelock_controller: missing dependency");
         vm.prank(EXECUTOR_ONE);
         timelockController.execute_batch(
@@ -2857,7 +2857,7 @@ contract TimelockControllerTest is Test {
         );
         vm.stopPrank();
 
-        vm.warp(block.timestamp + MIN_DELAY + 1);
+        vm.warp(vm.getBlockTimestamp() + MIN_DELAY + 1);
         vm.startPrank(EXECUTOR_ONE);
         for (uint256 i = 0; i < targets.length; ++i) {
             vm.expectEmit(true, true, false, true);
@@ -2973,7 +2973,7 @@ contract TimelockControllerTest is Test {
         );
         vm.stopPrank();
 
-        vm.warp(block.timestamp + MIN_DELAY);
+        vm.warp(vm.getBlockTimestamp() + MIN_DELAY);
         vm.startPrank(EXECUTOR_ONE);
         for (uint256 i = 0; i < targets.length; ++i) {
             vm.expectEmit(true, true, false, true);
@@ -3040,7 +3040,7 @@ contract TimelockControllerTest is Test {
             EMPTY_SALT,
             MIN_DELAY
         );
-        vm.warp(block.timestamp + MIN_DELAY);
+        vm.warp(vm.getBlockTimestamp() + MIN_DELAY);
         assertTrue(timelockController.is_operation_ready(batchedOperationId));
         vm.stopPrank();
     }
@@ -3087,7 +3087,7 @@ contract TimelockControllerTest is Test {
             EMPTY_SALT,
             MIN_DELAY
         );
-        vm.warp(block.timestamp + MIN_DELAY + 1 days);
+        vm.warp(vm.getBlockTimestamp() + MIN_DELAY + 1 days);
         assertTrue(timelockController.is_operation_ready(batchedOperationId));
         vm.stopPrank();
     }
@@ -3134,7 +3134,7 @@ contract TimelockControllerTest is Test {
             EMPTY_SALT,
             MIN_DELAY
         );
-        vm.warp(block.timestamp + MIN_DELAY - 1 days);
+        vm.warp(vm.getBlockTimestamp() + MIN_DELAY - 1 days);
         assertTrue(!timelockController.is_operation_ready(batchedOperationId));
         vm.stopPrank();
     }
@@ -3183,7 +3183,7 @@ contract TimelockControllerTest is Test {
         );
         vm.stopPrank();
 
-        vm.warp(block.timestamp + MIN_DELAY);
+        vm.warp(vm.getBlockTimestamp() + MIN_DELAY);
         vm.startPrank(EXECUTOR_ONE);
         for (uint256 i = 0; i < targets.length; ++i) {
             vm.expectEmit(true, true, false, true);
@@ -3346,7 +3346,7 @@ contract TimelockControllerTest is Test {
         );
         vm.stopPrank();
 
-        vm.warp(block.timestamp + MIN_DELAY);
+        vm.warp(vm.getBlockTimestamp() + MIN_DELAY);
         vm.startPrank(EXECUTOR_ONE);
         for (uint256 i = 0; i < targets.length; ++i) {
             vm.expectEmit(true, true, false, true);
@@ -3826,7 +3826,7 @@ contract TimelockControllerTest is Test {
         );
         vm.stopPrank();
 
-        vm.warp(block.timestamp + MIN_DELAY);
+        vm.warp(vm.getBlockTimestamp() + MIN_DELAY);
         vm.startPrank(EXECUTOR_ONE);
         vm.expectEmit(true, true, true, false);
         emit IAccessControl.RoleAdminChanged(
@@ -3896,7 +3896,7 @@ contract TimelockControllerTest is Test {
         );
         vm.stopPrank();
 
-        vm.warp(block.timestamp + MIN_DELAY);
+        vm.warp(vm.getBlockTimestamp() + MIN_DELAY);
         vm.startPrank(STRANGER);
         vm.expectEmit(true, true, true, false);
         emit IAccessControl.RoleAdminChanged(
@@ -3983,7 +3983,7 @@ contract TimelockControllerTest is Test {
         );
         vm.stopPrank();
 
-        vm.warp(block.timestamp + MIN_DELAY);
+        vm.warp(vm.getBlockTimestamp() + MIN_DELAY);
         vm.startPrank(EXECUTOR_ONE);
         for (uint256 i = 0; i < targets.length; ++i) {
             vm.expectEmit(true, true, false, true);
@@ -4081,7 +4081,7 @@ contract TimelockControllerTest is Test {
         );
         vm.stopPrank();
 
-        vm.warp(block.timestamp + MIN_DELAY);
+        vm.warp(vm.getBlockTimestamp() + MIN_DELAY);
         vm.startPrank(EXECUTOR_ONE);
         for (uint256 i = 0; i < targets.length; ++i) {
             vm.expectEmit(true, true, false, true);
@@ -4167,7 +4167,7 @@ contract TimelockControllerTest is Test {
         );
         vm.stopPrank();
 
-        vm.warp(block.timestamp + MIN_DELAY);
+        vm.warp(vm.getBlockTimestamp() + MIN_DELAY);
         vm.startPrank(EXECUTOR_ONE);
         vm.expectEmit(true, true, false, true);
         emit ITimelockController.CallExecuted(
@@ -4257,7 +4257,7 @@ contract TimelockControllerTest is Test {
         );
         vm.stopPrank();
 
-        vm.warp(block.timestamp + MIN_DELAY);
+        vm.warp(vm.getBlockTimestamp() + MIN_DELAY);
         vm.startPrank(EXECUTOR_ONE);
         for (uint256 i = 0; i < targets.length; ++i) {
             vm.expectEmit(true, true, false, true);
@@ -4531,7 +4531,7 @@ contract TimelockControllerHandler is Test {
         /**
          * @dev Advance the time to make the proposal ready.
          */
-        vm.warp(block.timestamp + minDelay);
+        vm.warp(vm.getBlockTimestamp() + minDelay);
         vm.startPrank(executor);
         timelockController.execute(
             self,
