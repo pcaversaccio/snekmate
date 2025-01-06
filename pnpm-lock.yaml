@@ -22,7 +22,7 @@ importers:
         version: 9.1.0(eslint@9.17.0)
       ethers:
         specifier: ^6.13.4
-        version: 6.13.4
+        version: 6.13.5
       keccak256:
         specifier: ^1.0.6
         version: 1.0.6
@@ -413,8 +413,8 @@ packages:
     resolution: {integrity: sha512-kVscqXk4OCp68SZ0dkgEKVi6/8ij300KBWTJq32P/dYeWTSwK41WyTxalN1eRmA5Z9UU/LX9D7FWSmV9SAYx6g==}
     engines: {node: '>=0.10.0'}
 
-  ethers@6.13.4:
-    resolution: {integrity: sha512-21YtnZVg4/zKkCQPjrDj38B1r4nQvTZLopUGMLQ1ePU2zV/joCfDC3t3iKQjWRzjjjbzR+mdAIoikeBRNkdllA==}
+  ethers@6.13.5:
+    resolution: {integrity: sha512-+knKNieu5EKRThQJWwqaJ10a6HE9sSehGeqWN65//wE7j47ZpFhKAnHB/JJFibwwg61I/koxaPsXbXpD/skNOQ==}
     engines: {node: '>=14.0.0'}
 
   fast-deep-equal@3.1.3:
@@ -1323,7 +1323,7 @@ snapshots:
 
   esutils@2.0.3: {}
 
-  ethers@6.13.4:
+  ethers@6.13.5:
     dependencies:
       '@adraffy/ens-normalize': 1.10.1
       '@noble/curves': 1.2.0
