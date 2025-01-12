@@ -1,4 +1,4 @@
-# pragma version ~=0.4.1b4
+# pragma version ~=0.4.1b5
 """
 @title Signature Message Hash Utility Functions
 @custom:contract-name message_hash_utils
