@@ -75,7 +75,7 @@ def _pause():
     @notice This is an `internal` function without access
             restriction.
     """
-    self._assert_unpaused()
+    self._require_not_paused()
     self.paused = True
     log Paused(account=msg.sender)
 
@@ -88,13 +88,13 @@ def _unpause():
     @notice This is an `internal` function without access
             restriction.
     """
-    self._assert_paused()
+    self._require_paused()
     self.paused = False
     log Unpaused(account=msg.sender)
 
 
 @internal
-def _assert_unpaused():
+def _require_not_paused():
     """
     @dev Throws if the contract is paused.
     """
@@ -102,7 +102,7 @@ def _assert_unpaused():
 
 
 @internal
-def _assert_paused():
+def _require_paused():
     """
     @dev Throws if the contract is not paused.
     """
