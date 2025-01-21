@@ -39,7 +39,7 @@
 """
 
 
-# @dev Returns whether a contract is paused or not.
+# @dev Returns whether the contract is paused or not.
 # @notice If you declare a variable as `public`,
 # Vyper automatically generates an `external`
 # getter function for the variable.
