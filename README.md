@@ -191,6 +191,7 @@ This repository contains [Foundry](https://github.com/foundry-rs/foundry)-based 
 | `math`                      |       ✅       |            ✅            |         ❌          |
 | `merkle_proof_verification` |       ✅       |            ✅            |         ❌          |
 | `multicall`                 |       ✅       |            ❌            |         ❌          |
+| `pausable`                  |       ✅       |            ✅            |         ✅          |
 
 ✅ Test Type Implemented &emsp; ❌ Test Type Not Implemented
 

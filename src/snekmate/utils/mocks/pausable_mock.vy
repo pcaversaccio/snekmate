@@ -1,26 +1,21 @@
 # pragma version ~=0.4.1rc2
 """
-@title `ownable_2step` Module Reference Implementation
-@custom:contract-name ownable_2step_mock
+@title `pausable` Module Reference Implementation
+@custom:contract-name pausable_mock
 @license GNU Affero General Public License v3.0 only
 @author pcaversaccio
 """
 
 
-# @dev We import and initialise the `ownable` module.
-from .. import ownable as ow
-initializes: ow
-
-
-# @dev We import and initialise the `ownable_2step` module.
-from .. import ownable_2step as o2
-initializes: o2[ownable := ow]
+# @dev We import and initialise the `pausable` module.
+from .. import pausable as ps
+initializes: ps
 
 
 # @dev We export (i.e. the runtime bytecode exposes these
 # functions externally, allowing them to be called using
 # the ABI encoding specification) all `external` functions
-# from the `ownable_2step` module. The built-in dunder method
+# from the `pausable` module. The built-in dunder method
 # `__interface__` allows you to export all functions of a
 # module without specifying the individual functions (see
 # https://github.com/vyperlang/vyper/pull/3919). Please take
@@ -32,7 +27,7 @@ initializes: o2[ownable := ow]
 # required by the contract logic) `public` declared `constant`,
 # `immutable`, and state variables, for which Vyper automatically
 # generates an `external` getter function for the variable.
-exports: o2.__interface__
+exports: ps.__interface__
 
 
 @deploy
@@ -42,10 +37,27 @@ def __init__():
     @dev To omit the opcodes for checking the `msg.value`
          in the creation-time EVM bytecode, the constructor
          is declared as `payable`.
-    @notice The `owner` role will be assigned to
-            the `msg.sender`.
     """
-    # The following line assigns the `owner`
-    # to the `msg.sender`.
-    ow.__init__()
-    o2.__init__()
+    ps.__init__()
+
+
+@external
+def pause():
+    """
+    @dev Triggers the pause state. Note that the contract
+         must not be paused.
+    @notice This is an `external` function without access
+            restriction.
+    """
+    ps._pause()
+
+
+@external
+def unpause():
+    """
+    @dev Lifts the pause state. Note that the contract
+         must be paused.
+    @notice This is an `external` function without access
+            restriction.
+    """
+    ps._unpause()

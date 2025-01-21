@@ -2,6 +2,11 @@
 
 ## [`0.1.1`](https://github.com/pcaversaccio/snekmate/releases/tag/v0.1.1) (Unreleased)
 
+### 💥 New Features
+
+- **Utility Functions**
+  - [`pausable`](https://github.com/pcaversaccio/snekmate/blob/v0.1.1/src/snekmate/utils/pausable.vy): Add a `pausable` contract module. ([#297](https://github.com/pcaversaccio/snekmate/pull/297))
+
 ### ♻️ Refactoring
 
 - **Authentication**
