@@ -65,6 +65,7 @@ jobs:
         run: forge config
         env:
           FOUNDRY_PROFILE: halmos-venom
+          FOUNDRY_DISABLE_NIGHTLY_WARNING: "1"
 
       - name: Run Halmos ERC-20 symbolic tests
         run: halmos --contract ERC20TestHalmos ${{ matrix.halmos }}
