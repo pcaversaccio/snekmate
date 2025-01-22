@@ -83,21 +83,25 @@ jobs:
         run: forge config
         env:
           FOUNDRY_PROFILE: ci
+          FOUNDRY_DISABLE_NIGHTLY_WARNING: "1"
 
       - name: Foundry tests
         run: forge test
         env:
           FOUNDRY_PROFILE: ci
+          FOUNDRY_DISABLE_NIGHTLY_WARNING: "1"
 
       - name: Show the Foundry default config
         run: forge config
         env:
           FOUNDRY_PROFILE: default
+          FOUNDRY_DISABLE_NIGHTLY_WARNING: "1"
 
       - name: Run snapshot
         run: NO_COLOR=1 forge snapshot >> $GITHUB_STEP_SUMMARY
         env:
           FOUNDRY_PROFILE: default
+          FOUNDRY_DISABLE_NIGHTLY_WARNING: "1"
 
       - name: Install Homebrew
         uses: Homebrew/actions/setup-homebrew@master
@@ -112,11 +116,13 @@ jobs:
         run: forge config
         env:
           FOUNDRY_PROFILE: echidna
+          FOUNDRY_DISABLE_NIGHTLY_WARNING: "1"
 
       - name: Compile the Echidna test contracts
         run: forge build --build-info
         env:
           FOUNDRY_PROFILE: echidna
+          FOUNDRY_DISABLE_NIGHTLY_WARNING: "1"
 
       - name: Run Echidna ERC-20 property tests
         run: echidna test/tokens/echidna/ERC20Properties.sol --contract CryticERC20ExternalHarness ${{ matrix.echidna }}

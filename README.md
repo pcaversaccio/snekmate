@@ -83,6 +83,7 @@ src
         ├── math — "Standard Mathematical Utility Functions"
         ├── merkle_proof_verification — "Merkle Tree Proof Verification Functions"
         ├── multicall — "Multicall Functions"
+        ├── pausable — "Pausable Functions"
         ├── interfaces
         │   ├── IERC1271 — "EIP-1271 Interface Definition"
         │   └── IERC5267 — "EIP-5267 Interface Definition"
@@ -98,7 +99,8 @@ src
             ├── eip712_domain_separator_mock — "`eip712_domain_separator` Module Reference Implementation"
             ├── math_mock — "`math` Module Reference Implementation"
             ├── merkle_proof_verification_mock — "`merkle_proof_verification` Module Reference Implementation"
-            └── multicall_mock — "`multicall` Module Reference Implementation"
+            ├── multicall_mock — "`multicall` Module Reference Implementation"
+            └── pausable_mock — "`pausable` Module Reference Implementation"
 ```
 
 ## 🎛 Installation
@@ -191,6 +193,7 @@ This repository contains [Foundry](https://github.com/foundry-rs/foundry)-based 
 | `math`                      |       ✅       |            ✅            |         ❌          |
 | `merkle_proof_verification` |       ✅       |            ✅            |         ❌          |
 | `multicall`                 |       ✅       |            ❌            |         ❌          |
+| `pausable`                  |       ✅       |            ✅            |         ✅          |
 
 ✅ Test Type Implemented &emsp; ❌ Test Type Not Implemented
 
