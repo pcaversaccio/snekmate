@@ -81,6 +81,7 @@ jobs:
         with:
           check_filenames: true
           skip: ./.git,pnpm-lock.yaml
+          ignore_words_list: pre-emptive
 
   validate-links:
     runs-on: ${{ matrix.os }}
