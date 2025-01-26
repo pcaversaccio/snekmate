@@ -37,9 +37,9 @@
     "CHANGELOG.md"
   ],
   "devDependencies": {
-    "@eslint/js": "^9.18.0",
+    "@eslint/js": "^9.19.0",
     "@openzeppelin/merkle-tree": "^1.0.7",
-    "eslint": "^9.18.0",
+    "eslint": "^9.19.0",
     "eslint-config-prettier": "^10.0.1",
     "ethers": "^6.13.5",
     "keccak256": "^1.0.6",
