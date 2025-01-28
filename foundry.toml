@@ -16,6 +16,7 @@ via_ir = false                                                   # Prevent the c
 vyper = { optimize = "gas" }                                     # Configure the Vyper compiler optimisation mode.
 verbosity = 3                                                    # Set the verbosity level for the tests.
 ffi = true                                                       # Enable the foreign function interface (ffi) cheatcode.
+allow_internal_expect_revert = true                              # Enable `expectRevert` for internal functions.
 no_match_path = "test/**/{echidna,halmos}/**/*"                  # Run only tests in the test directory that do not match the specified glob pattern.
 fs_permissions = [{ access = "read-write", path = "./" }]        # Configure read-write access to the project root.
 fuzz = { runs = 256, max_test_rejects = 65_536 }                 # Configure the number of fuzz runs and maximum number of combined inputs that may be rejected for the tests.
