@@ -767,8 +767,8 @@ packages:
   safe-buffer@5.2.1:
     resolution: {integrity: sha512-rp3So07KcdmmKbGvgaNxQSJr7bGVSVk5S9Eq1F+ppbRo70+YeaDxkw5Dd8NPN+GD6bjnYm2VuPuCXmpuYvmCXQ==}
 
-  semver@7.6.3:
-    resolution: {integrity: sha512-oVekP1cKtI+CTDvHWYFUcMtsK/00wmAEfyqKfNdARm8u1wNVhSgaX7A8d4UuIlUI5e84iEwOhs7ZPYRmzU9U6A==}
+  semver@7.7.0:
+    resolution: {integrity: sha512-DrfFnPzblFmNrIZzg5RzHegbiRWg7KMR7btwi2yjHwx06zsUbO5g613sVwEV7FTwmzJu+Io0lJe2GJ3LxqpvBQ==}
     engines: {node: '>=10'}
     hasBin: true
 
@@ -1567,7 +1567,7 @@ snapshots:
       got: 12.6.1
       registry-auth-token: 5.0.3
       registry-url: 6.0.1
-      semver: 7.6.3
+      semver: 7.7.0
 
   parent-module@1.0.1:
     dependencies:
@@ -1602,7 +1602,7 @@ snapshots:
     dependencies:
       '@solidity-parser/parser': 0.19.0
       prettier: 3.4.2
-      semver: 7.6.3
+      semver: 7.7.0
 
   prettier@2.8.8:
     optional: true
@@ -1648,7 +1648,7 @@ snapshots:
 
   safe-buffer@5.2.1: {}
 
-  semver@7.6.3: {}
+  semver@7.7.0: {}
 
   sh-syntax@0.4.2:
     dependencies:
@@ -1682,7 +1682,7 @@ snapshots:
       latest-version: 7.0.0
       lodash: 4.17.21
       pluralize: 8.0.0
-      semver: 7.6.3
+      semver: 7.7.0
       strip-ansi: 6.0.1
       table: 6.9.0
       text-table: 0.2.0
