@@ -1,5 +1,5 @@
-Vyper version: 0.4.1rc2+commit.a466dc8a
-Forge version: forge 1.0.0-nightly (c609884 2025-02-21T00:21:11.678144178Z)
+Vyper version: 0.4.1rc3+commit.2ffc8b3d
+Forge version: forge 1.0.0-nightly (c609884 2025-02-23T00:22:54.429897389Z)
 Vyper config:
 {
   "optimize": "gas",
@@ -691,13 +691,13 @@ SignatureCheckerTest:testFuzzEOAWithInvalidSignature(bytes,string) (runs: 256, �
 SignatureCheckerTest:testFuzzEOAWithInvalidSigner(string,string) (runs: 256, μ: 20185, ~: 20186)
 SignatureCheckerTest:testFuzzEOAWithValidSignature(string,string) (runs: 256, μ: 20117, ~: 20118)
 SignatureCheckerTest:testInitialSetup() (gas: 8370)
-TimelockControllerInvariants:statefulFuzzExecutedLessThanOrEqualToScheduled() (runs: 256, calls: 3840, reverts: 1230)
-TimelockControllerInvariants:statefulFuzzExecutedProposalCancellation() (runs: 256, calls: 3840, reverts: 1206)
-TimelockControllerInvariants:statefulFuzzExecutingCancelledProposal() (runs: 256, calls: 3840, reverts: 1264)
+TimelockControllerInvariants:statefulFuzzExecutedLessThanOrEqualToScheduled() (runs: 256, calls: 3840, reverts: 1229)
+TimelockControllerInvariants:statefulFuzzExecutedProposalCancellation() (runs: 256, calls: 3840, reverts: 1205)
+TimelockControllerInvariants:statefulFuzzExecutingCancelledProposal() (runs: 256, calls: 3840, reverts: 1265)
 TimelockControllerInvariants:statefulFuzzExecutingNotReadyProposal() (runs: 256, calls: 3840, reverts: 1215)
-TimelockControllerInvariants:statefulFuzzOnceProposalExecution() (runs: 256, calls: 3840, reverts: 1202)
-TimelockControllerInvariants:statefulFuzzProposalsExecutedMatchCount() (runs: 256, calls: 3840, reverts: 1228)
-TimelockControllerInvariants:statefulFuzzSumOfProposals() (runs: 256, calls: 3840, reverts: 1228)
+TimelockControllerInvariants:statefulFuzzOnceProposalExecution() (runs: 256, calls: 3840, reverts: 1201)
+TimelockControllerInvariants:statefulFuzzProposalsExecutedMatchCount() (runs: 256, calls: 3840, reverts: 1229)
+TimelockControllerInvariants:statefulFuzzSumOfProposals() (runs: 256, calls: 3840, reverts: 1230)
 TimelockControllerTest:testAdminCannotBatchExecute() (gas: 750542)
 TimelockControllerTest:testAdminCannotBatchSchedule() (gas: 748336)
 TimelockControllerTest:testAdminCannotCancel() (gas: 13323)
