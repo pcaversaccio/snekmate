@@ -1,4 +1,4 @@
-# pragma version ~=0.4.1rc2
+# pragma version ~=0.4.1rc3
 """
 @title Pausable Functions
 @custom:contract-name pausable

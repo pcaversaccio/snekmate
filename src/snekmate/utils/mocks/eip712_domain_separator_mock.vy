@@ -1,4 +1,4 @@
-# pragma version ~=0.4.1rc2
+# pragma version ~=0.4.1rc3
 """
 @title `eip712_domain_separator` Module Reference Implementation
 @custom:contract-name eip712_domain_separator_mock
