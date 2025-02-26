@@ -1,4 +1,4 @@
-# pragma version ~=0.4.1rc3
+# pragma version ~=0.4.1
 """
 @title `erc20` Module Reference Implementation
 @custom:contract-name erc20_mock

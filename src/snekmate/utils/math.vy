@@ -1,4 +1,4 @@
-# pragma version ~=0.4.1rc3
+# pragma version ~=0.4.1
 """
 @title Standard Mathematical Utility Functions
 @custom:contract-name math
