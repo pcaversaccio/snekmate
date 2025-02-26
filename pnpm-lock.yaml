@@ -27,8 +27,8 @@ importers:
         specifier: ^1.0.6
         version: 1.0.6
       merkletreejs:
-        specifier: ^0.4.1
-        version: 0.4.1
+        specifier: ^0.5.1
+        version: 0.5.1
       prettier:
         specifier: ^3.5.2
         version: 3.5.2
@@ -609,8 +609,8 @@ packages:
     resolution: {integrity: sha512-ozCC6gdQ+glXOQsveKD0YsDy8DSQFjDTz4zyzEHNV5+JP5D62LmfDZ6o1cycFx9ouG940M5dE8C8CTewdj2YWQ==}
     engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
 
-  merkletreejs@0.4.1:
-    resolution: {integrity: sha512-W2VSHeGTdAnWtedee+pgGn7SHvncMdINnMeHAaXrfarSaMNLff/pm7RCr/QXYxN6XzJFgJZY+28ejO0lAosW4A==}
+  merkletreejs@0.5.1:
+    resolution: {integrity: sha512-iR1MI07/HvioeZUvG9EQorcY6zSun8LCmW4jqNbHdecv2XsOt7qYMHWspcjY//lwaSM8/GUMX7ehpm/+UvqrqQ==}
     engines: {node: '>= 7.6.0'}
 
   micro-ftch@0.3.1:
@@ -1475,7 +1475,7 @@ snapshots:
 
   lowercase-keys@3.0.0: {}
 
-  merkletreejs@0.4.1:
+  merkletreejs@0.5.1:
     dependencies:
       buffer-reverse: 1.0.1
       crypto-js: 4.2.0
