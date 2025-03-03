@@ -1,4 +1,4 @@
-# pragma version ~=0.4.1rc3
+# pragma version ~=0.4.1
 """
 @title `pausable` Module Reference Implementation
 @custom:contract-name pausable_mock
