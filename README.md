@@ -197,7 +197,7 @@ This repository contains [Foundry](https://github.com/foundry-rs/foundry)-based 
 
 ✅ Test Type Implemented &emsp; ❌ Test Type Not Implemented
 
-Furthermore, the [`echidna`](https://github.com/crytic/echidna)-based [property](https://github.com/crytic/properties) tests for the [`erc20`](./src/snekmate/tokens/ERC20.vy) and [`erc721`](./src/snekmate/tokens/ERC721.vy) contracts are available in the [`test/tokens/echidna/`](./test/tokens/echidna) directory. You can run the tests by invoking:
+Furthermore, the [`echidna`](https://github.com/crytic/echidna)-based [property](https://github.com/crytic/properties) tests for the [`erc20`](./src/snekmate/tokens/erc20.vy) and [`erc721`](./src/snekmate/tokens/erc721.vy) contracts are available in the [`test/tokens/echidna/`](./test/tokens/echidna) directory. You can run the tests by invoking:
 
 ```console
 # Run Echidna ERC-20 property tests.
