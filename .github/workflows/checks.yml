@@ -109,4 +109,4 @@ jobs:
           awesome_bot ./*.md src/snekmate/**/*.vy src/snekmate/**/mocks/*.vy src/snekmate/**/interfaces/*.vyi \
           test/**/*.sol test/**/interfaces/*.sol test/**/mocks/*.sol test/**/scripts/*.js scripts/*.sh lib/utils/*.sol lib/utils/*.py \
           --allow-dupe --allow-redirect --request-delay 0.4 \
-          --white-list https://www.wagmi.xyz,https://github.com/pcaversaccio/snekmate.git@,https://github.com/vyperlang/vyper.git@,https://github.com/pcaversaccio/snekmate/releases/tag/v0.1.1,https://github.com/pcaversaccio/snekmate/blob/v0.1.1,https://github.com/pcaversaccio/snekmate/compare/v0.1.0...v0.1.1,https://hyperelliptic.org
+          --white-list https://www.wagmi.xyz,https://github.com/pcaversaccio/snekmate.git@,https://github.com/vyperlang/vyper.git@,https://github.com/pcaversaccio/snekmate/releases/tag/v0.1.2,https://github.com/pcaversaccio/snekmate/blob/v0.1.2,https://github.com/pcaversaccio/snekmate/compare/v0.1.1...v0.1.2,https://hyperelliptic.org
