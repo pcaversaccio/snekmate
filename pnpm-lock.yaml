@@ -137,8 +137,8 @@ packages:
     resolution: {integrity: sha512-StnIgUB75x7a7AgUhiaUZDpCsqGp7VkNnZh2XivXkJ6mPkE83U8ARGQj5MbRis7VJY8BC5V1AbB1fjdh0hupPQ==}
     engines: {node: '>=16.0.0'}
 
-  '@metamask/superstruct@3.1.0':
-    resolution: {integrity: sha512-N08M56HdOgBfRKkrgCMZvQppkZGcArEop3kixNEtVbJKm6P9Cfg0YkI6X0s1g78sNrj2fWUwvJADdZuzJgFttA==}
+  '@metamask/superstruct@3.2.0':
+    resolution: {integrity: sha512-mnNxXsl4Xuqc/yODZ4lX53ulsVZ2h3DqocrgGHhPA2nQ03uN+N2AOJJoUsNifZMZ+n1FTVBRIBzfbGy/K2f4Zw==}
     engines: {node: '>=16.0.0'}
 
   '@metamask/utils@9.3.0':
@@ -992,17 +992,17 @@ snapshots:
 
   '@metamask/abi-utils@2.0.4':
     dependencies:
-      '@metamask/superstruct': 3.1.0
+      '@metamask/superstruct': 3.2.0
       '@metamask/utils': 9.3.0
     transitivePeerDependencies:
       - supports-color
 
-  '@metamask/superstruct@3.1.0': {}
+  '@metamask/superstruct@3.2.0': {}
 
   '@metamask/utils@9.3.0':
     dependencies:
       '@ethereumjs/tx': 4.2.0
-      '@metamask/superstruct': 3.1.0
+      '@metamask/superstruct': 3.2.0
       '@noble/hashes': 1.7.1
       '@scure/base': 1.2.4
       '@types/debug': 4.1.12
