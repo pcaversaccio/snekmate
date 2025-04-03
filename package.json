@@ -1,6 +1,6 @@
 {
   "name": "snekmate",
-  "version": "0.1.1-rc.2",
+  "version": "0.1.1",
   "description": "State-of-the-art, highly opinionated, hyper-optimised, and secure 🐍Vyper smart contract building blocks.",
   "author": "Pascal Marco Caversaccio <pascal.caversaccio@hotmail.ch>",
   "license": "AGPL-3.0-only",
@@ -21,7 +21,7 @@
   "bugs": {
     "url": "https://github.com/pcaversaccio/snekmate/issues"
   },
-  "packageManager": "pnpm@10.7.0",
+  "packageManager": "pnpm@10.7.1",
   "scripts": {
     "prettier:check": "npx prettier -c \"**/*.{md,sol,js,json,yml,yaml,sh}\"",
     "prettier:fix": "npx prettier -w \"**/*.{md,sol,js,json,yml,yaml,sh}\"",
@@ -46,7 +46,7 @@
     "keccak256": "^1.0.6",
     "merkletreejs": "^0.5.1",
     "prettier": "^3.5.3",
-    "prettier-plugin-sh": "^0.15.0",
+    "prettier-plugin-sh": "^0.16.0",
     "prettier-plugin-solidity": "^1.4.2",
     "solhint": "^5.0.5"
   },

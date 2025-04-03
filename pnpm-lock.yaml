@@ -33,8 +33,8 @@ importers:
         specifier: ^3.5.3
         version: 3.5.3
       prettier-plugin-sh:
-        specifier: ^0.15.0
-        version: 0.15.0(prettier@3.5.3)
+        specifier: ^0.16.0
+        version: 0.16.0(prettier@3.5.3)
       prettier-plugin-solidity:
         specifier: ^1.4.2
         version: 1.4.2(prettier@3.5.3)
@@ -69,12 +69,16 @@ packages:
     resolution: {integrity: sha512-GNKqxfHG2ySmJOBSHg7LxeUx4xpuCoFjacmlCoYWEbaPXLwvfIjixRI12xCQZeULksQb23uiA8F40w5TojpV7w==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
 
-  '@eslint/config-helpers@0.2.0':
-    resolution: {integrity: sha512-yJLLmLexii32mGrhW29qvU3QBVTu0GUmEf/J4XsBtVhp4JkIUFN/BjWqTF63yRvGApIDpZm5fa97LtYtINmfeQ==}
+  '@eslint/config-helpers@0.2.1':
+    resolution: {integrity: sha512-RI17tsD2frtDu/3dmI7QRrD4bedNKPM08ziRYaC5AhkGrzIAJelm9kJU1TznK+apx6V+cqRz8tfpEeG3oIyjxw==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
 
   '@eslint/core@0.12.0':
     resolution: {integrity: sha512-cmrR6pytBuSMTaBweKoGMwu3EiHiEC+DoyupPmlZ0HxBJBtIxwe+j/E4XPIKNx+Q74c8lXKPwYawBf5glsTkHg==}
+    engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
+
+  '@eslint/core@0.13.0':
+    resolution: {integrity: sha512-yfkgDw1KR66rkT5A8ci4irzDysN7FRpq3ttJolR88OqQikAWqwA8j5VZyas+vjyBNFIJ7MfybJ9plMILI2UrCw==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
 
   '@eslint/eslintrc@3.3.1':
@@ -89,8 +93,8 @@ packages:
     resolution: {integrity: sha512-RBMg5FRL0I0gs51M/guSAj5/e14VQ4tpZnQNWwuDT66P14I43ItmPfIZRhO9fUVIPOAQXU47atlywZ/czoqFPA==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
 
-  '@eslint/plugin-kit@0.2.7':
-    resolution: {integrity: sha512-JubJ5B2pJ4k4yGxaNLdbjrnk9d/iDz6/q8wOilpIowd6PJPgaxCuHBnBszq7Ce2TyMrywm5r4PnKm6V3iiZF+g==}
+  '@eslint/plugin-kit@0.2.8':
+    resolution: {integrity: sha512-ZAoA40rNMPwSm+AeHpCq8STiNAwzWLJuP8Xv4CHIc9wv/PSuExjMrmjfYNj682vW0OOiZ1HKxzvjQr9XZIisQA==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
 
   '@ethereumjs/common@3.2.0':
@@ -133,8 +137,8 @@ packages:
     resolution: {integrity: sha512-StnIgUB75x7a7AgUhiaUZDpCsqGp7VkNnZh2XivXkJ6mPkE83U8ARGQj5MbRis7VJY8BC5V1AbB1fjdh0hupPQ==}
     engines: {node: '>=16.0.0'}
 
-  '@metamask/superstruct@3.1.0':
-    resolution: {integrity: sha512-N08M56HdOgBfRKkrgCMZvQppkZGcArEop3kixNEtVbJKm6P9Cfg0YkI6X0s1g78sNrj2fWUwvJADdZuzJgFttA==}
+  '@metamask/superstruct@3.2.0':
+    resolution: {integrity: sha512-mnNxXsl4Xuqc/yODZ4lX53ulsVZ2h3DqocrgGHhPA2nQ03uN+N2AOJJoUsNifZMZ+n1FTVBRIBzfbGy/K2f4Zw==}
     engines: {node: '>=16.0.0'}
 
   '@metamask/utils@9.3.0':
@@ -716,8 +720,8 @@ packages:
     resolution: {integrity: sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==}
     engines: {node: '>= 0.8.0'}
 
-  prettier-plugin-sh@0.15.0:
-    resolution: {integrity: sha512-U0PikJr/yr2bzzARl43qI0mApBj0C1xdAfA04AZa6LnvIKawXHhuy2fFo6LNA7weRzGlAiNbaEFfKMFo0nZr/A==}
+  prettier-plugin-sh@0.16.0:
+    resolution: {integrity: sha512-QaVH0X56IUy9niNczUQ0TxqVezcGzACz9XObbyxyAZ6NU/VCKnR9RUAcETyzCiPgcHKq/tjerCsqxn5nL3yo/w==}
     engines: {node: '>=16.0.0'}
     peerDependencies:
       prettier: ^3.0.3
@@ -920,9 +924,13 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@eslint/config-helpers@0.2.0': {}
+  '@eslint/config-helpers@0.2.1': {}
 
   '@eslint/core@0.12.0':
+    dependencies:
+      '@types/json-schema': 7.0.15
+
+  '@eslint/core@0.13.0':
     dependencies:
       '@types/json-schema': 7.0.15
 
@@ -944,9 +952,9 @@ snapshots:
 
   '@eslint/object-schema@2.1.6': {}
 
-  '@eslint/plugin-kit@0.2.7':
+  '@eslint/plugin-kit@0.2.8':
     dependencies:
-      '@eslint/core': 0.12.0
+      '@eslint/core': 0.13.0
       levn: 0.4.1
 
   '@ethereumjs/common@3.2.0':
@@ -984,17 +992,17 @@ snapshots:
 
   '@metamask/abi-utils@2.0.4':
     dependencies:
-      '@metamask/superstruct': 3.1.0
+      '@metamask/superstruct': 3.2.0
       '@metamask/utils': 9.3.0
     transitivePeerDependencies:
       - supports-color
 
-  '@metamask/superstruct@3.1.0': {}
+  '@metamask/superstruct@3.2.0': {}
 
   '@metamask/utils@9.3.0':
     dependencies:
       '@ethereumjs/tx': 4.2.0
-      '@metamask/superstruct': 3.1.0
+      '@metamask/superstruct': 3.2.0
       '@noble/hashes': 1.7.1
       '@scure/base': 1.2.4
       '@types/debug': 4.1.12
@@ -1243,11 +1251,11 @@ snapshots:
       '@eslint-community/eslint-utils': 4.5.1(eslint@9.23.0)
       '@eslint-community/regexpp': 4.12.1
       '@eslint/config-array': 0.19.2
-      '@eslint/config-helpers': 0.2.0
+      '@eslint/config-helpers': 0.2.1
       '@eslint/core': 0.12.0
       '@eslint/eslintrc': 3.3.1
       '@eslint/js': 9.23.0
-      '@eslint/plugin-kit': 0.2.7
+      '@eslint/plugin-kit': 0.2.8
       '@humanfs/node': 0.16.6
       '@humanwhocodes/module-importer': 1.0.1
       '@humanwhocodes/retry': 0.4.2
@@ -1571,7 +1579,7 @@ snapshots:
 
   prelude-ls@1.2.1: {}
 
-  prettier-plugin-sh@0.15.0(prettier@3.5.3):
+  prettier-plugin-sh@0.16.0(prettier@3.5.3):
     dependencies:
       mvdan-sh: 0.10.1
       prettier: 3.5.3
