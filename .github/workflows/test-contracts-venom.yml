@@ -35,7 +35,7 @@ jobs:
           architecture: ${{ matrix.architecture }}
 
       - name: Install Vyper
-        run: pip install git+https://github.com/vyperlang/vyper@master
+        run: pip install git+https://github.com/vyperlang/vyper.git@master
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
