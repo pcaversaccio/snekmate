@@ -25,7 +25,7 @@
 - [💸 Donation](#-donation)
 - [📄 Licence](#-licence)
   - [⚖️ Dual-Licencing Option](#️-dual-licencing-option)
-  - [📝 Requesting an MIT Licence](#-requesting-an-mit-licence)
+  - [📩 Requesting an MIT Licence](#-requesting-an-mit-licence)
 - [💢 Disclaimer](#-disclaimer)
 
 ## 📜 Contracts
@@ -273,7 +273,7 @@ We understand that [AGPL](./LICENSE)-licenced software may not be suitable for a
 
 For such scenarios, we offer an alternative licence under the [MIT License](https://opensource.org/license/mit), granted at our sole discretion.
 
-### 📝 Requesting an MIT Licence
+### 📩 Requesting an MIT Licence
 
 If you have **substantial** reasons for requiring a more permissive licence, such as those outlined above, feel free to contact us via [email](mailto:pascal.caversaccio@hotmail.ch) to request access to the software under the [MIT License](https://opensource.org/license/mit).
 
