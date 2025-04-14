@@ -4,6 +4,10 @@
 
 ### 👀 Full Changelog
 
+### 📄 Licencing
+
+- Add dual licencing option for MIT License. ([#315](https://github.com/pcaversaccio/snekmate/pull/315))
+
 - [`v0.1.1...v0.1.2`](https://github.com/pcaversaccio/snekmate/compare/v0.1.1...v0.1.2)
 
 ## [`0.1.1`](https://github.com/pcaversaccio/snekmate/releases/tag/v0.1.1) (03-04-2025)

@@ -55,8 +55,8 @@ packages:
     resolution: {integrity: sha512-Ed61U6XJc3CVRfkERJWDz4dJwKe7iLmmJsbOGu9wSloNSFttHV0I8g6UAgb7qnK5ly5bGLPd4oXZlxCdANBOWQ==}
     engines: {node: '>=6.9.0'}
 
-  '@eslint-community/eslint-utils@4.5.1':
-    resolution: {integrity: sha512-soEIOALTfTK6EjmKMMoLugwaP0rzkad90iIWd1hMO9ARkSAyjfMfkRRhLvD5qH7vvM0Cg72pieUfR6yh6XxC4w==}
+  '@eslint-community/eslint-utils@4.6.0':
+    resolution: {integrity: sha512-WhCn7Z7TauhBtmzhvKpoQs0Wwb/kBcy4CwpuI0/eEIr2Lx2auxmulAzLr91wVZJaz47iUZdkXOK7WlAfxGKCnA==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
     peerDependencies:
       eslint: ^6.0.0 || ^7.0.0 || >=8.0.0
@@ -186,8 +186,8 @@ packages:
     resolution: {integrity: sha512-c83qWb22rNRuB0UaVCI0uRPNRr8Z0FWnEIvT47jiHAmOIUHbBOg5XvV7pM5x+rKn9HRpjxquDbXYSXr3fAKFcw==}
     engines: {node: '>=12'}
 
-  '@reteps/dockerfmt@0.3.4':
-    resolution: {integrity: sha512-IHIyUHVsASQmUheWTmIVxnMdOayvIa4e9XGyt1qpuz6l+dv89H8WXg/jV6PNMX9286O0m2wd3zvmNfgpp7IsCA==}
+  '@reteps/dockerfmt@0.3.5':
+    resolution: {integrity: sha512-ib1LU/3lXHAH63hxaGu9O+G3nbe5JlCg5WoMS7zzfuuBUPenCeuO7cOhYhI7IwD2QaD1NBy8AJ+FrKyhaHtWLA==}
     engines: {node: ^v12.20.0 || ^14.13.0 || >=16.0.0}
 
   '@scure/base@1.1.9':
@@ -910,7 +910,7 @@ snapshots:
 
   '@babel/helper-validator-identifier@7.25.9': {}
 
-  '@eslint-community/eslint-utils@4.5.1(eslint@9.24.0)':
+  '@eslint-community/eslint-utils@4.6.0(eslint@9.24.0)':
     dependencies:
       eslint: 9.24.0
       eslint-visitor-keys: 3.4.3
@@ -1053,7 +1053,7 @@ snapshots:
       '@pnpm/network.ca-file': 1.0.2
       config-chain: 1.1.13
 
-  '@reteps/dockerfmt@0.3.4': {}
+  '@reteps/dockerfmt@0.3.5': {}
 
   '@scure/base@1.1.9': {}
 
@@ -1251,7 +1251,7 @@ snapshots:
 
   eslint@9.24.0:
     dependencies:
-      '@eslint-community/eslint-utils': 4.5.1(eslint@9.24.0)
+      '@eslint-community/eslint-utils': 4.6.0(eslint@9.24.0)
       '@eslint-community/regexpp': 4.12.1
       '@eslint/config-array': 0.20.0
       '@eslint/config-helpers': 0.2.1
@@ -1582,7 +1582,7 @@ snapshots:
 
   prettier-plugin-sh@0.17.2(prettier@3.5.3):
     dependencies:
-      '@reteps/dockerfmt': 0.3.4
+      '@reteps/dockerfmt': 0.3.5
       prettier: 3.5.3
       sh-syntax: 0.5.6
 
