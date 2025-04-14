@@ -24,8 +24,8 @@
 - [🫡 Contributing](#-contributing)
 - [💸 Donation](#-donation)
 - [📄 Licence](#-licence)
-  - [⚖️ Dual-Licencing Option](#️-dual-licencing-option)
-  - [📩 Requesting an MIT Licence](#-requesting-an-mit-licence)
+  - [⚖️ Dual-Licensing Option](#️-dual-licensing-option)
+  - [📩 Requesting an MIT License](#-requesting-an-mit-license)
 - [💢 Disclaimer](#-disclaimer)
 
 ## 📜 Contracts
@@ -263,9 +263,9 @@ This software is released under the [GNU Affero General Public License v3.0 only
 
 We believe in fostering a collaborative and open ecosystem. The [AGPL-3.0-only](./LICENSE) licence keeps the code free, the knowledge shared, and the doors open. It stands as a quiet rebellion against control, a promise that what is built in the open will remain in the open, owned by no one and available to all.
 
-### ⚖️ Dual-Licencing Option
+### ⚖️ Dual-Licensing Option
 
-We understand that [AGPL](./LICENSE)-licenced software may not be suitable for all use cases, particularly in cases involving:
+We understand that [AGPL](./LICENSE)-licensed software may not be suitable for all use cases, particularly in cases involving:
 
 - Proprietary or closed-source projects,
 - Licence incompatibilities,
@@ -273,7 +273,7 @@ We understand that [AGPL](./LICENSE)-licenced software may not be suitable for a
 
 For such scenarios, we offer an alternative licence under the [MIT License](https://opensource.org/license/mit), granted at our sole discretion.
 
-### 📩 Requesting an MIT Licence
+### 📩 Requesting an MIT License
 
 If you have **substantial** reasons for requiring a more permissive licence, such as those outlined above, feel free to contact us via [email](mailto:pascal.caversaccio@hotmail.ch) to request access to the software under the [MIT License](https://opensource.org/license/mit).
 
