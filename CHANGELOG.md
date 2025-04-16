@@ -6,7 +6,7 @@
 
 ### 📄 Licensing
 
-- Add dual-licensing option for MIT License. ([#315](https://github.com/pcaversaccio/snekmate/pull/315))
+- Add dual-licensing option for [MIT License](https://opensource.org/license/mit). ([#315](https://github.com/pcaversaccio/snekmate/pull/315))
 
 - [`v0.1.1...v0.1.2`](https://github.com/pcaversaccio/snekmate/compare/v0.1.1...v0.1.2)
 
