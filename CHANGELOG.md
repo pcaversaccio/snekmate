@@ -6,6 +6,10 @@
 
 - Add the [MIT License](https://opensource.org/license/mit) as a dual-licensing option. ([#315](https://github.com/pcaversaccio/snekmate/pull/315))
 
+### 🔖 Release Management
+
+- Add provenance to `npm` release. ([#314](https://github.com/pcaversaccio/snekmate/pull/314))
+
 ### 👀 Full Changelog
 
 - [`v0.1.1...v0.1.2`](https://github.com/pcaversaccio/snekmate/compare/v0.1.1...v0.1.2)
