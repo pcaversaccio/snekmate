@@ -2,11 +2,11 @@
 
 ## [`0.1.2`](https://github.com/pcaversaccio/snekmate/releases/tag/v0.1.2) (Unreleased)
 
-### 👀 Full Changelog
-
 ### 📄 Licensing
 
 - Add dual-licensing option for [MIT License](https://opensource.org/license/mit). ([#315](https://github.com/pcaversaccio/snekmate/pull/315))
+
+### 👀 Full Changelog
 
 - [`v0.1.1...v0.1.2`](https://github.com/pcaversaccio/snekmate/compare/v0.1.1...v0.1.2)
 
