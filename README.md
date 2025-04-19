@@ -23,6 +23,9 @@
 - [🙏🏼 Acknowledgements](#-acknowledgements)
 - [🫡 Contributing](#-contributing)
 - [💸 Donation](#-donation)
+- [📄 Licence](#-licence)
+  - [⚖️ Dual-Licensing Option](#️-dual-licensing-option)
+  - [📩 Requesting an MIT License](#-requesting-an-mit-license)
 - [💢 Disclaimer](#-disclaimer)
 
 ## 📜 Contracts
@@ -253,6 +256,28 @@ This repository is inspired by or directly modified from many sources, primarily
 ## 💸 Donation
 
 I am a strong advocate of the open-source and free software paradigm. However, if you feel my work deserves a donation, you can send it to this address: [`0xe9Fa0c8B5d7F79DeC36D3F448B1Ac4cEdedE4e69`](https://etherscan.io/address/0xe9Fa0c8B5d7F79DeC36D3F448B1Ac4cEdedE4e69). I can pledge that I will use this money to help fix more existing challenges in the Ethereum ecosystem 🤝.
+
+## 📄 Licence
+
+This software is released under the [GNU Affero General Public License v3.0 only](./LICENSE) (AGPL-3.0-only) **by default**.
+
+We believe in fostering a collaborative and open ecosystem. The [AGPL-3.0-only](./LICENSE) licence keeps the code free, the knowledge shared, and the doors open. It stands as a quiet rebellion against control, a promise that what is built in the open will remain in the open, owned by no one and available to all.
+
+### ⚖️ Dual-Licensing Option
+
+We understand that [AGPL-3.0-only](./LICENSE)-licensed software may not be suitable for all use cases, particularly in cases involving:
+
+- Proprietary or closed-source projects,
+- Licence incompatibilities, or
+- Commercial applications with conflicting requirements.
+
+For such scenarios, we offer an alternative licence under the [MIT License](https://opensource.org/license/mit), granted at our sole discretion.
+
+### 📩 Requesting an MIT License
+
+If you have **substantial** reasons for requiring a more permissive licence, such as those outlined above, feel free to contact us via [email](mailto:pascal.caversaccio@hotmail.ch) to request access to the software under the [MIT License](https://opensource.org/license/mit).
+
+Each request is evaluated on a case-by-case basis, and we will provide the [MIT License](https://opensource.org/license/mit) if deemed appropriate.
 
 ## 💢 Disclaimer
 
