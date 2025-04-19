@@ -259,16 +259,16 @@ I am a strong advocate of the open-source and free software paradigm. However, i
 
 ## 📄 Licence
 
-This software is released under the [GNU Affero General Public License v3.0 only (AGPL-3.0-only)](./LICENSE) by default.
+This software is released under the [GNU Affero General Public License v3.0 only (AGPL-3.0-only)](./LICENSE) **by default**.
 
 We believe in fostering a collaborative and open ecosystem. The [AGPL-3.0-only](./LICENSE) licence keeps the code free, the knowledge shared, and the doors open. It stands as a quiet rebellion against control, a promise that what is built in the open will remain in the open, owned by no one and available to all.
 
 ### ⚖️ Dual-Licensing Option
 
-We understand that [AGPL](./LICENSE)-licensed software may not be suitable for all use cases, particularly in cases involving:
+We understand that [AGPL-3.0-only](./LICENSE)-licensed software may not be suitable for all use cases, particularly in cases involving:
 
 - Proprietary or closed-source projects,
-- Licence incompatibilities,
+- Licence incompatibilities, or
 - Commercial applications with conflicting requirements.
 
 For such scenarios, we offer an alternative licence under the [MIT License](https://opensource.org/license/mit), granted at our sole discretion.
