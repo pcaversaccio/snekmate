@@ -793,8 +793,8 @@ packages:
     engines: {node: '>=10'}
     hasBin: true
 
-  sh-syntax@0.5.6:
-    resolution: {integrity: sha512-hUprXSSgi3HLdIxufSsr0lceThj6vKsgOHcVVGujDGLWg9RD5Mt6j2m642qkTAU/7GFX65ed/g9h2jeURGuTlQ==}
+  sh-syntax@0.5.7:
+    resolution: {integrity: sha512-74m9dt91konrF5+m0kASugzi37VxKsnTJQ6yvdDZu3IijG5/vIZpImP6FadsJLWNt2X2YD0VaTwW5W7Ox7mFVg==}
     engines: {node: '>=16.0.0'}
 
   shebang-command@2.0.0:
@@ -1582,7 +1582,7 @@ snapshots:
     dependencies:
       '@reteps/dockerfmt': 0.3.6
       prettier: 3.5.3
-      sh-syntax: 0.5.6
+      sh-syntax: 0.5.7
 
   prettier-plugin-solidity@1.4.2(prettier@3.5.3):
     dependencies:
@@ -1636,7 +1636,7 @@ snapshots:
 
   semver@7.7.1: {}
 
-  sh-syntax@0.5.6:
+  sh-syntax@0.5.7:
     dependencies:
       tslib: 2.8.1
 
