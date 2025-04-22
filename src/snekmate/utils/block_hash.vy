@@ -1,19 +1,19 @@
 # pragma version ~=0.4.1
 """
-@title Utility Function to Access Historical Block Hashes
-@custom:contract-name blockhash
+@title Utility Functions to Access Historical Block Hashes
+@custom:contract-name block_hash
 @license GNU Affero General Public License v3.0 only
 @author pcaversaccio
-@notice This function can be used to access historical block hashes
-        beyond the standard 256-block limit. It uses the EIP-2935
+@notice These functions can be used to access historical block hashes
+        beyond the standard 256-block limit. We use the EIP-2935
         (https://eips.ethereum.org/EIPS/eip-2935) history contract,
         which maintains a ring buffer of the last 8,191 block hashes
         stored in state. For blocks within the last 256 blocks, we
         use the native `BLOCKHASH` opcode. For blocks between 257 and
-        8,191 blocks ago, the function queries via the specified `get`
-        (https://eips.ethereum.org/EIPS/eip-2935#get) method the EIP-2935
-        history contract. For blocks older than 8,191 or future blocks,
-        returns zero, matching the `BLOCKHASH` behaviour.
+        8,191 blocks ago, the function `_block_hash` queries via the
+        specified `get` (https://eips.ethereum.org/EIPS/eip-2935#get)
+        method the EIP-2935 history contract. For blocks older than 8,191
+        or future blocks, we return zero, matching the `BLOCKHASH` behaviour.
 
         Please note that after EIP-2935 is activated, it takes 8,191 blocks
         to fully populate the history. Before that, only block hashes from

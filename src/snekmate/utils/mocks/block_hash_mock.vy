@@ -1,17 +1,17 @@
 # pragma version ~=0.4.1
 """
-@title `blockhash` Module Reference Implementation
-@custom:contract-name blockhash_mock
+@title `block_hash` Module Reference Implementation
+@custom:contract-name block_hash_mock
 @license GNU Affero General Public License v3.0 only
 @author pcaversaccio
 """
 
 
-# @dev We import the `blockhash` module.
-# @notice Please note that the `blockhash` module
+# @dev We import the `block_hash` module.
+# @notice Please note that the `block_hash` module
 # is stateless and therefore does not require
 # the `initializes` keyword for initialisation.
-from .. import blockhash as bh
+from .. import block_hash as bh
 
 
 @deploy
