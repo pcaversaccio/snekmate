@@ -2,6 +2,11 @@
 
 ## [`0.1.2`](https://github.com/pcaversaccio/snekmate/releases/tag/v0.1.2) (Unreleased)
 
+### 💥 New Features
+
+- **Utility Functions**
+  - [`blockhash`](https://github.com/pcaversaccio/snekmate/blob/v0.1.2/src/snekmate/utils/blockhash.vy): Add [EIP-2935](https://eips.ethereum.org/EIPS/eip-2935)-based `blockhash` utility function. ([#316](https://github.com/pcaversaccio/snekmate/pull/316))
+
 ### 📄 Licensing
 
 - Add the [MIT License](https://opensource.org/license/mit) as a dual-licensing option. ([#315](https://github.com/pcaversaccio/snekmate/pull/315))
