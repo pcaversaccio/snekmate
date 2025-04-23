@@ -31,7 +31,10 @@ def block_hash(block_number: uint256) -> bytes32:
     """
     @dev Returns the block hash for block number `block_number`.
     @notice For blocks older than 8,191 or future blocks, returns
-            zero, matching the `BLOCKHASH` behaviour.
+            zero, matching the `BLOCKHASH` behaviour. Furthermore,
+            this function does verify if the history contract is
+            deployed. If the contract is undeployed, the call will
+            fallback to the `BLOCKHASH` behaviour.
     @param block_number The 32-byte block number.
     @return bytes32 The 32-byte block hash for block number `block_number`.
     """

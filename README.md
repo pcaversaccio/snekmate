@@ -76,7 +76,7 @@ src
     └── utils
         ├── base64 — "Base64 Encoding and Decoding Functions"
         ├── batch_distributor — "Batch Sending Both Native and ERC-20 Tokens"
-        ├── block_hash — "Utility Function to Access Historical Block Hashes"
+        ├── block_hash — "Utility Functions to Access Historical Block Hashes"
         ├── create_address — "`CREATE` EVM Opcode Utility Function for Address Calculation"
         ├── create2_address — "`CREATE2` EVM Opcode Utility Functions for Address Calculations"
         ├── ecdsa — "Elliptic Curve Digital Signature Algorithm (ECDSA) Secp256k1-Based Functions"

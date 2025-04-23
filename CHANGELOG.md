@@ -5,7 +5,7 @@
 ### 💥 New Features
 
 - **Utility Functions**
-  - [`blockhash`](https://github.com/pcaversaccio/snekmate/blob/v0.1.2/src/snekmate/utils/blockhash.vy): Add [EIP-2935](https://eips.ethereum.org/EIPS/eip-2935)-based `blockhash` utility function. ([#316](https://github.com/pcaversaccio/snekmate/pull/316))
+  - [`block_hash`](https://github.com/pcaversaccio/snekmate/blob/v0.1.2/src/snekmate/utils/block_hash.vy): Add [EIP-2935](https://eips.ethereum.org/EIPS/eip-2935)-based utility functions. ([#316](https://github.com/pcaversaccio/snekmate/pull/316))
 
 ### 📄 Licensing
 

@@ -236,7 +236,7 @@ def _log2(x: uint256, roundup: bool) -> uint256:
            to round up or not. The default `False` is round down.
     @return uint256 The 32-byte calculation result.
     """
-    # For the special case `x == 0` we already return `0` here in order
+    # For the special case `x == 0`, we already return `0` here in order
     # not to iterate through the remaining code.
     if x == empty(uint256):
         return empty(uint256)
@@ -290,7 +290,7 @@ def _log10(x: uint256, roundup: bool) -> uint256:
            to round up or not. The default `False` is round down.
     @return uint256 The 32-byte calculation result.
     """
-    # For the special case `x == 0` we already return `0` here in order
+    # For the special case `x == 0`, we already return `0` here in order
     # not to iterate through the remaining code.
     if x == empty(uint256):
         return empty(uint256)
@@ -343,7 +343,7 @@ def _log256(x: uint256, roundup: bool) -> uint256:
            to round up or not. The default `False` is round down.
     @return uint256 The 32-byte calculation result.
     """
-    # For the special case `x == 0` we already return `0` here in order
+    # For the special case `x == 0`, we already return `0` here in order
     # not to iterate through the remaining code.
     if x == empty(uint256):
         return empty(uint256)
@@ -390,7 +390,7 @@ def _wad_ln(x: int256) -> int256:
     """
     assert x >= empty(int256), "math: wad_ln undefined"
 
-    # For the special case `x == 0` we already return `0` here in order
+    # For the special case `x == 0`, we already return `0` here in order
     # not to iterate through the remaining code.
     if x == empty(int256):
         return empty(int256)
@@ -559,7 +559,7 @@ def _cbrt(x: uint256, roundup: bool) -> uint256:
            to round up or not. The default `False` is round down.
     @return The 32-byte cube root of `x`.
     """
-    # For the special case `x == 0` we already return `0` here in order
+    # For the special case `x == 0`, we already return `0` here in order
     # not to iterate through the remaining code.
     if x == empty(uint256):
         return empty(uint256)
@@ -585,7 +585,7 @@ def _wad_cbrt(x: uint256) -> uint256:
     @param x The 32-byte variable from which the cube root is calculated.
     @return The 32-byte cubic root of `x` with a precision of 1e18.
     """
-    # For the special case `x == 0` we already return `0` here in order
+    # For the special case `x == 0`, we already return `0` here in order
     # not to iterate through the remaining code.
     if x == empty(uint256):
         return empty(uint256)
