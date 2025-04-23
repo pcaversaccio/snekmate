@@ -18,7 +18,7 @@
                  as defined in EIP-198 (https://eips.ethereum.org/EIPS/eip-198)
                  and introduced in the Byzantium hard fork. Otherwise,
                  these functions will revert due to the absence of the
-                 required precompile contract. For example, ZKsync Era
+                 required precompiled contract. For example, ZKsync Era
                  does not currently support this precompiled contract:
                  https://docs.zksync.io/zksync-protocol/differences/pre-compiles.
 """
