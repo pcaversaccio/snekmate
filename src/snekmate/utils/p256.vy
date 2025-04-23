@@ -12,6 +12,15 @@
         The implementation is inspired by dcposch's and nalinbhardwaj's
         implementation here:
         https://github.com/daimo-eth/p256-verifier/blob/master/src/P256Verifier.sol.
+@custom:security When using these functions, ensure that the underlying
+                 chain supports the `MODEXP` precompiled contract at the
+                 address `0x0000000000000000000000000000000000000005`,
+                 as defined in EIP-198 (https://eips.ethereum.org/EIPS/eip-198)
+                 and introduced in the Byzantium hard fork. Otherwise,
+                 these functions will revert due to the absence of the
+                 required precompiled contract. For example, ZKsync Era
+                 does not currently support this precompiled contract:
+                 https://docs.zksync.io/zksync-protocol/differences/pre-compiles.
 """
 
 
