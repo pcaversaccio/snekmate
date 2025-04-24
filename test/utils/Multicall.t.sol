@@ -29,11 +29,16 @@ contract MulticallTest is Test {
     }
 
     function testMulticallSuccess() public {
+        uint256 currentBlock = 1_337;
+        uint256 blockNumber = 1_337 - 17;
+        vm.roll(currentBlock);
+        vm.setBlockhash(blockNumber, keccak256("vyper"));
+
         IMulticall.Batch[] memory batch = new IMulticall.Batch[](3);
         batch[0] = IMulticall.Batch(
             mockCalleeAddr,
             false,
-            abi.encodeWithSignature("getBlockHash(uint256)", block.number)
+            abi.encodeWithSignature("getBlockHash(uint256)", blockNumber)
         );
         batch[1] = IMulticall.Batch(
             mockCalleeAddr,
@@ -50,7 +55,7 @@ contract MulticallTest is Test {
         assertTrue(results[0].success);
         assertEq(
             keccak256(results[0].returnData),
-            keccak256(abi.encodePacked(blockhash(block.number)))
+            keccak256(abi.encodePacked(blockhash(blockNumber)))
         );
         assertEq(
             keccak256(results[1].returnData),
@@ -65,7 +70,10 @@ contract MulticallTest is Test {
         batch[0] = IMulticall.Batch(
             mockCalleeAddr,
             false,
-            abi.encodeWithSignature("getBlockHash(uint256)", block.number)
+            abi.encodeWithSignature(
+                "getBlockHash(uint256)",
+                vm.getBlockNumber()
+            )
         );
         batch[1] = IMulticall.Batch(
             mockCalleeAddr,
@@ -85,6 +93,11 @@ contract MulticallTest is Test {
     }
 
     function testMulticallValueSuccess() public {
+        uint256 currentBlock = 1_337;
+        uint256 blockNumber = 1_337 - 17;
+        vm.roll(currentBlock);
+        vm.setBlockhash(blockNumber, keccak256("vyper"));
+
         IMulticall.BatchValue[] memory batchValue = new IMulticall.BatchValue[](
             4
         );
@@ -92,7 +105,7 @@ contract MulticallTest is Test {
             mockCalleeAddr,
             false,
             0,
-            abi.encodeWithSignature("getBlockHash(uint256)", block.number)
+            abi.encodeWithSignature("getBlockHash(uint256)", blockNumber)
         );
         batchValue[1] = IMulticall.BatchValue(
             mockCalleeAddr,
@@ -119,7 +132,7 @@ contract MulticallTest is Test {
         assertTrue(results[0].success);
         assertEq(
             keccak256(results[0].returnData),
-            keccak256(abi.encodePacked(blockhash(block.number)))
+            keccak256(abi.encodePacked(blockhash(blockNumber)))
         );
         assertEq(
             keccak256(results[1].returnData),
@@ -139,7 +152,10 @@ contract MulticallTest is Test {
             mockCalleeAddr,
             false,
             0,
-            abi.encodeWithSignature("getBlockHash(uint256)", block.number)
+            abi.encodeWithSignature(
+                "getBlockHash(uint256)",
+                vm.getBlockNumber()
+            )
         );
         batchValue[1] = IMulticall.BatchValue(
             mockCalleeAddr,
@@ -177,7 +193,10 @@ contract MulticallTest is Test {
             mockCalleeAddr,
             false,
             0,
-            abi.encodeWithSignature("getBlockHash(uint256)", block.number)
+            abi.encodeWithSignature(
+                "getBlockHash(uint256)",
+                vm.getBlockNumber()
+            )
         );
         batchValue[1] = IMulticall.BatchValue(
             mockCalleeAddr,
@@ -206,11 +225,16 @@ contract MulticallTest is Test {
     }
 
     function testMulticallSelfSuccess() public {
+        uint256 currentBlock = 1_337;
+        uint256 blockNumber = 1_337 - 17;
+        vm.roll(currentBlock);
+        vm.setBlockhash(blockNumber, keccak256("vyper"));
+
         IMulticall.Batch[] memory batch1 = new IMulticall.Batch[](3);
         batch1[0] = IMulticall.Batch(
             mockCalleeAddr,
             false,
-            abi.encodeWithSignature("getBlockHash(uint256)", block.number)
+            abi.encodeWithSignature("getBlockHash(uint256)", blockNumber)
         );
         batch1[1] = IMulticall.Batch(
             mockCalleeAddr,
@@ -227,7 +251,7 @@ contract MulticallTest is Test {
         batch2[0] = IMulticall.Batch(
             mockCalleeAddr,
             false,
-            abi.encodeWithSignature("getBlockHash(uint256)", block.number)
+            abi.encodeWithSignature("getBlockHash(uint256)", blockNumber)
         );
         batch2[1] = IMulticall.Batch(
             mockCalleeAddr,
@@ -261,7 +285,10 @@ contract MulticallTest is Test {
         batch1[0] = IMulticall.Batch(
             mockCalleeAddr,
             false,
-            abi.encodeWithSignature("getBlockHash(uint256)", block.number)
+            abi.encodeWithSignature(
+                "getBlockHash(uint256)",
+                vm.getBlockNumber()
+            )
         );
         batch1[1] = IMulticall.Batch(
             mockCalleeAddr,
@@ -278,7 +305,10 @@ contract MulticallTest is Test {
         batch2[0] = IMulticall.Batch(
             mockCalleeAddr,
             false,
-            abi.encodeWithSignature("getBlockHash(uint256)", block.number)
+            abi.encodeWithSignature(
+                "getBlockHash(uint256)",
+                vm.getBlockNumber()
+            )
         );
         batch2[1] = IMulticall.Batch(
             mockCalleeAddr,
@@ -305,12 +335,17 @@ contract MulticallTest is Test {
         multicall.multicall_self(batchSelf);
     }
 
-    function testMultistaticcallSuccess() public view {
+    function testMultistaticcallSuccess() public {
+        uint256 currentBlock = 1_337;
+        uint256 blockNumber = 1_337 - 17;
+        vm.roll(currentBlock);
+        vm.setBlockhash(blockNumber, keccak256("vyper"));
+
         IMulticall.Batch[] memory batch = new IMulticall.Batch[](2);
         batch[0] = IMulticall.Batch(
             mockCalleeAddr,
             false,
-            abi.encodeWithSignature("getBlockHash(uint256)", block.number)
+            abi.encodeWithSignature("getBlockHash(uint256)", blockNumber)
         );
         batch[1] = IMulticall.Batch(
             mockCalleeAddr,
@@ -322,7 +357,7 @@ contract MulticallTest is Test {
         assertTrue(results[0].success);
         assertEq(
             keccak256(results[0].returnData),
-            keccak256(abi.encodePacked(blockhash(block.number)))
+            keccak256(abi.encodePacked(blockhash(blockNumber)))
         );
         assertTrue(!results[1].success);
     }
@@ -332,7 +367,10 @@ contract MulticallTest is Test {
         batch[0] = IMulticall.Batch(
             mockCalleeAddr,
             false,
-            abi.encodeWithSignature("getBlockHash(uint256)", block.number)
+            abi.encodeWithSignature(
+                "getBlockHash(uint256)",
+                vm.getBlockNumber()
+            )
         );
         batch[1] = IMulticall.Batch(
             mockCalleeAddr,

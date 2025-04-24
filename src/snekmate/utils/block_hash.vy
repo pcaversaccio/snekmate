@@ -29,9 +29,9 @@ _HISTORY_STORAGE_ADDRESS: constant(address) = 0x0000F90827F1C53a10cb7A02335B1753
 
 # @dev The `keccak256` hash of the runtime bytecode of the
 # history contract deployed at `HISTORY_STORAGE_ADDRESS`.
-_HISTORY_STORAGE_RUNTIME_BYTECODE_HASH: constant(
-    bytes32
-) = 0x6e49e66782037c0555897870e29fa5e552daf4719552131a0abce779daec0a5d
+_HISTORY_STORAGE_RUNTIME_BYTECODE_HASH: constant(bytes32) = (
+    0x6e49e66782037c0555897870e29fa5e552daf4719552131a0abce779daec0a5d
+)
 
 
 @deploy
@@ -68,16 +68,15 @@ def _block_hash(block_number: uint256) -> bytes32:
 
     if delta <= 256:
         return blockhash(block_number)
-
-    # The Vyper built-in function `blockhash` reverts if the block number
-    # is more than `256` blocks behind the current block. We explicitly
-    # handle this case to ensure the function returns an empty `bytes32`
-    # value rather than reverting (i.e. exactly matching the `BLOCKHASH`
-    # opcode behaviour).
-    if delta > 8191 or _HISTORY_STORAGE_ADDRESS.codehash != _HISTORY_STORAGE_RUNTIME_BYTECODE_HASH:
+    elif delta > 8191 or _HISTORY_STORAGE_ADDRESS.codehash != _HISTORY_STORAGE_RUNTIME_BYTECODE_HASH:
+        # The Vyper built-in function `blockhash` reverts if the block number
+        # is more than `256` blocks behind the current block. We explicitly
+        # handle this case (i.e. `delta > 8191`) to ensure the function returns
+        # an empty `bytes32` value rather than reverting (i.e. exactly matching
+        # the `BLOCKHASH` opcode behaviour).
         return empty(bytes32)
-
-    return self._history_storage_call(block_number)
+    else:
+        return self._history_storage_call(block_number)
 
 
 @internal
