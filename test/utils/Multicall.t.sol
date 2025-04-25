@@ -32,7 +32,7 @@ contract MulticallTest is Test {
         uint256 currentBlock = 1_337;
         uint256 blockNumber = 1_337 - 17;
         vm.roll(currentBlock);
-        vm.setBlockhash(blockNumber, keccak256("vyper"));
+        vm.setBlockhash(blockNumber, keccak256("Long Live Vyper!"));
 
         IMulticall.Batch[] memory batch = new IMulticall.Batch[](3);
         batch[0] = IMulticall.Batch(
@@ -96,7 +96,7 @@ contract MulticallTest is Test {
         uint256 currentBlock = 1_337;
         uint256 blockNumber = 1_337 - 17;
         vm.roll(currentBlock);
-        vm.setBlockhash(blockNumber, keccak256("vyper"));
+        vm.setBlockhash(blockNumber, keccak256("Long Live Vyper!"));
 
         IMulticall.BatchValue[] memory batchValue = new IMulticall.BatchValue[](
             4
@@ -228,7 +228,7 @@ contract MulticallTest is Test {
         uint256 currentBlock = 1_337;
         uint256 blockNumber = 1_337 - 17;
         vm.roll(currentBlock);
-        vm.setBlockhash(blockNumber, keccak256("vyper"));
+        vm.setBlockhash(blockNumber, keccak256("Long Live Vyper!"));
 
         IMulticall.Batch[] memory batch1 = new IMulticall.Batch[](3);
         batch1[0] = IMulticall.Batch(
@@ -339,7 +339,7 @@ contract MulticallTest is Test {
         uint256 currentBlock = 1_337;
         uint256 blockNumber = 1_337 - 17;
         vm.roll(currentBlock);
-        vm.setBlockhash(blockNumber, keccak256("vyper"));
+        vm.setBlockhash(blockNumber, keccak256("Long Live Vyper!"));
 
         IMulticall.Batch[] memory batch = new IMulticall.Batch[](2);
         batch[0] = IMulticall.Batch(
