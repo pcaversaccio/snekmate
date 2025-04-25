@@ -13,8 +13,8 @@
         and 8,191 blocks ago, the function `_block_hash` queries via
         the specified `get` (https://eips.ethereum.org/EIPS/eip-2935#get)
         method the EIP-2935 history contract. For blocks older than
-        8,191 or future blocks, we return zero, matching the `BLOCKHASH`
-        behaviour.
+        8,191 or future blocks (including the current one), we return
+        zero, matching the `BLOCKHASH` behaviour.
 
         Please note that after EIP-2935 is activated, it takes 8,191
         blocks to fully populate the history. Before that, only block
@@ -50,11 +50,12 @@ def __init__():
 def _block_hash(block_number: uint256) -> bytes32:
     """
     @dev Returns the block hash for block number `block_number`.
-    @notice For blocks older than 8,191 or future blocks, returns
-            zero, matching the `BLOCKHASH` behaviour. Furthermore,
-            this function does verify if the history contract is
-            deployed. If the contract is undeployed, the call will
-            fallback to the `BLOCKHASH` behaviour.
+    @notice For blocks older than 8,191 or future blocks (including
+            the current one), returns zero, matching the `BLOCKHASH`
+            behaviour. Furthermore, this function does verify if the
+            history contract is deployed. If the history contract is
+            undeployed, the function will fallback to the `BLOCKHASH`
+            behaviour.
     @param block_number The 32-byte block number.
     @return bytes32 The 32-byte block hash for block number `block_number`.
     """
@@ -76,20 +77,21 @@ def _block_hash(block_number: uint256) -> bytes32:
         # the `BLOCKHASH` opcode behaviour).
         return empty(bytes32)
     else:
-        return self._history_storage_call(block_number)
+        return self._get_history_storage(block_number)
 
 
 @internal
 @view
-def _history_storage_call(block_number: uint256) -> bytes32:
+def _get_history_storage(block_number: uint256) -> bytes32:
     """
     @dev Returns the block hash for block number `block_number` by
          calling the `HISTORY_STORAGE_ADDRESS` contract address.
     @notice Please note that for any request outside the range of
             `[block.number - 8191, block.number - 1], this function
-            reverts. Furthermore, this function does not verify if
-            the history contract is deployed. If the contract is
-            undeployed, the call will return an empty `bytes32` value.
+            reverts (see https://eips.ethereum.org/EIPS/eip-2935#get).
+            Furthermore, this function does not verify if the history
+            contract is deployed. If the history contract is undeployed,
+            the function will return an empty `bytes32` value.
     @param block_number The 32-byte block number.
     @return bytes32 The 32-byte block hash for block number `block_number`.
     """

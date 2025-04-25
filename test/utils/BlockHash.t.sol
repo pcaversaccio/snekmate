@@ -7,6 +7,9 @@ import {VyperDeployer} from "utils/VyperDeployer.sol";
 import {IBlockHash} from "./interfaces/IBlockHash.sol";
 
 contract BlockHashTest is Test {
+    /**
+     * @dev For the specifications of EIP-2935, see here: https://eips.ethereum.org/EIPS/eip-2935.
+     */
     address private constant _SYSTEM_ADDRESS =
         0xffffFFFfFFffffffffffffffFfFFFfffFFFfFFfE;
     address private constant _HISTORY_STORAGE_ADDRESS =
@@ -42,7 +45,7 @@ contract BlockHashTest is Test {
     }
 
     function testBlockHashWithin256Range() public {
-        bytes32 hash = keccak256("blockhash");
+        bytes32 hash = keccak256("Long Live Vyper!");
         vm.roll(1_337);
         uint256 blockNumber = vm.getBlockNumber() - 256;
         vm.setBlockhash(blockNumber, hash);
@@ -51,7 +54,7 @@ contract BlockHashTest is Test {
     }
 
     function testBlockHashAbove8191Range() public {
-        bytes32 hash = keccak256("blockhash");
+        bytes32 hash = keccak256("Long Live Vyper!");
         vm.roll(31_337);
         uint256 blockNumber = vm.getBlockNumber() - 8192;
         vm.setBlockhash(blockNumber, hash);
@@ -64,13 +67,13 @@ contract BlockHashTest is Test {
          * @dev First, ensure that the logic behaves as expected when the
          * history contract is deployed.
          */
-        bytes32 hash = keccak256("blockhash");
+        bytes32 hash = keccak256("Long Live Vyper!");
         uint256 blockNumber1 = 1_337;
         vm.roll(blockNumber1 + 1);
-        vm.setBlockhash(blockNumber1, hash);
         vm.startPrank(_SYSTEM_ADDRESS);
         // solhint-disable-next-line avoid-low-level-calls
         (bool success1, ) = _HISTORY_STORAGE_ADDRESS.call(abi.encode(hash));
+        vm.stopPrank();
         assertTrue(success1);
         assertEq(
             vm.load(
@@ -79,7 +82,6 @@ contract BlockHashTest is Test {
             ),
             hash
         );
-        vm.stopPrank();
         vm.roll(blockNumber1 + 5_000);
         assertEq(blockHash.block_hash(blockNumber1), hash);
 
@@ -90,10 +92,10 @@ contract BlockHashTest is Test {
         vm.etch(_HISTORY_STORAGE_ADDRESS, type(VyperDeployer).runtimeCode);
         uint256 blockNumber2 = 31_337;
         vm.roll(blockNumber2 + 1);
-        vm.setBlockhash(blockNumber2, hash);
         vm.startPrank(_SYSTEM_ADDRESS);
         // solhint-disable-next-line avoid-low-level-calls
         (bool success2, ) = _HISTORY_STORAGE_ADDRESS.call(abi.encode(hash));
+        vm.stopPrank();
         assertTrue(!success2);
         assertEq(
             vm.load(
@@ -102,19 +104,18 @@ contract BlockHashTest is Test {
             ),
             bytes32(0)
         );
-        vm.stopPrank();
         vm.roll(blockNumber2 + 5_000);
         assertEq(blockHash.block_hash(blockNumber2), bytes32(0));
     }
 
     function testBlockHashWithin257And8191Range() public {
-        bytes32 hash = keccak256("blockhash");
+        bytes32 hash = keccak256("Long Live Vyper!");
         uint256 blockNumber = 31_337;
         vm.roll(blockNumber + 1);
-        vm.setBlockhash(blockNumber, hash);
         vm.startPrank(_SYSTEM_ADDRESS);
         // solhint-disable-next-line avoid-low-level-calls
         (bool success, ) = _HISTORY_STORAGE_ADDRESS.call(abi.encode(hash));
+        vm.stopPrank();
         assertTrue(success);
         assertEq(
             vm.load(
@@ -123,7 +124,6 @@ contract BlockHashTest is Test {
             ),
             hash
         );
-        vm.stopPrank();
         vm.roll(blockNumber + 1_337);
         assertEq(blockHash.block_hash(blockNumber), hash);
     }
@@ -151,7 +151,13 @@ contract BlockHashTest is Test {
         bytes32 hash
     ) public {
         delta = bound(delta, 1, 256);
-        currentBlock = bound(currentBlock, delta, type(uint256).max);
+        /**
+         * @dev We use `uint64` here due to Revm's internal saturation of `block.number`
+         * to `u64::MAX` (https://github.com/bluealloy/revm/blob/b2c789d42d4eee93ce111f1a7d3d0708f1e34180/crates/interpreter/src/instructions/host.rs#L144).
+         * If `requested_number >= block_number` (after saturation), Revm returns `U256::ZERO`
+         * early without querying the database (https://github.com/bluealloy/revm/blob/b2c789d42d4eee93ce111f1a7d3d0708f1e34180/crates/interpreter/src/instructions/host.rs#L148-L151).
+         */
+        currentBlock = bound(currentBlock, delta, type(uint64).max);
         vm.roll(currentBlock);
         uint256 blockNumber = vm.getBlockNumber() - delta;
         vm.setBlockhash(blockNumber, hash);
@@ -164,8 +170,14 @@ contract BlockHashTest is Test {
         uint256 delta,
         bytes32 hash
     ) public {
-        delta = bound(delta, 8192, type(uint256).max);
-        currentBlock = bound(currentBlock, delta, type(uint256).max);
+        /**
+         * @dev We use `uint64` here due to Revm's internal saturation of `block.number`
+         * to `u64::MAX` (https://github.com/bluealloy/revm/blob/b2c789d42d4eee93ce111f1a7d3d0708f1e34180/crates/interpreter/src/instructions/host.rs#L144).
+         * If `requested_number >= block_number` (after saturation), Revm returns `U256::ZERO`
+         * early without querying the database (https://github.com/bluealloy/revm/blob/b2c789d42d4eee93ce111f1a7d3d0708f1e34180/crates/interpreter/src/instructions/host.rs#L148-L151).
+         */
+        delta = bound(delta, 8192, type(uint64).max);
+        currentBlock = bound(currentBlock, delta, type(uint64).max);
         vm.roll(currentBlock);
         uint256 blockNumber = vm.getBlockNumber() - delta;
         vm.setBlockhash(blockNumber, hash);
@@ -178,14 +190,21 @@ contract BlockHashTest is Test {
         uint256 delta,
         bytes32 hash
     ) public {
-        delta = bound(delta, 0, type(uint248).max);
-        currentBlock = bound(currentBlock, delta, type(uint248).max + delta);
+        delta = bound(delta, 257, type(uint56).max);
+        /**
+         * @dev We use `type(uint56).max` to prevent an overflow, as Revm internally saturates `block.number`
+         * to `u64::MAX` (see: https://github.com/bluealloy/revm/blob/b2c789d42d4eee93ce111f1a7d3d0708f1e34180/crates/interpreter/src/instructions/host.rs#L144).
+         * Since the `currentBlock` is incremented by `delta` at the end of the test, using `type(uint64).max`
+         * would result in an overflow. If `requested_number >= block_number` (after saturation), Revm returns `U256::ZERO`
+         * early without querying the database (https://github.com/bluealloy/revm/blob/b2c789d42d4eee93ce111f1a7d3d0708f1e34180/crates/interpreter/src/instructions/host.rs#L148-L151).
+         */
+        currentBlock = bound(currentBlock, delta, type(uint56).max);
         vm.etch(_HISTORY_STORAGE_ADDRESS, type(VyperDeployer).runtimeCode);
         vm.roll(currentBlock + 1);
-        vm.setBlockhash(currentBlock, hash);
         vm.startPrank(_SYSTEM_ADDRESS);
         // solhint-disable-next-line avoid-low-level-calls
         (bool success, ) = _HISTORY_STORAGE_ADDRESS.call(abi.encode(hash));
+        vm.stopPrank();
         assertTrue(!success);
         assertEq(
             vm.load(
@@ -194,33 +213,38 @@ contract BlockHashTest is Test {
             ),
             bytes32(0)
         );
-        vm.stopPrank();
         vm.roll(currentBlock + delta);
         assertEq(blockHash.block_hash(currentBlock), bytes32(0));
     }
 
-    // function testFuzzBlockHashWithin257And8191Range(
-    //     uint256 currentBlock,
-    //     uint256 delta,
-    //     bytes32 hash
-    // ) public {
-    //     delta = bound(delta, 257, 8191 > currentBlock ? 8191 : currentBlock);
-    //     currentBlock = bound(currentBlock, delta, currentBlock + delta);
-    //     vm.roll(currentBlock + 1);
-    //     vm.setBlockhash(currentBlock, hash);
-    //     vm.startPrank(_SYSTEM_ADDRESS);
-    //     // solhint-disable-next-line avoid-low-level-calls
-    //     (bool success, ) = _HISTORY_STORAGE_ADDRESS.call(abi.encode(hash));
-    //     assertTrue(success);
-    //     assertEq(
-    //         vm.load(
-    //             _HISTORY_STORAGE_ADDRESS,
-    //             bytes32((vm.getBlockNumber() - 1) % 8191)
-    //         ),
-    //         hash
-    //     );
-    //     vm.stopPrank();
-    //     vm.roll(currentBlock + delta);
-    //     assertEq(blockHash.block_hash(currentBlock), hash);
-    // }
+    function testFuzzBlockHashWithin257And8191Range(
+        uint256 currentBlock,
+        uint256 delta,
+        bytes32 hash
+    ) public {
+        delta = bound(delta, 257, 8191);
+        /**
+         * @dev We use `type(uint56).max` to prevent an overflow, as Revm internally saturates `block.number`
+         * to `u64::MAX` (see: https://github.com/bluealloy/revm/blob/b2c789d42d4eee93ce111f1a7d3d0708f1e34180/crates/interpreter/src/instructions/host.rs#L144).
+         * Since the `currentBlock` is incremented by `delta` at the end of the test, using `type(uint64).max`
+         * would result in an overflow. If `requested_number >= block_number` (after saturation), Revm returns `U256::ZERO`
+         * early without querying the database (https://github.com/bluealloy/revm/blob/b2c789d42d4eee93ce111f1a7d3d0708f1e34180/crates/interpreter/src/instructions/host.rs#L148-L151).
+         */
+        currentBlock = bound(currentBlock, delta, type(uint56).max);
+        vm.roll(currentBlock + 1);
+        vm.startPrank(_SYSTEM_ADDRESS);
+        // solhint-disable-next-line avoid-low-level-calls
+        (bool success, ) = _HISTORY_STORAGE_ADDRESS.call(abi.encode(hash));
+        vm.stopPrank();
+        assertTrue(success);
+        assertEq(
+            vm.load(
+                _HISTORY_STORAGE_ADDRESS,
+                bytes32((vm.getBlockNumber() - 1) % 8191)
+            ),
+            hash
+        );
+        vm.roll(currentBlock + delta);
+        assertEq(blockHash.block_hash(currentBlock), hash);
+    }
 }
