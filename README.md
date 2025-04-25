@@ -94,7 +94,7 @@ src
         └── mocks
             ├── base64_mock — "`base64` Module Reference Implementation"
             ├── batch_distributor_mock — "`batch_distributor` Module Reference Implementation"
-            ├── block_hash_mock — `block_hash` Module Reference Implementation
+            ├── block_hash_mock — "`block_hash` Module Reference Implementation"
             ├── create_address_mock — "`create_address` Module Reference Implementation"
             ├── create2_address_mock — "`create2_address` Module Reference Implementation"
             ├── ecdsa_mock — "`ecdsa` Module Reference Implementation"
