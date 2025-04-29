@@ -87,7 +87,7 @@ def _get_history_storage(block_number: uint256) -> bytes32:
     @dev Returns the block hash for block number `block_number` by
          calling the `HISTORY_STORAGE_ADDRESS` contract address.
     @notice Please note that for any request outside the range of
-            `[block.number - 8191, block.number - 1], this function
+            `[block.number - 8191, block.number - 1]`, this function
             reverts (see https://eips.ethereum.org/EIPS/eip-2935#get).
             Furthermore, this function does not verify if the history
             contract is deployed. If the history contract is undeployed,
