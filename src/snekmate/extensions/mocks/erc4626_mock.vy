@@ -1,4 +1,5 @@
 # pragma version ~=0.4.1
+# pragma nonreentrancy off
 """
 @title `erc4626` Module Reference Implementation
 @custom:contract-name erc4626_mock

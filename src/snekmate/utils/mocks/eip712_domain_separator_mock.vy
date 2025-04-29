@@ -1,4 +1,5 @@
 # pragma version ~=0.4.1
+# pragma nonreentrancy off
 """
 @title `eip712_domain_separator` Module Reference Implementation
 @custom:contract-name eip712_domain_separator_mock

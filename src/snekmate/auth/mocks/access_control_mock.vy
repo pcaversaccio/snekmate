@@ -1,4 +1,5 @@
 # pragma version ~=0.4.1
+# pragma nonreentrancy off
 """
 @title `access_control` Module Reference Implementation
 @custom:contract-name access_control_mock

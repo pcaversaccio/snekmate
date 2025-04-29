@@ -1,4 +1,5 @@
 # pragma version ~=0.4.1
+# pragma nonreentrancy off
 """
 @title Modern and Gas-Efficient ERC-1155 Implementation
 @custom:contract-name erc1155

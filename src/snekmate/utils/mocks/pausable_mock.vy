@@ -1,4 +1,5 @@
 # pragma version ~=0.4.1
+# pragma nonreentrancy off
 """
 @title `pausable` Module Reference Implementation
 @custom:contract-name pausable_mock

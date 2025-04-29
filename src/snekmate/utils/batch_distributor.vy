@@ -1,4 +1,5 @@
 # pragma version ~=0.4.1
+# pragma nonreentrancy off
 """
 @title Batch Sending Both Native and ERC-20 Tokens
 @custom:contract-name batch_distributor

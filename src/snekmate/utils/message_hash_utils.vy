@@ -1,4 +1,5 @@
 # pragma version ~=0.4.1
+# pragma nonreentrancy off
 """
 @title Signature Message Hash Utility Functions
 @custom:contract-name message_hash_utils

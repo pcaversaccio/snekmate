@@ -1,4 +1,5 @@
 # pragma version ~=0.4.1
+# pragma nonreentrancy off
 """
 @title `message_hash_utils` Module Reference Implementation
 @custom:contract-name message_hash_utils_mock

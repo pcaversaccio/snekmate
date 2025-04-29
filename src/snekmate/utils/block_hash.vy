@@ -1,4 +1,5 @@
 # pragma version ~=0.4.1
+# pragma nonreentrancy off
 """
 @title Utility Functions to Access Historical Block Hashes
 @custom:contract-name block_hash
