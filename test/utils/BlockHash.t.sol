@@ -155,7 +155,7 @@ contract BlockHashTest is Test {
          * @dev We use `uint64` here due to Revm's internal saturation of `block.number`
          * to `u64::MAX` (https://github.com/bluealloy/revm/blob/b2c789d42d4eee93ce111f1a7d3d0708f1e34180/crates/interpreter/src/instructions/host.rs#L144).
          * If `requested_number >= block_number` (after saturation), Revm returns `U256::ZERO`
-         * early without querying the database (https://github.com/bluealloy/revm/blob/b2c789d42d4eee93ce111f1a7d3d0708f1e34180/crates/interpreter/src/instructions/host.rs#L148-L151).
+         * early without querying the database (https://github.com/bluealloy/revm/blob/b2c789d42d4eee93ce111f1a7d3d0708f1e34180/crates/interpreter/src/instructions/host.rs#L148-L157).
          */
         currentBlock = bound(currentBlock, delta, type(uint64).max);
         vm.roll(currentBlock);
@@ -174,7 +174,7 @@ contract BlockHashTest is Test {
          * @dev We use `uint64` here due to Revm's internal saturation of `block.number`
          * to `u64::MAX` (https://github.com/bluealloy/revm/blob/b2c789d42d4eee93ce111f1a7d3d0708f1e34180/crates/interpreter/src/instructions/host.rs#L144).
          * If `requested_number >= block_number` (after saturation), Revm returns `U256::ZERO`
-         * early without querying the database (https://github.com/bluealloy/revm/blob/b2c789d42d4eee93ce111f1a7d3d0708f1e34180/crates/interpreter/src/instructions/host.rs#L148-L151).
+         * early without querying the database (https://github.com/bluealloy/revm/blob/b2c789d42d4eee93ce111f1a7d3d0708f1e34180/crates/interpreter/src/instructions/host.rs#L148-L157).
          */
         delta = bound(delta, 8192, type(uint64).max);
         currentBlock = bound(currentBlock, delta, type(uint64).max);
@@ -196,7 +196,7 @@ contract BlockHashTest is Test {
          * to `u64::MAX` (see: https://github.com/bluealloy/revm/blob/b2c789d42d4eee93ce111f1a7d3d0708f1e34180/crates/interpreter/src/instructions/host.rs#L144).
          * Since the `currentBlock` is incremented by `delta` at the end of the test, using `type(uint64).max`
          * would result in an overflow. If `requested_number >= block_number` (after saturation), Revm returns `U256::ZERO`
-         * early without querying the database (https://github.com/bluealloy/revm/blob/b2c789d42d4eee93ce111f1a7d3d0708f1e34180/crates/interpreter/src/instructions/host.rs#L148-L151).
+         * early without querying the database (https://github.com/bluealloy/revm/blob/b2c789d42d4eee93ce111f1a7d3d0708f1e34180/crates/interpreter/src/instructions/host.rs#L148-L157).
          */
         currentBlock = bound(currentBlock, delta, type(uint56).max);
         vm.etch(_HISTORY_STORAGE_ADDRESS, type(VyperDeployer).runtimeCode);
@@ -228,7 +228,7 @@ contract BlockHashTest is Test {
          * to `u64::MAX` (see: https://github.com/bluealloy/revm/blob/b2c789d42d4eee93ce111f1a7d3d0708f1e34180/crates/interpreter/src/instructions/host.rs#L144).
          * Since the `currentBlock` is incremented by `delta` at the end of the test, using `type(uint64).max`
          * would result in an overflow. If `requested_number >= block_number` (after saturation), Revm returns `U256::ZERO`
-         * early without querying the database (https://github.com/bluealloy/revm/blob/b2c789d42d4eee93ce111f1a7d3d0708f1e34180/crates/interpreter/src/instructions/host.rs#L148-L151).
+         * early without querying the database (https://github.com/bluealloy/revm/blob/b2c789d42d4eee93ce111f1a7d3d0708f1e34180/crates/interpreter/src/instructions/host.rs#L148-L157).
          */
         currentBlock = bound(currentBlock, delta, type(uint56).max);
         vm.roll(currentBlock + 1);
