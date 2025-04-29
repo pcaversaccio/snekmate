@@ -21,7 +21,7 @@
   "bugs": {
     "url": "https://github.com/pcaversaccio/snekmate/issues"
   },
-  "packageManager": "pnpm@10.9.0",
+  "packageManager": "pnpm@10.10.0",
   "scripts": {
     "prettier:check": "npx prettier -c \"**/*.{md,sol,js,json,yml,yaml,sh}\"",
     "prettier:fix": "npx prettier -w \"**/*.{md,sol,js,json,yml,yaml,sh}\"",
@@ -42,12 +42,12 @@
     "@openzeppelin/merkle-tree": "^1.0.8",
     "eslint": "^9.25.1",
     "eslint-config-prettier": "^10.1.2",
-    "ethers": "^6.13.5",
+    "ethers": "^6.13.7",
     "keccak256": "^1.0.6",
     "merkletreejs": "^0.5.2",
     "prettier": "^3.5.3",
     "prettier-plugin-sh": "^0.17.2",
-    "prettier-plugin-solidity": "^1.4.2",
+    "prettier-plugin-solidity": "^1.4.3",
     "solhint": "^5.0.5"
   },
   "pnpm": {

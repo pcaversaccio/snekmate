@@ -1079,7 +1079,7 @@ contract ERC20Test is Test {
     ) public {
         (address ownerAddr, uint256 key) = makeAddrAndKey(owner);
         address spenderAddr = makeAddr(spender);
-        uint256 amount = block.number;
+        uint256 amount = vm.getBlockNumber();
         uint256 nonce = ERC20Extended.nonces(ownerAddr);
         uint256 deadline = block.timestamp + increment;
         bytes32 domainSeparator = ERC20Extended.DOMAIN_SEPARATOR();
@@ -1120,7 +1120,7 @@ contract ERC20Test is Test {
         (address ownerAddr, ) = makeAddrAndKey(owner);
         (, uint256 keyWrong) = makeAddrAndKey("ownerWrong");
         address spenderAddr = makeAddr(spender);
-        uint256 amount = block.number;
+        uint256 amount = vm.getBlockNumber();
         uint256 nonce = ERC20Extended.nonces(ownerAddr);
         uint256 deadline = block.timestamp + increment;
         bytes32 domainSeparator = ERC20Extended.DOMAIN_SEPARATOR();
