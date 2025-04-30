@@ -14,12 +14,7 @@ contract PausableTest is Test {
     address private deployer = address(vyperDeployer);
 
     function setUp() public {
-        pausable = IPausable(
-            vyperDeployer.deployContract(
-                "src/snekmate/utils/mocks/",
-                "pausable_mock"
-            )
-        );
+        pausable = IPausable(vyperDeployer.deployContract("src/snekmate/utils/mocks/", "pausable_mock"));
     }
 
     function testInitialSetup() public view {
@@ -138,12 +133,7 @@ contract PausableInvariants is Test {
     PausableHandler private pausableHandler;
 
     function setUp() public {
-        pausable = IPausable(
-            vyperDeployer.deployContract(
-                "src/snekmate/utils/mocks/",
-                "pausable_mock"
-            )
-        );
+        pausable = IPausable(vyperDeployer.deployContract("src/snekmate/utils/mocks/", "pausable_mock"));
         pausableHandler = new PausableHandler(pausable);
         targetContract(address(pausableHandler));
     }

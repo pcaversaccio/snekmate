@@ -22,20 +22,14 @@ contract ERC2981Test is Test {
 
     function setUp() public {
         ERC2981Extended = IERC2981Extended(
-            vyperDeployer.deployContract(
-                "src/snekmate/extensions/mocks/",
-                "erc2981_mock"
-            )
+            vyperDeployer.deployContract("src/snekmate/extensions/mocks/", "erc2981_mock")
         );
     }
 
     function testInitialSetup() public {
         uint256 tokenId = 1;
         uint256 salePrice = 1_000;
-        (address receiver, uint256 royaltyAmount) = ERC2981Extended.royaltyInfo(
-            tokenId,
-            salePrice
-        );
+        (address receiver, uint256 royaltyAmount) = ERC2981Extended.royaltyInfo(tokenId, salePrice);
         assertEq(ERC2981Extended.owner(), deployer);
         assertEq(receiver, zeroAddress);
         assertEq(royaltyAmount, 0);
@@ -43,37 +37,27 @@ contract ERC2981Test is Test {
         vm.expectEmit(true, true, false, false);
         emit IERC2981Extended.OwnershipTransferred(zeroAddress, deployer);
         ERC2981ExtendedInitialEvent = IERC2981Extended(
-            vyperDeployer.deployContract(
-                "src/snekmate/extensions/mocks/",
-                "erc2981_mock"
-            )
+            vyperDeployer.deployContract("src/snekmate/extensions/mocks/", "erc2981_mock")
         );
-        (
-            address receiverInitialSetup,
-            uint256 royaltyAmountInitialSetup
-        ) = ERC2981ExtendedInitialEvent.royaltyInfo(tokenId, salePrice);
+        (address receiverInitialSetup, uint256 royaltyAmountInitialSetup) = ERC2981ExtendedInitialEvent.royaltyInfo(
+            tokenId,
+            salePrice
+        );
         assertEq(ERC2981ExtendedInitialEvent.owner(), deployer);
         assertEq(receiverInitialSetup, zeroAddress);
         assertEq(royaltyAmountInitialSetup, 0);
     }
 
     function testSupportsInterfaceSuccess() public view {
-        assertTrue(
-            ERC2981Extended.supportsInterface(type(IERC165).interfaceId)
-        );
-        assertTrue(
-            ERC2981Extended.supportsInterface(type(IERC2981).interfaceId)
-        );
+        assertTrue(ERC2981Extended.supportsInterface(type(IERC165).interfaceId));
+        assertTrue(ERC2981Extended.supportsInterface(type(IERC2981).interfaceId));
     }
 
     function testSupportsInterfaceSuccessGasCost() public view {
         uint256 startGas = gasleft();
         ERC2981Extended.supportsInterface(type(IERC165).interfaceId);
         uint256 gasUsed = startGas - gasleft();
-        assertTrue(
-            gasUsed <= 30_000 &&
-                ERC2981Extended.supportsInterface(type(IERC165).interfaceId)
-        );
+        assertTrue(gasUsed <= 30_000 && ERC2981Extended.supportsInterface(type(IERC165).interfaceId));
     }
 
     function testSupportsInterfaceInvalidInterfaceId() public view {
@@ -84,9 +68,7 @@ contract ERC2981Test is Test {
         uint256 startGas = gasleft();
         ERC2981Extended.supportsInterface(0x0011bbff);
         uint256 gasUsed = startGas - gasleft();
-        assertTrue(
-            gasUsed <= 30_000 && !ERC2981Extended.supportsInterface(0x0011bbff)
-        );
+        assertTrue(gasUsed <= 30_000 && !ERC2981Extended.supportsInterface(0x0011bbff));
     }
 
     function testRoyaltyInfoDefaultRoyalty() public {
@@ -99,10 +81,8 @@ contract ERC2981Test is Test {
         uint256 royalty = (salePrice * royaltyFraction) / 10_000;
         vm.startPrank(owner);
         ERC2981Extended.set_default_royalty(receiver, royaltyFraction);
-        (address receiverAddr1, uint256 royaltyAmount1) = ERC2981Extended
-            .royaltyInfo(tokenId1, salePrice);
-        (address receiverAddr2, uint256 royaltyAmount2) = ERC2981Extended
-            .royaltyInfo(tokenId2, salePrice);
+        (address receiverAddr1, uint256 royaltyAmount1) = ERC2981Extended.royaltyInfo(tokenId1, salePrice);
+        (address receiverAddr2, uint256 royaltyAmount2) = ERC2981Extended.royaltyInfo(tokenId2, salePrice);
         assertEq(receiverAddr1, receiverAddr2);
         assertEq(royaltyAmount1, royaltyAmount2);
         assertEq(receiver, receiverAddr1);
@@ -124,10 +104,8 @@ contract ERC2981Test is Test {
         uint256 royalty2 = (salePrice * royaltyFraction * 2) / 10_000;
         vm.startPrank(owner);
         ERC2981Extended.set_default_royalty(receiver1, royaltyFraction);
-        (address receiverAddr1, uint256 royaltyAmount1) = ERC2981Extended
-            .royaltyInfo(tokenId1, salePrice);
-        (address receiverAddr2, uint256 royaltyAmount2) = ERC2981Extended
-            .royaltyInfo(tokenId2, salePrice);
+        (address receiverAddr1, uint256 royaltyAmount1) = ERC2981Extended.royaltyInfo(tokenId1, salePrice);
+        (address receiverAddr2, uint256 royaltyAmount2) = ERC2981Extended.royaltyInfo(tokenId2, salePrice);
         assertEq(receiverAddr1, receiverAddr2);
         assertEq(royaltyAmount1, royaltyAmount2);
         assertEq(receiver1, receiverAddr1);
@@ -136,10 +114,8 @@ contract ERC2981Test is Test {
         assertEq(royalty1, royaltyAmount2);
 
         ERC2981Extended.set_default_royalty(receiver2, royaltyFraction * 2);
-        (address receiverAddr3, uint256 royaltyAmount3) = ERC2981Extended
-            .royaltyInfo(tokenId1, salePrice);
-        (address receiverAddr4, uint256 royaltyAmount4) = ERC2981Extended
-            .royaltyInfo(tokenId2, salePrice);
+        (address receiverAddr3, uint256 royaltyAmount3) = ERC2981Extended.royaltyInfo(tokenId1, salePrice);
+        (address receiverAddr4, uint256 royaltyAmount4) = ERC2981Extended.royaltyInfo(tokenId2, salePrice);
         assertEq(receiverAddr3, receiverAddr4);
         assertEq(royaltyAmount3, royaltyAmount4);
         assertEq(receiver2, receiverAddr3);
@@ -159,10 +135,8 @@ contract ERC2981Test is Test {
         uint256 royalty = (salePrice * royaltyFraction) / 10_000;
         vm.startPrank(owner);
         ERC2981Extended.set_default_royalty(receiver, royaltyFraction);
-        (address receiverAddr1, uint256 royaltyAmount1) = ERC2981Extended
-            .royaltyInfo(tokenId1, salePrice);
-        (address receiverAddr2, uint256 royaltyAmount2) = ERC2981Extended
-            .royaltyInfo(tokenId2, salePrice);
+        (address receiverAddr1, uint256 royaltyAmount1) = ERC2981Extended.royaltyInfo(tokenId1, salePrice);
+        (address receiverAddr2, uint256 royaltyAmount2) = ERC2981Extended.royaltyInfo(tokenId2, salePrice);
         assertEq(receiverAddr1, receiverAddr2);
         assertEq(royaltyAmount1, royaltyAmount2);
         assertEq(receiver, receiverAddr1);
@@ -171,10 +145,8 @@ contract ERC2981Test is Test {
         assertEq(royalty, royaltyAmount2);
 
         ERC2981Extended.delete_default_royalty();
-        (address receiverAddr3, uint256 royaltyAmount3) = ERC2981Extended
-            .royaltyInfo(tokenId1, salePrice);
-        (address receiverAddr4, uint256 royaltyAmount4) = ERC2981Extended
-            .royaltyInfo(tokenId2, salePrice);
+        (address receiverAddr3, uint256 royaltyAmount3) = ERC2981Extended.royaltyInfo(tokenId1, salePrice);
+        (address receiverAddr4, uint256 royaltyAmount4) = ERC2981Extended.royaltyInfo(tokenId2, salePrice);
         assertEq(receiverAddr3, receiverAddr4);
         assertEq(royaltyAmount3, royaltyAmount4);
         assertEq(receiverAddr3, zeroAddress);
@@ -196,15 +168,9 @@ contract ERC2981Test is Test {
         uint256 royalty2 = (salePrice * royaltyFraction * 2) / 10_000;
         vm.startPrank(owner);
         ERC2981Extended.set_default_royalty(receiver1, royaltyFraction);
-        ERC2981Extended.set_token_royalty(
-            tokenId1,
-            receiver2,
-            royaltyFraction * 2
-        );
-        (address receiverAddr1, uint256 royaltyAmount1) = ERC2981Extended
-            .royaltyInfo(tokenId1, salePrice);
-        (address receiverAddr2, uint256 royaltyAmount2) = ERC2981Extended
-            .royaltyInfo(tokenId2, salePrice);
+        ERC2981Extended.set_token_royalty(tokenId1, receiver2, royaltyFraction * 2);
+        (address receiverAddr1, uint256 royaltyAmount1) = ERC2981Extended.royaltyInfo(tokenId1, salePrice);
+        (address receiverAddr2, uint256 royaltyAmount2) = ERC2981Extended.royaltyInfo(tokenId2, salePrice);
         assertTrue(receiverAddr1 != receiverAddr2);
         assertTrue(royaltyAmount1 != royaltyAmount2);
         assertEq(receiver2, receiverAddr1);
@@ -226,15 +192,9 @@ contract ERC2981Test is Test {
         uint256 royalty2 = (salePrice * royaltyFraction * 2) / 10_000;
         vm.startPrank(owner);
         ERC2981Extended.set_default_royalty(receiver1, royaltyFraction);
-        ERC2981Extended.set_token_royalty(
-            tokenId1,
-            receiver2,
-            royaltyFraction * 2
-        );
-        (address receiverAddr1, uint256 royaltyAmount1) = ERC2981Extended
-            .royaltyInfo(tokenId1, salePrice);
-        (address receiverAddr2, uint256 royaltyAmount2) = ERC2981Extended
-            .royaltyInfo(tokenId2, salePrice);
+        ERC2981Extended.set_token_royalty(tokenId1, receiver2, royaltyFraction * 2);
+        (address receiverAddr1, uint256 royaltyAmount1) = ERC2981Extended.royaltyInfo(tokenId1, salePrice);
+        (address receiverAddr2, uint256 royaltyAmount2) = ERC2981Extended.royaltyInfo(tokenId2, salePrice);
         assertTrue(receiverAddr1 != receiverAddr2);
         assertTrue(royaltyAmount1 != royaltyAmount2);
         assertEq(receiver2, receiverAddr1);
@@ -242,15 +202,9 @@ contract ERC2981Test is Test {
         assertEq(receiver1, receiverAddr2);
         assertEq(royalty1, royaltyAmount2);
 
-        ERC2981Extended.set_token_royalty(
-            tokenId2,
-            receiver2,
-            royaltyFraction * 2
-        );
-        (address receiverAddr3, uint256 royaltyAmount3) = ERC2981Extended
-            .royaltyInfo(tokenId1, salePrice);
-        (address receiverAddr4, uint256 royaltyAmount4) = ERC2981Extended
-            .royaltyInfo(tokenId2, salePrice);
+        ERC2981Extended.set_token_royalty(tokenId2, receiver2, royaltyFraction * 2);
+        (address receiverAddr3, uint256 royaltyAmount3) = ERC2981Extended.royaltyInfo(tokenId1, salePrice);
+        (address receiverAddr4, uint256 royaltyAmount4) = ERC2981Extended.royaltyInfo(tokenId2, salePrice);
         assertEq(receiverAddr3, receiverAddr4);
         assertEq(royaltyAmount3, royaltyAmount4);
         assertEq(receiver2, receiverAddr3);
@@ -272,15 +226,9 @@ contract ERC2981Test is Test {
         uint256 royalty2 = (salePrice * royaltyFraction * 2) / 10_000;
         vm.startPrank(owner);
         ERC2981Extended.set_default_royalty(receiver1, royaltyFraction);
-        ERC2981Extended.set_token_royalty(
-            tokenId1,
-            receiver2,
-            royaltyFraction * 2
-        );
-        (address receiverAddr1, uint256 royaltyAmount1) = ERC2981Extended
-            .royaltyInfo(tokenId1, salePrice);
-        (address receiverAddr2, uint256 royaltyAmount2) = ERC2981Extended
-            .royaltyInfo(tokenId2, salePrice);
+        ERC2981Extended.set_token_royalty(tokenId1, receiver2, royaltyFraction * 2);
+        (address receiverAddr1, uint256 royaltyAmount1) = ERC2981Extended.royaltyInfo(tokenId1, salePrice);
+        (address receiverAddr2, uint256 royaltyAmount2) = ERC2981Extended.royaltyInfo(tokenId2, salePrice);
         assertTrue(receiverAddr1 != receiverAddr2);
         assertTrue(royaltyAmount1 != royaltyAmount2);
         assertEq(receiver2, receiverAddr1);
@@ -289,8 +237,7 @@ contract ERC2981Test is Test {
         assertEq(royalty1, royaltyAmount2);
 
         ERC2981Extended.reset_token_royalty(tokenId1);
-        (address receiverAddr3, uint256 royaltyAmount3) = ERC2981Extended
-            .royaltyInfo(tokenId1, salePrice);
+        (address receiverAddr3, uint256 royaltyAmount3) = ERC2981Extended.royaltyInfo(tokenId1, salePrice);
         assertEq(receiverAddr3, receiverAddr2);
         assertEq(royaltyAmount3, royaltyAmount2);
         assertEq(receiver1, receiverAddr2);
@@ -416,10 +363,8 @@ contract ERC2981Test is Test {
         uint256 royalty = (salePrice * royaltyFraction) / 10_000;
         vm.startPrank(deployer);
         ERC2981Extended.set_default_royalty(receiver, royaltyFraction);
-        (address receiverAddr1, uint256 royaltyAmount1) = ERC2981Extended
-            .royaltyInfo(tokenId1, salePrice);
-        (address receiverAddr2, uint256 royaltyAmount2) = ERC2981Extended
-            .royaltyInfo(tokenId2, salePrice);
+        (address receiverAddr1, uint256 royaltyAmount1) = ERC2981Extended.royaltyInfo(tokenId1, salePrice);
+        (address receiverAddr2, uint256 royaltyAmount2) = ERC2981Extended.royaltyInfo(tokenId2, salePrice);
         assertEq(receiverAddr1, receiverAddr2);
         assertEq(royaltyAmount1, royaltyAmount2);
         assertEq(receiver, receiverAddr1);
@@ -438,10 +383,7 @@ contract ERC2981Test is Test {
         uint256 salePrice
     ) public {
         vm.assume(
-            receiver1 != zeroAddress &&
-                receiver2 != zeroAddress &&
-                receiver1 != receiver2 &&
-                tokenId1 != tokenId2
+            receiver1 != zeroAddress && receiver2 != zeroAddress && receiver1 != receiver2 && tokenId1 != tokenId2
         );
         royaltyFraction = uint96(bound(royaltyFraction, 0, 5_000));
         salePrice = bound(salePrice, 0, type(uint240).max);
@@ -449,10 +391,8 @@ contract ERC2981Test is Test {
         uint256 royalty2 = (salePrice * royaltyFraction * 2) / 10_000;
         vm.startPrank(deployer);
         ERC2981Extended.set_default_royalty(receiver1, royaltyFraction);
-        (address receiverAddr1, uint256 royaltyAmount1) = ERC2981Extended
-            .royaltyInfo(tokenId1, salePrice);
-        (address receiverAddr2, uint256 royaltyAmount2) = ERC2981Extended
-            .royaltyInfo(tokenId2, salePrice);
+        (address receiverAddr1, uint256 royaltyAmount1) = ERC2981Extended.royaltyInfo(tokenId1, salePrice);
+        (address receiverAddr2, uint256 royaltyAmount2) = ERC2981Extended.royaltyInfo(tokenId2, salePrice);
         assertEq(receiverAddr1, receiverAddr2);
         assertEq(royaltyAmount1, royaltyAmount2);
         assertEq(receiver1, receiverAddr1);
@@ -461,10 +401,8 @@ contract ERC2981Test is Test {
         assertEq(royalty1, royaltyAmount2);
 
         ERC2981Extended.set_default_royalty(receiver2, royaltyFraction * 2);
-        (address receiverAddr3, uint256 royaltyAmount3) = ERC2981Extended
-            .royaltyInfo(tokenId1, salePrice);
-        (address receiverAddr4, uint256 royaltyAmount4) = ERC2981Extended
-            .royaltyInfo(tokenId2, salePrice);
+        (address receiverAddr3, uint256 royaltyAmount3) = ERC2981Extended.royaltyInfo(tokenId1, salePrice);
+        (address receiverAddr4, uint256 royaltyAmount4) = ERC2981Extended.royaltyInfo(tokenId2, salePrice);
         assertEq(receiverAddr3, receiverAddr4);
         assertEq(royaltyAmount3, royaltyAmount4);
         assertEq(receiver2, receiverAddr3);
@@ -487,10 +425,8 @@ contract ERC2981Test is Test {
         uint256 royalty = (salePrice * royaltyFraction) / 10_000;
         vm.startPrank(deployer);
         ERC2981Extended.set_default_royalty(receiver, royaltyFraction);
-        (address receiverAddr1, uint256 royaltyAmount1) = ERC2981Extended
-            .royaltyInfo(tokenId1, salePrice);
-        (address receiverAddr2, uint256 royaltyAmount2) = ERC2981Extended
-            .royaltyInfo(tokenId2, salePrice);
+        (address receiverAddr1, uint256 royaltyAmount1) = ERC2981Extended.royaltyInfo(tokenId1, salePrice);
+        (address receiverAddr2, uint256 royaltyAmount2) = ERC2981Extended.royaltyInfo(tokenId2, salePrice);
         assertEq(receiverAddr1, receiverAddr2);
         assertEq(royaltyAmount1, royaltyAmount2);
         assertEq(receiver, receiverAddr1);
@@ -499,10 +435,8 @@ contract ERC2981Test is Test {
         assertEq(royalty, royaltyAmount2);
 
         ERC2981Extended.delete_default_royalty();
-        (address receiverAddr3, uint256 royaltyAmount3) = ERC2981Extended
-            .royaltyInfo(tokenId1, salePrice);
-        (address receiverAddr4, uint256 royaltyAmount4) = ERC2981Extended
-            .royaltyInfo(tokenId2, salePrice);
+        (address receiverAddr3, uint256 royaltyAmount3) = ERC2981Extended.royaltyInfo(tokenId1, salePrice);
+        (address receiverAddr4, uint256 royaltyAmount4) = ERC2981Extended.royaltyInfo(tokenId2, salePrice);
         assertEq(receiverAddr3, receiverAddr4);
         assertEq(royaltyAmount3, royaltyAmount4);
         assertEq(receiverAddr3, zeroAddress);
@@ -521,10 +455,7 @@ contract ERC2981Test is Test {
         uint256 salePrice
     ) public {
         vm.assume(
-            receiver1 != zeroAddress &&
-                receiver2 != zeroAddress &&
-                receiver1 != receiver2 &&
-                tokenId1 != tokenId2
+            receiver1 != zeroAddress && receiver2 != zeroAddress && receiver1 != receiver2 && tokenId1 != tokenId2
         );
         royaltyFraction = uint96(bound(royaltyFraction, 0, 5_000));
         salePrice = bound(salePrice, 0, type(uint240).max);
@@ -532,15 +463,9 @@ contract ERC2981Test is Test {
         uint256 royalty2 = (salePrice * royaltyFraction * 2) / 10_000;
         vm.startPrank(deployer);
         ERC2981Extended.set_default_royalty(receiver1, royaltyFraction);
-        ERC2981Extended.set_token_royalty(
-            tokenId1,
-            receiver2,
-            royaltyFraction * 2
-        );
-        (address receiverAddr1, uint256 royaltyAmount1) = ERC2981Extended
-            .royaltyInfo(tokenId1, salePrice);
-        (address receiverAddr2, uint256 royaltyAmount2) = ERC2981Extended
-            .royaltyInfo(tokenId2, salePrice);
+        ERC2981Extended.set_token_royalty(tokenId1, receiver2, royaltyFraction * 2);
+        (address receiverAddr1, uint256 royaltyAmount1) = ERC2981Extended.royaltyInfo(tokenId1, salePrice);
+        (address receiverAddr2, uint256 royaltyAmount2) = ERC2981Extended.royaltyInfo(tokenId2, salePrice);
         assertTrue(receiverAddr1 != receiverAddr2);
         assertEq(receiver2, receiverAddr1);
         assertEq(royalty2, royaltyAmount1);
@@ -558,10 +483,7 @@ contract ERC2981Test is Test {
         uint256 salePrice
     ) public {
         vm.assume(
-            receiver1 != zeroAddress &&
-                receiver2 != zeroAddress &&
-                receiver1 != receiver2 &&
-                tokenId1 != tokenId2
+            receiver1 != zeroAddress && receiver2 != zeroAddress && receiver1 != receiver2 && tokenId1 != tokenId2
         );
         royaltyFraction = uint96(bound(royaltyFraction, 0, 5_000));
         salePrice = bound(salePrice, 0, type(uint240).max);
@@ -569,30 +491,18 @@ contract ERC2981Test is Test {
         uint256 royalty2 = (salePrice * royaltyFraction * 2) / 10_000;
         vm.startPrank(deployer);
         ERC2981Extended.set_default_royalty(receiver1, royaltyFraction);
-        ERC2981Extended.set_token_royalty(
-            tokenId1,
-            receiver2,
-            royaltyFraction * 2
-        );
-        (address receiverAddr1, uint256 royaltyAmount1) = ERC2981Extended
-            .royaltyInfo(tokenId1, salePrice);
-        (address receiverAddr2, uint256 royaltyAmount2) = ERC2981Extended
-            .royaltyInfo(tokenId2, salePrice);
+        ERC2981Extended.set_token_royalty(tokenId1, receiver2, royaltyFraction * 2);
+        (address receiverAddr1, uint256 royaltyAmount1) = ERC2981Extended.royaltyInfo(tokenId1, salePrice);
+        (address receiverAddr2, uint256 royaltyAmount2) = ERC2981Extended.royaltyInfo(tokenId2, salePrice);
         assertTrue(receiverAddr1 != receiverAddr2);
         assertEq(receiver2, receiverAddr1);
         assertEq(royalty2, royaltyAmount1);
         assertEq(receiver1, receiverAddr2);
         assertEq(royalty1, royaltyAmount2);
 
-        ERC2981Extended.set_token_royalty(
-            tokenId2,
-            receiver2,
-            royaltyFraction * 2
-        );
-        (address receiverAddr3, uint256 royaltyAmount3) = ERC2981Extended
-            .royaltyInfo(tokenId1, salePrice);
-        (address receiverAddr4, uint256 royaltyAmount4) = ERC2981Extended
-            .royaltyInfo(tokenId2, salePrice);
+        ERC2981Extended.set_token_royalty(tokenId2, receiver2, royaltyFraction * 2);
+        (address receiverAddr3, uint256 royaltyAmount3) = ERC2981Extended.royaltyInfo(tokenId1, salePrice);
+        (address receiverAddr4, uint256 royaltyAmount4) = ERC2981Extended.royaltyInfo(tokenId2, salePrice);
         assertEq(receiverAddr3, receiverAddr4);
         assertEq(royaltyAmount3, royaltyAmount4);
         assertEq(receiver2, receiverAddr3);
@@ -611,10 +521,7 @@ contract ERC2981Test is Test {
         uint256 salePrice
     ) public {
         vm.assume(
-            receiver1 != zeroAddress &&
-                receiver2 != zeroAddress &&
-                receiver1 != receiver2 &&
-                tokenId1 != tokenId2
+            receiver1 != zeroAddress && receiver2 != zeroAddress && receiver1 != receiver2 && tokenId1 != tokenId2
         );
         royaltyFraction = uint96(bound(royaltyFraction, 0, 5_000));
         salePrice = bound(salePrice, 0, type(uint240).max);
@@ -622,15 +529,9 @@ contract ERC2981Test is Test {
         uint256 royalty2 = (salePrice * royaltyFraction * 2) / 10_000;
         vm.startPrank(deployer);
         ERC2981Extended.set_default_royalty(receiver1, royaltyFraction);
-        ERC2981Extended.set_token_royalty(
-            tokenId1,
-            receiver2,
-            royaltyFraction * 2
-        );
-        (address receiverAddr1, uint256 royaltyAmount1) = ERC2981Extended
-            .royaltyInfo(tokenId1, salePrice);
-        (address receiverAddr2, uint256 royaltyAmount2) = ERC2981Extended
-            .royaltyInfo(tokenId2, salePrice);
+        ERC2981Extended.set_token_royalty(tokenId1, receiver2, royaltyFraction * 2);
+        (address receiverAddr1, uint256 royaltyAmount1) = ERC2981Extended.royaltyInfo(tokenId1, salePrice);
+        (address receiverAddr2, uint256 royaltyAmount2) = ERC2981Extended.royaltyInfo(tokenId2, salePrice);
         assertTrue(receiverAddr1 != receiverAddr2);
         assertEq(receiver2, receiverAddr1);
         assertEq(royalty2, royaltyAmount1);
@@ -638,8 +539,7 @@ contract ERC2981Test is Test {
         assertEq(royalty1, royaltyAmount2);
 
         ERC2981Extended.reset_token_royalty(tokenId1);
-        (address receiverAddr3, uint256 royaltyAmount3) = ERC2981Extended
-            .royaltyInfo(tokenId1, salePrice);
+        (address receiverAddr3, uint256 royaltyAmount3) = ERC2981Extended.royaltyInfo(tokenId1, salePrice);
         assertEq(receiverAddr3, receiverAddr2);
         assertEq(royaltyAmount3, royaltyAmount2);
         assertEq(receiver1, receiverAddr2);
@@ -649,12 +549,8 @@ contract ERC2981Test is Test {
         vm.stopPrank();
     }
 
-    function testFuzzSetDefaultRoyaltyTooHighFeeNumerator(
-        uint96 feeNumerator
-    ) public {
-        feeNumerator = uint96(
-            bound(uint256(feeNumerator), 10_001, type(uint96).max)
-        );
+    function testFuzzSetDefaultRoyaltyTooHighFeeNumerator(uint96 feeNumerator) public {
+        feeNumerator = uint96(bound(uint256(feeNumerator), 10_001, type(uint96).max));
         address owner = deployer;
         vm.startPrank(owner);
         vm.expectRevert("erc2981: royalty fee will exceed sale_price");
@@ -674,20 +570,12 @@ contract ERC2981Test is Test {
         ERC2981Extended.delete_default_royalty();
     }
 
-    function testFuzzSetTokenRoyaltyTooHighFeeNumerator(
-        uint96 feeNumerator
-    ) public {
-        feeNumerator = uint96(
-            bound(uint256(feeNumerator), 10_001, type(uint96).max)
-        );
+    function testFuzzSetTokenRoyaltyTooHighFeeNumerator(uint96 feeNumerator) public {
+        feeNumerator = uint96(bound(uint256(feeNumerator), 10_001, type(uint96).max));
         address owner = deployer;
         vm.startPrank(owner);
         vm.expectRevert("erc2981: royalty fee will exceed sale_price");
-        ERC2981Extended.set_token_royalty(
-            1,
-            makeAddr("receiver"),
-            feeNumerator
-        );
+        ERC2981Extended.set_token_royalty(1, makeAddr("receiver"), feeNumerator);
         vm.stopPrank();
     }
 
@@ -712,10 +600,7 @@ contract ERC2981Test is Test {
         ERC2981Extended.reset_token_royalty(1);
     }
 
-    function testFuzzTransferOwnershipSuccess(
-        address newOwner1,
-        address newOwner2
-    ) public {
+    function testFuzzTransferOwnershipSuccess(address newOwner1, address newOwner2) public {
         vm.assume(newOwner1 != zeroAddress && newOwner2 != zeroAddress);
         address oldOwner = deployer;
         vm.startPrank(oldOwner);
@@ -733,10 +618,7 @@ contract ERC2981Test is Test {
         vm.stopPrank();
     }
 
-    function testFuzzTransferOwnershipNonOwner(
-        address nonOwner,
-        address newOwner
-    ) public {
+    function testFuzzTransferOwnershipNonOwner(address nonOwner, address newOwner) public {
         vm.assume(nonOwner != deployer);
         vm.prank(nonOwner);
         vm.expectRevert(bytes("ownable: caller is not the owner"));
@@ -781,10 +663,7 @@ contract ERC2981Invariants is Test {
 
     function setUp() public {
         ERC2981Extended = IERC2981Extended(
-            vyperDeployer.deployContract(
-                "src/snekmate/extensions/mocks/",
-                "erc2981_mock"
-            )
+            vyperDeployer.deployContract("src/snekmate/extensions/mocks/", "erc2981_mock")
         );
         erc2981Handler = new ERC2981Handler(ERC2981Extended, deployer);
         targetContract(address(erc2981Handler));
@@ -816,11 +695,7 @@ contract ERC2981Handler {
         erc2981.delete_default_royalty();
     }
 
-    function set_token_royalty(
-        uint256 tokenId,
-        address receiver,
-        uint96 feeNumerator
-    ) public {
+    function set_token_royalty(uint256 tokenId, address receiver, uint96 feeNumerator) public {
         erc2981.set_token_royalty(tokenId, receiver, feeNumerator);
     }
 

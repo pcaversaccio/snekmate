@@ -38,8 +38,7 @@ interface _CheatCodes {
  * Vyper contract, returning the address that the bytecode was deployed to.
  */
 contract VyperDeployer is Create {
-    address private constant HEVM_ADDRESS =
-        address(uint160(uint256(keccak256("hevm cheat code"))));
+    address private constant HEVM_ADDRESS = address(uint160(uint256(keccak256("hevm cheat code"))));
     address private self = address(this);
 
     /**
@@ -57,10 +56,7 @@ contract VyperDeployer is Create {
      * For example, the file name for "ECDSA.vy" is "ECDSA".
      * @return deployedAddress The address that the contract was deployed to.
      */
-    function deployContract(
-        string calldata path,
-        string calldata fileName
-    ) public returns (address deployedAddress) {
+    function deployContract(string calldata path, string calldata fileName) public returns (address deployedAddress) {
         /**
          * @dev Create a list of strings with the commands necessary
          * to compile Vyper contracts.
@@ -82,9 +78,7 @@ contract VyperDeployer is Create {
         if (bytecode.length == 0) {
             // solhint-disable-next-line no-console
             console.log(
-                StdStyle.red(
-                    "Vyper compilation failed! Please ensure that you have a valid Vyper version installed."
-                )
+                StdStyle.red("Vyper compilation failed! Please ensure that you have a valid Vyper version installed.")
             );
             revert CompilationFailed({emitter: self});
         }
@@ -97,8 +91,7 @@ contract VyperDeployer is Create {
         /**
          * @dev Check that the deployment was successful.
          */
-        if (deployedAddress == address(0))
-            revert DeploymentFailed({emitter: self});
+        if (deployedAddress == address(0)) revert DeploymentFailed({emitter: self});
     }
 
     /**
@@ -140,9 +133,7 @@ contract VyperDeployer is Create {
         if (bytecode.length == 0) {
             // solhint-disable-next-line no-console
             console.log(
-                StdStyle.red(
-                    "Vyper compilation failed! Please ensure that you have a valid Vyper version installed."
-                )
+                StdStyle.red("Vyper compilation failed! Please ensure that you have a valid Vyper version installed.")
             );
             revert CompilationFailed({emitter: self});
         }
@@ -161,8 +152,7 @@ contract VyperDeployer is Create {
         /**
          * @dev Check that the deployment was successful.
          */
-        if (deployedAddress == address(0))
-            revert DeploymentFailed({emitter: self});
+        if (deployedAddress == address(0)) revert DeploymentFailed({emitter: self});
     }
 
     /**
@@ -213,9 +203,7 @@ contract VyperDeployer is Create {
         if (bytecode.length == 0) {
             // solhint-disable-next-line no-console
             console.log(
-                StdStyle.red(
-                    "Vyper compilation failed! Please ensure that you have a valid Vyper version installed."
-                )
+                StdStyle.red("Vyper compilation failed! Please ensure that you have a valid Vyper version installed.")
             );
             revert CompilationFailed({emitter: self});
         }
@@ -228,8 +216,7 @@ contract VyperDeployer is Create {
         /**
          * @dev Check that the deployment was successful.
          */
-        if (deployedAddress == address(0))
-            revert DeploymentFailed({emitter: self});
+        if (deployedAddress == address(0)) revert DeploymentFailed({emitter: self});
     }
 
     /**
@@ -284,9 +271,7 @@ contract VyperDeployer is Create {
         if (bytecode.length == 0) {
             // solhint-disable-next-line no-console
             console.log(
-                StdStyle.red(
-                    "Vyper compilation failed! Please ensure that you have a valid Vyper version installed."
-                )
+                StdStyle.red("Vyper compilation failed! Please ensure that you have a valid Vyper version installed.")
             );
             revert CompilationFailed({emitter: self});
         }
@@ -305,7 +290,6 @@ contract VyperDeployer is Create {
         /**
          * @dev Check that the deployment was successful.
          */
-        if (deployedAddress == address(0))
-            revert DeploymentFailed({emitter: self});
+        if (deployedAddress == address(0)) revert DeploymentFailed({emitter: self});
     }
 }

@@ -25,19 +25,11 @@ interface IMulticall {
         bytes returnData;
     }
 
-    function multicall(
-        Batch[] calldata batch
-    ) external returns (Result[] memory results);
+    function multicall(Batch[] calldata batch) external returns (Result[] memory results);
 
-    function multicall_value(
-        BatchValue[] calldata batchValue
-    ) external payable returns (Result[] memory results);
+    function multicall_value(BatchValue[] calldata batchValue) external payable returns (Result[] memory results);
 
-    function multicall_self(
-        BatchSelf[] calldata batchSelf
-    ) external returns (Result[] memory results);
+    function multicall_self(BatchSelf[] calldata batchSelf) external returns (Result[] memory results);
 
-    function multistaticcall(
-        Batch[] calldata batch
-    ) external pure returns (Result[] memory results);
+    function multistaticcall(Batch[] calldata batch) external pure returns (Result[] memory results);
 }

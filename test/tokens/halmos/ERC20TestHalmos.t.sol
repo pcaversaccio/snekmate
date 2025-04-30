@@ -31,14 +31,7 @@ contract ERC20TestHalmos is Test, SymTest {
      */
     function setUpSymbolic(uint256 initialSupply_) public {
         uint8 decimals = uint8(svm.createUint(8, "decimals"));
-        bytes memory args = abi.encode(
-            _NAME,
-            _SYMBOL,
-            decimals,
-            initialSupply_,
-            _NAME_EIP712,
-            _VERSION_EIP712
-        );
+        bytes memory args = abi.encode(_NAME, _SYMBOL, decimals, initialSupply_, _NAME_EIP712, _VERSION_EIP712);
         /**
          * @dev Halmos does not currently work with the latest Vyper jump-table-based
          * dispatchers: https://github.com/a16z/halmos/issues/253. For Halmos-based tests,
@@ -47,13 +40,7 @@ contract ERC20TestHalmos is Test, SymTest {
          * For Halmos-based tests, we therefore use the EVM version `shanghai`.
          */
         erc20 = IERC20(
-            vyperDeployer.deployContract(
-                "src/snekmate/tokens/mocks/",
-                "erc20_mock",
-                args,
-                "shanghai",
-                "none"
-            )
+            vyperDeployer.deployContract("src/snekmate/tokens/mocks/", "erc20_mock", args, "shanghai", "none")
         );
 
         address deployer = address(vyperDeployer);
@@ -115,12 +102,7 @@ contract ERC20TestHalmos is Test, SymTest {
      * @notice Forked and adjusted accordingly from here:
      * https://github.com/a16z/halmos/blob/main/examples/tokens/ERC20/test/ERC20Test.sol.
      */
-    function testHalmosTransfer(
-        address sender,
-        address receiver,
-        address other,
-        uint256 amount
-    ) public {
+    function testHalmosTransfer(address sender, address receiver, address other, uint256 amount) public {
         /**
          * @dev Using a single `assume` with conjunctions would result in the creation of
          * multiple paths, negatively impacting performance.
@@ -155,13 +137,7 @@ contract ERC20TestHalmos is Test, SymTest {
      * @notice Forked and adjusted accordingly from here:
      * https://github.com/a16z/halmos/blob/main/examples/tokens/ERC20/test/ERC20Test.sol.
      */
-    function testHalmosTransferFrom(
-        address caller,
-        address from,
-        address to,
-        address other,
-        uint256 amount
-    ) public {
+    function testHalmosTransferFrom(address caller, address from, address to, address other, uint256 amount) public {
         /**
          * @dev Using a single `assume` with conjunctions would result in the creation of
          * multiple paths, negatively impacting performance.
@@ -185,10 +161,7 @@ contract ERC20TestHalmos is Test, SymTest {
             assertEq(newBalanceFrom, oldBalanceFrom - amount);
             assertEq(newBalanceTo, oldBalanceTo + amount);
             assertGe(oldAllowance, amount);
-            assertTrue(
-                oldAllowance == type(uint256).max ||
-                    erc20.allowance(from, caller) == oldAllowance - amount
-            );
+            assertTrue(oldAllowance == type(uint256).max || erc20.allowance(from, caller) == oldAllowance - amount);
         } else {
             assertEq(newBalanceFrom, oldBalanceFrom);
             assertEq(newBalanceTo, oldBalanceTo);
