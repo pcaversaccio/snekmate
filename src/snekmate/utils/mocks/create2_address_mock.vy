@@ -1,4 +1,5 @@
 # pragma version ~=0.4.1
+# pragma nonreentrancy off
 """
 @title `create2_address` Module Reference Implementation
 @custom:contract-name create2_address_mock

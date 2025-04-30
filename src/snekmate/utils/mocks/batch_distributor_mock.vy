@@ -1,4 +1,5 @@
 # pragma version ~=0.4.1
+# pragma nonreentrancy off
 """
 @title `batch_distributor` Module Reference Implementation
 @custom:contract-name batch_distributor_mock

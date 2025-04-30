@@ -38,10 +38,7 @@ contract CallReceiverMock {
      * @param b The second 32-byte function argument.
      * @return string The return string `0xba5ed`.
      */
-    function mockFunctionWithArgs(
-        uint256 a,
-        uint256 b
-    ) public payable returns (string memory) {
+    function mockFunctionWithArgs(uint256 a, uint256 b) public payable returns (string memory) {
         emit MockFunctionCalledWithArgs(a, b);
         return _retValue;
     }
@@ -89,10 +86,7 @@ contract CallReceiverMock {
      * @notice Writes to storage slot `slot` with value `value`.
      * @return string The return string `0xba5ed`.
      */
-    function mockFunctionWritesStorage(
-        bytes32 slot,
-        bytes32 value
-    ) public payable returns (string memory) {
+    function mockFunctionWritesStorage(bytes32 slot, bytes32 value) public payable returns (string memory) {
         // solhint-disable-next-line no-inline-assembly
         assembly ("memory-safe") {
             sstore(slot, value)

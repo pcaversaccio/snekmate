@@ -10,10 +10,8 @@ contract BlockHashTest is Test {
     /**
      * @dev For the specifications of EIP-2935, see here: https://eips.ethereum.org/EIPS/eip-2935.
      */
-    address private constant _SYSTEM_ADDRESS =
-        0xffffFFFfFFffffffffffffffFfFFFfffFFFfFFfE;
-    address private constant _HISTORY_STORAGE_ADDRESS =
-        0x0000F90827F1C53a10cb7A02335B175320002935;
+    address private constant _SYSTEM_ADDRESS = 0xffffFFFfFFffffffffffffffFfFFFfffFFFfFFfE;
+    address private constant _HISTORY_STORAGE_ADDRESS = 0x0000F90827F1C53a10cb7A02335B175320002935;
     bytes private constant _HISTORY_STORAGE_RUNTIME_BYTECODE =
         hex"3373fffffffffffffffffffffffffffffffffffffffe14604657602036036042575f35600143038111604257611fff81430311604257611fff9006545f5260205ff35b5f5ffd5b5f35611fff60014303065500";
 
@@ -22,26 +20,15 @@ contract BlockHashTest is Test {
     IBlockHash private blockHash;
 
     function setUp() public {
-        blockHash = IBlockHash(
-            vyperDeployer.deployContract(
-                "src/snekmate/utils/mocks/",
-                "block_hash_mock"
-            )
-        );
+        blockHash = IBlockHash(vyperDeployer.deployContract("src/snekmate/utils/mocks/", "block_hash_mock"));
         vm.etch(_HISTORY_STORAGE_ADDRESS, _HISTORY_STORAGE_RUNTIME_BYTECODE);
     }
 
     function testBlockHashCurrentAndFutureBlock() public view {
         assertEq(blockHash.block_hash(vm.getBlockNumber()), bytes32(0));
-        assertEq(
-            blockHash.block_hash(vm.getBlockNumber()),
-            blockhash(vm.getBlockNumber())
-        );
+        assertEq(blockHash.block_hash(vm.getBlockNumber()), blockhash(vm.getBlockNumber()));
         assertEq(blockHash.block_hash(vm.getBlockNumber() + 1), bytes32(0));
-        assertEq(
-            blockHash.block_hash(vm.getBlockNumber() + 1),
-            blockhash(vm.getBlockNumber() + 1)
-        );
+        assertEq(blockHash.block_hash(vm.getBlockNumber() + 1), blockhash(vm.getBlockNumber() + 1));
     }
 
     function testBlockHashWithin256Range() public {
@@ -75,13 +62,7 @@ contract BlockHashTest is Test {
         (bool success1, ) = _HISTORY_STORAGE_ADDRESS.call(abi.encode(hash));
         vm.stopPrank();
         assertTrue(success1);
-        assertEq(
-            vm.load(
-                _HISTORY_STORAGE_ADDRESS,
-                bytes32((vm.getBlockNumber() - 1) % 8191)
-            ),
-            hash
-        );
+        assertEq(vm.load(_HISTORY_STORAGE_ADDRESS, bytes32((vm.getBlockNumber() - 1) % 8191)), hash);
         vm.roll(blockNumber1 + 5_000);
         assertEq(blockHash.block_hash(blockNumber1), hash);
 
@@ -97,13 +78,7 @@ contract BlockHashTest is Test {
         (bool success2, ) = _HISTORY_STORAGE_ADDRESS.call(abi.encode(hash));
         vm.stopPrank();
         assertTrue(!success2);
-        assertEq(
-            vm.load(
-                _HISTORY_STORAGE_ADDRESS,
-                bytes32((vm.getBlockNumber() - 1) % 8191)
-            ),
-            bytes32(0)
-        );
+        assertEq(vm.load(_HISTORY_STORAGE_ADDRESS, bytes32((vm.getBlockNumber() - 1) % 8191)), bytes32(0));
         vm.roll(blockNumber2 + 5_000);
         assertEq(blockHash.block_hash(blockNumber2), bytes32(0));
     }
@@ -117,39 +92,20 @@ contract BlockHashTest is Test {
         (bool success, ) = _HISTORY_STORAGE_ADDRESS.call(abi.encode(hash));
         vm.stopPrank();
         assertTrue(success);
-        assertEq(
-            vm.load(
-                _HISTORY_STORAGE_ADDRESS,
-                bytes32((vm.getBlockNumber() - 1) % 8191)
-            ),
-            hash
-        );
+        assertEq(vm.load(_HISTORY_STORAGE_ADDRESS, bytes32((vm.getBlockNumber() - 1) % 8191)), hash);
         vm.roll(blockNumber + 1_337);
         assertEq(blockHash.block_hash(blockNumber), hash);
     }
 
-    function testFuzzBlockHashCurrentAndFutureBlock(
-        uint256 blockNumber
-    ) public view {
-        blockNumber = bound(
-            blockNumber,
-            vm.getBlockNumber(),
-            type(uint256).max - 1
-        );
+    function testFuzzBlockHashCurrentAndFutureBlock(uint256 blockNumber) public view {
+        blockNumber = bound(blockNumber, vm.getBlockNumber(), type(uint256).max - 1);
         assertEq(blockHash.block_hash(blockNumber), bytes32(0));
         assertEq(blockHash.block_hash(blockNumber), blockhash(blockNumber));
         assertEq(blockHash.block_hash(blockNumber + 1), bytes32(0));
-        assertEq(
-            blockHash.block_hash(blockNumber + 1),
-            blockhash(blockNumber + 1)
-        );
+        assertEq(blockHash.block_hash(blockNumber + 1), blockhash(blockNumber + 1));
     }
 
-    function testFuzzBlockHashWithin256Range(
-        uint256 currentBlock,
-        uint256 delta,
-        bytes32 hash
-    ) public {
+    function testFuzzBlockHashWithin256Range(uint256 currentBlock, uint256 delta, bytes32 hash) public {
         delta = bound(delta, 1, 256);
         /**
          * @dev We use `uint64` here due to Revm's internal saturation of `block.number`
@@ -165,11 +121,7 @@ contract BlockHashTest is Test {
         assertEq(blockHash.block_hash(blockNumber), blockhash(blockNumber));
     }
 
-    function testFuzzBlockHashAbove8191Range(
-        uint256 currentBlock,
-        uint256 delta,
-        bytes32 hash
-    ) public {
+    function testFuzzBlockHashAbove8191Range(uint256 currentBlock, uint256 delta, bytes32 hash) public {
         /**
          * @dev We use `uint64` here due to Revm's internal saturation of `block.number`
          * to `u64::MAX` (https://github.com/bluealloy/revm/blob/b2c789d42d4eee93ce111f1a7d3d0708f1e34180/crates/interpreter/src/instructions/host.rs#L144).
@@ -185,11 +137,7 @@ contract BlockHashTest is Test {
         assertEq(blockHash.block_hash(blockNumber), blockhash(blockNumber));
     }
 
-    function testFuzzBlockHashHistoryContractNotDeployed(
-        uint256 currentBlock,
-        uint256 delta,
-        bytes32 hash
-    ) public {
+    function testFuzzBlockHashHistoryContractNotDeployed(uint256 currentBlock, uint256 delta, bytes32 hash) public {
         delta = bound(delta, 257, type(uint56).max);
         /**
          * @dev We use `type(uint56).max` to prevent an overflow, as Revm internally saturates `block.number`
@@ -206,22 +154,12 @@ contract BlockHashTest is Test {
         (bool success, ) = _HISTORY_STORAGE_ADDRESS.call(abi.encode(hash));
         vm.stopPrank();
         assertTrue(!success);
-        assertEq(
-            vm.load(
-                _HISTORY_STORAGE_ADDRESS,
-                bytes32((vm.getBlockNumber() - 1) % 8191)
-            ),
-            bytes32(0)
-        );
+        assertEq(vm.load(_HISTORY_STORAGE_ADDRESS, bytes32((vm.getBlockNumber() - 1) % 8191)), bytes32(0));
         vm.roll(currentBlock + delta);
         assertEq(blockHash.block_hash(currentBlock), bytes32(0));
     }
 
-    function testFuzzBlockHashWithin257And8191Range(
-        uint256 currentBlock,
-        uint256 delta,
-        bytes32 hash
-    ) public {
+    function testFuzzBlockHashWithin257And8191Range(uint256 currentBlock, uint256 delta, bytes32 hash) public {
         delta = bound(delta, 257, 8191);
         /**
          * @dev We use `type(uint56).max` to prevent an overflow, as Revm internally saturates `block.number`
@@ -237,13 +175,7 @@ contract BlockHashTest is Test {
         (bool success, ) = _HISTORY_STORAGE_ADDRESS.call(abi.encode(hash));
         vm.stopPrank();
         assertTrue(success);
-        assertEq(
-            vm.load(
-                _HISTORY_STORAGE_ADDRESS,
-                bytes32((vm.getBlockNumber() - 1) % 8191)
-            ),
-            hash
-        );
+        assertEq(vm.load(_HISTORY_STORAGE_ADDRESS, bytes32((vm.getBlockNumber() - 1) % 8191)), hash);
         vm.roll(currentBlock + delta);
         assertEq(blockHash.block_hash(currentBlock), hash);
     }

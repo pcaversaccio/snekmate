@@ -1,4 +1,5 @@
 # pragma version ~=0.4.1
+# pragma nonreentrancy off
 """
 @title `block_hash` Module Reference Implementation
 @custom:contract-name block_hash_mock

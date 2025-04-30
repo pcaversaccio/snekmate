@@ -18,28 +18,11 @@ contract ERC1155ReceiverMock is ERC165, IERC1155Receiver {
     bytes4 private _batRetval;
     bool private _batReverts;
 
-    event Received(
-        address indexed operator,
-        address indexed from,
-        uint256 id,
-        uint256 amount,
-        bytes data
-    );
+    event Received(address indexed operator, address indexed from, uint256 id, uint256 amount, bytes data);
 
-    event BatchReceived(
-        address indexed operator,
-        address indexed from,
-        uint256[] ids,
-        uint256[] amounts,
-        bytes data
-    );
+    event BatchReceived(address indexed operator, address indexed from, uint256[] ids, uint256[] amounts, bytes data);
 
-    constructor(
-        bytes4 recRetval_,
-        bool recReverts_,
-        bytes4 batRetval_,
-        bool batReverts_
-    ) {
+    constructor(bytes4 recRetval_, bool recReverts_, bytes4 batRetval_, bool batReverts_) {
         _recRetval = recRetval_;
         _recReverts = recReverts_;
         _batRetval = batRetval_;
@@ -93,10 +76,7 @@ contract ERC1155ReceiverMock is ERC165, IERC1155Receiver {
         bytes memory data
     ) external returns (bytes4) {
         // solhint-disable-next-line reason-string, gas-custom-errors
-        require(
-            !_batReverts,
-            "ERC1155ReceiverMock: reverting on batch receive"
-        );
+        require(!_batReverts, "ERC1155ReceiverMock: reverting on batch receive");
         emit BatchReceived(operator, from, ids, amounts, data);
         return _batRetval;
     }

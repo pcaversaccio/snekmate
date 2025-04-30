@@ -1,4 +1,5 @@
 # pragma version ~=0.4.1
+# pragma nonreentrancy off
 """
 @title `CREATE` EVM Opcode Utility Functions for Address Calculations
 @custom:contract-name create_address

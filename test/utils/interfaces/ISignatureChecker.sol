@@ -2,10 +2,7 @@
 pragma solidity ^0.8.29;
 
 interface ISignatureChecker {
-    function IERC1271_ISVALIDSIGNATURE_SELECTOR()
-        external
-        pure
-        returns (bytes4);
+    function IERC1271_ISVALIDSIGNATURE_SELECTOR() external pure returns (bytes4);
 
     function is_valid_signature_now(
         address signer,

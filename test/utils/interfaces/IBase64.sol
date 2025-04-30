@@ -2,13 +2,7 @@
 pragma solidity ^0.8.29;
 
 interface IBase64 {
-    function encode(
-        bytes calldata data,
-        bool base64Url
-    ) external pure returns (string[] memory);
+    function encode(bytes calldata data, bool base64Url) external pure returns (string[] memory);
 
-    function decode(
-        string calldata data,
-        bool base64Url
-    ) external pure returns (bytes[] memory);
+    function decode(string calldata data, bool base64Url) external pure returns (bytes[] memory);
 }

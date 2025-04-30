@@ -1,4 +1,5 @@
 # pragma version ~=0.4.1
+# pragma nonreentrancy off
 """
 @title `merkle_proof_verification` Module Reference Implementation
 @custom:contract-name merkle_proof_verification_mock

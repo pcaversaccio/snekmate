@@ -41,13 +41,7 @@ contract ERC1155TestHalmos is Test, SymTest {
          * For Halmos-based tests, we therefore use the EVM version `shanghai`.
          */
         erc1155 = IERC1155(
-            vyperDeployer.deployContract(
-                "src/snekmate/tokens/mocks/",
-                "erc1155_mock",
-                args,
-                "shanghai",
-                "none"
-            )
+            vyperDeployer.deployContract("src/snekmate/tokens/mocks/", "erc1155_mock", args, "shanghai", "none")
         );
 
         address deployer = address(vyperDeployer);
@@ -85,40 +79,12 @@ contract ERC1155TestHalmos is Test, SymTest {
 
         vm.startPrank(deployer);
         for (uint256 i = 0; i < tokenIds.length; i++) {
-            IERC1155Extended(token)._customMint(
-                deployer,
-                tokenIds[i],
-                amounts[i]
-            );
+            IERC1155Extended(token)._customMint(deployer, tokenIds[i], amounts[i]);
         }
-        erc1155.safeTransferFrom(
-            deployer,
-            holders[0],
-            tokenIds[0],
-            amounts[0],
-            new bytes(0)
-        );
-        erc1155.safeTransferFrom(
-            deployer,
-            holders[0],
-            tokenIds[1],
-            amounts[1],
-            new bytes(42)
-        );
-        erc1155.safeTransferFrom(
-            deployer,
-            holders[1],
-            tokenIds[2],
-            amounts[2],
-            new bytes(96)
-        );
-        erc1155.safeTransferFrom(
-            deployer,
-            holders[2],
-            tokenIds[3],
-            amounts[3],
-            new bytes(1_024)
-        );
+        erc1155.safeTransferFrom(deployer, holders[0], tokenIds[0], amounts[0], new bytes(0));
+        erc1155.safeTransferFrom(deployer, holders[0], tokenIds[1], amounts[1], new bytes(42));
+        erc1155.safeTransferFrom(deployer, holders[1], tokenIds[2], amounts[2], new bytes(96));
+        erc1155.safeTransferFrom(deployer, holders[2], tokenIds[3], amounts[3], new bytes(1_024));
         vm.stopPrank();
 
         vm.startPrank(holders[0]);
@@ -139,11 +105,7 @@ contract ERC1155TestHalmos is Test, SymTest {
          * @dev To verify the correct behaviour of the Vyper compiler for `view` and `pure`
          * functions, we include read-only functions in the calldata creation.
          */
-        bytes memory data = svm.createCalldata(
-            "IERC1155Extended.sol",
-            "IERC1155Extended",
-            true
-        );
+        bytes memory data = svm.createCalldata("IERC1155Extended.sol", "IERC1155Extended", true);
         bytes4 selector = bytes4(data);
 
         /**
@@ -167,14 +129,8 @@ contract ERC1155TestHalmos is Test, SymTest {
             others[i] = other;
         }
 
-        uint256[] memory oldBalanceCaller = erc1155.balanceOfBatch(
-            callers,
-            tokenIds
-        );
-        uint256[] memory oldBalanceOther = erc1155.balanceOfBatch(
-            others,
-            tokenIds
-        );
+        uint256[] memory oldBalanceCaller = erc1155.balanceOfBatch(callers, tokenIds);
+        uint256[] memory oldBalanceOther = erc1155.balanceOfBatch(others, tokenIds);
 
         vm.startPrank(caller);
         // solhint-disable-next-line avoid-low-level-calls
@@ -183,20 +139,12 @@ contract ERC1155TestHalmos is Test, SymTest {
         vm.stopPrank();
 
         for (uint256 i = 0; i < tokenIds.length; i++) {
-            assertLe(
-                erc1155.balanceOf(caller, tokenIds[i]),
-                oldBalanceCaller[i]
-            );
+            assertLe(erc1155.balanceOf(caller, tokenIds[i]), oldBalanceCaller[i]);
             assertGe(erc1155.balanceOf(other, tokenIds[i]), oldBalanceOther[i]);
         }
     }
 
-    function testHalmosSafeTransferFrom(
-        address caller,
-        address from,
-        address to,
-        address other
-    ) public {
+    function testHalmosSafeTransferFrom(address caller, address from, address to, address other) public {
         /**
          * @dev Using a single `assume` with conjunctions would result in the creation of
          * multiple paths, negatively impacting performance.
@@ -211,21 +159,9 @@ contract ERC1155TestHalmos is Test, SymTest {
 
         vm.startPrank(caller);
         if (svm.createBool("1337")) {
-            erc1155.safeTransferFrom(
-                from,
-                to,
-                tokenIds[0],
-                amounts[0],
-                svm.createBytes(96, "YOLO")
-            );
+            erc1155.safeTransferFrom(from, to, tokenIds[0], amounts[0], svm.createBytes(96, "YOLO"));
         } else {
-            erc1155.safeBatchTransferFrom(
-                from,
-                to,
-                tokenIds,
-                amounts,
-                svm.createBytes(96, "YOLO")
-            );
+            erc1155.safeBatchTransferFrom(from, to, tokenIds, amounts, svm.createBytes(96, "YOLO"));
         }
         vm.stopPrank();
 

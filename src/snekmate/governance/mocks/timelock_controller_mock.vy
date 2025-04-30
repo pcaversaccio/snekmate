@@ -1,4 +1,5 @@
 # pragma version ~=0.4.1
+# pragma nonreentrancy off
 """
 @title `timelock_controller` Module Reference Implementation
 @custom:contract-name timelock_controller_mock

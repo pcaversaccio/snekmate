@@ -21,25 +21,16 @@ contract BatchDistributorTest is Test {
 
     function setUp() public {
         batchDistributor = IBatchDistributor(
-            vyperDeployer.deployContract(
-                "src/snekmate/utils/mocks/",
-                "batch_distributor_mock"
-            )
+            vyperDeployer.deployContract("src/snekmate/utils/mocks/", "batch_distributor_mock")
         );
         batchDistributorAddr = address(batchDistributor);
     }
 
     function testDistributeEtherOneAddressSuccess() public {
         address alice = makeAddr("alice");
-        IBatchDistributor.Transaction[]
-            memory transaction = new IBatchDistributor.Transaction[](1);
-        transaction[0] = IBatchDistributor.Transaction({
-            recipient: alice,
-            amount: 2 wei
-        });
-        IBatchDistributor.Batch memory batch = IBatchDistributor.Batch({
-            txns: transaction
-        });
+        IBatchDistributor.Transaction[] memory transaction = new IBatchDistributor.Transaction[](1);
+        transaction[0] = IBatchDistributor.Transaction({recipient: alice, amount: 2 wei});
+        IBatchDistributor.Batch memory batch = IBatchDistributor.Batch({txns: transaction});
 
         batchDistributor.distribute_ether{value: 2 wei}(batch);
         assertEq(alice.balance, 2 wei);
@@ -50,23 +41,11 @@ contract BatchDistributorTest is Test {
         address alice = makeAddr("alice");
         address bob = makeAddr("bob");
         address carol = makeAddr("carol");
-        IBatchDistributor.Transaction[]
-            memory transaction = new IBatchDistributor.Transaction[](3);
-        transaction[0] = IBatchDistributor.Transaction({
-            recipient: alice,
-            amount: 2 wei
-        });
-        transaction[1] = IBatchDistributor.Transaction({
-            recipient: bob,
-            amount: 100 wei
-        });
-        transaction[2] = IBatchDistributor.Transaction({
-            recipient: carol,
-            amount: 2_000 wei
-        });
-        IBatchDistributor.Batch memory batch = IBatchDistributor.Batch({
-            txns: transaction
-        });
+        IBatchDistributor.Transaction[] memory transaction = new IBatchDistributor.Transaction[](3);
+        transaction[0] = IBatchDistributor.Transaction({recipient: alice, amount: 2 wei});
+        transaction[1] = IBatchDistributor.Transaction({recipient: bob, amount: 100 wei});
+        transaction[2] = IBatchDistributor.Transaction({recipient: carol, amount: 2_000 wei});
+        IBatchDistributor.Batch memory batch = IBatchDistributor.Batch({txns: transaction});
 
         batchDistributor.distribute_ether{value: 2_102 wei}(batch);
         assertEq(alice.balance, 2 wei);
@@ -82,59 +61,30 @@ contract BatchDistributorTest is Test {
         address msgSender = address(makeAddr("msgSender"));
         vm.deal(msgSender, 1 ether);
         uint256 balance = msgSender.balance;
-        IBatchDistributor.Transaction[]
-            memory transaction = new IBatchDistributor.Transaction[](3);
-        transaction[0] = IBatchDistributor.Transaction({
-            recipient: alice,
-            amount: 2 wei
-        });
-        transaction[1] = IBatchDistributor.Transaction({
-            recipient: bob,
-            amount: 100 wei
-        });
-        transaction[2] = IBatchDistributor.Transaction({
-            recipient: carol,
-            amount: 2_000 wei
-        });
-        IBatchDistributor.Batch memory batch = IBatchDistributor.Batch({
-            txns: transaction
-        });
+        IBatchDistributor.Transaction[] memory transaction = new IBatchDistributor.Transaction[](3);
+        transaction[0] = IBatchDistributor.Transaction({recipient: alice, amount: 2 wei});
+        transaction[1] = IBatchDistributor.Transaction({recipient: bob, amount: 100 wei});
+        transaction[2] = IBatchDistributor.Transaction({recipient: carol, amount: 2_000 wei});
+        IBatchDistributor.Batch memory batch = IBatchDistributor.Batch({txns: transaction});
 
         vm.prank(msgSender);
         batchDistributor.distribute_ether{value: 1 ether}(batch);
         assertEq(alice.balance, 2 wei);
         assertEq(bob.balance, 100 wei);
         assertEq(carol.balance, 2_000 wei);
-        assertEq(
-            msgSender.balance,
-            balance - alice.balance - bob.balance - carol.balance
-        );
+        assertEq(msgSender.balance, balance - alice.balance - bob.balance - carol.balance);
         assertEq(batchDistributorAddr.balance, 0);
     }
 
-    function testDistributeEtherRevertWithNoFallbackFunctionForReceipt()
-        public
-    {
+    function testDistributeEtherRevertWithNoFallbackFunctionForReceipt() public {
         address alice = batchDistributorAddr;
         address bob = makeAddr("bob");
         address carol = makeAddr("carol");
-        IBatchDistributor.Transaction[]
-            memory transaction = new IBatchDistributor.Transaction[](3);
-        transaction[0] = IBatchDistributor.Transaction({
-            recipient: alice,
-            amount: 2 wei
-        });
-        transaction[1] = IBatchDistributor.Transaction({
-            recipient: bob,
-            amount: 100 wei
-        });
-        transaction[2] = IBatchDistributor.Transaction({
-            recipient: carol,
-            amount: 2_000 wei
-        });
-        IBatchDistributor.Batch memory batch = IBatchDistributor.Batch({
-            txns: transaction
-        });
+        IBatchDistributor.Transaction[] memory transaction = new IBatchDistributor.Transaction[](3);
+        transaction[0] = IBatchDistributor.Transaction({recipient: alice, amount: 2 wei});
+        transaction[1] = IBatchDistributor.Transaction({recipient: bob, amount: 100 wei});
+        transaction[2] = IBatchDistributor.Transaction({recipient: carol, amount: 2_000 wei});
+        IBatchDistributor.Batch memory batch = IBatchDistributor.Batch({txns: transaction});
 
         /**
          * @dev The `BatchDistributor` contract does not have a `fallback` function
@@ -145,29 +95,15 @@ contract BatchDistributorTest is Test {
         assertEq(batchDistributorAddr.balance, 0);
     }
 
-    function testDistributeEtherRevertWithNoFallbackFunctionForMsgSender()
-        public
-    {
+    function testDistributeEtherRevertWithNoFallbackFunctionForMsgSender() public {
         address alice = makeAddr("alice");
         address bob = makeAddr("bob");
         address carol = makeAddr("carol");
-        IBatchDistributor.Transaction[]
-            memory transaction = new IBatchDistributor.Transaction[](3);
-        transaction[0] = IBatchDistributor.Transaction({
-            recipient: alice,
-            amount: 2 wei
-        });
-        transaction[1] = IBatchDistributor.Transaction({
-            recipient: bob,
-            amount: 100 wei
-        });
-        transaction[2] = IBatchDistributor.Transaction({
-            recipient: carol,
-            amount: 2_000 wei
-        });
-        IBatchDistributor.Batch memory batch = IBatchDistributor.Batch({
-            txns: transaction
-        });
+        IBatchDistributor.Transaction[] memory transaction = new IBatchDistributor.Transaction[](3);
+        transaction[0] = IBatchDistributor.Transaction({recipient: alice, amount: 2 wei});
+        transaction[1] = IBatchDistributor.Transaction({recipient: bob, amount: 100 wei});
+        transaction[2] = IBatchDistributor.Transaction({recipient: carol, amount: 2_000 wei});
+        IBatchDistributor.Batch memory batch = IBatchDistributor.Batch({txns: transaction});
 
         /**
          * @dev The `Test` contract does not have a `fallback` function and must
@@ -182,23 +118,11 @@ contract BatchDistributorTest is Test {
         address alice = makeAddr("alice");
         address bob = makeAddr("bob");
         address carol = makeAddr("carol");
-        IBatchDistributor.Transaction[]
-            memory transaction = new IBatchDistributor.Transaction[](3);
-        transaction[0] = IBatchDistributor.Transaction({
-            recipient: alice,
-            amount: 2 wei
-        });
-        transaction[1] = IBatchDistributor.Transaction({
-            recipient: bob,
-            amount: 100 wei
-        });
-        transaction[2] = IBatchDistributor.Transaction({
-            recipient: carol,
-            amount: 2_000 wei
-        });
-        IBatchDistributor.Batch memory batch = IBatchDistributor.Batch({
-            txns: transaction
-        });
+        IBatchDistributor.Transaction[] memory transaction = new IBatchDistributor.Transaction[](3);
+        transaction[0] = IBatchDistributor.Transaction({recipient: alice, amount: 2 wei});
+        transaction[1] = IBatchDistributor.Transaction({recipient: bob, amount: 100 wei});
+        transaction[2] = IBatchDistributor.Transaction({recipient: carol, amount: 2_000 wei});
+        IBatchDistributor.Batch memory batch = IBatchDistributor.Batch({txns: transaction});
 
         /**
          * @dev Sends too little funds, which triggers an insufficient funds error.
@@ -214,19 +138,11 @@ contract BatchDistributorTest is Test {
          */
         DistributeEtherReentrancyMock distributeEtherReentrancyMock = new DistributeEtherReentrancyMock();
         address alice = address(distributeEtherReentrancyMock);
-        IBatchDistributor.Transaction[]
-            memory transaction1 = new IBatchDistributor.Transaction[](1);
-        transaction1[0] = IBatchDistributor.Transaction({
-            recipient: alice,
-            amount: 2 wei
-        });
-        IBatchDistributor.Batch memory batch1 = IBatchDistributor.Batch({
-            txns: transaction1
-        });
+        IBatchDistributor.Transaction[] memory transaction1 = new IBatchDistributor.Transaction[](1);
+        transaction1[0] = IBatchDistributor.Transaction({recipient: alice, amount: 2 wei});
+        IBatchDistributor.Batch memory batch1 = IBatchDistributor.Batch({txns: transaction1});
 
-        vm.expectRevert(
-            bytes("DistributeEtherReentrancyMock: reentrancy unsuccessful")
-        );
+        vm.expectRevert(bytes("DistributeEtherReentrancyMock: reentrancy unsuccessful"));
         batchDistributor.distribute_ether{value: 2 wei}(batch1);
 
         /**
@@ -234,19 +150,11 @@ contract BatchDistributorTest is Test {
          */
         DistributeTokenReentrancyMock distributeTokenReentrancyMock = new DistributeTokenReentrancyMock();
         address bob = address(distributeTokenReentrancyMock);
-        IBatchDistributor.Transaction[]
-            memory transaction2 = new IBatchDistributor.Transaction[](1);
-        transaction2[0] = IBatchDistributor.Transaction({
-            recipient: bob,
-            amount: 2 wei
-        });
-        IBatchDistributor.Batch memory batch2 = IBatchDistributor.Batch({
-            txns: transaction2
-        });
+        IBatchDistributor.Transaction[] memory transaction2 = new IBatchDistributor.Transaction[](1);
+        transaction2[0] = IBatchDistributor.Transaction({recipient: bob, amount: 2 wei});
+        IBatchDistributor.Batch memory batch2 = IBatchDistributor.Batch({txns: transaction2});
 
-        vm.expectRevert(
-            bytes("DistributeTokenReentrancyMock: reentrancy unsuccessful")
-        );
+        vm.expectRevert(bytes("DistributeTokenReentrancyMock: reentrancy unsuccessful"));
         batchDistributor.distribute_ether{value: 2 wei}(batch2);
     }
 
@@ -260,15 +168,9 @@ contract BatchDistributorTest is Test {
         erc20Mock.approve(batchDistributorAddr, 30);
 
         address alice = makeAddr("alice");
-        IBatchDistributor.Transaction[]
-            memory transaction = new IBatchDistributor.Transaction[](1);
-        transaction[0] = IBatchDistributor.Transaction({
-            recipient: alice,
-            amount: 30
-        });
-        IBatchDistributor.Batch memory batch = IBatchDistributor.Batch({
-            txns: transaction
-        });
+        IBatchDistributor.Transaction[] memory transaction = new IBatchDistributor.Transaction[](1);
+        transaction[0] = IBatchDistributor.Transaction({recipient: alice, amount: 30});
+        IBatchDistributor.Batch memory batch = IBatchDistributor.Batch({txns: transaction});
 
         batchDistributor.distribute_token(erc20Mock, batch);
         vm.stopPrank();
@@ -288,23 +190,11 @@ contract BatchDistributorTest is Test {
         address alice = makeAddr("alice");
         address bob = makeAddr("bob");
         address carol = makeAddr("carol");
-        IBatchDistributor.Transaction[]
-            memory transaction = new IBatchDistributor.Transaction[](3);
-        transaction[0] = IBatchDistributor.Transaction({
-            recipient: alice,
-            amount: 30
-        });
-        transaction[1] = IBatchDistributor.Transaction({
-            recipient: bob,
-            amount: 20
-        });
-        transaction[2] = IBatchDistributor.Transaction({
-            recipient: carol,
-            amount: 50
-        });
-        IBatchDistributor.Batch memory batch = IBatchDistributor.Batch({
-            txns: transaction
-        });
+        IBatchDistributor.Transaction[] memory transaction = new IBatchDistributor.Transaction[](3);
+        transaction[0] = IBatchDistributor.Transaction({recipient: alice, amount: 30});
+        transaction[1] = IBatchDistributor.Transaction({recipient: bob, amount: 20});
+        transaction[2] = IBatchDistributor.Transaction({recipient: carol, amount: 50});
+        IBatchDistributor.Batch memory batch = IBatchDistributor.Batch({txns: transaction});
 
         batchDistributor.distribute_token(erc20Mock, batch);
         vm.stopPrank();
@@ -326,31 +216,14 @@ contract BatchDistributorTest is Test {
         address alice = makeAddr("alice");
         address bob = makeAddr("bob");
         address carol = makeAddr("carol");
-        IBatchDistributor.Transaction[]
-            memory transaction = new IBatchDistributor.Transaction[](3);
-        transaction[0] = IBatchDistributor.Transaction({
-            recipient: alice,
-            amount: 30
-        });
-        transaction[1] = IBatchDistributor.Transaction({
-            recipient: bob,
-            amount: 20
-        });
-        transaction[2] = IBatchDistributor.Transaction({
-            recipient: carol,
-            amount: 50
-        });
-        IBatchDistributor.Batch memory batch = IBatchDistributor.Batch({
-            txns: transaction
-        });
+        IBatchDistributor.Transaction[] memory transaction = new IBatchDistributor.Transaction[](3);
+        transaction[0] = IBatchDistributor.Transaction({recipient: alice, amount: 30});
+        transaction[1] = IBatchDistributor.Transaction({recipient: bob, amount: 20});
+        transaction[2] = IBatchDistributor.Transaction({recipient: carol, amount: 50});
+        IBatchDistributor.Batch memory batch = IBatchDistributor.Batch({txns: transaction});
 
         vm.expectRevert(
-            abi.encodeWithSelector(
-                IERC20Errors.ERC20InsufficientAllowance.selector,
-                batchDistributorAddr,
-                99,
-                100
-            )
+            abi.encodeWithSelector(IERC20Errors.ERC20InsufficientAllowance.selector, batchDistributorAddr, 99, 100)
         );
         batchDistributor.distribute_token(erc20Mock, batch);
         assertEq(erc20Mock.balanceOf(batchDistributorAddr), 0);
@@ -369,32 +242,13 @@ contract BatchDistributorTest is Test {
         address alice = makeAddr("alice");
         address bob = makeAddr("bob");
         address carol = makeAddr("carol");
-        IBatchDistributor.Transaction[]
-            memory transaction = new IBatchDistributor.Transaction[](3);
-        transaction[0] = IBatchDistributor.Transaction({
-            recipient: alice,
-            amount: 50
-        });
-        transaction[1] = IBatchDistributor.Transaction({
-            recipient: bob,
-            amount: 20
-        });
-        transaction[2] = IBatchDistributor.Transaction({
-            recipient: carol,
-            amount: 50
-        });
-        IBatchDistributor.Batch memory batch = IBatchDistributor.Batch({
-            txns: transaction
-        });
+        IBatchDistributor.Transaction[] memory transaction = new IBatchDistributor.Transaction[](3);
+        transaction[0] = IBatchDistributor.Transaction({recipient: alice, amount: 50});
+        transaction[1] = IBatchDistributor.Transaction({recipient: bob, amount: 20});
+        transaction[2] = IBatchDistributor.Transaction({recipient: carol, amount: 50});
+        IBatchDistributor.Batch memory batch = IBatchDistributor.Batch({txns: transaction});
 
-        vm.expectRevert(
-            abi.encodeWithSelector(
-                IERC20Errors.ERC20InsufficientBalance.selector,
-                arg3,
-                100,
-                120
-            )
-        );
+        vm.expectRevert(abi.encodeWithSelector(IERC20Errors.ERC20InsufficientBalance.selector, arg3, 100, 120));
         batchDistributor.distribute_token(erc20Mock, batch);
         assertEq(erc20Mock.balanceOf(batchDistributorAddr), 0);
         vm.stopPrank();
@@ -429,48 +283,27 @@ contract BatchDistributorTest is Test {
         address initialAccount,
         uint256 initialAmount
     ) public {
-        vm.assume(
-            initialAccount != zeroAddress &&
-                initialAccount != batchDistributorAddr
-        );
-        initialAmount = bound(
-            initialAmount,
-            type(uint16).max,
-            type(uint32).max
-        );
+        vm.assume(initialAccount != zeroAddress && initialAccount != batchDistributorAddr);
+        initialAmount = bound(initialAmount, type(uint16).max, type(uint32).max);
         vm.assume(batch.txns.length <= 50);
         for (uint256 i; i < batch.txns.length; ++i) {
             batch.txns[i].amount = bound(batch.txns[i].amount, 1, 100);
-            vm.assume(
-                batch.txns[i].recipient != batchDistributorAddr &&
-                    batch.txns[i].recipient != zeroAddress
-            );
+            vm.assume(batch.txns[i].recipient != batchDistributorAddr && batch.txns[i].recipient != zeroAddress);
         }
 
         uint256 valueAccumulator;
         string memory arg1 = "MyToken";
         string memory arg2 = "MTKN";
-        ERC20Mock erc20Mock = new ERC20Mock(
-            arg1,
-            arg2,
-            initialAccount,
-            initialAmount
-        );
+        ERC20Mock erc20Mock = new ERC20Mock(arg1, arg2, initialAccount, initialAmount);
         vm.startPrank(initialAccount);
         erc20Mock.approve(batchDistributorAddr, initialAmount);
         batchDistributor.distribute_token(erc20Mock, batch);
         vm.stopPrank();
         for (uint256 i; i < batch.txns.length; ++i) {
             valueAccumulator += batch.txns[i].amount;
-            assertGe(
-                erc20Mock.balanceOf(batch.txns[i].recipient),
-                batch.txns[i].amount
-            );
+            assertGe(erc20Mock.balanceOf(batch.txns[i].recipient), batch.txns[i].amount);
         }
-        assertGe(
-            erc20Mock.balanceOf(initialAccount),
-            initialAmount - valueAccumulator
-        );
+        assertGe(erc20Mock.balanceOf(initialAccount), initialAmount - valueAccumulator);
         assertEq(erc20Mock.balanceOf(batchDistributorAddr), 0);
     }
 }
@@ -486,23 +319,12 @@ contract BatchDistributorInvariants is Test {
 
     function setUp() public {
         batchDistributor = IBatchDistributor(
-            vyperDeployer.deployContract(
-                "src/snekmate/utils/mocks/",
-                "batch_distributor_mock"
-            )
+            vyperDeployer.deployContract("src/snekmate/utils/mocks/", "batch_distributor_mock")
         );
         batchDistributorAddr = address(batchDistributor);
         address msgSender = makeAddr("msgSender");
-        erc20Mock = new ERC20Mock(
-            "MyToken",
-            "MTKN",
-            msgSender,
-            type(uint256).max
-        );
-        batchDistributorHandler = new BatchDistributorHandler(
-            batchDistributor,
-            erc20Mock
-        );
+        erc20Mock = new ERC20Mock("MyToken", "MTKN", msgSender, type(uint256).max);
+        batchDistributorHandler = new BatchDistributorHandler(batchDistributor, erc20Mock);
         targetContract(address(batchDistributorHandler));
         targetSender(msgSender);
     }
@@ -529,9 +351,7 @@ contract BatchDistributorHandler {
         token = token_;
     }
 
-    function distribute_ether(
-        IBatchDistributor.Batch calldata batch
-    ) public payable {
+    function distribute_ether(IBatchDistributor.Batch calldata batch) public payable {
         batchDistributor.distribute_ether(batch);
     }
 

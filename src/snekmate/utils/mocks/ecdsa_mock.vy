@@ -1,4 +1,5 @@
 # pragma version ~=0.4.1
+# pragma nonreentrancy off
 """
 @title `ecdsa` Module Reference Implementation
 @custom:contract-name ecdsa_mock

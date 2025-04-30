@@ -18,8 +18,7 @@ contract P256Test is Test {
     uint256 private constant _MALLEABILITY_THRESHOLD =
         57_896_044_605_178_124_381_348_723_474_703_786_764_998_477_612_067_880_171_211_129_530_534_256_022_184;
     /* solhint-disable const-name-snakecase */
-    bytes32 private constant hashValid =
-        0xbb5a52f42f9c9261ed4361f59422a1e30036e7c32b270c8807a419feca605023;
+    bytes32 private constant hashValid = 0xbb5a52f42f9c9261ed4361f59422a1e30036e7c32b270c8807a419feca605023;
     uint256 private constant rValid =
         19_738_613_187_745_101_558_623_338_726_804_762_177_711_919_211_234_071_563_652_772_152_683_725_073_944;
     uint256 private constant sValid =
@@ -38,21 +37,12 @@ contract P256Test is Test {
     IP256 private P256;
 
     function setUp() public {
-        P256 = IP256(
-            vyperDeployer.deployContract(
-                "src/snekmate/utils/mocks/",
-                "p256_mock"
-            )
-        );
+        P256 = IP256(vyperDeployer.deployContract("src/snekmate/utils/mocks/", "p256_mock"));
     }
 
     function testVerifyWithValidSignature() public view {
-        assertTrue(
-            P256.verify_sig(hashValid, rValid, sValid, qxValid, qyValid)
-        );
-        assertTrue(
-            !P256.verify_sig(hashValid, rValid, sValid, qxValid + 1, qyValid)
-        );
+        assertTrue(P256.verify_sig(hashValid, rValid, sValid, qxValid, qyValid));
+        assertTrue(!P256.verify_sig(hashValid, rValid, sValid, qxValid + 1, qyValid));
     }
 
     function testVerifyWithZeroInputs() public view {
@@ -71,30 +61,14 @@ contract P256Test is Test {
     }
 
     function testVerifyWithFlippedValues() public view {
-        assertTrue(
-            P256.verify_sig(hashValid, rValid, sValid, qxValid, qyValid)
-        );
-        assertTrue(
-            !P256.verify_sig(hashValid, sValid, rValid, qxValid, qyValid)
-        );
-        assertTrue(
-            !P256.verify_sig(hashValid, rValid, sValid, qyValid, qxValid)
-        );
-        assertTrue(
-            !P256.verify_sig(hashValid, sValid, rValid, qyValid, qxValid)
-        );
+        assertTrue(P256.verify_sig(hashValid, rValid, sValid, qxValid, qyValid));
+        assertTrue(!P256.verify_sig(hashValid, sValid, rValid, qxValid, qyValid));
+        assertTrue(!P256.verify_sig(hashValid, rValid, sValid, qyValid, qxValid));
+        assertTrue(!P256.verify_sig(hashValid, sValid, rValid, qyValid, qxValid));
     }
 
     function testVerifyWithInvalidSignature() public view {
-        assertTrue(
-            !P256.verify_sig(
-                keccak256("WAGMI"),
-                rValid,
-                sValid,
-                qxValid,
-                qyValid
-            )
-        );
+        assertTrue(!P256.verify_sig(keccak256("WAGMI"), rValid, sValid, qxValid, qyValid));
     }
 
     function testVerifyWycheproofData() public {
@@ -138,10 +112,7 @@ contract P256Test is Test {
         P256.verify_sig(hashValid, rValid, sTooHigh, qxValid, qyValid);
     }
 
-    function testFuzzVerifyWithValidSignature(
-        string calldata signer,
-        string calldata message
-    ) public {
+    function testFuzzVerifyWithValidSignature(string calldata signer, string calldata message) public {
         (, uint256 key) = makeAddrAndKey(signer);
         key = bound(key, 1, _N - 1);
         bytes32 hash = keccak256(abi.encode(message));

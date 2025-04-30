@@ -1,3 +1,7 @@
 plugins:
   - "prettier-plugin-solidity"
   - "prettier-plugin-sh"
+overrides:
+  - files: "*.sol"
+    options:
+      printWidth: 120

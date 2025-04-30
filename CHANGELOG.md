@@ -7,6 +7,10 @@
 - **Utility Functions**
   - [`block_hash`](https://github.com/pcaversaccio/snekmate/blob/v0.1.2/src/snekmate/utils/block_hash.vy): Add [EIP-2935](https://eips.ethereum.org/EIPS/eip-2935)-based utility functions. ([#316](https://github.com/pcaversaccio/snekmate/pull/316))
 
+### ♻️ Refactoring
+
+- Explicitly set `nonreentrancy off` pragma. ([#320](https://github.com/pcaversaccio/snekmate/pull/320))
+
 ### 📄 Licensing
 
 - Add the [MIT License](https://opensource.org/license/mit) as a dual-licensing option. ([#315](https://github.com/pcaversaccio/snekmate/pull/315))

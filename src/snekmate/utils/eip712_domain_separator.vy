@@ -1,4 +1,5 @@
 # pragma version ~=0.4.1
+# pragma nonreentrancy off
 """
 @title EIP-712 Domain Separator
 @custom:contract-name eip712_domain_separator

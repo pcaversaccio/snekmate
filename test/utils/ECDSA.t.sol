@@ -40,9 +40,7 @@ contract ECDSATest is Test {
      * @param signature The secp256k1 64/65-bytes signature.
      * @return short The 64-bytes EIP-2098 compliant signature.
      */
-    function to2098Format(
-        bytes memory signature
-    ) internal view returns (bytes memory) {
+    function to2098Format(bytes memory signature) internal view returns (bytes memory) {
         if (signature.length != 65) revert InvalidSignatureLength(self);
         if (uint8(signature[32]) >> 7 == 1) revert InvalidSignatureSValue(self);
         bytes memory short = signature.slice(0, 64);
@@ -52,12 +50,7 @@ contract ECDSATest is Test {
     }
 
     function setUp() public {
-        ECDSA = IECDSA(
-            vyperDeployer.deployContract(
-                "src/snekmate/utils/mocks/",
-                "ecdsa_mock"
-            )
-        );
+        ECDSA = IECDSA(vyperDeployer.deployContract("src/snekmate/utils/mocks/", "ecdsa_mock"));
     }
 
     function testRecoverWithValidSignature() public {
@@ -88,9 +81,7 @@ contract ECDSATest is Test {
         /**
          * @dev EIP-2098 signature check.
          */
-        vm.expectRevert(
-            abi.encodeWithSelector(InvalidSignatureLength.selector, self)
-        );
+        vm.expectRevert(abi.encodeWithSelector(InvalidSignatureLength.selector, self));
         to2098Format(signature);
     }
 
@@ -108,9 +99,7 @@ contract ECDSATest is Test {
         /**
          * @dev EIP-2098 signature check.
          */
-        vm.expectRevert(
-            abi.encodeWithSelector(InvalidSignatureLength.selector, self)
-        );
+        vm.expectRevert(abi.encodeWithSelector(InvalidSignatureLength.selector, self));
         to2098Format(signature);
     }
 
@@ -172,10 +161,7 @@ contract ECDSATest is Test {
         bytes memory signatureWithoutVersion = abi.encodePacked(r, s);
         bytes1 version = 0x00;
         vm.expectRevert(bytes("ecdsa: invalid signature"));
-        ECDSA.recover_sig(
-            hash,
-            abi.encodePacked(signatureWithoutVersion, version)
-        );
+        ECDSA.recover_sig(hash, abi.encodePacked(signatureWithoutVersion, version));
     }
 
     function testRecoverWithWrongVersion() public {
@@ -188,10 +174,7 @@ contract ECDSATest is Test {
         bytes memory signatureWithoutVersion = abi.encodePacked(r, s);
         bytes1 version = 0x02;
         vm.expectRevert(bytes("ecdsa: invalid signature"));
-        ECDSA.recover_sig(
-            hash,
-            abi.encodePacked(signatureWithoutVersion, version)
-        );
+        ECDSA.recover_sig(hash, abi.encodePacked(signatureWithoutVersion, version));
     }
 
     function testRecoverWithCorrectVersion() public {
@@ -202,20 +185,12 @@ contract ECDSATest is Test {
         bytes32 hash = keccak256("WAGMI");
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(key, hash);
         bytes memory signatureWithoutVersion = abi.encodePacked(r, s);
-        assertEq(
-            alice,
-            ECDSA.recover_sig(
-                hash,
-                abi.encodePacked(signatureWithoutVersion, v)
-            )
-        );
+        assertEq(alice, ECDSA.recover_sig(hash, abi.encodePacked(signatureWithoutVersion, v)));
 
         /**
          * @dev EIP-2098 signature check.
          */
-        bytes memory signature2098 = to2098Format(
-            abi.encodePacked(signatureWithoutVersion, v)
-        );
+        bytes memory signature2098 = to2098Format(abi.encodePacked(signatureWithoutVersion, v));
         assertEq(alice, ECDSA.recover_sig(hash, signature2098));
     }
 
@@ -234,16 +209,11 @@ contract ECDSATest is Test {
         /**
          * @dev EIP-2098 signature check.
          */
-        vm.expectRevert(
-            abi.encodeWithSelector(InvalidSignatureSValue.selector, self)
-        );
+        vm.expectRevert(abi.encodeWithSelector(InvalidSignatureSValue.selector, self));
         to2098Format(signature);
     }
 
-    function testFuzzRecoverWithValidSignature(
-        string calldata signer,
-        string calldata message
-    ) public {
+    function testFuzzRecoverWithValidSignature(string calldata signer, string calldata message) public {
         /**
          * @dev Standard signature check.
          */
@@ -260,11 +230,7 @@ contract ECDSATest is Test {
         assertEq(alice, ECDSA.recover_sig(hash, signature2098));
     }
 
-    function testFuzzRecoverWithWrongMessage(
-        string calldata signer,
-        string calldata message,
-        bytes32 digest
-    ) public {
+    function testFuzzRecoverWithWrongMessage(string calldata signer, string calldata message, bytes32 digest) public {
         /**
          * @dev Standard signature check.
          */
@@ -282,10 +248,7 @@ contract ECDSATest is Test {
         assertTrue(alice != ECDSA.recover_sig(digest, signature2098));
     }
 
-    function testFuzzRecoverWithInvalidSignature(
-        bytes calldata signature,
-        string calldata message
-    ) public {
+    function testFuzzRecoverWithInvalidSignature(bytes calldata signature, string calldata message) public {
         vm.assume(signature.length < 64);
         /**
          * @dev Standard signature check.
@@ -297,16 +260,11 @@ contract ECDSATest is Test {
         /**
          * @dev EIP-2098 signature check.
          */
-        vm.expectRevert(
-            abi.encodeWithSelector(InvalidSignatureLength.selector, self)
-        );
+        vm.expectRevert(abi.encodeWithSelector(InvalidSignatureLength.selector, self));
         to2098Format(signature);
     }
 
-    function testFuzzRecoverWithTooLongSignature(
-        bytes calldata signature,
-        string calldata message
-    ) public {
+    function testFuzzRecoverWithTooLongSignature(bytes calldata signature, string calldata message) public {
         vm.assume(signature.length > 65);
         /**
          * @dev Standard signature check.
@@ -318,9 +276,7 @@ contract ECDSATest is Test {
         /**
          * @dev EIP-2098 signature check.
          */
-        vm.expectRevert(
-            abi.encodeWithSelector(InvalidSignatureLength.selector, self)
-        );
+        vm.expectRevert(abi.encodeWithSelector(InvalidSignatureLength.selector, self));
         to2098Format(signature);
     }
 }

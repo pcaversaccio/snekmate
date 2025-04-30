@@ -33,9 +33,7 @@ contract MockCallee {
      * @param blockNumber The block number.
      * @return blockHash The 32-byte block hash.
      */
-    function getBlockHash(
-        uint256 blockNumber
-    ) public view returns (bytes32 blockHash) {
+    function getBlockHash(uint256 blockNumber) public view returns (bytes32 blockHash) {
         blockHash = blockhash(blockNumber);
     }
 

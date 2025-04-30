@@ -5,11 +5,7 @@ import {IERC721Receiver} from "openzeppelin/token/ERC721/IERC721Receiver.sol";
 import {IERC1155Receiver} from "openzeppelin/token/ERC1155/IERC1155Receiver.sol";
 import {IAccessControl} from "openzeppelin/access/IAccessControl.sol";
 
-interface ITimelockController is
-    IERC721Receiver,
-    IERC1155Receiver,
-    IAccessControl
-{
+interface ITimelockController is IERC721Receiver, IERC1155Receiver, IAccessControl {
     event CallScheduled(
         bytes32 indexed id,
         uint256 indexed index,
@@ -20,13 +16,7 @@ interface ITimelockController is
         uint256 delay
     );
 
-    event CallExecuted(
-        bytes32 indexed id,
-        uint256 indexed index,
-        address target,
-        uint256 amount,
-        bytes payload
-    );
+    event CallExecuted(bytes32 indexed id, uint256 indexed index, address target, uint256 amount, bytes payload);
 
     event CallSalt(bytes32 indexed id, bytes32 salt);
 
@@ -44,15 +34,9 @@ interface ITimelockController is
 
     function IERC721_TOKENRECEIVER_SELECTOR() external pure returns (bytes4);
 
-    function IERC1155_TOKENRECEIVER_SINGLE_SELECTOR()
-        external
-        pure
-        returns (bytes4);
+    function IERC1155_TOKENRECEIVER_SINGLE_SELECTOR() external pure returns (bytes4);
 
-    function IERC1155_TOKENRECEIVER_BATCH_SELECTOR()
-        external
-        pure
-        returns (bytes4);
+    function IERC1155_TOKENRECEIVER_BATCH_SELECTOR() external pure returns (bytes4);
 
     function get_timestamp(bytes32 id) external view returns (uint256);
 

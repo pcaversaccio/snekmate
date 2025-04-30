@@ -1,4 +1,5 @@
 # pragma version ~=0.4.1
+# pragma nonreentrancy off
 """
 @title `math` Module Reference Implementation
 @custom:contract-name math_mock

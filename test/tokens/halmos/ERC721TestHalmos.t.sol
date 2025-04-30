@@ -35,13 +35,7 @@ contract ERC721TestHalmos is Test, SymTest {
      * @custom:halmos --solver-timeout-branching 1000
      */
     function setUp() public {
-        bytes memory args = abi.encode(
-            _NAME,
-            _SYMBOL,
-            _BASE_URI,
-            _NAME_EIP712,
-            _VERSION_EIP712
-        );
+        bytes memory args = abi.encode(_NAME, _SYMBOL, _BASE_URI, _NAME_EIP712, _VERSION_EIP712);
         /**
          * @dev Halmos does not currently work with the latest Vyper jump-table-based
          * dispatchers: https://github.com/a16z/halmos/issues/253. For Halmos-based tests,
@@ -50,13 +44,7 @@ contract ERC721TestHalmos is Test, SymTest {
          * For Halmos-based tests, we therefore use the EVM version `shanghai`.
          */
         erc721 = IERC721(
-            vyperDeployer.deployContract(
-                "src/snekmate/tokens/mocks/",
-                "erc721_mock",
-                args,
-                "shanghai",
-                "none"
-            )
+            vyperDeployer.deployContract("src/snekmate/tokens/mocks/", "erc721_mock", args, "shanghai", "none")
         );
 
         address deployer = address(vyperDeployer);
@@ -101,11 +89,7 @@ contract ERC721TestHalmos is Test, SymTest {
          * @dev To verify the correct behaviour of the Vyper compiler for `view` and `pure`
          * functions, we include read-only functions in the calldata creation.
          */
-        bytes memory data = svm.createCalldata(
-            "IERC721Extended.sol",
-            "IERC721Extended",
-            true
-        );
+        bytes memory data = svm.createCalldata("IERC721Extended.sol", "IERC721Extended", true);
         bytes4 selector = bytes4(data);
 
         /**
@@ -173,12 +157,7 @@ contract ERC721TestHalmos is Test, SymTest {
         if (svm.createBool("1337")) {
             erc721.transferFrom(from, to, tokenId);
         } else {
-            erc721.safeTransferFrom(
-                from,
-                to,
-                tokenId,
-                svm.createBytes(96, "YOLO")
-            );
+            erc721.safeTransferFrom(from, to, tokenId, svm.createBytes(96, "YOLO"));
         }
         vm.stopPrank();
 

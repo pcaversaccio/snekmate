@@ -33,14 +33,7 @@ contract MathTestHalmos is Test, SymTest {
          * work with the EVM version `cancun`: https://github.com/a16z/halmos/issues/290.
          * For Halmos-based tests, we therefore use the EVM version `shanghai`.
          */
-        math = IMath(
-            vyperDeployer.deployContract(
-                "src/snekmate/utils/mocks/",
-                "math_mock",
-                "shanghai",
-                "none"
-            )
-        );
+        math = IMath(vyperDeployer.deployContract("src/snekmate/utils/mocks/", "math_mock", "shanghai", "none"));
     }
 
     function testHalmosAssertUint256Average(uint256 x, uint256 y) public view {
@@ -81,34 +74,16 @@ contract MathTestHalmos is Test, SymTest {
     //     );
     // }
 
-    function testHalmosAssertLog2(
-        uint256 x,
-        Math.Rounding rounding
-    ) public view {
-        assertEq(
-            math.log2(x, Math.unsignedRoundsUp(rounding)),
-            Math.log2(x, rounding)
-        );
+    function testHalmosAssertLog2(uint256 x, Math.Rounding rounding) public view {
+        assertEq(math.log2(x, Math.unsignedRoundsUp(rounding)), Math.log2(x, rounding));
     }
 
-    function testHalmosAssertLog10(
-        uint256 x,
-        Math.Rounding rounding
-    ) public view {
-        assertEq(
-            math.log10(x, Math.unsignedRoundsUp(rounding)),
-            Math.log10(x, rounding)
-        );
+    function testHalmosAssertLog10(uint256 x, Math.Rounding rounding) public view {
+        assertEq(math.log10(x, Math.unsignedRoundsUp(rounding)), Math.log10(x, rounding));
     }
 
-    function testHalmosAssertLog256(
-        uint256 x,
-        Math.Rounding rounding
-    ) public view {
-        assertEq(
-            math.log256(x, Math.unsignedRoundsUp(rounding)),
-            Math.log256(x, rounding)
-        );
+    function testHalmosAssertLog256(uint256 x, Math.Rounding rounding) public view {
+        assertEq(math.log256(x, Math.unsignedRoundsUp(rounding)), Math.log256(x, rounding));
     }
 
     /**

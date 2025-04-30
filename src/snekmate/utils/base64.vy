@@ -1,4 +1,5 @@
 # pragma version ~=0.4.1
+# pragma nonreentrancy off
 """
 @title Base64 Encoding and Decoding Functions
 @custom:contract-name base64

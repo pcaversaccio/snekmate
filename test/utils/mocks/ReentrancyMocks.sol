@@ -20,28 +20,17 @@ contract DistributeEtherReentrancyMock {
     // solhint-disable-next-line no-complex-fallback
     receive() external payable {
         if (_counter == 0) {
-            IBatchDistributor.Transaction[]
-                memory transaction = new IBatchDistributor.Transaction[](1);
-            transaction[0] = IBatchDistributor.Transaction({
-                recipient: _FUND_RECEIVER,
-                amount: msg.value
-            });
-            IBatchDistributor.Batch memory batch = IBatchDistributor.Batch({
-                txns: transaction
-            });
+            IBatchDistributor.Transaction[] memory transaction = new IBatchDistributor.Transaction[](1);
+            transaction[0] = IBatchDistributor.Transaction({recipient: _FUND_RECEIVER, amount: msg.value});
+            IBatchDistributor.Batch memory batch = IBatchDistributor.Batch({txns: transaction});
 
             // solhint-disable-next-line avoid-low-level-calls
             (bool reentered, ) = msg.sender.call{value: msg.value}(
-                abi.encodeWithSelector(
-                    IBatchDistributor.distribute_ether.selector,
-                    batch
-                )
+                abi.encodeWithSelector(IBatchDistributor.distribute_ether.selector, batch)
             );
             if (!reentered) {
                 // solhint-disable-next-line reason-string, gas-custom-errors
-                revert(
-                    "DistributeEtherReentrancyMock: reentrancy unsuccessful"
-                );
+                revert("DistributeEtherReentrancyMock: reentrancy unsuccessful");
             }
             _counter = 1;
         }
@@ -71,29 +60,17 @@ contract DistributeTokenReentrancyMock {
             ERC20Mock erc20Mock = new ERC20Mock(arg1, arg2, arg3, arg4);
             erc20Mock.approve(msg.sender, arg4);
 
-            IBatchDistributor.Transaction[]
-                memory transaction = new IBatchDistributor.Transaction[](1);
-            transaction[0] = IBatchDistributor.Transaction({
-                recipient: _FUND_RECEIVER,
-                amount: 30
-            });
-            IBatchDistributor.Batch memory batch = IBatchDistributor.Batch({
-                txns: transaction
-            });
+            IBatchDistributor.Transaction[] memory transaction = new IBatchDistributor.Transaction[](1);
+            transaction[0] = IBatchDistributor.Transaction({recipient: _FUND_RECEIVER, amount: 30});
+            IBatchDistributor.Batch memory batch = IBatchDistributor.Batch({txns: transaction});
 
             // solhint-disable-next-line avoid-low-level-calls
             (bool reentered, ) = msg.sender.call(
-                abi.encodeWithSelector(
-                    IBatchDistributor.distribute_token.selector,
-                    erc20Mock,
-                    batch
-                )
+                abi.encodeWithSelector(IBatchDistributor.distribute_token.selector, erc20Mock, batch)
             );
             if (!reentered) {
                 // solhint-disable-next-line reason-string, gas-custom-errors
-                revert(
-                    "DistributeTokenReentrancyMock: reentrancy unsuccessful"
-                );
+                revert("DistributeTokenReentrancyMock: reentrancy unsuccessful");
             }
             _counter = 1;
         }

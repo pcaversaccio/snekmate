@@ -1,4 +1,5 @@
 # pragma version ~=0.4.1
+# pragma nonreentrancy off
 """
 @title Standard Mathematical Utility Functions
 @custom:contract-name math
