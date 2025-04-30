@@ -1,30 +1,30 @@
 [submodule "lib/murky"]
 	path = lib/murky
-	url = https://github.com/dmfxyz/murky.git
+	url = https://github.com/dmfxyz/murky
 [submodule "lib/solady"]
 	path = lib/solady
-	url = https://github.com/vectorized/solady.git
+	url = https://github.com/vectorized/solady
 [submodule "lib/solmate"]
 	path = lib/solmate
-	url = https://github.com/transmissions11/solmate.git
+	url = https://github.com/transmissions11/solmate
 [submodule "lib/prb-test"]
 	path = lib/prb-test
-	url = https://github.com/paulrberg/prb-test.git
+	url = https://github.com/paulrberg/prb-test
 [submodule "lib/forge-std"]
 	path = lib/forge-std
-	url = https://github.com/foundry-rs/forge-std.git
+	url = https://github.com/foundry-rs/forge-std
 [submodule "lib/properties"]
 	path = lib/properties
-	url = https://github.com/crytic/properties.git
+	url = https://github.com/crytic/properties
 [submodule "lib/create-util"]
 	path = lib/create-util
-	url = https://github.com/pcaversaccio/create-util.git
+	url = https://github.com/pcaversaccio/create-util
 [submodule "lib/erc4626-tests"]
 	path = lib/erc4626-tests
-	url = https://github.com/a16z/erc4626-tests.git
+	url = https://github.com/a16z/erc4626-tests
 [submodule "lib/halmos-cheatcodes"]
 	path = lib/halmos-cheatcodes
-	url = https://github.com/a16z/halmos-cheatcodes.git
+	url = https://github.com/a16z/halmos-cheatcodes
 [submodule "lib/solidity-bytes-utils"]
 	path = lib/solidity-bytes-utils
 	url = https://github.com/GNSPS/solidity-bytes-utils.git
