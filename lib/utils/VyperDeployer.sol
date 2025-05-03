@@ -17,14 +17,16 @@ error CompilationFailed(address emitter);
 error DeploymentFailed(address emitter);
 
 /**
- * @dev The interface of this cheat code is called `_CheatCodes`,
- * so you can use the `CheatCodes` interface (see here:
- * https://book.getfoundry.sh/cheatcodes/?highlight=CheatCodes#cheatcode-types)
+ * @dev The interface of this cheat code is called `_VmSafe`, so you
+ * can use the `VmSafe` interface (see here: https://book.getfoundry.sh/cheatcodes)
  * in other test files without errors.
  */
 // solhint-disable-next-line contract-name-capwords
-interface _CheatCodes {
-    function ffi(string[] calldata) external returns (bytes memory);
+interface _VmSafe {
+    /**
+     * @dev Performs a foreign function call via the terminal.
+     */
+    function ffi(string[] calldata commandInput) external returns (bytes memory result);
 }
 
 /**
@@ -42,10 +44,10 @@ contract VyperDeployer is Create {
     address private self = address(this);
 
     /**
-     * @dev Initialises `cheatCodes` in order to use the foreign function interface (ffi)
+     * @dev Initialises `vmSafe` in order to use the foreign function interface (ffi)
      * to compile the Vyper contracts.
      */
-    _CheatCodes private cheatCodes = _CheatCodes(HEVM_ADDRESS);
+    _VmSafe private vmSafe = _VmSafe(HEVM_ADDRESS);
 
     /**
      * @dev Compiles a Vyper contract and returns the address that the contract
@@ -69,7 +71,7 @@ contract VyperDeployer is Create {
         /**
          * @dev Compile the Vyper contract and return the bytecode.
          */
-        bytes memory bytecode = cheatCodes.ffi(cmds);
+        bytes memory bytecode = vmSafe.ffi(cmds);
 
         /**
          * @dev Revert if the Vyper compilation failed or is a zero-length
@@ -124,7 +126,7 @@ contract VyperDeployer is Create {
         /**
          * @dev Compile the Vyper contract and return the bytecode.
          */
-        bytes memory bytecode = cheatCodes.ffi(cmds);
+        bytes memory bytecode = vmSafe.ffi(cmds);
 
         /**
          * @dev Revert if the Vyper compilation failed or is a zero-length
@@ -194,7 +196,7 @@ contract VyperDeployer is Create {
         /**
          * @dev Compile the Vyper contract and return the bytecode.
          */
-        bytes memory bytecode = cheatCodes.ffi(cmds);
+        bytes memory bytecode = vmSafe.ffi(cmds);
 
         /**
          * @dev Revert if the Vyper compilation failed or is a zero-length
@@ -262,7 +264,7 @@ contract VyperDeployer is Create {
         /**
          * @dev Compile the Vyper contract and return the bytecode.
          */
-        bytes memory bytecode = cheatCodes.ffi(cmds);
+        bytes memory bytecode = vmSafe.ffi(cmds);
 
         /**
          * @dev Revert if the Vyper compilation failed or is a zero-length

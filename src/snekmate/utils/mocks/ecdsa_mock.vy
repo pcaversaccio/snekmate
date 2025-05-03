@@ -1,4 +1,4 @@
-# pragma version ~=0.4.1
+# pragma version ~=0.4.2rc1
 # pragma nonreentrancy off
 """
 @title `ecdsa` Module Reference Implementation
