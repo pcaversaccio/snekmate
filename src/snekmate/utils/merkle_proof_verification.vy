@@ -229,12 +229,12 @@ def _process_multi_proof(
 @pure
 def _hash_pair(a: bytes32, b: bytes32) -> bytes32:
     """
-    @dev Returns the keccak256 hash of `a` and `b` after concatenation.
+    @dev Returns the `keccak256` hash of `a` and `b` after concatenation.
     @notice The concatenation pattern is determined by the sorting assumption
             of hashing pairs.
     @param a The first 32-byte hash value to be concatenated and hashed.
     @param b The second 32-byte hash value to be concatenated and hashed.
-    @return bytes32 The 32-byte keccak256 hash of `a` and `b`.
+    @return bytes32 The 32-byte `keccak256` hash of `a` and `b`.
     """
     if convert(a, uint256) < convert(b, uint256):
         return keccak256(concat(a, b))
