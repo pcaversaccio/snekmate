@@ -48,7 +48,7 @@
     "prettier": "^3.5.3",
     "prettier-plugin-sh": "^0.17.2",
     "prettier-plugin-solidity": "^2.0.0",
-    "solhint": "^5.0.5"
+    "solhint": "^5.1.0"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
