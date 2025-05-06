@@ -2,9 +2,9 @@
 pragma solidity ^0.8.29;
 
 interface ICreate3 {
-    function deploy_create(bytes calldata initCode) external returns (address);
+    function deploy_create3(bytes32 salt, bytes calldata initCode) external returns (address);
 
-    function compute_create_address_self(uint256 nonce) external view returns (address);
+    function compute_create3_address_self(bytes32 salt) external view returns (address);
 
-    function compute_create_address(address deployer, uint256 nonce) external view returns (address);
+    function compute_create3_address(bytes32 salt, address deployer) external view returns (address);
 }

@@ -27,11 +27,12 @@ contract Create2Test is Test {
         address arg3 = makeAddr("initialAccount");
         uint256 arg4 = 100;
         bytes memory args = abi.encode(arg1, arg2, arg3, arg4);
-        bytes memory bytecode = abi.encodePacked(vm.getCode("ERC20Mock.sol:ERC20Mock"), args);
+        bytes memory bytecode = abi.encodePacked(type(ERC20Mock).creationCode, args);
         bytes32 bytecodeHash = keccak256(bytecode);
         address create2AddressComputed = create2.compute_create2_address(salt, bytecodeHash, address(this));
 
         ERC20Mock create2AddressComputedOnChain = new ERC20Mock{salt: salt}(arg1, arg2, arg3, arg4);
+        assertEq(create2AddressComputed, vm.computeCreate2Address(salt, bytecodeHash, address(this)));
         assertEq(create2AddressComputed, address(create2AddressComputedOnChain));
     }
 
@@ -42,7 +43,7 @@ contract Create2Test is Test {
         address arg3 = makeAddr("initialAccount");
         uint256 arg4 = 100;
         bytes memory args = abi.encode(arg1, arg2, arg3, arg4);
-        bytes memory bytecode = abi.encodePacked(vm.getCode("ERC20Mock.sol:ERC20Mock"), args);
+        bytes memory bytecode = abi.encodePacked(type(ERC20Mock).creationCode, args);
         bytes32 bytecodeHash = keccak256(bytecode);
         address create2AddressComputed = create2.compute_create2_address_self(salt, bytecodeHash);
 
@@ -59,13 +60,14 @@ contract Create2Test is Test {
         address arg3 = makeAddr("initialAccount");
         uint256 arg4 = 100;
         bytes memory args = abi.encode(arg1, arg2, arg3, arg4);
-        bytes memory bytecode = abi.encodePacked(vm.getCode("ERC20Mock.sol:ERC20Mock"), args);
+        bytes memory bytecode = abi.encodePacked(type(ERC20Mock).creationCode, args);
         bytes32 bytecodeHash = keccak256(bytecode);
         address create2AddressComputed = create2.compute_create2_address(salt, bytecodeHash, deployer);
 
         vm.startPrank(deployer);
         ERC20Mock create2AddressComputedOnChain = new ERC20Mock{salt: salt}(arg1, arg2, arg3, arg4);
         vm.stopPrank();
+        assertEq(create2AddressComputed, vm.computeCreate2Address(salt, bytecodeHash, deployer));
         assertEq(create2AddressComputed, address(create2AddressComputedOnChain));
     }
 
@@ -75,7 +77,7 @@ contract Create2Test is Test {
         address arg3 = makeAddr("initialAccount");
         uint256 arg4 = 100;
         bytes memory args = abi.encode(arg1, arg2, arg3, arg4);
-        bytes memory bytecode = abi.encodePacked(vm.getCode("ERC20Mock.sol:ERC20Mock"), args);
+        bytes memory bytecode = abi.encodePacked(type(ERC20Mock).creationCode, args);
         bytes32 bytecodeHash = keccak256(bytecode);
         address create2AddressComputed = create2.compute_create2_address_self(salt, bytecodeHash);
 
