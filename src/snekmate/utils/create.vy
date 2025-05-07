@@ -1,13 +1,13 @@
 # pragma version ~=0.4.2rc1
 # pragma nonreentrancy off
 """
-@title `CREATE` EVM Opcode Utility Functions for Address Calculations
-@custom:contract-name create_address
+@title `CREATE` EVM Opcode Utility Functions
+@custom:contract-name create
 @license GNU Affero General Public License v3.0 only
 @author pcaversaccio
-@notice These functions can be used to compute in advance the address
-        where a smart contract will be deployed if deployed via the
-        `CREATE` opcode. The implementation is inspired by my
+@notice These functions can be used either to deploy a contract via the
+        `CREATE` opcode or to compute the address where a contract will
+        be deployed using `CREATE`. The implementation is inspired by my
         implementation here:
         https://github.com/pcaversaccio/create-util/blob/main/contracts/Create.sol.
 """
@@ -25,20 +25,37 @@ def __init__():
 
 
 @internal
+@payable
+def _deploy_create(init_code: Bytes[8_192]) -> address:
+    """
+    @dev Deploys a new contract via calling the `CREATE` opcode and
+         using the creation bytecode `init_code` and `msg.value` as
+         inputs.
+    @notice Please note that the `init_code` represents the complete
+            contract creation code, i.e. including the ABI-encoded
+            constructor arguments, and if `msg.value` is non-zero,
+            `init_code` must have a `payable` constructor.
+    @param init_code The maximum 8,192-byte contract creation bytecode.
+    @return address The 20-byte address where the contract was deployed.
+    """
+    return raw_create(init_code, value=msg.value)
+
+
+@internal
 @view
-def _compute_address_rlp_self(nonce: uint256) -> address:
+def _compute_create_address_self(nonce: uint256) -> address:
     """
     @dev Returns the address where a contract will be stored if
          deployed via this contract using the `CREATE` opcode.
     @param nonce The 32-byte account nonce of this contract.
     @return address The 20-byte address where a contract will be stored.
     """
-    return self._compute_address_rlp(self, nonce)
+    return self._compute_create_address(self, nonce)
 
 
 @internal
 @pure
-def _compute_address_rlp(deployer: address, nonce: uint256) -> address:
+def _compute_create_address(deployer: address, nonce: uint256) -> address:
     """
     @dev Returns the address where a contract will be stored
          if deployed via `deployer` using the `CREATE` opcode.
@@ -61,7 +78,7 @@ def _compute_address_rlp(deployer: address, nonce: uint256) -> address:
 
     # The theoretical allowed limit, based on EIP-2681, for an
     # account nonce is 2**64-2: https://eips.ethereum.org/EIPS/eip-2681.
-    assert nonce < convert(max_value(uint64), uint256), "create_address: invalid nonce value"
+    assert nonce < convert(max_value(uint64), uint256), "create: invalid nonce value"
 
     # The integer zero is treated as an empty byte string and
     # therefore has only one length prefix, 0x80, which is
