@@ -4,6 +4,7 @@
   "description": "State-of-the-art, highly opinionated, hyper-optimised, and secure 🐍Vyper smart contract building blocks.",
   "author": "Pascal Marco Caversaccio <pascal.caversaccio@hotmail.ch>",
   "license": "AGPL-3.0-only",
+  "funding": "https://github.com/pcaversaccio/snekmate/blob/main/.github/FUNDING.yml",
   "keywords": [
     "security",
     "library",
