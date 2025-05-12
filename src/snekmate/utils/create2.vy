@@ -89,4 +89,4 @@ def _compute_create2_address(salt: bytes32, bytecode_hash: bytes32, deployer: ad
     @return address The 20-byte address where a contract will be stored.
     """
     data: bytes32 = keccak256(concat(_COLLISION_OFFSET, convert(deployer, bytes20), salt, bytecode_hash))
-    return create._convert_keccak256_2_address(data)
+    return create._convert_keccak256_to_address(data)
