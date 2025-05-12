@@ -29,40 +29,41 @@ contract CreateTest is Test {
         initialAccount = makeAddr("initialAccount");
         bytes memory args = abi.encode(_NAME, _SYMBOL, initialAccount, _INITIAL_SUPPLY);
         cachedInitCode = abi.encodePacked(type(ERC20Mock).creationCode, args);
-
         create = ICreate(vyperDeployer.deployContract("src/snekmate/utils/mocks/", "create_mock"));
         createAddr = address(create);
     }
 
     function testDeployCreateSuccess() public {
-        address computedAddress = create.compute_create_address(createAddr, 1);
-        vm.expectEmit(true, true, false, true, computedAddress);
+        address createAddressComputed = create.compute_create_address(createAddr, 1);
+        vm.expectEmit(true, true, false, true, createAddressComputed);
         emit IERC20.Transfer(zeroAddress, initialAccount, _INITIAL_SUPPLY);
         address newContract = create.deploy_create(cachedInitCode);
-        assertEq(newContract, computedAddress);
-        assertNotEq(newContract, zeroAddress);
-        assertNotEq(newContract.code.length, 0);
+        assertEq(newContract, vm.computeCreateAddress(createAddr, 1));
+        assertEq(newContract, createAddressComputed);
+        assertTrue(newContract != zeroAddress);
+        assertTrue(newContract.code.length != 0);
         assertEq(newContract.balance, 0);
         assertEq(createAddr.balance, 0);
-        assertEq(ERC20Mock(computedAddress).name(), _NAME);
-        assertEq(ERC20Mock(computedAddress).symbol(), _SYMBOL);
-        assertEq(ERC20Mock(computedAddress).balanceOf(initialAccount), _INITIAL_SUPPLY);
+        assertEq(ERC20Mock(createAddressComputed).name(), _NAME);
+        assertEq(ERC20Mock(createAddressComputed).symbol(), _SYMBOL);
+        assertEq(ERC20Mock(createAddressComputed).balanceOf(initialAccount), _INITIAL_SUPPLY);
     }
 
     function testDeployCreateValueSuccess() public {
         uint256 msgValue = 1_337;
-        address computedAddress = create.compute_create_address(createAddr, 1);
-        vm.expectEmit(true, true, false, true, computedAddress);
+        address createAddressComputed = create.compute_create_address(createAddr, 1);
+        vm.expectEmit(true, true, false, true, createAddressComputed);
         emit IERC20.Transfer(zeroAddress, initialAccount, _INITIAL_SUPPLY);
         address newContract = create.deploy_create{value: msgValue}(cachedInitCode);
-        assertEq(newContract, computedAddress);
-        assertNotEq(newContract, zeroAddress);
-        assertNotEq(newContract.code.length, 0);
+        assertEq(newContract, vm.computeCreateAddress(createAddr, 1));
+        assertEq(newContract, createAddressComputed);
+        assertTrue(newContract != zeroAddress);
+        assertTrue(newContract.code.length != 0);
         assertEq(newContract.balance, msgValue);
         assertEq(createAddr.balance, 0);
-        assertEq(ERC20Mock(computedAddress).name(), _NAME);
-        assertEq(ERC20Mock(computedAddress).symbol(), _SYMBOL);
-        assertEq(ERC20Mock(computedAddress).balanceOf(initialAccount), _INITIAL_SUPPLY);
+        assertEq(ERC20Mock(createAddressComputed).name(), _NAME);
+        assertEq(ERC20Mock(createAddressComputed).symbol(), _SYMBOL);
+        assertEq(ERC20Mock(createAddressComputed).balanceOf(initialAccount), _INITIAL_SUPPLY);
     }
 
     function testDeployCreateRevert() public {
@@ -70,11 +71,11 @@ contract CreateTest is Test {
          * @dev Deploy the invalid runtime bytecode `0xef0100` (see https://eips.ethereum.org/EIPS/eip-3541).
          */
         bytes memory invalidInitCode = hex"60_ef_60_00_53_60_01_60_01_53_60_03_60_00_f3";
-        address computedAddress = create.compute_create_address(createAddr, 1);
+        address createAddressComputed = create.compute_create_address(createAddr, 1);
         vm.expectRevert();
         create.deploy_create(invalidInitCode);
-        assertEq(computedAddress.code.length, 0);
-        assertEq(computedAddress.balance, 0);
+        assertEq(createAddressComputed.code.length, 0);
+        assertEq(createAddressComputed.balance, 0);
     }
 
     function testComputeCreateAddressRevertTooHighNonce() public {
@@ -101,6 +102,7 @@ contract CreateTest is Test {
         vm.setNonce(self, nonce);
         address createAddressComputed = create.compute_create_address(self, nonce);
         ERC20Mock createAddressComputedOnChain = new ERC20Mock(_NAME, _SYMBOL, initialAccount, _INITIAL_SUPPLY);
+        assertEq(createAddressComputed, vm.computeCreateAddress(self, nonce));
         assertEq(createAddressComputed, address(createAddressComputedOnChain));
     }
 
@@ -109,6 +111,7 @@ contract CreateTest is Test {
         vm.setNonce(self, nonce);
         address createAddressComputed = create.compute_create_address(self, nonce);
         ERC20Mock createAddressComputedOnChain = new ERC20Mock(_NAME, _SYMBOL, initialAccount, _INITIAL_SUPPLY);
+        assertEq(createAddressComputed, vm.computeCreateAddress(self, nonce));
         assertEq(createAddressComputed, address(createAddressComputedOnChain));
     }
 
@@ -117,6 +120,7 @@ contract CreateTest is Test {
         vm.setNonce(self, nonce);
         address createAddressComputed = create.compute_create_address(self, nonce);
         ERC20Mock createAddressComputedOnChain = new ERC20Mock(_NAME, _SYMBOL, initialAccount, _INITIAL_SUPPLY);
+        assertEq(createAddressComputed, vm.computeCreateAddress(self, nonce));
         assertEq(createAddressComputed, address(createAddressComputedOnChain));
     }
 
@@ -125,6 +129,7 @@ contract CreateTest is Test {
         vm.setNonce(self, nonce);
         address createAddressComputed = create.compute_create_address(self, nonce);
         ERC20Mock createAddressComputedOnChain = new ERC20Mock(_NAME, _SYMBOL, initialAccount, _INITIAL_SUPPLY);
+        assertEq(createAddressComputed, vm.computeCreateAddress(self, nonce));
         assertEq(createAddressComputed, address(createAddressComputedOnChain));
     }
 
@@ -133,6 +138,7 @@ contract CreateTest is Test {
         vm.setNonce(self, nonce);
         address createAddressComputed = create.compute_create_address(self, nonce);
         ERC20Mock createAddressComputedOnChain = new ERC20Mock(_NAME, _SYMBOL, initialAccount, _INITIAL_SUPPLY);
+        assertEq(createAddressComputed, vm.computeCreateAddress(self, nonce));
         assertEq(createAddressComputed, address(createAddressComputedOnChain));
     }
 
@@ -141,6 +147,7 @@ contract CreateTest is Test {
         vm.setNonce(self, nonce);
         address createAddressComputed = create.compute_create_address(self, nonce);
         ERC20Mock createAddressComputedOnChain = new ERC20Mock(_NAME, _SYMBOL, initialAccount, _INITIAL_SUPPLY);
+        assertEq(createAddressComputed, vm.computeCreateAddress(self, nonce));
         assertEq(createAddressComputed, address(createAddressComputedOnChain));
     }
 
@@ -149,6 +156,7 @@ contract CreateTest is Test {
         vm.setNonce(self, nonce);
         address createAddressComputed = create.compute_create_address(self, nonce);
         ERC20Mock createAddressComputedOnChain = new ERC20Mock(_NAME, _SYMBOL, initialAccount, _INITIAL_SUPPLY);
+        assertEq(createAddressComputed, vm.computeCreateAddress(self, nonce));
         assertEq(createAddressComputed, address(createAddressComputedOnChain));
     }
 
@@ -157,6 +165,7 @@ contract CreateTest is Test {
         vm.setNonce(self, nonce);
         address createAddressComputed = create.compute_create_address(self, nonce);
         ERC20Mock createAddressComputedOnChain = new ERC20Mock(_NAME, _SYMBOL, initialAccount, _INITIAL_SUPPLY);
+        assertEq(createAddressComputed, vm.computeCreateAddress(self, nonce));
         assertEq(createAddressComputed, address(createAddressComputedOnChain));
     }
 
@@ -165,6 +174,7 @@ contract CreateTest is Test {
         vm.setNonce(self, nonce);
         address createAddressComputed = create.compute_create_address(self, nonce);
         ERC20Mock createAddressComputedOnChain = new ERC20Mock(_NAME, _SYMBOL, initialAccount, _INITIAL_SUPPLY);
+        assertEq(createAddressComputed, vm.computeCreateAddress(self, nonce));
         assertEq(createAddressComputed, address(createAddressComputedOnChain));
     }
 
@@ -172,7 +182,6 @@ contract CreateTest is Test {
         uint64 nonce = 0x7f;
         vm.setNonce(createAddr, nonce);
         address createAddressComputed = create.compute_create_address_self(nonce);
-
         vm.startPrank(createAddr);
         ERC20Mock createAddressComputedOnChain = new ERC20Mock(_NAME, _SYMBOL, initialAccount, _INITIAL_SUPPLY);
         vm.stopPrank();
@@ -184,7 +193,6 @@ contract CreateTest is Test {
         uint64 nonce = type(uint8).max;
         vm.setNonce(createAddr, nonce);
         address createAddressComputed = create.compute_create_address_self(nonce);
-
         vm.startPrank(createAddr);
         ERC20Mock createAddressComputedOnChain = new ERC20Mock(_NAME, _SYMBOL, initialAccount, _INITIAL_SUPPLY);
         vm.stopPrank();
@@ -196,7 +204,6 @@ contract CreateTest is Test {
         uint64 nonce = type(uint16).max;
         vm.setNonce(createAddr, nonce);
         address createAddressComputed = create.compute_create_address_self(nonce);
-
         vm.startPrank(createAddr);
         ERC20Mock createAddressComputedOnChain = new ERC20Mock(_NAME, _SYMBOL, initialAccount, _INITIAL_SUPPLY);
         vm.stopPrank();
@@ -208,7 +215,6 @@ contract CreateTest is Test {
         uint64 nonce = type(uint24).max;
         vm.setNonce(createAddr, nonce);
         address createAddressComputed = create.compute_create_address_self(nonce);
-
         vm.startPrank(createAddr);
         ERC20Mock createAddressComputedOnChain = new ERC20Mock(_NAME, _SYMBOL, initialAccount, _INITIAL_SUPPLY);
         vm.stopPrank();
@@ -220,7 +226,6 @@ contract CreateTest is Test {
         uint64 nonce = type(uint32).max;
         vm.setNonce(createAddr, nonce);
         address createAddressComputed = create.compute_create_address_self(nonce);
-
         vm.startPrank(createAddr);
         ERC20Mock createAddressComputedOnChain = new ERC20Mock(_NAME, _SYMBOL, initialAccount, _INITIAL_SUPPLY);
         vm.stopPrank();
@@ -232,7 +237,6 @@ contract CreateTest is Test {
         uint64 nonce = type(uint40).max;
         vm.setNonce(createAddr, nonce);
         address createAddressComputed = create.compute_create_address_self(nonce);
-
         vm.startPrank(createAddr);
         ERC20Mock createAddressComputedOnChain = new ERC20Mock(_NAME, _SYMBOL, initialAccount, _INITIAL_SUPPLY);
         vm.stopPrank();
@@ -244,7 +248,6 @@ contract CreateTest is Test {
         uint64 nonce = type(uint48).max;
         vm.setNonce(createAddr, nonce);
         address createAddressComputed = create.compute_create_address_self(nonce);
-
         vm.startPrank(createAddr);
         ERC20Mock createAddressComputedOnChain = new ERC20Mock(_NAME, _SYMBOL, initialAccount, _INITIAL_SUPPLY);
         vm.stopPrank();
@@ -256,7 +259,6 @@ contract CreateTest is Test {
         uint64 nonce = type(uint56).max;
         vm.setNonce(createAddr, nonce);
         address createAddressComputed = create.compute_create_address_self(nonce);
-
         vm.startPrank(createAddr);
         ERC20Mock createAddressComputedOnChain = new ERC20Mock(_NAME, _SYMBOL, initialAccount, _INITIAL_SUPPLY);
         vm.stopPrank();
@@ -268,7 +270,6 @@ contract CreateTest is Test {
         uint64 nonce = uint64(type(uint64).max) - 1;
         vm.setNonce(createAddr, nonce);
         address createAddressComputed = create.compute_create_address_self(nonce);
-
         vm.startPrank(createAddr);
         ERC20Mock createAddressComputedOnChain = new ERC20Mock(_NAME, _SYMBOL, initialAccount, _INITIAL_SUPPLY);
         vm.stopPrank();
@@ -280,18 +281,19 @@ contract CreateTest is Test {
         vm.assume(nonce != 0 && nonce < type(uint64).max);
         vm.setNonceUnsafe(createAddr, nonce);
         msgValue = bound(msgValue, 0, type(uint64).max);
-        address computedAddress = create.compute_create_address(createAddr, nonce);
-        vm.expectEmit(true, true, false, true, computedAddress);
+        address createAddressComputed = create.compute_create_address(createAddr, nonce);
+        vm.expectEmit(true, true, false, true, createAddressComputed);
         emit IERC20.Transfer(zeroAddress, initialAccount, _INITIAL_SUPPLY);
         address newContract = create.deploy_create{value: msgValue}(cachedInitCode);
-        assertEq(newContract, computedAddress);
-        assertNotEq(newContract, zeroAddress);
-        assertNotEq(newContract.code.length, 0);
+        assertEq(newContract, vm.computeCreateAddress(createAddr, nonce));
+        assertEq(newContract, createAddressComputed);
+        assertTrue(newContract != zeroAddress);
+        assertTrue(newContract.code.length != 0);
         assertEq(newContract.balance, msgValue);
         assertEq(createAddr.balance, 0);
-        assertEq(ERC20Mock(computedAddress).name(), _NAME);
-        assertEq(ERC20Mock(computedAddress).symbol(), _SYMBOL);
-        assertEq(ERC20Mock(computedAddress).balanceOf(initialAccount), _INITIAL_SUPPLY);
+        assertEq(ERC20Mock(createAddressComputed).name(), _NAME);
+        assertEq(ERC20Mock(createAddressComputed).symbol(), _SYMBOL);
+        assertEq(ERC20Mock(createAddressComputed).balanceOf(initialAccount), _INITIAL_SUPPLY);
     }
 
     function testFuzzDeployCreateRevert(uint64 nonce, uint256 msgValue) public {
@@ -302,11 +304,11 @@ contract CreateTest is Test {
          * @dev Deploy the invalid runtime bytecode `0xef0100` (see https://eips.ethereum.org/EIPS/eip-3541).
          */
         bytes memory invalidInitCode = hex"60_ef_60_00_53_60_01_60_01_53_60_03_60_00_f3";
-        address computedAddress = create.compute_create_address(createAddr, 1);
+        address createAddressComputed = create.compute_create_address(createAddr, 1);
         vm.expectRevert();
         create.deploy_create{value: msgValue}(invalidInitCode);
-        assertEq(computedAddress.code.length, 0);
-        assertEq(computedAddress.balance, 0);
+        assertEq(createAddressComputed.code.length, 0);
+        assertEq(createAddressComputed.balance, 0);
     }
 
     function testFuzzComputeCreateAddressRevertTooHighNonce(uint256 nonce, address deployer) public {
@@ -325,10 +327,10 @@ contract CreateTest is Test {
         nonce = uint64(bound(uint256(nonce), vm.getNonce(deployer) + 1, 0x7f));
         vm.setNonce(deployer, nonce);
         address createAddressComputed = create.compute_create_address(deployer, nonce);
-
         vm.prank(deployer);
         ERC20Mock createAddressComputedOnChain = new ERC20Mock(_NAME, _SYMBOL, initialAccount, _INITIAL_SUPPLY);
         vm.stopPrank();
+        assertEq(createAddressComputed, vm.computeCreateAddress(deployer, nonce));
         assertEq(createAddressComputed, address(createAddressComputedOnChain));
     }
 
@@ -336,10 +338,10 @@ contract CreateTest is Test {
         nonce = uint64(bound(nonce, 0x7f + 1, uint256(type(uint8).max)));
         vm.setNonce(deployer, nonce);
         address createAddressComputed = create.compute_create_address(deployer, nonce);
-
         vm.prank(deployer);
         ERC20Mock createAddressComputedOnChain = new ERC20Mock(_NAME, _SYMBOL, initialAccount, _INITIAL_SUPPLY);
         vm.stopPrank();
+        assertEq(createAddressComputed, vm.computeCreateAddress(deployer, nonce));
         assertEq(createAddressComputed, address(createAddressComputedOnChain));
     }
 
@@ -347,10 +349,10 @@ contract CreateTest is Test {
         nonce = uint64(bound(nonce, uint64(type(uint8).max) + 1, uint64(type(uint16).max)));
         vm.setNonce(deployer, nonce);
         address createAddressComputed = create.compute_create_address(deployer, nonce);
-
         vm.prank(deployer);
         ERC20Mock createAddressComputedOnChain = new ERC20Mock(_NAME, _SYMBOL, initialAccount, _INITIAL_SUPPLY);
         vm.stopPrank();
+        assertEq(createAddressComputed, vm.computeCreateAddress(deployer, nonce));
         assertEq(createAddressComputed, address(createAddressComputedOnChain));
     }
 
@@ -358,10 +360,10 @@ contract CreateTest is Test {
         nonce = uint64(bound(uint256(nonce), uint256(type(uint16).max) + 1, uint256(type(uint24).max)));
         vm.setNonce(deployer, nonce);
         address createAddressComputed = create.compute_create_address(deployer, nonce);
-
         vm.prank(deployer);
         ERC20Mock createAddressComputedOnChain = new ERC20Mock(_NAME, _SYMBOL, initialAccount, _INITIAL_SUPPLY);
         vm.stopPrank();
+        assertEq(createAddressComputed, vm.computeCreateAddress(deployer, nonce));
         assertEq(createAddressComputed, address(createAddressComputedOnChain));
     }
 
@@ -369,10 +371,10 @@ contract CreateTest is Test {
         nonce = uint64(bound(uint256(nonce), uint256(type(uint24).max) + 1, uint256(type(uint32).max)));
         vm.setNonce(deployer, nonce);
         address createAddressComputed = create.compute_create_address(deployer, nonce);
-
         vm.prank(deployer);
         ERC20Mock createAddressComputedOnChain = new ERC20Mock(_NAME, _SYMBOL, initialAccount, _INITIAL_SUPPLY);
         vm.stopPrank();
+        assertEq(createAddressComputed, vm.computeCreateAddress(deployer, nonce));
         assertEq(createAddressComputed, address(createAddressComputedOnChain));
     }
 
@@ -380,10 +382,10 @@ contract CreateTest is Test {
         nonce = uint64(bound(uint256(nonce), uint256(type(uint32).max) + 1, uint256(type(uint40).max)));
         vm.setNonce(deployer, nonce);
         address createAddressComputed = create.compute_create_address(deployer, nonce);
-
         vm.prank(deployer);
         ERC20Mock createAddressComputedOnChain = new ERC20Mock(_NAME, _SYMBOL, initialAccount, _INITIAL_SUPPLY);
         vm.stopPrank();
+        assertEq(createAddressComputed, vm.computeCreateAddress(deployer, nonce));
         assertEq(createAddressComputed, address(createAddressComputedOnChain));
     }
 
@@ -391,10 +393,10 @@ contract CreateTest is Test {
         nonce = uint64(bound(uint256(nonce), uint256(type(uint40).max) + 1, uint256(type(uint48).max)));
         vm.setNonce(deployer, nonce);
         address createAddressComputed = create.compute_create_address(deployer, nonce);
-
         vm.prank(deployer);
         ERC20Mock createAddressComputedOnChain = new ERC20Mock(_NAME, _SYMBOL, initialAccount, _INITIAL_SUPPLY);
         vm.stopPrank();
+        assertEq(createAddressComputed, vm.computeCreateAddress(deployer, nonce));
         assertEq(createAddressComputed, address(createAddressComputedOnChain));
     }
 
@@ -402,10 +404,10 @@ contract CreateTest is Test {
         nonce = uint64(bound(uint256(nonce), uint256(type(uint48).max) + 1, uint256(type(uint56).max)));
         vm.setNonce(deployer, nonce);
         address createAddressComputed = create.compute_create_address(deployer, nonce);
-
         vm.prank(deployer);
         ERC20Mock createAddressComputedOnChain = new ERC20Mock(_NAME, _SYMBOL, initialAccount, _INITIAL_SUPPLY);
         vm.stopPrank();
+        assertEq(createAddressComputed, vm.computeCreateAddress(deployer, nonce));
         assertEq(createAddressComputed, address(createAddressComputedOnChain));
     }
 
@@ -413,10 +415,10 @@ contract CreateTest is Test {
         nonce = uint64(bound(uint256(nonce), uint256(type(uint56).max) + 1, uint256(type(uint64).max) - 1));
         vm.setNonce(deployer, nonce);
         address createAddressComputed = create.compute_create_address(deployer, nonce);
-
         vm.prank(deployer);
         ERC20Mock createAddressComputedOnChain = new ERC20Mock(_NAME, _SYMBOL, initialAccount, _INITIAL_SUPPLY);
         vm.stopPrank();
+        assertEq(createAddressComputed, vm.computeCreateAddress(deployer, nonce));
         assertEq(createAddressComputed, address(createAddressComputedOnChain));
     }
 
@@ -424,7 +426,6 @@ contract CreateTest is Test {
         nonce = uint64(bound(nonce, vm.getNonce(createAddr) + 1, 0x7f));
         vm.setNonce(createAddr, nonce);
         address createAddressComputed = create.compute_create_address_self(nonce);
-
         vm.startPrank(createAddr);
         ERC20Mock createAddressComputedOnChain = new ERC20Mock(_NAME, _SYMBOL, initialAccount, _INITIAL_SUPPLY);
         vm.stopPrank();
@@ -436,7 +437,6 @@ contract CreateTest is Test {
         nonce = uint64(bound(uint256(nonce), 0x7f + 1, uint256(type(uint8).max)));
         vm.setNonce(createAddr, nonce);
         address createAddressComputed = create.compute_create_address_self(nonce);
-
         vm.startPrank(createAddr);
         ERC20Mock createAddressComputedOnChain = new ERC20Mock(_NAME, _SYMBOL, initialAccount, _INITIAL_SUPPLY);
         vm.stopPrank();
@@ -448,7 +448,6 @@ contract CreateTest is Test {
         nonce = uint64(bound(uint256(nonce), uint256(type(uint8).max) + 1, uint256(type(uint16).max)));
         vm.setNonce(createAddr, nonce);
         address createAddressComputed = create.compute_create_address_self(nonce);
-
         vm.startPrank(createAddr);
         ERC20Mock createAddressComputedOnChain = new ERC20Mock(_NAME, _SYMBOL, initialAccount, _INITIAL_SUPPLY);
         vm.stopPrank();
@@ -460,7 +459,6 @@ contract CreateTest is Test {
         nonce = uint64(bound(uint256(nonce), uint256(type(uint16).max) + 1, uint256(type(uint24).max)));
         vm.setNonce(createAddr, nonce);
         address createAddressComputed = create.compute_create_address_self(nonce);
-
         vm.startPrank(createAddr);
         ERC20Mock createAddressComputedOnChain = new ERC20Mock(_NAME, _SYMBOL, initialAccount, _INITIAL_SUPPLY);
         vm.stopPrank();
@@ -472,7 +470,6 @@ contract CreateTest is Test {
         nonce = uint64(bound(uint256(nonce), uint256(type(uint24).max) + 1, uint256(type(uint32).max)));
         vm.setNonce(createAddr, nonce);
         address createAddressComputed = create.compute_create_address_self(nonce);
-
         vm.startPrank(createAddr);
         ERC20Mock createAddressComputedOnChain = new ERC20Mock(_NAME, _SYMBOL, initialAccount, _INITIAL_SUPPLY);
         vm.stopPrank();
@@ -484,7 +481,6 @@ contract CreateTest is Test {
         nonce = uint64(bound(uint256(nonce), uint256(type(uint32).max) + 1, uint256(type(uint40).max)));
         vm.setNonce(createAddr, nonce);
         address createAddressComputed = create.compute_create_address_self(nonce);
-
         vm.startPrank(createAddr);
         ERC20Mock createAddressComputedOnChain = new ERC20Mock(_NAME, _SYMBOL, initialAccount, _INITIAL_SUPPLY);
         vm.stopPrank();
@@ -496,7 +492,6 @@ contract CreateTest is Test {
         nonce = uint64(bound(uint256(nonce), uint256(type(uint40).max) + 1, uint256(type(uint48).max)));
         vm.setNonce(createAddr, nonce);
         address createAddressComputed = create.compute_create_address_self(nonce);
-
         vm.startPrank(createAddr);
         ERC20Mock createAddressComputedOnChain = new ERC20Mock(_NAME, _SYMBOL, initialAccount, _INITIAL_SUPPLY);
         vm.stopPrank();
@@ -508,7 +503,6 @@ contract CreateTest is Test {
         nonce = uint64(bound(uint256(nonce), uint256(type(uint48).max) + 1, uint256(type(uint56).max)));
         vm.setNonce(createAddr, nonce);
         address createAddressComputed = create.compute_create_address_self(nonce);
-
         vm.startPrank(createAddr);
         ERC20Mock createAddressComputedOnChain = new ERC20Mock(_NAME, _SYMBOL, initialAccount, _INITIAL_SUPPLY);
         vm.stopPrank();
@@ -520,7 +514,6 @@ contract CreateTest is Test {
         nonce = uint64(bound(uint256(nonce), uint256(type(uint56).max) + 1, uint256(type(uint64).max) - 1));
         vm.setNonce(createAddr, nonce);
         address createAddressComputed = create.compute_create_address_self(nonce);
-
         vm.startPrank(createAddr);
         ERC20Mock createAddressComputedOnChain = new ERC20Mock(_NAME, _SYMBOL, initialAccount, _INITIAL_SUPPLY);
         vm.stopPrank();
