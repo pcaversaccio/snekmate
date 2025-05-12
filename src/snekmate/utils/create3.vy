@@ -52,7 +52,7 @@ from . import create2
 _PROXY_INIT_CODE: constant(Bytes[16]) = x"67363d3d37363d34f03d5260086018f3"
 
 
-# @dev The `keccak256` hash of `_PROXY_INIT_CODE`
+# @dev The `keccak256` hash of `_PROXY_INIT_CODE`.
 _PROXY_INIT_CODE_HASH: constant(bytes32) = keccak256(_PROXY_INIT_CODE)
 
 
@@ -119,7 +119,7 @@ def _compute_create3_address(salt: bytes32, deployer: address) -> address:
     @param deployer The 20-byte deployer address.
     @return address The 20-byte address where a contract will be stored.
     """
-    proxy: address = create2._compute_create2_address(salt, keccak256(_PROXY_INIT_CODE), deployer)
+    proxy: address = create2._compute_create2_address(salt, _PROXY_INIT_CODE_HASH, deployer)
     # Due to the EIP-161 (https://github.com/ethereum/EIPs/blob/master/EIPS/eip-161.md)
     # specification, all contract accounts are initiated with `nonce = 1`.
     # Thus, the first contract address created by the proxy contract is

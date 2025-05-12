@@ -12,7 +12,7 @@
 # @notice Please note that the `create` module
 # is stateless and therefore does not require
 # the `initializes` keyword for initialisation.
-from .. import create as cr
+from .. import create as c1
 
 
 @deploy
@@ -40,7 +40,7 @@ def deploy_create(init_code: Bytes[8_192]) -> address:
     @param init_code The maximum 8,192-byte contract creation bytecode.
     @return address The 20-byte address where the contract was deployed.
     """
-    return cr._deploy_create(init_code)
+    return c1._deploy_create(init_code)
 
 
 @external
@@ -52,7 +52,7 @@ def compute_create_address_self(nonce: uint256) -> address:
     @param nonce The 32-byte account nonce of this contract.
     @return address The 20-byte address where a contract will be stored.
     """
-    return cr._compute_create_address_self(nonce)
+    return c1._compute_create_address_self(nonce)
 
 
 @external
@@ -76,4 +76,4 @@ def compute_create_address(deployer: address, nonce: uint256) -> address:
     @param nonce The 32-byte account nonce of the deployer address.
     @return address The 20-byte address where a contract will be stored.
     """
-    return cr._compute_create_address(deployer, nonce)
+    return c1._compute_create_address(deployer, nonce)
