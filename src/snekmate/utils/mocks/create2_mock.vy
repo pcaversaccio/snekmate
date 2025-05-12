@@ -9,7 +9,7 @@
 
 
 # @dev We import the `create2` module.
-# @notice Please note that the `create` module
+# @notice Please note that the `create2` module
 # is stateless and therefore does not require
 # the `initializes` keyword for initialisation.
 from .. import create2 as c2
@@ -38,7 +38,7 @@ def deploy_create2(salt: bytes32, init_code: Bytes[8_192]) -> address:
             constructor arguments, and if `msg.value` is non-zero,
             `init_code` must have a `payable` constructor.
     @param salt The 32-byte random value used to create the contract
-                address.
+           address.
     @param init_code The maximum 8,192-byte contract creation bytecode.
     @return address The 20-byte address where the contract was deployed.
     """
