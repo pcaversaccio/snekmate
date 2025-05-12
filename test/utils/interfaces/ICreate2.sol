@@ -10,5 +10,5 @@ interface ICreate2 {
         bytes32 salt,
         bytes32 bytecodeHash,
         address deployer
-    ) external view returns (address);
+    ) external pure returns (address);
 }
