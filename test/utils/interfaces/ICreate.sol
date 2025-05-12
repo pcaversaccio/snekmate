@@ -6,5 +6,5 @@ interface ICreate {
 
     function compute_create_address_self(uint256 nonce) external view returns (address);
 
-    function compute_create_address(address deployer, uint256 nonce) external view returns (address);
+    function compute_create_address(address deployer, uint256 nonce) external pure returns (address);
 }
