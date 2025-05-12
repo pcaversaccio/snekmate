@@ -137,8 +137,8 @@ def _compute_create_address(deployer: address, nonce: uint256) -> address:
 @pure
 def _convert_keccak256_to_address(digest: bytes32) -> address:
     """
-    @dev Converts a 32-byte keccak256 digest to an address.
-    @param digest The 32-byte keccak256 digest.
+    @dev Converts a 32-byte `keccak256` digest to an address.
+    @param digest The 32-byte `keccak256` digest.
     @return address The converted 20-byte address.
     """
     return convert(convert(digest, uint256) & convert(max_value(uint160), uint256), address)
