@@ -6,6 +6,9 @@
 
 - **Utility Functions**
   - [`block_hash`](https://github.com/pcaversaccio/snekmate/blob/v0.1.2/src/snekmate/utils/block_hash.vy): Add [EIP-2935](https://eips.ethereum.org/EIPS/eip-2935)-based utility functions. ([#316](https://github.com/pcaversaccio/snekmate/pull/316))
+  - [`create`](https://github.com/pcaversaccio/snekmate/blob/v0.1.2/src/snekmate/utils/create.vy): Add `CREATE`-based deployment function. ([#323](https://github.com/pcaversaccio/snekmate/pull/323))
+  - [`create2`](https://github.com/pcaversaccio/snekmate/blob/v0.1.2/src/snekmate/utils/create2.vy): Add `CREATE2`-based deployment function. ([#323](https://github.com/pcaversaccio/snekmate/pull/323))
+  - [`create3`](https://github.com/pcaversaccio/snekmate/blob/v0.1.2/src/snekmate/utils/create3.vy): Add `CREATE3`-based address computation and deployment functions. ([#323](https://github.com/pcaversaccio/snekmate/pull/323))
 
 ### ♻️ Refactoring
 
@@ -18,6 +21,10 @@
 ### 🔖 Release Management
 
 - Add provenance to `npm` release. ([#314](https://github.com/pcaversaccio/snekmate/pull/314))
+
+### ❗️ Breaking Changes
+
+- The contracts `create_address.vy` and `create2_address.vy` have been renamed to `create.vy` and `create2.vy`, respectively. In `create.vy`, the functions `_compute_address_rlp_self`, `_compute_address_rlp`, and `_convert_keccak256_2_address` have been renamed to `_compute_create_address_self`, `_compute_create_address`, and `_convert_keccak256_to_address`. Similarly, in `create2.vy`, the functions `_compute_address_self` and `_compute_address` have been renamed to `_compute_create2_address_self` and `_compute_create2_address`. ([#323](https://github.com/pcaversaccio/snekmate/pull/323))
 
 ### 👀 Full Changelog
 
