@@ -79,6 +79,7 @@ src
         ├── block_hash — "Utility Functions to Access Historical Block Hashes"
         ├── create — "`CREATE` EVM Opcode Utility Functions"
         ├── create2 — "`CREATE2` EVM Opcode Utility Functions"
+        ├── create3 — "`CREATE3`-Based Utility Functions"
         ├── ecdsa — "Elliptic Curve Digital Signature Algorithm (ECDSA) Secp256k1-Based Functions"
         ├── p256 — "Elliptic Curve Digital Signature Algorithm (ECDSA) Secp256r1-Based Functions"
         ├── message_hash_utils — "Signature Message Hash Utility Functions"
@@ -97,6 +98,7 @@ src
             ├── block_hash_mock — "`block_hash` Module Reference Implementation"
             ├── create_mock — "`create` Module Reference Implementation"
             ├── create2_mock — "`create2` Module Reference Implementation"
+            ├── create3_mock — "`create3` Module Reference Implementation"
             ├── ecdsa_mock — "`ecdsa` Module Reference Implementation"
             ├── p256_mock — "`p256` Module Reference Implementation"
             ├── message_hash_utils_mock — "`message_hash_utils` Module Reference Implementation"
@@ -191,6 +193,7 @@ This repository contains [Foundry](https://github.com/foundry-rs/foundry)-based 
 | `block_hash`                |       ✅       |            ✅            |         ❌          |
 | `create`                    |       ✅       |            ✅            |         ❌          |
 | `create2`                   |       ✅       |            ✅            |         ❌          |
+| `create3`                   |       ✅       |            ✅            |         ❌          |
 | `ecdsa`                     |       ✅       |            ✅            |         ❌          |
 | `p256`                      |       ✅       |            ✅            |         ❌          |
 | `message_hash_utils`        |       ✅       |            ✅            |         ❌          |
