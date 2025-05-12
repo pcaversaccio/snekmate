@@ -2,7 +2,7 @@
 pragma solidity ^0.8.29;
 
 interface ICreate {
-    function deploy_create(bytes calldata initCode) external returns (address);
+    function deploy_create(bytes calldata initCode) external payable returns (address);
 
     function compute_create_address_self(uint256 nonce) external view returns (address);
 
