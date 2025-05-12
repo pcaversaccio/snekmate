@@ -131,7 +131,7 @@ contract Create2Test is Test {
         bytes memory invalidInitCode = hex"60_ef_60_00_53_60_01_60_01_53_60_03_60_00_f3";
         address create2AddressComputed = create2.compute_create2_address(salt, bytecodeHash, create2Addr);
         vm.expectRevert();
-        create2.deploy_create2(salt, invalidInitCode);
+        create2.deploy_create2{value: msgValue}(salt, invalidInitCode);
         assertEq(create2AddressComputed.code.length, 0);
         assertEq(create2AddressComputed.balance, 0);
     }
