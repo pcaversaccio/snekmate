@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: WTFPL
-pragma solidity ^0.8.29;
+pragma solidity ^0.8.30;
 
 interface IMessageHashUtils {
     function to_eth_signed_message_hash(bytes32 hash) external pure returns (bytes32);

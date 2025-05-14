@@ -499,7 +499,7 @@ ERC721Test:testFuzzPermitSuccess(string,string,uint16) (runs: 256, μ: 227012, ~
 ERC721Test:testFuzzRenounceOwnershipNonOwner(address) (runs: 256, μ: 13960, ~: 13960)
 ERC721Test:testFuzzRenounceOwnershipSuccess(address) (runs: 256, μ: 48621, ~: 48607)
 ERC721Test:testFuzzSafeMintNonMinter(address) (runs: 256, μ: 15663, ~: 15663)
-ERC721Test:testFuzzSafeMintSuccess(address[]) (runs: 256, μ: 21153992, ~: 20180293)
+ERC721Test:testFuzzSafeMintSuccess(address[]) (runs: 256, μ: 21153992, ~: 20.8.303)
 ERC721Test:testFuzzSafeTransferFromWithData(address,address,address,bytes) (runs: 256, μ: 1433490, ~: 1433630)
 ERC721Test:testFuzzSetApprovalForAllSuccess(address,address) (runs: 256, μ: 189167, ~: 189167)
 ERC721Test:testFuzzSetMinterNonOwner(address,string) (runs: 256, μ: 15506, ~: 15507)
