@@ -1,18 +1,18 @@
 # pragma version ~=0.4.2rc1
 # pragma nonreentrancy off
 """
-@title `create_address` Module Reference Implementation
-@custom:contract-name create_address_mock
+@title `create` Module Reference Implementation
+@custom:contract-name create_mock
 @license GNU Affero General Public License v3.0 only
 @author pcaversaccio
 """
 
 
-# @dev We import the `create_address` module.
-# @notice Please note that the `create_address`
-# module is stateless and therefore does not require
+# @dev We import the `create` module.
+# @notice Please note that the `create` module
+# is stateless and therefore does not require
 # the `initializes` keyword for initialisation.
-from .. import create_address as ca
+from .. import create as c1
 
 
 @deploy
@@ -27,20 +27,37 @@ def __init__():
 
 
 @external
+@payable
+def deploy_create(init_code: Bytes[8_192]) -> address:
+    """
+    @dev Deploys a new contract via calling the `CREATE` opcode and
+         using the creation bytecode `init_code` and `msg.value` as
+         inputs.
+    @notice Please note that the `init_code` represents the complete
+            contract creation code, i.e. including the ABI-encoded
+            constructor arguments, and if `msg.value` is non-zero,
+            `init_code` must have a `payable` constructor.
+    @param init_code The maximum 8,192-byte contract creation bytecode.
+    @return address The 20-byte address where the contract was deployed.
+    """
+    return c1._deploy_create(init_code)
+
+
+@external
 @view
-def compute_address_rlp_self(nonce: uint256) -> address:
+def compute_create_address_self(nonce: uint256) -> address:
     """
     @dev Returns the address where a contract will be stored if
          deployed via this contract using the `CREATE` opcode.
     @param nonce The 32-byte account nonce of this contract.
     @return address The 20-byte address where a contract will be stored.
     """
-    return ca._compute_address_rlp_self(nonce)
+    return c1._compute_create_address_self(nonce)
 
 
 @external
 @pure
-def compute_address_rlp(deployer: address, nonce: uint256) -> address:
+def compute_create_address(deployer: address, nonce: uint256) -> address:
     """
     @dev Returns the address where a contract will be stored
          if deployed via `deployer` using the `CREATE` opcode.
@@ -59,4 +76,4 @@ def compute_address_rlp(deployer: address, nonce: uint256) -> address:
     @param nonce The 32-byte account nonce of the deployer address.
     @return address The 20-byte address where a contract will be stored.
     """
-    return ca._compute_address_rlp(deployer, nonce)
+    return c1._compute_create_address(deployer, nonce)
