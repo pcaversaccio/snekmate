@@ -69,13 +69,14 @@ contract Create2Test is Test {
     }
 
     function testDeployCreate2Revert() public {
+        uint256 msgValue = 1_337;
         /**
          * @dev Deploy the invalid runtime bytecode `0xef0100` (see https://eips.ethereum.org/EIPS/eip-3541).
          */
         bytes memory invalidInitCode = hex"60_ef_60_00_53_60_01_60_01_53_60_03_60_00_f3";
         address create2AddressComputed = create2.compute_create2_address(_SALT, bytecodeHash, create2Addr);
         vm.expectRevert();
-        create2.deploy_create2(_SALT, invalidInitCode);
+        create2.deploy_create2{value: msgValue}(_SALT, invalidInitCode);
         assertEq(create2AddressComputed.code.length, 0);
         assertEq(create2AddressComputed.balance, 0);
     }
