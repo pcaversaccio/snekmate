@@ -78,7 +78,10 @@ def _deploy_create3(salt: bytes32, init_code: Bytes[8_192]) -> address:
     @notice Please note that the `init_code` represents the complete
             contract creation code, i.e. including the ABI-encoded
             constructor arguments, and if `msg.value` is non-zero,
-            `init_code` must have a `payable` constructor.
+            `init_code` must have a `payable` constructor. To align
+            with other `CREATE3`-based implementations, we enforce via
+            `is_contract` that the deployed contract contains non-empty
+            bytecode.
     @param salt The 32-byte random value used to create the proxy
            contract address.
     @param init_code The maximum 8,192-byte contract creation bytecode.
