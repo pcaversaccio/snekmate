@@ -43,7 +43,7 @@
     "@openzeppelin/merkle-tree": "^1.0.8",
     "eslint": "^9.27.0",
     "eslint-config-prettier": "^10.1.5",
-    "ethers": "^6.14.1",
+    "ethers": "^6.14.3",
     "keccak256": "^1.0.6",
     "merkletreejs": "^0.5.2",
     "prettier": "^3.5.3",
