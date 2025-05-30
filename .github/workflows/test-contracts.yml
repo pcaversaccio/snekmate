@@ -35,7 +35,7 @@ jobs:
           architecture: ${{ matrix.architecture }}
 
       - name: Install Vyper
-        run: pip install git+https://github.com/vyperlang/vyper.git@master
+        run: pip install git+https://github.com/HodanPlodky/vyper.git@fix/venom/inliner-phi-invalidation
 
       - name: Show the Vyper version
         run: vyper --version
