@@ -1,4 +1,4 @@
-# pragma version ~=0.4.2rc1
+# pragma version ~=0.4.2
 # pragma nonreentrancy off
 """
 @title `pausable` Module Reference Implementation

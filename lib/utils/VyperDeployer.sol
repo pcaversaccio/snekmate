@@ -18,7 +18,7 @@ error DeploymentFailed(address emitter);
 
 /**
  * @dev The interface of this cheat code is called `_VmSafe`, so you
- * can use the `VmSafe` interface (see here: https://book.getfoundry.sh/cheatcodes)
+ * can use the `VmSafe` interface (see here: https://github.com/foundry-rs/forge-std/blob/master/src/Vm.sol)
  * in other test files without errors.
  */
 // solhint-disable-next-line contract-name-capwords
