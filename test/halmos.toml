@@ -12,5 +12,5 @@ statistics = true                      # Print the statistics.
 early-exit = true                      # Stop after a counterexample is found.
 
 # Solver settings.
-solver-command = "yices-smt2"          # Use the Yices 2 SMT solver.
+solver = "yices"                       # Use the Yices 2 SMT solver.
 cache-solver = true                    # Cache unsatisfiable queries using unsatisfiable cores.
