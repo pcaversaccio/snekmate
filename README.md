@@ -218,9 +218,6 @@ Furthermore, the [`echidna`](https://github.com/crytic/echidna)-based [property]
 
 Eventually, the [`halmos`](https://github.com/a16z/halmos)-based symbolic tests for the [`erc20`](./src/snekmate/tokens/erc20.vy), [`erc721`](./src/snekmate/tokens/erc721.vy), [`erc1155`](./src/snekmate/tokens/erc1155.vy), and [`math`](./src/snekmate/utils/math.vy) contracts are available in the [`test/tokens/halmos/`](./test/tokens/halmos) and [`test/utils/halmos/`](./test/utils/halmos) directories. You can run the tests by invoking:
 
-> [!IMPORTANT]
-> You must install the [Yices 2 SMT solver](https://github.com/SRI-CSL/yices2) before invoking the [`halmos`](https://github.com/a16z/halmos)-based symbolic tests.
-
 ```console
 # Run Halmos ERC-20 symbolic tests.
 ~$ FOUNDRY_PROFILE=halmos halmos --contract ERC20TestHalmos --config test/halmos.toml
