@@ -66,4 +66,4 @@ After having installed `pnpm`, simply run:
 pnpm install
 ```
 
-This repository also includes the [Foundry](https://github.com/foundry-rs/foundry) toolkit. You can simply run `forge install` to install all the submodule dependencies that are in this repository. If you need help getting started with Foundry, we recommend reading the [📖 Foundry Book](https://book.getfoundry.sh).
+This repository also includes the [Foundry](https://github.com/foundry-rs/foundry) toolkit. You can simply run `forge install` to install all the submodule dependencies that are in this repository. If you need help getting started with Foundry, we recommend reading the [📖 Foundry Book](https://getfoundry.sh).

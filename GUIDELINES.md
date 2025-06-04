@@ -20,7 +20,7 @@ Please consider writing [Foundry](https://github.com/foundry-rs/foundry)-based u
 
 🐍Vyper code should be written in a consistent format that follows our [🐍Vyper Conventions](#vyper-conventions).
 
-Solidity test code should be written in a consistent format enforced by a prettier and linter that follows the official [Solidity Style Guide](https://docs.soliditylang.org/en/latest/style-guide.html). Also, we refer to Foundry's [best practices](https://book.getfoundry.sh/guides/best-practices/).
+Solidity test code should be written in a consistent format enforced by a prettier and linter that follows the official [Solidity Style Guide](https://docs.soliditylang.org/en/latest/style-guide.html). Also, we refer to Foundry's [best practices](https://getfoundry.sh/guides/best-practices/).
 
 The code should be simple and straightforward, with a focus on readability and comprehensibility. Consistency and predictability should be maintained throughout the code base. This is especially true for naming, which should be systematic, clear, and concise.
 
