@@ -17,7 +17,7 @@
 ### 🐛 Bug Fixes
 
 - **Extensions**
-  - [`erc4626`](https://github.com/pcaversaccio/snekmate/blob/v0.1.2/src/snekmate/extensions/erc4626.vy): Fix `_max_withdraw` check in `withdraw` to use `owner`. ([#327](https://github.com/pcaversaccio/snekmate/pull/327))
+  - [`erc4626`](https://github.com/pcaversaccio/snekmate/blob/v0.1.2/src/snekmate/extensions/erc4626.vy): Fix `_max_withdraw` check in `withdraw` function to use `owner`. ([#327](https://github.com/pcaversaccio/snekmate/pull/327))
 
 ### 📄 Licensing
 
