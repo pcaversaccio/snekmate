@@ -956,15 +956,37 @@ contract ERC4626VaultTest is ERC4626Test {
         vm.stopPrank();
 
         vm.startPrank(alice);
-        ERC4626ExtendedDecimalsOffset0.redeem(amount, bob, alice);
+        ERC4626ExtendedDecimalsOffset0.redeem(amount / 2, bob, alice);
+        assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(alice), amount / 2);
+        assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(bob), amount);
+        assertEq(underlying.balanceOf(alice), 0);
+        assertEq(underlying.balanceOf(bob), amount / 2);
+
+        vm.expectRevert(bytes("erc4626: redeem more than maximum"));
+        ERC4626ExtendedDecimalsOffset0.redeem(amount / 2 + 1, bob, alice);
+
+        ERC4626ExtendedDecimalsOffset0.redeem(amount / 2, bob, alice);
         assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(alice), 0);
         assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(bob), amount);
+        assertEq(underlying.balanceOf(alice), 0);
         assertEq(underlying.balanceOf(bob), amount);
         vm.stopPrank();
 
         vm.startPrank(bob);
+        ERC4626ExtendedDecimalsOffset0.withdraw(amount / 2, alice, bob);
+        assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(alice), 0);
+        assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(bob), amount / 2);
+        assertEq(underlying.balanceOf(alice), amount / 2);
+        assertEq(underlying.balanceOf(bob), amount);
+
         vm.expectRevert(bytes("erc4626: withdraw more than maximum"));
-        ERC4626ExtendedDecimalsOffset0.withdraw(amount, alice, bob);
+        ERC4626ExtendedDecimalsOffset0.withdraw(amount / 2 + 1, alice, bob);
+
+        ERC4626ExtendedDecimalsOffset0.withdraw(amount / 2, alice, bob);
+        assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(alice), 0);
+        assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(bob), 0);
+        assertEq(underlying.balanceOf(alice), amount);
+        assertEq(underlying.balanceOf(bob), amount);
         vm.stopPrank();
     }
 

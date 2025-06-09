@@ -390,7 +390,7 @@ def withdraw(assets: uint256, receiver: address, owner: address) -> uint256:
     @param owner The 20-byte owner address.
     @return uint256 The burned 32-byte shares amount.
     """
-    assert assets <= self._max_withdraw(receiver), "erc4626: withdraw more than maximum"
+    assert assets <= self._max_withdraw(owner), "erc4626: withdraw more than maximum"
     shares: uint256 = self._preview_withdraw(assets)
     self._withdraw(msg.sender, receiver, owner, assets, shares)
     return shares
