@@ -932,39 +932,89 @@ contract ERC4626VaultTest is ERC4626Test {
     function testVaultInteractionsForSomeoneElse() public {
         address alice = makeAddr("alice");
         address bob = makeAddr("bob");
+        address charles = makeAddr("charles");
         uint256 amount = 1_000;
         underlying.mint(alice, amount);
         underlying.mint(bob, amount);
+        underlying.mint(charles, amount);
 
         vm.prank(alice);
         underlying.approve(ERC4626ExtendedDecimalsOffset0Addr, amount);
         vm.prank(bob);
+        underlying.approve(ERC4626ExtendedDecimalsOffset0Addr, amount);
+        vm.prank(charles);
         underlying.approve(ERC4626ExtendedDecimalsOffset0Addr, amount);
 
         vm.startPrank(alice);
         ERC4626ExtendedDecimalsOffset0.deposit(amount, bob);
         assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(alice), 0);
         assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(bob), amount);
+        assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(charles), 0);
         assertEq(underlying.balanceOf(alice), 0);
+        assertEq(underlying.balanceOf(bob), amount);
+        assertEq(underlying.balanceOf(charles), amount);
         vm.stopPrank();
 
         vm.startPrank(bob);
         ERC4626ExtendedDecimalsOffset0.mint(amount, alice);
         assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(alice), amount);
         assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(bob), amount);
+        assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(charles), 0);
+        assertEq(underlying.balanceOf(alice), 0);
         assertEq(underlying.balanceOf(bob), 0);
+        assertEq(underlying.balanceOf(charles), amount);
+        vm.stopPrank();
+
+        vm.startPrank(charles);
+        ERC4626ExtendedDecimalsOffset0.mint(amount, charles);
+        assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(alice), amount);
+        assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(bob), amount);
+        assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(charles), amount);
+        assertEq(underlying.balanceOf(alice), 0);
+        assertEq(underlying.balanceOf(bob), 0);
+        assertEq(underlying.balanceOf(charles), 0);
         vm.stopPrank();
 
         vm.startPrank(alice);
-        ERC4626ExtendedDecimalsOffset0.redeem(amount, bob, alice);
+        ERC4626ExtendedDecimalsOffset0.redeem(amount / 2, bob, alice);
+        assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(alice), amount / 2);
+        assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(bob), amount);
+        assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(charles), amount);
+        assertEq(underlying.balanceOf(alice), 0);
+        assertEq(underlying.balanceOf(bob), amount / 2);
+        assertEq(underlying.balanceOf(charles), 0);
+
+        vm.expectRevert(bytes("erc4626: redeem more than maximum"));
+        ERC4626ExtendedDecimalsOffset0.redeem(amount / 2 + 1, charles, alice);
+
+        ERC4626ExtendedDecimalsOffset0.redeem(amount / 2, bob, alice);
         assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(alice), 0);
         assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(bob), amount);
+        assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(charles), amount);
+        assertEq(underlying.balanceOf(alice), 0);
         assertEq(underlying.balanceOf(bob), amount);
+        assertEq(underlying.balanceOf(charles), 0);
         vm.stopPrank();
 
         vm.startPrank(bob);
+        ERC4626ExtendedDecimalsOffset0.withdraw(amount / 2, alice, bob);
+        assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(alice), 0);
+        assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(bob), amount / 2);
+        assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(charles), amount);
+        assertEq(underlying.balanceOf(alice), amount / 2);
+        assertEq(underlying.balanceOf(bob), amount);
+        assertEq(underlying.balanceOf(charles), 0);
+
         vm.expectRevert(bytes("erc4626: withdraw more than maximum"));
-        ERC4626ExtendedDecimalsOffset0.withdraw(amount, alice, bob);
+        ERC4626ExtendedDecimalsOffset0.withdraw(amount / 2 + 1, charles, bob);
+
+        ERC4626ExtendedDecimalsOffset0.withdraw(amount / 2, alice, bob);
+        assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(alice), 0);
+        assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(bob), 0);
+        assertEq(ERC4626ExtendedDecimalsOffset0.balanceOf(charles), amount);
+        assertEq(underlying.balanceOf(alice), amount);
+        assertEq(underlying.balanceOf(bob), amount);
+        assertEq(underlying.balanceOf(charles), 0);
         vm.stopPrank();
     }
 
