@@ -87,10 +87,9 @@ DEFAULT_ADMIN_ROLE: public(constant(bytes32)) = empty(bytes32)
 # imported interface. The ERC-165 interface identifier
 # is defined as the XOR of all function selectors in the
 # interface.
-_SUPPORTED_INTERFACES: constant(bytes4[2]) = [
-    0x01FFC9A7, # The ERC-165 identifier for ERC-165.
-    0x7965DB0B, # The ERC-165 identifier for `IAccessControl`.
-]
+
+
+_supported_interfaces: HashMap[bytes4, bool] 
 
 
 # @dev Returns `True` if `account` has been granted `role`.
@@ -100,31 +99,27 @@ hasRole: public(HashMap[bytes32, HashMap[address, bool]])
 # @dev Returns the admin role that controls `role`.
 getRoleAdmin: public(HashMap[bytes32, bytes32])
 
-
+ 
 @deploy
 @payable
 def __init__():
-    """
-    @dev To omit the opcodes for checking the `msg.value`
-         in the creation-time EVM bytecode, the constructor
-         is declared as `payable`.
-    @notice The `DEFAULT_ADMIN_ROLE` role will be assigned
-            to the `msg.sender`.
-    """
+    # Existing admin role setup
     self._grant_role(DEFAULT_ADMIN_ROLE, msg.sender)
+    
+    # Initialize default supported interfaces
+    self._supported_interfaces[0x01FFC9A7] = True  # ERC-165
+    self._supported_interfaces[0x7965DB0B] = True  # IAccessControl
 
 
 @external
 @view
+
 def supportsInterface(interface_id: bytes4) -> bool:
     """
-    @dev Returns `True` if this contract implements the
-         interface defined by `interface_id`.
-    @param interface_id The 4-byte interface identifier.
-    @return bool The verification whether the contract
-            implements the interface or not.
+    @dev Returns `True` if this contract implements the interface.
+    @notice Now supports dynamically added interfaces.
     """
-    return interface_id in _SUPPORTED_INTERFACES
+    return self._supported_interfaces[interface_id]
 
 
 @external
@@ -187,6 +182,15 @@ def set_role_admin(role: bytes32, admin_role: bytes32):
     self._check_role(self.getRoleAdmin[role], msg.sender)
     self._set_role_admin(role, admin_role)
 
+@external
+def set_interface_support(interface_id: bytes4, supported: bool):
+    """
+    @dev Allows admin to dynamically add/remove interface support.
+    @notice Restricted to DEFAULT_ADMIN_ROLE.
+    """
+    self._check_role(DEFAULT_ADMIN_ROLE, msg.sender)
+    self._supported_interfaces[interface_id] = supported
+    log InterfaceSupportSet(interface_id, supported)  # Optional event
 
 @internal
 @view
