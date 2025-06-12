@@ -52,7 +52,7 @@ You will need the following dependencies:
 > [!IMPORTANT]
 > All 🐍 snekmate contracts in the `main` branch are designed to work with the latest `master` branch commit of 🐍Vyper, which can be installed via `pip install git+https://github.com/vyperlang/vyper.git@master` (note that Python version `3.10` or higher is required).
 
-It is recommended to install [`pnpm`](https://pnpm.io) through the `npm` package manager, which comes bundled with [Node.js](https://nodejs.org/en) when you install it on your system. It is recommended to use a Node.js version `>=22.11.0`.
+It is recommended to install [`pnpm`](https://pnpm.io) through the `npm` package manager, which comes bundled with [Node.js](https://nodejs.org/en) when you install it on your system. It is recommended to use a Node.js version `>=24.2.0`.
 
 Once you have `npm` installed, you can run the following both to install and upgrade `pnpm`:
 
