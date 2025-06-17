@@ -1,4 +1,4 @@
-# pragma version ~=0.4.2
+# pragma version ~=0.4.3rc2
 """
 @title EIP-1155 Optional Metadata Interface Definition
 @custom:contract-name IERC1155MetadataURI

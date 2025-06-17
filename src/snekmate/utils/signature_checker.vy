@@ -1,4 +1,4 @@
-# pragma version ~=0.4.2
+# pragma version ~=0.4.3rc2
 # pragma nonreentrancy off
 """
 @title ECDSA and EIP-1271 Signature Verification Functions

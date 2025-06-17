@@ -30,6 +30,14 @@
 ### ❗️ Breaking Changes
 
 - The contracts `create_address.vy` and `create2_address.vy` have been renamed to `create.vy` and `create2.vy`, respectively. In `create.vy`, the functions `_compute_address_rlp_self`, `_compute_address_rlp`, and `_convert_keccak256_2_address` have been renamed to `_compute_create_address_self`, `_compute_create_address`, and `_convert_keccak256_to_address`. Similarly, in `create2.vy`, the functions `_compute_address_self` and `_compute_address` have been renamed to `_compute_create2_address_self` and `_compute_create2_address`. ([#323](https://github.com/pcaversaccio/snekmate/pull/323))
+- All 🐍 snekmate contracts now target the new 🐍Vyper [default EVM version](https://github.com/vyperlang/vyper/pull/4633) `prague` ([#331](https://github.com/pcaversaccio/snekmate/pull/331)). If you intend to deploy on an EVM chain with no `prague` support, you must compile — using the `cancun` EVM version as an example — the main contract that uses the 🐍 snekmate module contracts with the `--evm-version cancun` option; e.g. `vyper --evm-version cancun src/snekmate/tokens/mocks/erc20_mock.vy`, or add the `# pragma evm-version cancun` directive to the main contract that uses the 🐍 snekmate module contracts:
+
+```vyper
+# pragma version ~=0.4.3
+# pragma evm-version cancun
+
+...
+```
 
 ### 👀 Full Changelog
 
