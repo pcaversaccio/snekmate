@@ -4,7 +4,7 @@ default_ecosystem: ethereum
 plugins:
   - name: vyper
 vyper:
-  evm_version: cancun
+  evm_version: prague
 compile:
   exclude:
     - r"(?!.*_mock\.vy$)"

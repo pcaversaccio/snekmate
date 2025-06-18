@@ -1,4 +1,4 @@
-# pragma version ~=0.4.2
+# pragma version ~=0.4.3rc2
 # pragma nonreentrancy off
 """
 @title ERC-721 and ERC-1155 Compatible ERC-2981 Reference Implementation

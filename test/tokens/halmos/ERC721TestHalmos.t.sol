@@ -39,12 +39,10 @@ contract ERC721TestHalmos is Test, SymTest {
         /**
          * @dev Halmos does not currently work with the latest Vyper jump-table-based
          * dispatchers: https://github.com/a16z/halmos/issues/253. For Halmos-based tests,
-         * we therefore disable the optimiser. Furthermore, Halmos does not currently
-         * work with the EVM version `cancun`: https://github.com/a16z/halmos/issues/290.
-         * For Halmos-based tests, we therefore use the EVM version `shanghai`.
+         * we therefore disable the optimiser.
          */
         erc721 = IERC721(
-            vyperDeployer.deployContract("src/snekmate/tokens/mocks/", "erc721_mock", args, "shanghai", "none")
+            vyperDeployer.deployContract("src/snekmate/tokens/mocks/", "erc721_mock", args, "prague", "none")
         );
 
         address deployer = address(vyperDeployer);

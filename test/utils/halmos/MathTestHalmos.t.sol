@@ -29,11 +29,9 @@ contract MathTestHalmos is Test, SymTest {
         /**
          * @dev Halmos does not currently work with the latest Vyper jump-table-based
          * dispatchers: https://github.com/a16z/halmos/issues/253. For Halmos-based tests,
-         * we therefore disable the optimiser. Furthermore, Halmos does not currently
-         * work with the EVM version `cancun`: https://github.com/a16z/halmos/issues/290.
-         * For Halmos-based tests, we therefore use the EVM version `shanghai`.
+         * we therefore disable the optimiser.
          */
-        math = IMath(vyperDeployer.deployContract("src/snekmate/utils/mocks/", "math_mock", "shanghai", "none"));
+        math = IMath(vyperDeployer.deployContract("src/snekmate/utils/mocks/", "math_mock", "prague", "none"));
     }
 
     function testHalmosAssertUint256Average(uint256 x, uint256 y) public view {
