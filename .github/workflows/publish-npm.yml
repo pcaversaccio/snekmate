@@ -51,7 +51,15 @@ jobs:
         run: pnpm install --prefer-offline --frozen-lockfile
 
       - name: Publish to npm
-        run: pnpm publish --no-git-checks
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          case $VERSION in
+            *-alpha.*) TAG="alpha" ;;
+            *-beta.*)  TAG="beta" ;;
+            *-rc.*)    TAG="next" ;;
+            *)         TAG="latest" ;;
+          esac
+          pnpm publish --no-git-checks --tag $TAG
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_CONFIG_PROVENANCE: true
