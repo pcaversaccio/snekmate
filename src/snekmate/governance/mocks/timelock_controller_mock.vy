@@ -1,4 +1,4 @@
-# pragma version ~=0.4.3rc2
+# pragma version ~=0.4.3
 # pragma nonreentrancy off
 """
 @title `timelock_controller` Module Reference Implementation
