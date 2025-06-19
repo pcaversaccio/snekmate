@@ -1,4 +1,4 @@
-# pragma version ~=0.4.3rc2
+# pragma version ~=0.4.3
 """
 @title EIP-721 Optional Enumeration Interface Definition
 @custom:contract-name IERC721Enumerable

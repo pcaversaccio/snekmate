@@ -1,4 +1,4 @@
-# pragma version ~=0.4.3rc2
+# pragma version ~=0.4.3
 # pragma nonreentrancy off
 """
 @title Multi-Role-Based Access Control Functions

@@ -1,5 +1,5 @@
-Vyper version: 0.4.3rc2+commit.d29b521f
-Forge version: forge 1.2.3-nightly (2ddd74a 2025-06-17T06:02:39.376649905Z)
+Vyper version: 0.4.3+commit.bff19ea2
+Forge version: forge 1.2.3-nightly (bfc53de 2025-06-19T06:02:56.696032826Z)
 Vyper config:
 {
   "optimize": "gas"
@@ -723,12 +723,12 @@ SignatureCheckerTest:testFuzzEOAWithInvalidSignature(bytes,string) (runs: 256, �
 SignatureCheckerTest:testFuzzEOAWithInvalidSigner(string,string) (runs: 256, μ: 20319, ~: 20318)
 SignatureCheckerTest:testFuzzEOAWithValidSignature(string,string) (runs: 256, μ: 20251, ~: 20250)
 SignatureCheckerTest:testInitialSetup() (gas: 8356)
-TimelockControllerInvariants:statefulFuzzExecutedLessThanOrEqualToScheduled() (runs: 256, calls: 3840, reverts: 1249)
+TimelockControllerInvariants:statefulFuzzExecutedLessThanOrEqualToScheduled() (runs: 256, calls: 3840, reverts: 1248)
 TimelockControllerInvariants:statefulFuzzExecutedProposalCancellation() (runs: 256, calls: 3840, reverts: 1227)
-TimelockControllerInvariants:statefulFuzzExecutingCancelledProposal() (runs: 256, calls: 3840, reverts: 1200)
+TimelockControllerInvariants:statefulFuzzExecutingCancelledProposal() (runs: 256, calls: 3840, reverts: 1201)
 TimelockControllerInvariants:statefulFuzzExecutingNotReadyProposal() (runs: 256, calls: 3840, reverts: 1236)
 TimelockControllerInvariants:statefulFuzzOnceProposalExecution() (runs: 256, calls: 3840, reverts: 1247)
-TimelockControllerInvariants:statefulFuzzProposalsExecutedMatchCount() (runs: 256, calls: 3840, reverts: 1248)
+TimelockControllerInvariants:statefulFuzzProposalsExecutedMatchCount() (runs: 256, calls: 3840, reverts: 1249)
 TimelockControllerInvariants:statefulFuzzSumOfProposals() (runs: 256, calls: 3840, reverts: 1249)
 TimelockControllerTest:testAdminCannotBatchExecute() (gas: 750618)
 TimelockControllerTest:testAdminCannotBatchSchedule() (gas: 748405)
