@@ -30,7 +30,7 @@ importers:
         specifier: ^0.5.2
         version: 0.5.2
       prettier:
-        specifier: ^3.5.3
+        specifier: ^3.6.0
         version: 3.6.0
       prettier-plugin-sh:
         specifier: ^0.17.4
