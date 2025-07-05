@@ -39,8 +39,8 @@ importers:
         specifier: ^2.0.0
         version: 2.0.0(prettier@3.6.2)
       solhint:
-        specifier: ^5.2.0
-        version: 5.2.0
+        specifier: ^6.0.0
+        version: 6.0.0
 
 packages:
 
@@ -848,8 +848,8 @@ packages:
     resolution: {integrity: sha512-qMCMfhY040cVHT43K9BFygqYbUPFZKHOg7K73mtTWJRb8pyP3fzf4Ixd5SzdEJQ6MRUg/WBnOLxghZtKKurENQ==}
     engines: {node: '>=10'}
 
-  solhint@5.2.0:
-    resolution: {integrity: sha512-9NZC1zt+O2K7zEZOhTT9rFeB6GdxC6qTX5pWX70RaQoflR9RejJQUC+/19LNi+e7K9Ptb4k7XAWO9wY5mkprHg==}
+  solhint@6.0.0:
+    resolution: {integrity: sha512-PQGfwFqfeYdebi2tEG1fhVfMjqSzbW3Noz+LYf8UusKe5nkikCghdgEjYQPcGfFZj4snlVyJQt//AaxkubOtVQ==}
     hasBin: true
 
   string-width@4.2.3:
@@ -1737,7 +1737,7 @@ snapshots:
       astral-regex: 2.0.0
       is-fullwidth-code-point: 3.0.0
 
-  solhint@5.2.0:
+  solhint@6.0.0:
     dependencies:
       '@solidity-parser/parser': 0.20.1
       ajv: 6.12.6

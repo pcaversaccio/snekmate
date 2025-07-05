@@ -6,6 +6,12 @@
     "private-vars-leading-underscore": "off",
     "one-contract-per-file": "off",
     "max-states-count": "off",
-    "import-path-check": "off"
+    "import-path-check": "off",
+    "gas-strict-inequalities": "off",
+    "gas-small-strings": "off",
+    "function-max-lines": "off",
+    "gas-increment-by-one": "off",
+    "gas-indexed-events": "off",
+    "use-natspec": "off"
   }
 }

@@ -21,7 +21,7 @@ error DeploymentFailed(address emitter);
  * can use the `VmSafe` interface (see here: https://github.com/foundry-rs/forge-std/blob/master/src/Vm.sol)
  * in other test files without errors.
  */
-// solhint-disable-next-line contract-name-capwords
+// solhint-disable-next-line contract-name-capwords, interface-starts-with-i
 interface _VmSafe {
     /**
      * @dev Performs a foreign function call via the terminal.

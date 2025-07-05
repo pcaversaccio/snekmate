@@ -47,7 +47,7 @@ contract ERC1155ReceiverMock is ERC165, IERC1155Receiver {
         address from,
         uint256 id,
         uint256 amount,
-        bytes memory data
+        bytes calldata data
     ) external returns (bytes4) {
         // solhint-disable-next-line reason-string, gas-custom-errors
         require(!_recReverts, "ERC1155ReceiverMock: reverting on receive");
@@ -71,9 +71,9 @@ contract ERC1155ReceiverMock is ERC165, IERC1155Receiver {
     function onERC1155BatchReceived(
         address operator,
         address from,
-        uint256[] memory ids,
-        uint256[] memory amounts,
-        bytes memory data
+        uint256[] calldata ids,
+        uint256[] calldata amounts,
+        bytes calldata data
     ) external returns (bytes4) {
         // solhint-disable-next-line reason-string, gas-custom-errors
         require(!_batReverts, "ERC1155ReceiverMock: reverting on batch receive");
