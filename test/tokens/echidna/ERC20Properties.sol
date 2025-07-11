@@ -5,15 +5,9 @@ import {VyperDeployer} from "utils/VyperDeployer.sol";
 
 import {ITokenMock} from "properties/ERC20/external/util/ITokenMock.sol";
 
-import {
-    CryticERC20ExternalBasicProperties
-} from "properties/ERC20/external/properties/ERC20ExternalBasicProperties.sol";
-import {
-    CryticERC20ExternalBurnableProperties
-} from "properties/ERC20/external/properties/ERC20ExternalBurnableProperties.sol";
-import {
-    CryticERC20ExternalMintableProperties
-} from "properties/ERC20/external/properties/ERC20ExternalMintableProperties.sol";
+import {CryticERC20ExternalBasicProperties} from "properties/ERC20/external/properties/ERC20ExternalBasicProperties.sol";
+import {CryticERC20ExternalBurnableProperties} from "properties/ERC20/external/properties/ERC20ExternalBurnableProperties.sol";
+import {CryticERC20ExternalMintableProperties} from "properties/ERC20/external/properties/ERC20ExternalMintableProperties.sol";
 
 contract CryticERC20ExternalHarness is
     CryticERC20ExternalBasicProperties,

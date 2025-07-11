@@ -6,15 +6,9 @@ import {VyperDeployer} from "utils/VyperDeployer.sol";
 import {IERC721Internal} from "properties/ERC721/util/IERC721Internal.sol";
 import {MockReceiver} from "properties/ERC721/external/util/MockReceiver.sol";
 
-import {
-    CryticERC721ExternalBasicProperties
-} from "properties/ERC721/external/properties/ERC721ExternalBasicProperties.sol";
-import {
-    CryticERC721ExternalBurnableProperties
-} from "properties/ERC721/external/properties/ERC721ExternalBurnableProperties.sol";
-import {
-    CryticERC721ExternalMintableProperties
-} from "properties/ERC721/external/properties/ERC721ExternalMintableProperties.sol";
+import {CryticERC721ExternalBasicProperties} from "properties/ERC721/external/properties/ERC721ExternalBasicProperties.sol";
+import {CryticERC721ExternalBurnableProperties} from "properties/ERC721/external/properties/ERC721ExternalBurnableProperties.sol";
+import {CryticERC721ExternalMintableProperties} from "properties/ERC721/external/properties/ERC721ExternalMintableProperties.sol";
 
 contract CryticERC721ExternalHarness is
     CryticERC721ExternalBasicProperties,

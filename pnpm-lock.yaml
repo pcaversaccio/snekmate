@@ -36,8 +36,8 @@ importers:
         specifier: ^0.18.0
         version: 0.18.0(prettier@3.6.2)
       prettier-plugin-solidity:
-        specifier: ^2.0.0
-        version: 2.0.0(prettier@3.6.2)
+        specifier: ^2.1.0
+        version: 2.1.0(prettier@3.6.2)
       solhint:
         specifier: ^6.0.0
         version: 6.0.0
@@ -178,8 +178,8 @@ packages:
     resolution: {integrity: sha512-jCs9ldd7NwzpgXDIf6P3+NrHh9/sD6CQdxHyjQI+h/6rDNo88ypBxxz45UDuZHz9r3tNz7N/VInSVoVdtXEI4A==}
     engines: {node: ^14.21.3 || >=16}
 
-  '@nomicfoundation/slang@1.1.0':
-    resolution: {integrity: sha512-g2BofMUq1qCP22L/ksOftScrCxjdHTxgg8ch5PYon2zfSSKGCMwE4TgIC64CuorMcSsvCmqNNFEWR/fwFcMeTw==}
+  '@nomicfoundation/slang@1.2.0':
+    resolution: {integrity: sha512-+04Z1RHbbz0ldDbHKQFOzveCdI9Rd3TZZu7fno5hHy3OsqTo9UK5Jgqo68wMvRovCO99POv6oCEyO7+urGeN8Q==}
 
   '@openzeppelin/merkle-tree@1.0.8':
     resolution: {integrity: sha512-E2c9/Y3vjZXwVvPZKqCKUn7upnvam1P1ZhowJyZVQSkzZm5WhumtaRr+wkUXrZVfkIc7Gfrl7xzabElqDL09ow==}
@@ -766,9 +766,9 @@ packages:
     peerDependencies:
       prettier: ^3.6.0
 
-  prettier-plugin-solidity@2.0.0:
-    resolution: {integrity: sha512-tis3SwLSrYKDzzRFle48fjPM4GQKBtkVBUajAkt4b75/cc6zojFP7qjz6fDxKfup+34q0jKeSM3QeP9flJFXWw==}
-    engines: {node: '>=18'}
+  prettier-plugin-solidity@2.1.0:
+    resolution: {integrity: sha512-O5HX4/PCE5aqiaEiNGbSRLbSBZQ6kLswAav5LBSewwzhT+sZlN6iAaLZlZcJzPEnIAxwLEHP03xKEg92fflT9Q==}
+    engines: {node: '>=20'}
     peerDependencies:
       prettier: '>=3.0.0'
 
@@ -1081,7 +1081,7 @@ snapshots:
 
   '@noble/hashes@1.8.0': {}
 
-  '@nomicfoundation/slang@1.1.0':
+  '@nomicfoundation/slang@1.2.0':
     dependencies:
       '@bytecodealliance/preview2-shim': 0.17.2
 
@@ -1668,9 +1668,9 @@ snapshots:
       prettier: 3.6.2
       sh-syntax: 0.5.8
 
-  prettier-plugin-solidity@2.0.0(prettier@3.6.2):
+  prettier-plugin-solidity@2.1.0(prettier@3.6.2):
     dependencies:
-      '@nomicfoundation/slang': 1.1.0
+      '@nomicfoundation/slang': 1.2.0
       '@solidity-parser/parser': 0.20.1
       prettier: 3.6.2
       semver: 7.7.2
