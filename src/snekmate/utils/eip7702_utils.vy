@@ -49,6 +49,8 @@ def _fetch_delegate(account: address) -> address:
     if account.codesize < 23:
         return empty(address)
 
+    # Per EIP-7702, the delegation indicator is 23 bytes long, consisting
+    # of the prefix `0xef0100` followed by the 20-byte delegation address.
     delegation: Bytes[23] = slice(account.code, 0, 23)
     delegation_bytes32: bytes32 = convert(delegation, bytes32)
 
