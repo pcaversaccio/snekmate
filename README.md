@@ -85,6 +85,7 @@ src
         ├── message_hash_utils — "Signature Message Hash Utility Functions"
         ├── signature_checker — "ECDSA and EIP-1271 Signature Verification Functions"
         ├── eip712_domain_separator — "EIP-712 Domain Separator"
+        ├── eip7702_utils — "EIP-7702 Utility Functions"
         ├── math — "Standard Mathematical Utility Functions"
         ├── merkle_proof_verification — "Merkle Tree Proof Verification Functions"
         ├── multicall — "Multicall Functions"
@@ -104,6 +105,7 @@ src
             ├── message_hash_utils_mock — "`message_hash_utils` Module Reference Implementation"
             ├── signature_checker_mock — "`signature_checker` Module Reference Implementation"
             ├── eip712_domain_separator_mock — "`eip712_domain_separator` Module Reference Implementation"
+            ├── eip7702_utils_mock — "`eip7702_utils` Module Reference Implementation"
             ├── math_mock — "`math` Module Reference Implementation"
             ├── merkle_proof_verification_mock — "`merkle_proof_verification` Module Reference Implementation"
             ├── multicall_mock — "`multicall` Module Reference Implementation"
@@ -199,6 +201,7 @@ This repository contains [Foundry](https://github.com/foundry-rs/foundry)-based 
 | `message_hash_utils`        |       ✅       |            ✅            |         ❌          |
 | `signature_checker`         |       ✅       |            ✅            |         ❌          |
 | `eip712_domain_separator`   |       ✅       |            ✅            |         ❌          |
+| `eip7702_utils`             |       ✅       |            ✅            |         ❌          |
 | `math`                      |       ✅       |            ✅            |         ❌          |
 | `merkle_proof_verification` |       ✅       |            ✅            |         ❌          |
 | `multicall`                 |       ✅       |            ❌            |         ❌          |
