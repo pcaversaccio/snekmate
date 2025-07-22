@@ -19,6 +19,7 @@ ffi = true                                                       # Enable the fo
 allow_internal_expect_revert = true                              # Enable `expectRevert` for `internal` functions.
 no_match_path = "test/**/{echidna,halmos}/**/*"                  # Run only tests in the test directory that do not match the specified glob pattern.
 fs_permissions = [{ access = "read-write", path = "./" }]        # Configure read-write access to the project root.
+lint = { lint_on_build = false }                                 # Do not run automatic linting during builds.
 fuzz = { runs = 256, max_test_rejects = 65_536 }                 # Configure the number of fuzz runs and maximum number of combined inputs that may be rejected for the tests.
 invariant = { runs = 256, depth = 15 }                           # Configure the number of runs and calls (executed in one run) for each invariant test group.
 
