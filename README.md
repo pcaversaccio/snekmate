@@ -105,7 +105,7 @@ src
             ├── message_hash_utils_mock — "`message_hash_utils` Module Reference Implementation"
             ├── signature_checker_mock — "`signature_checker` Module Reference Implementation"
             ├── eip712_domain_separator_mock — "`eip712_domain_separator` Module Reference Implementation"
-            ├── eip7702_utils — "`eip7702_utils` Module Reference Implementation"
+            ├── eip7702_utils_mock — "`eip7702_utils` Module Reference Implementation"
             ├── math_mock — "`math` Module Reference Implementation"
             ├── merkle_proof_verification_mock — "`merkle_proof_verification` Module Reference Implementation"
             ├── multicall_mock — "`multicall` Module Reference Implementation"

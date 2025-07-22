@@ -43,10 +43,10 @@ def _fetch_delegate(account: address) -> address:
     @param account The 20-byte account address.
     @return address The 20-byte delegation contract address.
     """
-    # For the special case where the code size is less than 23 bytes,
+    # For the special case where the code size does not equal 23 bytes,
     # we already return `empty(address)` here in order not to iterate
     # through the remaining code.
-    if account.codesize < 23:
+    if account.codesize != 23:
         return empty(address)
 
     # Per EIP-7702, the delegation indicator is 23 bytes long, consisting
@@ -57,4 +57,4 @@ def _fetch_delegate(account: address) -> address:
     if convert(convert(delegation_bytes32 >> 232, uint24), bytes3) != _DELEGATION_PREFIX:
         return empty(address)
 
-    return convert(convert(convert(delegation_bytes32 << 24, bytes20), uint160), address)
+    return convert(convert(delegation_bytes32 << 24, bytes20), address)
