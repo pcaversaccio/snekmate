@@ -50,7 +50,7 @@ jobs:
         run: pip install setuptools
 
       - name: Install Halmos
-        run: pip install git+https://github.com/a16z/halmos.git@main
+        run: pip install git+https://github.com/a16z/halmos.git@ba94bdc232c746b61f12eeacef6136eace81c7c2
 
       - name: Show the Halmos version
         run: halmos --version

@@ -122,6 +122,7 @@ contract ERC4626VaultTest is ERC4626Test {
         _delta_ = 0;
         _vaultMayBeEmpty = true;
         _unlimitedAmount = true;
+        _skipRoundTripShares = false;
     }
 
     function testInitialSetup() public {
