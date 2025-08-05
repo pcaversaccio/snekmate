@@ -1,6 +1,11 @@
 name: 🧪 Venom-based smart contract tests
 
-on: [push, pull_request, workflow_dispatch]
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+  schedule:
+    - cron: "30 3 * * *"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
