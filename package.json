@@ -45,7 +45,7 @@
     "eslint-config-prettier": "^10.1.8",
     "ethers": "^6.15.0",
     "keccak256": "^1.0.6",
-    "merkletreejs": "^0.5.2",
+    "merkletreejs": "^0.6.0",
     "prettier": "^3.6.2",
     "prettier-plugin-sh": "^0.18.0",
     "prettier-plugin-solidity": "^2.1.0",
