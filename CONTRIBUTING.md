@@ -36,6 +36,25 @@ When you open a PR, you will be provided with a [template](./.github/pull_reques
 
 If you are looking for an easy starting point, look for issues labelled as [good first issue 🎉](https://github.com/pcaversaccio/snekmate/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue+%F0%9F%8E%89%22)!
 
+## 🤖 AI Assistance Notice
+
+> [!IMPORTANT]
+> If you use **any form of AI assistance** when contributing to 🐍 snekmate, you must disclose it in your pull request.
+
+If AI assistance was involved in your contribution, **you must clearly state this in the pull request**, along with the extent of its use. For example, note whether it was used only for documentation or also for code generation. If AI was used to draft pull request comments or responses, that must also be disclosed. Minor, trivial completions (like short phrases or single keywords) do not need disclosure.
+
+An example disclosure:
+
+> This PR was written primarily by Claude Code.
+
+Or a more detailed note:
+
+> I consulted ChatGPT to understand the codebase, but all code changes were written manually by me.
+
+Failure to disclose AI assistance is discourteous to the human maintainers reviewing your work. It also makes it harder to determine how much scrutiny a contribution requires.
+
+In a perfect world, AI would consistently produce equal or better quality than human work. That is not the world we live in today, and in most cases, it is generating slop. Please respect maintainers' time and be transparent about any AI involvement.
+
 ## 🌀 Dependencies
 
 You will need the following dependencies:
