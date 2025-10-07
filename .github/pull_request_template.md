@@ -11,6 +11,8 @@ Please:
 
 #### ✅ PR Checklist
 
+- [ ] I have read and followed the [Contributing Guidelines](https://github.com/pcaversaccio/snekmate/blob/main/CONTRIBUTING.md).
+- [ ] I have read and followed the [Engineering Guidelines](https://github.com/pcaversaccio/snekmate/blob/main/GUIDELINES.md).
 - [ ] Because this PR includes a **bug fix**, relevant tests have been included.
 - [ ] Because this PR includes a **new feature**, the change was previously discussed in an [issue](https://github.com/pcaversaccio/snekmate/issues) or in the [discussions](https://github.com/pcaversaccio/snekmate/discussions) section.
 - [x] I didn't do anything of this.
