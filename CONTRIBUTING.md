@@ -39,7 +39,7 @@ If you are looking for an easy starting point, look for issues labelled as [good
 ## 🤖 AI Assistance Notice
 
 > [!IMPORTANT]
-> If you use **any form of AI assistance** when contributing to 🐍 snekmate, you **must disclose it** in your pull request.
+> If you use **any form of AI assistance** when contributing to 🐍 snekmate, you must disclose it in your pull request.
 
 If AI assistance was involved in your contribution, **you must clearly state this in the pull request**, along with the extent of its use. For example, note whether it was used only for documentation or also for code generation. If AI was used to draft pull request comments or responses, that must also be disclosed. Minor, trivial completions (like short phrases or single keywords) do not need disclosure.
 
