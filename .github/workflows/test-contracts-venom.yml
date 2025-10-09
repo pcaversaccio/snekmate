@@ -19,7 +19,7 @@ jobs:
         os:
           - ubuntu-latest
         python_version:
-          - 3.13
+          - 3.14
         architecture:
           - x64
         node_version:
