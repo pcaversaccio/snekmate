@@ -60,6 +60,3 @@ jobs:
             *)         TAG="latest" ;;
           esac
           pnpm publish --no-git-checks --tag $TAG
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-          NPM_CONFIG_PROVENANCE: true
