@@ -9,13 +9,13 @@ importers:
   .:
     devDependencies:
       '@eslint/js':
-        specifier: ^9.37.0
+        specifier: ^9.38.0
         version: 9.38.0
       '@openzeppelin/merkle-tree':
         specifier: ^1.0.8
         version: 1.0.8
       eslint:
-        specifier: ^9.37.0
+        specifier: ^9.38.0
         version: 9.38.0
       eslint-config-prettier:
         specifier: ^10.1.8
