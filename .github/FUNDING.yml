@@ -1,1 +1,5 @@
-custom: https://etherscan.io/address/0xe9Fa0c8B5d7F79DeC36D3F448B1Ac4cEdedE4e69
+custom:
+  [
+    https://etherscan.io/address/0xe9Fa0c8B5d7F79DeC36D3F448B1Ac4cEdedE4e69,
+    https://giveth.io/project/snekmate,
+  ]
