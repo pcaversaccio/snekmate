@@ -1,0 +1,68 @@
+{
+  "lib/create-util": {
+    "branch": {
+      "name": "main",
+      "rev": "a1beb197b3510c9265cb7ee5679f849652e264e5"
+    }
+  },
+  "lib/erc4626-tests": {
+    "branch": {
+      "name": "main",
+      "rev": "ac485460e014f22807c1ff687e0b4dc3af96ee40"
+    }
+  },
+  "lib/forge-std": {
+    "branch": {
+      "name": "master",
+      "rev": "100b0d756adda67bc70aab816fa5a1a95dcf78b6"
+    }
+  },
+  "lib/halmos-cheatcodes": {
+    "branch": {
+      "name": "main",
+      "rev": "6da4e692c357ba6d641a2e677a28298cac9f76ab"
+    }
+  },
+  "lib/murky": {
+    "branch": {
+      "name": "main",
+      "rev": "991e371eb1dfa9f86701869eb08ec4e98c3cc0b0"
+    }
+  },
+  "lib/openzeppelin-contracts": {
+    "branch": {
+      "name": "master",
+      "rev": "51ab591cd7a47446293a0d5e285792f63cbeb1ea"
+    }
+  },
+  "lib/prb-test": {
+    "branch": {
+      "name": "main",
+      "rev": "cd07166bdd12c7c4a899cb53951653b53939a644"
+    }
+  },
+  "lib/properties": {
+    "branch": {
+      "name": "main",
+      "rev": "d346d8ed5c1a9f7deebe92fcbaf237b185fda326"
+    }
+  },
+  "lib/solady": {
+    "branch": {
+      "name": "main",
+      "rev": "73f13dd1483707ef6b4d16cb0543570b7e1715a8"
+    }
+  },
+  "lib/solidity-bytes-utils": {
+    "branch": {
+      "name": "master",
+      "rev": "fc502455bb2a7e26a743378df042612dd50d1eb9"
+    }
+  },
+  "lib/solmate": {
+    "branch": {
+      "name": "main",
+      "rev": "89365b880c4f3c786bdd453d4b8e8fe410344a69"
+    }
+  }
+}
