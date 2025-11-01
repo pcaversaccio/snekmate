@@ -42,7 +42,7 @@ jobs:
           restore-keys: ${{ runner.os }}-pnpm-store-
 
       - name: Setup .npmrc file to publish to npm
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ matrix.node_version }}
           registry-url: "https://registry.npmjs.org"
