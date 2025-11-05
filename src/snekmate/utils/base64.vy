@@ -215,14 +215,15 @@ def _decode(data: String[_DATA_OUTPUT_BOUND], base64_url: bool) -> DynArray[Byte
             b2: bytes1 = convert(convert((chunk_bytes >> 8) & 255, uint8), bytes1)
             b3: bytes1 = convert(convert(chunk_bytes & 255, uint8), bytes1)
 
-            # Case 1: padding of "=" as part of the
+            # Case 1: padding of "==" as part of the
             # encoded input.
-            if c4 == 64:
-                result.append(concat(b1, b2, x"00"))
-            # Case 2: padding of "==" as part of the
-            # encoded input.
-            elif c3 == 63:
+            if c3 == 64:
+                assert c4 == 64, "base64: invalid padding"
                 result.append(concat(b1, x"0000"))
+            # Case 2: padding of "=" as part of the
+            # encoded input.
+            elif c4 == 64:
+                result.append(concat(b1, b2, x"00"))
             # Case 3: no padding as part of the encoded
             # input.
             else:
@@ -252,14 +253,15 @@ def _decode(data: String[_DATA_OUTPUT_BOUND], base64_url: bool) -> DynArray[Byte
             b2: bytes1 = convert(convert((chunk_bytes >> 8) & 255, uint8), bytes1)
             b3: bytes1 = convert(convert(chunk_bytes & 255, uint8), bytes1)
 
-            # Case 1: padding of "=" as part of the
+            # Case 1: padding of "==" as part of the
             # encoded input.
-            if c4 == 64:
-                result.append(concat(b1, b2, x"00"))
-            # Case 2: padding of "==" as part of the
-            # encoded input.
-            elif c3 == 63:
+            if c3 == 64:
+                assert c4 == 64, "base64: invalid padding"
                 result.append(concat(b1, x"0000"))
+            # Case 2: padding of "=" as part of the
+            # encoded input.
+            elif c4 == 64:
+                result.append(concat(b1, b2, x"00"))
             # Case 3: no padding as part of the encoded
             # input.
             else:

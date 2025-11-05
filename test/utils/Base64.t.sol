@@ -208,11 +208,47 @@ contract Base64Test is PRBTest {
         assertEq(string(returnDataUrl), text);
     }
 
+    function testDecodeIndex63NotTreatedAsPadding() public {
+        string memory text1 = "AA/A";
+        string memory data1 = "QUEvQQ==";
+        bytes[] memory outputStd1 = base64.decode(data1, false);
+        bytes[] memory outputUrl1 = base64.decode(data1, true);
+        bytes memory returnDataStd1 = bytes.concat(outputStd1[0], outputStd1[1]);
+        bytes memory returnDataUrl1 = bytes.concat(outputUrl1[0], outputUrl1[1]);
+        /**
+         * @dev We remove the two trailing zero bytes that stem from
+         * the padding to ensure byte-level equality.
+         */
+        assertEq(string(returnDataStd1.slice(0, returnDataStd1.length - 2)), text1);
+        assertEq(string(returnDataUrl1.slice(0, returnDataUrl1.length - 2)), text1);
+
+        string memory text2 = "AA_A";
+        string memory data2 = "QUFfQQ==";
+        bytes[] memory outputStd2 = base64.decode(data2, false);
+        bytes[] memory outputUrl2 = base64.decode(data2, true);
+        bytes memory returnDataStd2 = bytes.concat(outputStd2[0], outputStd2[1]);
+        bytes memory returnDataUrl2 = bytes.concat(outputUrl2[0], outputUrl2[1]);
+        /**
+         * @dev We remove the two trailing zero bytes that stem from
+         * the padding to ensure byte-level equality.
+         */
+        assertEq(string(returnDataStd2.slice(0, returnDataStd2.length - 2)), text2);
+        assertEq(string(returnDataUrl2.slice(0, returnDataUrl2.length - 2)), text2);
+    }
+
     function testDataLengthMismatch() public {
         string memory data = "W11jI";
         vm.expectRevert(bytes("base64: length mismatch"));
         base64.decode(data, false);
         vm.expectRevert(bytes("base64: length mismatch"));
+        base64.decode(data, true);
+    }
+
+    function testInvalidPadding() public {
+        string memory data = "TQ=u";
+        vm.expectRevert(bytes("base64: invalid padding"));
+        base64.decode(data, false);
+        vm.expectRevert(bytes("base64: invalid padding"));
         base64.decode(data, true);
     }
 }
