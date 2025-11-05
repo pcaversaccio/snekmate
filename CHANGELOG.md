@@ -10,7 +10,7 @@
 ### 🐛 Bug Fixes
 
 - **Utility Functions**
-  - [`base64`](https://github.com/pcaversaccio/snekmate/blob/v0.1.3/src/snekmate/utils/base64.vy): Fix `base64` double padding detection. ([#345](https://github.com/pcaversaccio/snekmate/pull/345))
+  - [`base64`](https://github.com/pcaversaccio/snekmate/blob/v0.1.3/src/snekmate/utils/base64.vy): Fix `base64` `_decode` double padding detection. ([#345](https://github.com/pcaversaccio/snekmate/pull/345))
 
 ### 🔖 Release Management
 
