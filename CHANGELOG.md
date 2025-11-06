@@ -7,6 +7,11 @@
 - **Utility Functions**
   - [`eip7702_utils`](https://github.com/pcaversaccio/snekmate/blob/v0.1.3/src/snekmate/utils/eip7702_utils.vy): Add [EIP-7702](https://eips.ethereum.org/EIPS/eip-7702)-based utility functions. ([#335](https://github.com/pcaversaccio/snekmate/pull/335))
 
+### 🐛 Bug Fixes
+
+- **Utility Functions**
+  - [`base64`](https://github.com/pcaversaccio/snekmate/blob/v0.1.3/src/snekmate/utils/base64.vy): Fix `base64` `_decode` double padding detection. ([#345](https://github.com/pcaversaccio/snekmate/pull/345))
+
 ### 🔖 Release Management
 
 - Use trusted publishing for `npm` package. ([#341](https://github.com/pcaversaccio/snekmate/pull/341))
