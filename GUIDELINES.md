@@ -72,9 +72,9 @@ def _as_singleton_array(element: uint256) -> DynArray[uint256, 1]:
 - All functions should be provided with full [NatSpec](https://docs.vyperlang.org/en/latest/natspec.html) comments containing the tags `@dev`, `@notice` (if applicable), `@param` for each function parameter, and `@return` if a return statement is present.
 - Please note the following order of layout:
   - Version pragma statement
-  - 🐍Vyper built-in interface imports
-  - Custom interface imports
-  - Module imports
+  - 🐍Vyper built-in interface imports (one per line, with `implements` on the next line if applicable)
+  - Custom interface imports (one per line, with `implements` on the next line if applicable)
+  - Module imports (one per line, with `initializes` or `uses` on the next line if applicable)
   - Module exports
   - `public` constants
   - `internal` constants
@@ -87,7 +87,7 @@ def _as_singleton_array(element: uint256) -> DynArray[uint256, 1]:
   - `__default__` function
   - `external` functions
   - `internal` functions
-- There should be two line breaks between each variable or event declaration or function.
+- There should be two line breaks between each import, variable declaration, event declaration, and function.
 - Each line of code should be limited to a maximum of 120 characters, including spaces.
 - Code comments should be confined to a maximum of 80 characters per line, including spaces, with an allowed exception for comments with long URL links.
 - For any undocumented behavior, please refer to [🐍Vyper's Official Style Guide](https://docs.vyperlang.org/en/latest/style-guide.html) and/or [PEP 8 – Style Guide for Python Code](https://peps.python.org/pep-0008).
