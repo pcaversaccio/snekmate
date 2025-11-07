@@ -71,10 +71,10 @@ def _as_singleton_array(element: uint256) -> DynArray[uint256, 1]:
 - Unchecked arithmetic calculations should contain comments explaining why an overflow/underflow is guaranteed not to occur.
 - Numeric literals should use underscores as thousand separators for readability (e.g., `1_000_000` instead of `1000000`). This applies to large constants, magic numbers, and any literal where readability would be improved.
 - Function decorators must follow this order:
-  1. Visibility: `@external`, `@internal`, or `@deploy`
-  2. Mutability: `@pure`, `@view`, or `@payable` (the 🐍Vyper default mutability `@nonpayable` is always omitted if applicable)
-  3. Nonreentrancy locks: `@nonreentrant`
-  4. Raw return: `@raw_return`
+  - Visibility: `@external`, `@internal`, or `@deploy`
+  - Mutability: `@pure`, `@view`, or `@payable` (the 🐍Vyper default mutability `@nonpayable` is always omitted if applicable)
+  - Nonreentrancy locks: `@nonreentrant`
+  - Raw return: `@raw_return`
 
 ```vy
 @external
