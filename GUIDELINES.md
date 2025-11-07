@@ -54,7 +54,7 @@ Branch names do not matter, and commit messages within a PR are mostly not impor
 - The names of `constant`, `immutable`, and state variables, functions, and function parameters use the _snake case_ notation (e.g. `my_function`) if no other notation is enforced via an EIP standard. In particular, `constant` and `immutable` variable names use the _screaming snake case_ notation (e.g. `DEFAULT_CONSTANT`) if no other notation is enforced via an EIP standard.
 - `internal` `constant`, `immutable`, state variables and functions must have an underscore prefix:
 
-```vyper
+```vy
 _SUPPORTED_INTERFACES: constant(bytes4[1]) = [0x01FFC9A7]
 
 _CACHED_DOMAIN_SEPARATOR: immutable(bytes32)
@@ -70,6 +70,21 @@ def _as_singleton_array(element: uint256) -> DynArray[uint256, 1]:
 - Use `internal` functions where feasible to improve composability and modularity.
 - Unchecked arithmetic calculations should contain comments explaining why an overflow/underflow is guaranteed not to occur.
 - Numeric literals should use underscores as thousand separators for readability (e.g., `1_000_000` instead of `1000000`). This applies to large constants, magic numbers, and any literal where readability would be improved.
+- Function decorators must follow this order:
+  1. Visibility: `@external`, `@internal`, or `@deploy`
+  2. Mutability: `@pure`, `@view`, or `@payable` (the 🐍Vyper default mutability `@nonpayable` is always omitted if applicable)
+  3. Nonreentrancy locks: `@nonreentrant`
+  4. Raw return: `@raw_return`
+
+```vy
+@external
+@payable
+@nonreentrant
+@raw_return
+def forward_call(target: address) -> Bytes[1_024]:
+    return raw_call(target, msg.data, max_outsize=1_024, value=msg.value)
+```
+
 - All functions should be provided with full [NatSpec](https://docs.vyperlang.org/en/latest/natspec.html) comments containing the tags `@dev`, `@notice` (if applicable), `@param` for each function parameter, and `@return` if a return statement is present.
 - Please note the following order of layout:
   - Version pragma statement
@@ -81,6 +96,8 @@ def _as_singleton_array(element: uint256) -> DynArray[uint256, 1]:
   - `internal` constants
   - `public` immutables
   - `internal` immutables
+  - `flag` definitions
+  - `struct` definitions
   - `public` state variables
   - `internal` state variables
   - `event` declarations

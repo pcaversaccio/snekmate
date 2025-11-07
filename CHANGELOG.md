@@ -52,7 +52,7 @@
 - The contracts `create_address.vy` and `create2_address.vy` have been renamed to `create.vy` and `create2.vy`, respectively. In `create.vy`, the functions `_compute_address_rlp_self`, `_compute_address_rlp`, and `_convert_keccak256_2_address` have been renamed to `_compute_create_address_self`, `_compute_create_address`, and `_convert_keccak256_to_address`. Similarly, in `create2.vy`, the functions `_compute_address_self` and `_compute_address` have been renamed to `_compute_create2_address_self` and `_compute_create2_address`. ([#323](https://github.com/pcaversaccio/snekmate/pull/323))
 - All 🐍 snekmate contracts now target the new 🐍Vyper [default EVM version](https://github.com/vyperlang/vyper/pull/4633) `prague` ([#331](https://github.com/pcaversaccio/snekmate/pull/331)). If you intend to deploy on an EVM chain with no `prague` support, you must compile — using the `cancun` EVM version as an example — the main contract that uses the 🐍 snekmate module contracts with the `--evm-version cancun` option; e.g. `vyper --evm-version cancun src/snekmate/tokens/mocks/erc20_mock.vy`, or add the `# pragma evm-version cancun` directive to the main contract that uses the 🐍 snekmate module contracts:
 
-```vyper
+```vy
 # pragma version ~=0.4.3
 # pragma evm-version cancun
 
@@ -176,7 +176,7 @@
 - The mathematical utility functions `_log_2`, `_log_10`, and `_log_256` are renamed to `_log2`, `_log10`, and `_log256`. ([#242](https://github.com/pcaversaccio/snekmate/pull/242))
 - All 🐍 snekmate contracts now target the new 🐍Vyper [default EVM version](https://github.com/vyperlang/vyper/pull/4029) `cancun` ([#245](https://github.com/pcaversaccio/snekmate/pull/245)). If you intend to deploy on an EVM chain with no `cancun` support, you must compile — using the `shanghai` EVM version as an example — the main contract that uses the 🐍 snekmate module contracts with the `--evm-version shanghai` option; e.g. `vyper --evm-version shanghai src/snekmate/tokens/mocks/erc20_mock.vy`, or add the `# pragma evm-version shanghai` directive to the main contract that uses the 🐍 snekmate module contracts:
 
-```vyper
+```vy
 # pragma version ~=0.4.0
 # pragma evm-version shanghai
 
@@ -254,7 +254,7 @@
 
 - All 🐍 snekmate contracts now target the 🐍Vyper version [`0.3.10`](https://github.com/vyperlang/vyper/releases/tag/v0.3.10) ([#164](https://github.com/pcaversaccio/snekmate/pull/164)). It is strongly recommended to upgrade accordingly your local 🐍Vyper version prior to using the 🐍 snekmate contracts. **Important:** The default EVM version since 🐍Vyper version [`0.3.8`](https://github.com/vyperlang/vyper/releases/tag/v0.3.8) is set to `shanghai` (i.e. the EVM includes the [`PUSH0`](https://eips.ethereum.org/EIPS/eip-3855) instruction). If you intend to deploy on an EVM chain with no `PUSH0` support, you must compile the 🐍 snekmate contracts with the `--evm-version paris` option; e.g. `vyper --evm-version paris utils/Math.vy`, or add the `# pragma evm-version paris` directive to the 🐍 snekmate contracts:
 
-```vyper
+```vy
 # pragma version ^0.3.10
 # pragma evm-version paris
 # pragma optimize gas
