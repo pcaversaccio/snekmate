@@ -69,6 +69,7 @@ def _as_singleton_array(element: uint256) -> DynArray[uint256, 1]:
 
 - Use `internal` functions where feasible to improve composability and modularity.
 - Unchecked arithmetic calculations should contain comments explaining why an overflow/underflow is guaranteed not to occur.
+- Numeric literals should use underscores as thousand separators for readability (e.g., `1_000_000` instead of `1000000`). This applies to large constants, magic numbers, and any literal where readability would be improved.
 - All functions should be provided with full [NatSpec](https://docs.vyperlang.org/en/latest/natspec.html) comments containing the tags `@dev`, `@notice` (if applicable), `@param` for each function parameter, and `@return` if a return statement is present.
 - Please note the following order of layout:
   - Version pragma statement
