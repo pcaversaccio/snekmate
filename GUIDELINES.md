@@ -87,11 +87,11 @@ def forward_call(target: address) -> Bytes[1_024]:
 
 - All functions should be provided with full [NatSpec](https://docs.vyperlang.org/en/latest/natspec.html) comments containing the tags `@dev`, `@notice` (if applicable), `@param` for each function parameter, and `@return` if a return statement is present.
 - Please note the following order of layout:
-  - Pragma directives (in this order):
-    - 🐍Vyper version: `# pragma version`
-    - Optimisation mode (if applicable): `# pragma optimize`
-    - EVM version (if applicable): `# pragma evm-version`
-    - Nonreentrancy (if applicable): `# pragma nonreentrancy`
+  - Pragma directives (one per line, in this order):
+    - 🐍Vyper version: `# pragma version ~=<vyper_version>`
+    - EVM version (if applicable): `# pragma evm-version <evm_version>`
+    - Optimisation mode (if applicable): `# pragma optimize <mode>`
+    - Nonreentrancy (if applicable): `# pragma nonreentrancy <flag>`
     - Experimental code generation (=[Venom](https://github.com/vyperlang/vyper/tree/master/vyper/venom)) (if applicable): `# experimental-codegen`
   - 🐍Vyper built-in interface imports (one per line, with `implements` on the next line if applicable)
   - Custom interface imports (one per line, with `implements` on the next line if applicable)
