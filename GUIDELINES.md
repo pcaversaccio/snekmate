@@ -28,7 +28,7 @@ Wherever possible, modularity, composability, and gas efficiency should be pursu
 
 ## 🖌 Pull Request (PR) Format
 
-Pull requests are _squash-merged_ in most cases to keep the `main` branch history clean. The title of the PR becomes the commit message, so it should be written in a consistent format:
+Pull requests are _squash-merged_ in most cases to keep the `main` branch history clean. The title of the PR becomes part of the commit message, so it should be written in a consistent format:
 
 - Start with an emoji that well describes the PR. Please refer to the following emoji list as a basis:
   - Bug Fix 🐛
