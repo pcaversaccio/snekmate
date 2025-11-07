@@ -92,7 +92,7 @@ def forward_call(target: address) -> Bytes[1_024]:
     - EVM version (if applicable): `# pragma evm-version <evm_version>`
     - Optimisation mode (if applicable): `# pragma optimize <mode>`
     - Nonreentrancy (if applicable): `# pragma nonreentrancy <flag>`
-    - Experimental code generation (=[Venom](https://github.com/vyperlang/vyper/tree/master/vyper/venom)) (if applicable): `# experimental-codegen`
+    - Experimental code generation (=[Venom](https://github.com/vyperlang/vyper/tree/master/vyper/venom)) (if applicable): `# pragma experimental-codegen`
   - 🐍Vyper built-in interface imports (one per line, with `implements` on the next line if applicable)
   - Custom interface imports (one per line, with `implements` on the next line if applicable)
   - Module imports (one per line, with `initializes` or `uses` on the next line if applicable)
