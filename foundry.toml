@@ -54,6 +54,7 @@ vyper = { experimental_codegen = true }                          # Enable experi
 # Default overrides for the the Venom-based Echidna tests.
 [profile.echidna-venom]
 force = true                                                     # Perform always a clean build.
+skip = ["src/snekmate/**/*.{vy,vyi}"]                            # Skip all Vyper compilations.
 vyper = { experimental_codegen = true }                          # Enable experimental code generation using the Venom backend.
 
 # Default overrides for the Venom-based Halmos tests.
