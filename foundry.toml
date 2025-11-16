@@ -7,7 +7,7 @@ libs = ["lib"]                                                   # Configure an 
 cache = true                                                     # Enable caching.
 cache_path = "cache"                                             # Set the path to the cache.
 force = false                                                    # Do not ignore the cache.
-skip = ["src/snekmate/**/*[!c][!k].vy", "src/snekmate/**/*.vyi"] # Skip the compilation of non-mock and interface files.
+skip = ["src/snekmate/**/*[!c][!k].vy", "src/snekmate/**/*.vyi"] # Skip the Vyper compilation of non-mock and interface files.
 solc_version = "0.8.30"                                          # Set the Solidity compiler version.
 evm_version = "prague"                                           # Set the EVM target version.
 optimizer = true                                                 # Enable the Solidity compiler optimiser.
@@ -33,6 +33,7 @@ invariant = { runs = 375, depth = 500 }                          # Increase the 
 # Default overrides for the Echidna tests.
 [profile.echidna]
 force = true                                                     # Perform always a clean build.
+skip = ["src/snekmate/**/*.{vy,vyi}"]                            # Skip all Vyper compilations.
 
 # Default overrides for the Halmos tests.
 [profile.halmos]
