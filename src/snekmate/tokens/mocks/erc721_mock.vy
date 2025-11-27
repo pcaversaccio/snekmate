@@ -100,10 +100,9 @@ initializes: erc721[ownable := ow]
 exports: erc721.__interface__
 
 
-# @dev The following two parameters are required for the Echidna
+# @dev The following parameter is required for the Echidna
 # fuzzing test integration: https://github.com/crytic/properties.
 isMintableOrBurnable: public(constant(bool)) = True
-usedId: public(HashMap[uint256, bool])
 
 
 @deploy
