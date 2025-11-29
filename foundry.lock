@@ -44,7 +44,7 @@
   "lib/properties": {
     "branch": {
       "name": "main",
-      "rev": "c793cd93c8f583471842f53029e325aec94f96b5"
+      "rev": "5ea14b813ff296e24b4257ab52a0402360f916f6"
     }
   },
   "lib/solady": {
