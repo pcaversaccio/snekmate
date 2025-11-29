@@ -30,14 +30,14 @@ importers:
         specifier: ^0.6.0
         version: 0.6.0
       prettier:
-        specifier: ^3.7.1
-        version: 3.7.1
+        specifier: ^3.7.2
+        version: 3.7.2
       prettier-plugin-sh:
         specifier: ^0.18.0
-        version: 0.18.0(prettier@3.7.1)
+        version: 0.18.0(prettier@3.7.2)
       prettier-plugin-solidity:
         specifier: ^2.2.0
-        version: 2.2.0(prettier@3.7.1)
+        version: 2.2.0(prettier@3.7.2)
       solhint:
         specifier: ^6.0.1
         version: 6.0.1
@@ -80,8 +80,8 @@ packages:
     resolution: {integrity: sha512-yL/sLrpmtDaFEiUj1osRP4TI2MDz1AddJL+jZ7KSqvBuliN4xqYY54IfdN8qD8Toa6g1iloph1fxQNkjOxrrpQ==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
 
-  '@eslint/eslintrc@3.3.1':
-    resolution: {integrity: sha512-gtF186CXhIl1p4pJNGZw8Yc6RlshoePRvE0X91oPGb3vZ8pM3qOS9W9NGPat9LziaBV7XrJWGylNQXkGcnM3IQ==}
+  '@eslint/eslintrc@3.3.3':
+    resolution: {integrity: sha512-Kr+LPIUVKz2qkx1HAMH8q1q6azbqBAsXJUxBl/ODDuVPX45Z9DfwB8tPjTi6nNZ8BuM3nbJxC5zCAg5elnBUTQ==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
 
   '@eslint/js@9.39.1':
@@ -759,8 +759,8 @@ packages:
     engines: {node: '>=10.13.0'}
     hasBin: true
 
-  prettier@3.7.1:
-    resolution: {integrity: sha512-RWKXE4qB3u5Z6yz7omJkjWwmTfLdcbv44jUVHC5NpfXwFGzvpQM798FGv/6WNK879tc+Cn0AAyherCl1KjbyZQ==}
+  prettier@3.7.2:
+    resolution: {integrity: sha512-n3HV2J6QhItCXndGa3oMWvWFAgN1ibnS7R9mt6iokScBOC0Ul9/iZORmU2IWUMcyAQaMPjTlY3uT34TqocUxMA==}
     engines: {node: '>=14'}
     hasBin: true
 
@@ -956,7 +956,7 @@ snapshots:
     dependencies:
       '@types/json-schema': 7.0.15
 
-  '@eslint/eslintrc@3.3.1':
+  '@eslint/eslintrc@3.3.3':
     dependencies:
       ajv: 6.12.6
       debug: 4.4.3
@@ -1294,7 +1294,7 @@ snapshots:
       '@eslint/config-array': 0.21.1
       '@eslint/config-helpers': 0.4.2
       '@eslint/core': 0.17.0
-      '@eslint/eslintrc': 3.3.1
+      '@eslint/eslintrc': 3.3.3
       '@eslint/js': 9.39.1
       '@eslint/plugin-kit': 0.4.1
       '@humanfs/node': 0.16.7
@@ -1621,23 +1621,23 @@ snapshots:
 
   prelude-ls@1.2.1: {}
 
-  prettier-plugin-sh@0.18.0(prettier@3.7.1):
+  prettier-plugin-sh@0.18.0(prettier@3.7.2):
     dependencies:
       '@reteps/dockerfmt': 0.3.6
-      prettier: 3.7.1
+      prettier: 3.7.2
       sh-syntax: 0.5.8
 
-  prettier-plugin-solidity@2.2.0(prettier@3.7.1):
+  prettier-plugin-solidity@2.2.0(prettier@3.7.2):
     dependencies:
       '@nomicfoundation/slang': 1.3.0
       '@solidity-parser/parser': 0.20.2
-      prettier: 3.7.1
+      prettier: 3.7.2
       semver: 7.7.3
 
   prettier@2.8.8:
     optional: true
 
-  prettier@3.7.1: {}
+  prettier@3.7.2: {}
 
   proto-list@1.2.4: {}
 
