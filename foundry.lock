@@ -2,7 +2,7 @@
   "lib/create-util": {
     "branch": {
       "name": "main",
-      "rev": "fe448df411b60acc33049305e1758fe06b423571"
+      "rev": "b6e3438803f419fee463e971c4b28145bde02d2f"
     }
   },
   "lib/erc4626-tests": {
@@ -14,7 +14,7 @@
   "lib/forge-std": {
     "branch": {
       "name": "master",
-      "rev": "755e679abefaf6ca9a08b5b9b90a52fb9b4ee188"
+      "rev": "799589bfa97698c2bdf0ba8df4d461b607e36c57"
     }
   },
   "lib/halmos-cheatcodes": {
