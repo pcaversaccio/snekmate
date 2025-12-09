@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: WTFPL
-pragma solidity ^0.8.30;
+pragma solidity ^0.8.31;
 
 import {IERC20} from "openzeppelin/token/ERC20/IERC20.sol";
 

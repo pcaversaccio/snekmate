@@ -14,7 +14,7 @@
   "lib/forge-std": {
     "branch": {
       "name": "master",
-      "rev": "799589bfa97698c2bdf0ba8df4d461b607e36c57"
+      "rev": "ebc60f500bc6870baaf321a0196fddc24d6edb03"
     }
   },
   "lib/halmos-cheatcodes": {
@@ -32,7 +32,7 @@
   "lib/openzeppelin-contracts": {
     "branch": {
       "name": "master",
-      "rev": "9d9621033cd0acb0bc3fa1b18ec0493a7bee3f88"
+      "rev": "ce5e6ed9e87172d13b4dc325a299487bc9edd3f4"
     }
   },
   "lib/prb-test": {
@@ -50,7 +50,7 @@
   "lib/solady": {
     "branch": {
       "name": "main",
-      "rev": "73f13dd1483707ef6b4d16cb0543570b7e1715a8"
+      "rev": "cbcfe0009477aa329574f17e8db0a05703bb8bdd"
     }
   },
   "lib/solidity-bytes-utils": {
