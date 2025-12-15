@@ -2,7 +2,7 @@
   "lib/create-util": {
     "branch": {
       "name": "main",
-      "rev": "3102caee87daaca3917a9132dbfc50f5ec6ad2b5"
+      "rev": "d17e874ae42b7b6b29897f0afbb71e2b3fc32fc4"
     }
   },
   "lib/erc4626-tests": {
@@ -32,7 +32,7 @@
   "lib/openzeppelin-contracts": {
     "branch": {
       "name": "master",
-      "rev": "0e199734dcc446647a89ef908b985bdd2623d60f"
+      "rev": "353f564d1db53c1d30cfa8a631771c205e41107b"
     }
   },
   "lib/prb-test": {
