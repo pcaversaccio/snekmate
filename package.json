@@ -22,7 +22,7 @@
   "bugs": {
     "url": "https://github.com/pcaversaccio/snekmate/issues"
   },
-  "packageManager": "pnpm@10.26.0",
+  "packageManager": "pnpm@10.26.1",
   "scripts": {
     "prettier:check": "npx prettier -c \"**/*.{md,sol,js,json,yml,yaml,sh}\"",
     "prettier:fix": "npx prettier -w \"**/*.{md,sol,js,json,yml,yaml,sh}\"",
@@ -48,8 +48,8 @@
     "merkletreejs": "^0.6.0",
     "prettier": "^3.7.4",
     "prettier-plugin-sh": "^0.18.0",
-    "prettier-plugin-solidity": "^2.2.0",
-    "solhint": "^6.0.1"
+    "prettier-plugin-solidity": "^2.2.1",
+    "solhint": "^6.0.2"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
