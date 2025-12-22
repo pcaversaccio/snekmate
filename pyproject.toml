@@ -15,10 +15,10 @@ keywords = [
   "vyper-contracts",
 ]
 authors = [
-  { name = "Pascal Marco Caversaccio", email = "pascal.caversaccio@hotmail.ch" },
+  { name = "pcaversaccio", email = "pascal.caversaccio@hotmail.ch" },
 ]
 maintainers = [
-  { name = "Pascal Marco Caversaccio", email = "pascal.caversaccio@hotmail.ch" },
+  { name = "pcaversaccio", email = "pascal.caversaccio@hotmail.ch" },
 ]
 classifiers = [
   "Development Status :: 5 - Production/Stable",
