@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: WTFPL
-pragma solidity ^0.8.31;
+pragma solidity ^0.8.33;
 
 interface IMath {
     function uint256_average(uint256 x, uint256 y) external pure returns (uint256);

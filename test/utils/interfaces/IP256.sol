@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: WTFPL
-pragma solidity ^0.8.31;
+pragma solidity ^0.8.33;
 
 interface IP256 {
     function verify_sig(bytes32 hash, uint256 r, uint256 s, uint256 qx, uint256 qy) external view returns (bool);
