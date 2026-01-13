@@ -63,6 +63,7 @@ jobs:
           wget -q https://github.com/SRI-CSL/yices2/releases/download/yices-2.7.0/yices-2.7.0-x86_64-pc-linux-gnu-static-gmp.tar.gz
           sudo tar -xzf yices-2.7.0-x86_64-pc-linux-gnu-static-gmp.tar.gz -C /usr/local --strip-components=1
           rm yices-2.7.0-x86_64-pc-linux-gnu-static-gmp.tar.gz
+          echo "/usr/local/bin" >> $GITHUB_PATH
 
       - name: Show the Yices 2 SMT solver version
         run: yices-smt2 --version
