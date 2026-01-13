@@ -69,7 +69,7 @@ jobs:
           set -Eeuo pipefail
           wget -q https://github.com/bitwuzla/bitwuzla/releases/download/0.8.2/Bitwuzla-Linux-x86_64-static.zip
           unzip -q Bitwuzla-Linux-x86_64-static.zip
-          sudo mv Bitwuzla-Linux-x86_64-static/Bitwuzla-Linux-x86_64-static/bin/* /usr/local/bin/
+          sudo mv Bitwuzla-Linux-x86_64-static/bin/* /usr/local/bin/
           rm -rf Bitwuzla-Linux-x86_64-static.zip Bitwuzla-Linux-x86_64-static
 
       - name: Prioritise system binaries in `PATH`
