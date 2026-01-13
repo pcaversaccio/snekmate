@@ -72,7 +72,7 @@ jobs:
           sudo mv Bitwuzla-Linux-x86_64-static/bin/* /usr/local/bin/
           rm -rf Bitwuzla-Linux-x86_64-static.zip Bitwuzla-Linux-x86_64-static
 
-      - name: Prioritise system binaries in `PATH`
+      - name: Prioritise the system binaries in `PATH`
         run: echo "/usr/local/bin" >> $GITHUB_PATH
 
       - name: Show the Yices 2 SMT solver version
@@ -83,14 +83,14 @@ jobs:
 
       - name: Patch `jsi` for Python 3.14 compatibility
         run: |
-          python - << 'EOF'
+          python - << "EOF"
           import site
           from pathlib import Path
 
           code = """\
           import importlib.abc
           try:
-              if not hasattr(importlib.abc, 'Traversable'):
+              if not hasattr(importlib.abc, "Traversable"):
                   from importlib.resources.abc import Traversable
                   importlib.abc.Traversable = Traversable
           except Exception:
@@ -100,7 +100,7 @@ jobs:
           for site_dir in site.getsitepackages():
               sc = Path(site_dir) / "sitecustomize.py"
               sc.write_text(code)
-              print(f'Installed sitecustomize in {sc}')
+              print(f"Installed \`sitecustomize\` in {sc}")
           EOF
 
       - name: Install `jsi`
