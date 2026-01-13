@@ -55,12 +55,17 @@ contract MathTestHalmos is Test, SymTest {
         assertEq(math.signum(x), signum);
     }
 
-    function testHalmosAssertMulDiv(uint256 x, uint256 y, uint256 denominator, Math.Rounding rounding) public view {
-        assertEq(
-            math.mul_div(x, y, denominator, Math.unsignedRoundsUp(rounding)),
-            Math.mulDiv(x, y, denominator, rounding)
-        );
-    }
+    /**
+     * @dev Currently commented out, as the timeout for the Yices 2 SMT solver does not
+     * work for the queries of this test, where the Yices 2 SMT solver is constantly
+     * running and consumes a lot of memory, causing the CI to crash due to out of memory.
+     */
+    // function testHalmosAssertMulDiv(uint256 x, uint256 y, uint256 denominator, Math.Rounding rounding) public view {
+    //     assertEq(
+    //         math.mul_div(x, y, denominator, Math.unsignedRoundsUp(rounding)),
+    //         Math.mulDiv(x, y, denominator, rounding)
+    //     );
+    // }
 
     function testHalmosAssertLog2(uint256 x, Math.Rounding rounding) public view {
         assertEq(math.log2(x, Math.unsignedRoundsUp(rounding)), Math.log2(x, rounding));
@@ -74,26 +79,46 @@ contract MathTestHalmos is Test, SymTest {
         assertEq(math.log256(x, Math.unsignedRoundsUp(rounding)), Math.log256(x, rounding));
     }
 
-    function testHalmosAssertWadLn(int256 x) public view {
-        assertEq(math.wad_ln(x), FixedPointMathLib.lnWad(x));
-    }
+    /**
+     * @dev Currently commented out, as the timeout for the Yices 2 SMT solver does not
+     * work for the queries of this test, where the Yices 2 SMT solver is constantly
+     * running and consumes a lot of memory, causing the CI to crash due to out of memory.
+     */
+    // function testHalmosAssertWadLn(int256 x) public view {
+    //     assertEq(math.wad_ln(x), FixedPointMathLib.lnWad(x));
+    // }
 
-    function testHalmosAssertWadExp(int256 x) public view {
-        assertEq(math.wad_exp(x), FixedPointMathLib.expWad(x));
-    }
+    /**
+     * @dev Currently commented out, as the timeout for the Yices 2 SMT solver does not
+     * work for the queries of this test, where the Yices 2 SMT solver is constantly
+     * running and consumes a lot of memory, causing the CI to crash due to out of memory.
+     */
+    // function testHalmosAssertWadExp(int256 x) public view {
+    //     assertEq(math.wad_exp(x), FixedPointMathLib.expWad(x));
+    // }
 
-    function testHalmosAssertCbrt(uint256 x, bool roundup) public view {
-        if (!roundup) {
-            assertEq(math.cbrt(x, roundup), FixedPointMathLib.cbrt(x));
-        } else {
-            assertTrue(
-                math.cbrt(x, roundup) >= FixedPointMathLib.cbrt(x) &&
-                    math.cbrt(x, roundup) <= FixedPointMathLib.cbrt(x) + 1
-            );
-        }
-    }
+    /**
+     * @dev Currently commented out, as the timeout for the Yices 2 SMT solver does not
+     * work for the queries of this test, where the Yices 2 SMT solver is constantly
+     * running and consumes a lot of memory, causing the CI to crash due to out of memory.
+     */
+    // function testHalmosAssertCbrt(uint256 x, bool roundup) public view {
+    //     if (!roundup) {
+    //         assertEq(math.cbrt(x, roundup), FixedPointMathLib.cbrt(x));
+    //     } else {
+    //         assertTrue(
+    //             math.cbrt(x, roundup) >= FixedPointMathLib.cbrt(x) &&
+    //                 math.cbrt(x, roundup) <= FixedPointMathLib.cbrt(x) + 1
+    //         );
+    //     }
+    // }
 
-    function testHalmosAssertWadCbrt(uint256 x) public view {
-        assertEq(math.wad_cbrt(x), FixedPointMathLib.cbrtWad(x));
-    }
+    /**
+     * @dev Currently commented out, as the timeout for the Yices 2 SMT solver does not
+     * work for the queries of this test, where the Yices 2 SMT solver is constantly
+     * running and consumes a lot of memory, causing the CI to crash due to out of memory.
+     */
+    // function testHalmosAssertWadCbrt(uint256 x) public view {
+    //     assertEq(math.wad_cbrt(x), FixedPointMathLib.cbrtWad(x));
+    // }
 }
