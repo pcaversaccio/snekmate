@@ -46,7 +46,7 @@
     "ethers": "^6.16.0",
     "keccak256": "^1.0.6",
     "merkletreejs": "^0.6.0",
-    "prettier": "^3.7.4",
+    "prettier": "^3.8.0",
     "prettier-plugin-sh": "^0.18.0",
     "prettier-plugin-solidity": "^2.2.1",
     "solhint": "^6.0.2"

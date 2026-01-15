@@ -57,6 +57,33 @@ jobs:
       - name: Show the Halmos version
         run: halmos --version
 
+      - name: Install the Yices 2 SMT solver
+        run: |
+          set -Eeuo pipefail
+          wget -q https://github.com/SRI-CSL/yices2/releases/download/yices-2.7.0/yices-2.7.0-x86_64-pc-linux-gnu-static-gmp.tar.gz
+          sudo tar -xzf yices-2.7.0-x86_64-pc-linux-gnu-static-gmp.tar.gz --strip-components=2 -C /usr/local/bin yices-2.7.0/bin
+          rm yices-2.7.0-x86_64-pc-linux-gnu-static-gmp.tar.gz
+
+      - name: Install the Bitwuzla SMT solver
+        run: |
+          set -Eeuo pipefail
+          wget -q https://github.com/bitwuzla/bitwuzla/releases/download/0.8.2/Bitwuzla-Linux-x86_64-static.zip
+          unzip -q Bitwuzla-Linux-x86_64-static.zip
+          sudo mv Bitwuzla-Linux-x86_64-static/bin/* /usr/local/bin/
+          rm -rf Bitwuzla-Linux-x86_64-static.zip Bitwuzla-Linux-x86_64-static
+
+      - name: Prioritise the system binaries in `PATH`
+        run: echo "/usr/local/bin" >> $GITHUB_PATH
+
+      - name: Show the Yices 2 SMT solver version
+        run: yices-smt2 --version
+
+      - name: Show the Bitwuzla SMT solver version
+        run: bitwuzla --version
+
+      - name: Install `jsi`
+        run: pip install just-solve-it
+
       - name: Show the Foundry Halmos config
         run: forge config
         env:

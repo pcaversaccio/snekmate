@@ -12,6 +12,10 @@
 - **Utility Functions**
   - [`base64`](https://github.com/pcaversaccio/snekmate/blob/v0.1.3/src/snekmate/utils/base64.vy): Fix `base64` `_decode` double padding detection. ([#345](https://github.com/pcaversaccio/snekmate/pull/345))
 
+### 🥢 Test Coverage
+
+- All Halmos-based symbolic tests are now solved by running the [Yices 2](https://github.com/SRI-CSL/yices2) and [Bitwuzla](https://github.com/bitwuzla/bitwuzla) SMT solvers in parallel. ([#353](https://github.com/pcaversaccio/snekmate/pull/353))
+
 ### 🔖 Release Management
 
 - Use trusted publishing for `npm` package. ([#341](https://github.com/pcaversaccio/snekmate/pull/341))

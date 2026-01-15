@@ -498,7 +498,9 @@ contract TimelockControllerTest is Test {
     }
 
     function testCanReceiveEther() public {
-        payable(timelockControllerAddr).transfer(0.5 ether);
+        // solhint-disable-next-line avoid-low-level-calls
+        (bool success, ) = timelockControllerAddr.call{value: 0.5 ether}("");
+        assertTrue(success);
         assertEq(timelockControllerAddr.balance, 0.5 ether);
     }
 

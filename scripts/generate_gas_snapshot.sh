@@ -85,4 +85,4 @@ cat "$TEMP_FILE" "$OUTPUT_FILE" > "${OUTPUT_FILE}.tmp" && mv "${OUTPUT_FILE}.tmp
 # Clean up the temporary file.
 rm "$TEMP_FILE"
 
-echo "Gas snapshot generated in $OUTPUT_FILE"
+echo "Gas snapshot generated in \`$OUTPUT_FILE\`."

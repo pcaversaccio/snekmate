@@ -60,12 +60,7 @@ contract MathTestHalmos is Test, SymTest {
      * work for the queries of this test, where the Yices 2 SMT solver is constantly
      * running and consumes a lot of memory, causing the CI to crash due to out of memory.
      */
-    // function testHalmosAssertMulDiv(
-    //     uint256 x,
-    //     uint256 y,
-    //     uint256 denominator,
-    //     Math.Rounding rounding
-    // ) public view {
+    // function testHalmosAssertMulDiv(uint256 x, uint256 y, uint256 denominator, Math.Rounding rounding) public view {
     //     assertEq(
     //         math.mul_div(x, y, denominator, Math.unsignedRoundsUp(rounding)),
     //         Math.mulDiv(x, y, denominator, rounding)
