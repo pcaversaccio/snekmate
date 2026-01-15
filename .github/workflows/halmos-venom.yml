@@ -81,6 +81,9 @@ jobs:
       - name: Show the Bitwuzla SMT solver version
         run: bitwuzla --version
 
+      - name: Install `jsi`
+        run: pip install just-solve-it
+
       - name: Show the Foundry Halmos config
         run: forge config
         env:
