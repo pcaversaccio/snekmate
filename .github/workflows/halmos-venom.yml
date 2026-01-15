@@ -61,7 +61,7 @@ jobs:
         run: |
           set -Eeuo pipefail
           wget -q https://github.com/SRI-CSL/yices2/releases/download/yices-2.7.0/yices-2.7.0-x86_64-pc-linux-gnu-static-gmp.tar.gz
-          sudo tar -xzf yices-2.7.0-x86_64-pc-linux-gnu-static-gmp.tar.gz -C /usr/local --strip-components=1
+          sudo tar -xzf yices-2.7.0-x86_64-pc-linux-gnu-static-gmp.tar.gz --strip-components=2 -C /usr/local/bin yices-2.7.0/bin
           rm yices-2.7.0-x86_64-pc-linux-gnu-static-gmp.tar.gz
 
       - name: Install the Bitwuzla SMT solver
@@ -80,31 +80,6 @@ jobs:
 
       - name: Show the Bitwuzla SMT solver version
         run: bitwuzla --version
-
-      - name: Patch `jsi` for Python 3.14 compatibility
-        run: |
-          python - << "EOF"
-          import site
-          from pathlib import Path
-
-          code = """\
-          import importlib.abc
-          try:
-              if not hasattr(importlib.abc, "Traversable"):
-                  from importlib.resources.abc import Traversable
-                  importlib.abc.Traversable = Traversable
-          except Exception:
-              pass
-          """
-
-          for site_dir in site.getsitepackages():
-              sc = Path(site_dir) / "sitecustomize.py"
-              sc.write_text(code)
-              print(f"Installed \`sitecustomize\` in {sc}")
-          EOF
-
-      - name: Install `jsi`
-        run: pip install just-solve-it
 
       - name: Show the Foundry Halmos config
         run: forge config
