@@ -184,8 +184,8 @@ packages:
     resolution: {integrity: sha512-YcPQ8a0jwYU9bTdJDpXjMi7Brhkr1mXsXrUJvjqM2mQDgkRiz8jFaQGOdaLxgjtUfQgZhKy/O3cG/YwmgKaxLA==}
     engines: {node: '>=12.22.0'}
 
-  '@pnpm/npm-conf@2.3.1':
-    resolution: {integrity: sha512-c83qWb22rNRuB0UaVCI0uRPNRr8Z0FWnEIvT47jiHAmOIUHbBOg5XvV7pM5x+rKn9HRpjxquDbXYSXr3fAKFcw==}
+  '@pnpm/npm-conf@3.0.2':
+    resolution: {integrity: sha512-h104Kh26rR8tm+a3Qkc5S4VLYint3FE48as7+/5oCEcKR2idC/pF1G6AhIXKI+eHPJa/3J9i5z0Al47IeGHPkA==}
     engines: {node: '>=12'}
 
   '@reteps/dockerfmt@0.3.6':
@@ -783,8 +783,8 @@ packages:
     resolution: {integrity: sha512-9u/sniCrY3D5WdsERHzHE4G2YCXqoG5FTHUiCC4SIbr6XcLZBY05ya9EKjYek9O5xOAwjGq+1JdGBAS7Q9ScoA==}
     engines: {node: '>= 6'}
 
-  registry-auth-token@5.1.0:
-    resolution: {integrity: sha512-GdekYuwLXLxMuFTwAPg5UKGLW/UXzQrZvH/Zj791BQif5T05T0RsaLfHc9q3ZOKi7n+BoprPD9mJ0O0k4xzUlw==}
+  registry-auth-token@5.1.1:
+    resolution: {integrity: sha512-P7B4+jq8DeD2nMsAcdfaqHbssgHtZ7Z5+++a5ask90fvmJ8p5je4mOa+wzu+DB4vQ5tdJV/xywY+UnVFeQLV5Q==}
     engines: {node: '>=14'}
 
   registry-url@6.0.1:
@@ -1072,7 +1072,7 @@ snapshots:
     dependencies:
       graceful-fs: 4.2.10
 
-  '@pnpm/npm-conf@2.3.1':
+  '@pnpm/npm-conf@3.0.2':
     dependencies:
       '@pnpm/config.env-replace': 1.1.0
       '@pnpm/network.ca-file': 1.0.2
@@ -1592,7 +1592,7 @@ snapshots:
   package-json@8.1.1:
     dependencies:
       got: 12.6.1
-      registry-auth-token: 5.1.0
+      registry-auth-token: 5.1.1
       registry-url: 6.0.1
       semver: 7.7.3
 
@@ -1658,9 +1658,9 @@ snapshots:
       string_decoder: 1.3.0
       util-deprecate: 1.0.2
 
-  registry-auth-token@5.1.0:
+  registry-auth-token@5.1.1:
     dependencies:
-      '@pnpm/npm-conf': 2.3.1
+      '@pnpm/npm-conf': 3.0.2
 
   registry-url@6.0.1:
     dependencies:
