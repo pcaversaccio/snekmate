@@ -2,7 +2,7 @@
   "lib/create-util": {
     "branch": {
       "name": "main",
-      "rev": "579221c77cf1ff8e8b5d8d2c71072827f4a76cb7"
+      "rev": "fbbc2268665e69d57b1db257c33fbccb7ed2f87e"
     }
   },
   "lib/erc4626-tests": {
