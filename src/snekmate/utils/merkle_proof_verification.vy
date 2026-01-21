@@ -152,7 +152,7 @@ def _process_multi_proof(
                to left, starting with the deepest layer and moving
                on to the next layer). For the definition of the
                generalised Merkle tree index, please visit:
-               https://github.com/ethereum/consensus-specs/blob/dev/ssz/merkle-proofs.md#generalized-merkle-tree-index.
+               https://github.com/ethereum/consensus-specs/blob/master/ssz/merkle-proofs.md#generalized-merkle-tree-index.
     @param proof The 32-byte array containing sibling hashes
            on the branches from `leaves` to the `root` of the
            Merkle tree.
