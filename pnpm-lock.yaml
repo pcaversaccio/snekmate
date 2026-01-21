@@ -39,8 +39,8 @@ importers:
         specifier: ^2.2.1
         version: 2.2.1(prettier@3.8.0)
       solhint:
-        specifier: ^6.0.2
-        version: 6.0.2
+        specifier: ^6.0.3
+        version: 6.0.3
 
 packages:
 
@@ -270,10 +270,6 @@ packages:
   ansi-styles@4.3.0:
     resolution: {integrity: sha512-zbB9rCJAT1rbjiVDb2hqKFHNYLxgtk8NURxZ3IZwD3F6NtxbXZQCnnSi1Lkx+IDohdPlFp222wVALIheZJQSEg==}
     engines: {node: '>=8'}
-
-  antlr4@4.13.2:
-    resolution: {integrity: sha512-QiVbZhyy4xAZ17UPEuG3YTOt8ZaoeOR1CvEAqrEsDBsOqINslaB147i9xqljZqoyf5S+EUlGStaj+t22LT9MOg==}
-    engines: {node: '>=16'}
 
   argparse@2.0.1:
     resolution: {integrity: sha512-8+9WqebbFzpX9OR+Wa6O29asIogeRMzcGtAINdpMHHyAg10f05aSFVBbcEqGf/PXw1EjAZ+q2/bEBg3DvurK3Q==}
@@ -830,8 +826,8 @@ packages:
     resolution: {integrity: sha512-qMCMfhY040cVHT43K9BFygqYbUPFZKHOg7K73mtTWJRb8pyP3fzf4Ixd5SzdEJQ6MRUg/WBnOLxghZtKKurENQ==}
     engines: {node: '>=10'}
 
-  solhint@6.0.2:
-    resolution: {integrity: sha512-RInN0tz9FVR4eYlyLS0Pk8iJP3WdfVmmMJR9FIUxe9bKHgAPE8OYUXcMd5PGi5fO5BnZw32e0qMYcJZgH9MiBg==}
+  solhint@6.0.3:
+    resolution: {integrity: sha512-LYiy1bN8X9eUsti13mbS4fY6ILVxhP6VoOgqbHxCsHl5VPnxOWf7U1V9ZvgizxdInKBMW82D1FNJO+daAcWHbA==}
     hasBin: true
 
   string-width@4.2.3:
@@ -1161,8 +1157,6 @@ snapshots:
   ansi-styles@4.3.0:
     dependencies:
       color-convert: 2.0.1
-
-  antlr4@4.13.2: {}
 
   argparse@2.0.1: {}
 
@@ -1696,12 +1690,11 @@ snapshots:
       astral-regex: 2.0.0
       is-fullwidth-code-point: 3.0.0
 
-  solhint@6.0.2:
+  solhint@6.0.3:
     dependencies:
       '@solidity-parser/parser': 0.20.2
       ajv: 6.12.6
       ajv-errors: 1.0.1(ajv@6.12.6)
-      antlr4: 4.13.2
       ast-parents: 0.0.1
       better-ajv-errors: 2.0.3(ajv@6.12.6)
       chalk: 4.1.2
