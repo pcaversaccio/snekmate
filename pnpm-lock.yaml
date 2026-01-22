@@ -631,8 +631,8 @@ packages:
   lodash.truncate@4.4.2:
     resolution: {integrity: sha512-jttmRe7bRse52OsWIMDLaXxWqRAmtIUccAQ3garviCqJjafXOfNMO0yMfNpdD6zbGaTU0P5Nz7e7gAT6cKmJRw==}
 
-  lodash@4.17.21:
-    resolution: {integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==}
+  lodash@4.17.23:
+    resolution: {integrity: sha512-LgVTMpQtIopCi79SJeDiP0TfWi5CNEc/L/aRdTh3yIvmZXTnheWpKjSZhnvMl8iXbC1tFg9gdHHDMLoV7CnG+w==}
 
   lowercase-keys@3.0.0:
     resolution: {integrity: sha512-ozCC6gdQ+glXOQsveKD0YsDy8DSQFjDTz4zyzEHNV5+JP5D62LmfDZ6o1cycFx9ouG940M5dE8C8CTewdj2YWQ==}
@@ -1524,7 +1524,7 @@ snapshots:
 
   lodash.truncate@4.4.2: {}
 
-  lodash@4.17.21: {}
+  lodash@4.17.23: {}
 
   lowercase-keys@3.0.0: {}
 
@@ -1705,7 +1705,7 @@ snapshots:
       ignore: 5.3.2
       js-yaml: 4.1.1
       latest-version: 7.0.0
-      lodash: 4.17.21
+      lodash: 4.17.23
       pluralize: 8.0.0
       semver: 7.7.3
       table: 6.9.0
