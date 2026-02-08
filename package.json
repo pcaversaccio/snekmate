@@ -22,14 +22,14 @@
   "bugs": {
     "url": "https://github.com/pcaversaccio/snekmate/issues"
   },
-  "packageManager": "pnpm@10.28.2",
+  "packageManager": "pnpm@10.29.1",
   "scripts": {
-    "prettier:check": "pnpx prettier -c \"**/*.{md,sol,js,json,yml,yaml,sh}\"",
-    "prettier:fix": "pnpx prettier -w \"**/*.{md,sol,js,json,yml,yaml,sh}\"",
-    "solhint:check": "pnpx solhint \"**/*.sol\"",
-    "solhint:fix": "pnpx solhint \"**/*.sol\" --fix",
-    "lint:check": "pnpm prettier:check && pnpm solhint:check && pnpx eslint .",
-    "lint:fix": "pnpm prettier:fix && pnpm solhint:fix && pnpx eslint . --fix"
+    "prettier:check": "prettier -c \"**/*.{md,sol,js,json,yml,yaml,sh}\"",
+    "prettier:fix": "prettier -w \"**/*.{md,sol,js,json,yml,yaml,sh}\"",
+    "solhint:check": "solhint \"**/*.sol\"",
+    "solhint:fix": "solhint \"**/*.sol\" --fix",
+    "lint:check": "pnpm prettier:check && pnpm solhint:check && eslint .",
+    "lint:fix": "pnpm prettier:fix && pnpm solhint:fix && eslint . --fix"
   },
   "files": [
     "src/snekmate/**/*.{vy,vyi}",
