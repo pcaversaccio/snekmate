@@ -88,8 +88,8 @@ DEFAULT_ADMIN_ROLE: public(constant(bytes32)) = empty(bytes32)
 # is defined as the XOR of all function selectors in the
 # interface.
 _SUPPORTED_INTERFACES: constant(bytes4[2]) = [
-    0x01FFC9A7, # The ERC-165 identifier for ERC-165.
-    0x7965DB0B, # The ERC-165 identifier for `IAccessControl`.
+    0x01_FF_C9_A7, # The ERC-165 identifier for ERC-165.
+    0x79_65_DB_0B, # The ERC-165 identifier for `IAccessControl`.
 ]
 
 

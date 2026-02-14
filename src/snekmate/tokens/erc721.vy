@@ -142,12 +142,12 @@ exports: (
 # this contract, please ensure you exclude the unused
 # ERC-165 interface identifiers in the main contract.
 _SUPPORTED_INTERFACES: constant(bytes4[6]) = [
-    0x01FFC9A7, # The ERC-165 identifier for ERC-165.
-    0x80AC58CD, # The ERC-165 identifier for ERC-721.
-    0x5B5E139F, # The ERC-165 identifier for the ERC-721 metadata extension.
-    0x780E9D63, # The ERC-165 identifier for the ERC-721 enumeration extension.
-    0x589C5CE2, # The ERC-165 identifier for ERC-4494.
-    0x49064906, # The ERC-165 identifier for ERC-4906.
+    0x01_FF_C9_A7, # The ERC-165 identifier for ERC-165.
+    0x80_AC_58_CD, # The ERC-165 identifier for ERC-721.
+    0x5B_5E_13_9F, # The ERC-165 identifier for the ERC-721 metadata extension.
+    0x78_0E_9D_63, # The ERC-165 identifier for the ERC-721 enumeration extension.
+    0x58_9C_5C_E2, # The ERC-165 identifier for ERC-4494.
+    0x49_06_49_06, # The ERC-165 identifier for ERC-4906.
 ]
 
 

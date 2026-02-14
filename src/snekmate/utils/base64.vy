@@ -105,7 +105,7 @@ def _encode(data: Bytes[_DATA_INPUT_BOUND], base64_url: bool) -> DynArray[String
         # │------│------│------│------│
         #  000000 000000 000000 011100
         #
-        # 63 (or `0x3F`) is `000000000000000000111111` in binary.
+        # 63 (or `0x3F`) is `00000000_00000000_00111111` in binary.
         # Thus, the bitwise `AND` operation is redundant.
         c1: uint256 = chunk >> 18
         c2: uint256 = (chunk >> 12) & 63

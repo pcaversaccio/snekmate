@@ -110,8 +110,8 @@ exports: (
 # ERC-721 or ERC-1155 contract, please ensure you include
 # the additional ERC-165 interface identifiers.
 _SUPPORTED_INTERFACES: constant(bytes4[2]) = [
-    0x01FFC9A7, # The ERC-165 identifier for ERC-165.
-    0x2A55205A, # The ERC-165 identifier for ERC-2981.
+    0x01_FF_C9_A7, # The ERC-165 identifier for ERC-165.
+    0x2A_55_20_5A, # The ERC-165 identifier for ERC-2981.
 ]
 
 

@@ -112,15 +112,15 @@ CANCELLER_ROLE: public(constant(bytes32)) = keccak256("CANCELLER_ROLE")
 
 
 # @dev The 4-byte function selector of `onERC721Received(address,address,uint256,bytes)`.
-IERC721_TOKENRECEIVER_SELECTOR: public(constant(bytes4)) = 0x150B7A02
+IERC721_TOKENRECEIVER_SELECTOR: public(constant(bytes4)) = 0x15_0B_7A_02
 
 
 # @dev The 4-byte function selector of `onERC1155Received(address,address,uint256,uint256,bytes)`.
-IERC1155_TOKENRECEIVER_SINGLE_SELECTOR: public(constant(bytes4)) = 0xF23A6E61
+IERC1155_TOKENRECEIVER_SINGLE_SELECTOR: public(constant(bytes4)) = 0xF2_3A_6E_61
 
 
 # @dev The 4-byte function selector of `onERC1155BatchReceived(address,address,uint256[],uint256[],bytes)`.
-IERC1155_TOKENRECEIVER_BATCH_SELECTOR: public(constant(bytes4)) = 0xBC197C81
+IERC1155_TOKENRECEIVER_BATCH_SELECTOR: public(constant(bytes4)) = 0xBC_19_7C_81
 
 
 # @dev Stores the ERC-165 interface identifier for each
@@ -132,9 +132,9 @@ IERC1155_TOKENRECEIVER_BATCH_SELECTOR: public(constant(bytes4)) = 0xBC197C81
 # it is not required by the EIP:
 # https://eips.ethereum.org/EIPS/eip-721#specification.
 _SUPPORTED_INTERFACES: constant(bytes4[3]) = [
-    0x01FFC9A7, # The ERC-165 identifier for ERC-165.
-    0x7965DB0B, # The ERC-165 identifier for `IAccessControl`.
-    0x4E2312E0, # The ERC-165 identifier for `IERC1155Receiver`.
+    0x01_FF_C9_A7, # The ERC-165 identifier for ERC-165.
+    0x79_65_DB_0B, # The ERC-165 identifier for `IAccessControl`.
+    0x4E_23_12_E0, # The ERC-165 identifier for `IERC1155Receiver`.
 ]
 
 
