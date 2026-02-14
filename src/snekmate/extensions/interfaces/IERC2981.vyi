@@ -8,7 +8,7 @@
         royalty payment information for non-fungible tokens (NFTs)
         to enable universal support for royalty payments across
         all NFT marketplaces and ecosystem participants. The ERC-165
-        identifier for this interface is `0x2A55205A`. For more
+        identifier for this interface is `0x2A_55_20_5A`. For more
         details, please refer to:
         https://eips.ethereum.org/EIPS/eip-2981.
 

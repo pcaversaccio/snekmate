@@ -13,7 +13,7 @@
 
 
 # @dev The 3-byte EIP-7702 delegation prefix.
-_DELEGATION_PREFIX: constant(bytes3) = 0xef0100
+_DELEGATION_PREFIX: constant(bytes3) = 0xEF_01_00
 
 
 @deploy
@@ -50,7 +50,7 @@ def _fetch_delegate(account: address) -> address:
         return empty(address)
 
     # Per EIP-7702, the delegation indicator is 23 bytes long, consisting
-    # of the prefix `0xef0100` followed by the 20-byte delegation address.
+    # of the prefix `0xEF_01_00` followed by the 20-byte delegation address.
     delegation: Bytes[23] = slice(account.code, 0, 23)
     delegation_bytes32: bytes32 = convert(delegation, bytes32)
 

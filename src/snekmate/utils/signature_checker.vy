@@ -35,7 +35,7 @@ from . import ecdsa
 # @notice If you declare a variable as `public`,
 # Vyper automatically generates an `external`
 # getter function for the variable.
-IERC1271_ISVALIDSIGNATURE_SELECTOR: public(constant(bytes4)) = 0x1626BA7E
+IERC1271_ISVALIDSIGNATURE_SELECTOR: public(constant(bytes4)) = 0x16_26_BA_7E
 
 
 @deploy
