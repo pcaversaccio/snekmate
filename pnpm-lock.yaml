@@ -10,16 +10,16 @@ importers:
     devDependencies:
       '@eslint/js':
         specifier: ^10.0.1
-        version: 10.0.1(eslint@10.0.0)
+        version: 10.0.1(eslint@10.0.1)
       '@openzeppelin/merkle-tree':
         specifier: ^1.0.8
         version: 1.0.8
       eslint:
-        specifier: ^10.0.0
-        version: 10.0.0
+        specifier: ^10.0.1
+        version: 10.0.1
       eslint-config-prettier:
         specifier: ^10.1.8
-        version: 10.1.8(eslint@10.0.0)
+        version: 10.1.8(eslint@10.0.1)
       ethers:
         specifier: ^6.16.0
         version: 6.16.0
@@ -261,8 +261,8 @@ packages:
     peerDependencies:
       ajv: '>=5.0.0'
 
-  ajv@6.12.6:
-    resolution: {integrity: sha512-j3fVLgvTo527anyYyJOGTYJbG+vnnQYvE0m5mmkc1TK+nxAppkCLMIL0aZ4dblVCNoGShhm+kzE4ZUykBoMg4g==}
+  ajv@6.14.0:
+    resolution: {integrity: sha512-IWrosm/yrn43eiKqkfkHis7QioDleaXQHdDVPKg0FSwwd/DuvyX79TZnFOnYpB7dcsFAMmtFztZuXPDvSePkFw==}
 
   ajv@8.18.0:
     resolution: {integrity: sha512-PlXPeEWMXMZ7sPYOHqmDyCJzcfNrUr3fGNKtezX14ykXOEIvyK81d+qydx89KY5O71FKMPaQ2vBfBFI5NHR63A==}
@@ -420,8 +420,8 @@ packages:
     resolution: {integrity: sha512-tD40eHxA35h0PEIZNeIjkHoDR4YjjJp34biM0mDvplBe//mB+IHCqHDGV7pxF+7MklTvighcCPPZC7ynWyjdTA==}
     engines: {node: ^20.19.0 || ^22.13.0 || >=24}
 
-  eslint@10.0.0:
-    resolution: {integrity: sha512-O0piBKY36YSJhlFSG8p9VUdPV/SxxS4FYDWVpr/9GJuMaepzwlf4J8I4ov1b+ySQfDTPhc3DtLaxcT1fN0yqCg==}
+  eslint@10.0.1:
+    resolution: {integrity: sha512-20MV9SUdeN6Jd84xESsKhRly+/vxI+hwvpBMA93s+9dAcjdCuCojn4IqUGS3lvVaqjVYGYHSRMCpeFtF2rQYxQ==}
     engines: {node: ^20.19.0 || ^22.13.0 || >=24}
     hasBin: true
     peerDependencies:
@@ -925,9 +925,9 @@ snapshots:
 
   '@bytecodealliance/preview2-shim@0.17.8': {}
 
-  '@eslint-community/eslint-utils@4.9.1(eslint@10.0.0)':
+  '@eslint-community/eslint-utils@4.9.1(eslint@10.0.1)':
     dependencies:
-      eslint: 10.0.0
+      eslint: 10.0.1
       eslint-visitor-keys: 3.4.3
 
   '@eslint-community/regexpp@4.12.2': {}
@@ -948,9 +948,9 @@ snapshots:
     dependencies:
       '@types/json-schema': 7.0.15
 
-  '@eslint/js@10.0.1(eslint@10.0.0)':
+  '@eslint/js@10.0.1(eslint@10.0.1)':
     optionalDependencies:
-      eslint: 10.0.0
+      eslint: 10.0.1
 
   '@eslint/object-schema@3.0.2': {}
 
@@ -1120,11 +1120,11 @@ snapshots:
 
   aes-js@4.0.0-beta.5: {}
 
-  ajv-errors@1.0.1(ajv@6.12.6):
+  ajv-errors@1.0.1(ajv@6.14.0):
     dependencies:
-      ajv: 6.12.6
+      ajv: 6.14.0
 
-  ajv@6.12.6:
+  ajv@6.14.0:
     dependencies:
       fast-deep-equal: 3.1.3
       fast-json-stable-stringify: 2.1.0
@@ -1156,11 +1156,11 @@ snapshots:
 
   base64-js@1.5.1: {}
 
-  better-ajv-errors@2.0.3(ajv@6.12.6):
+  better-ajv-errors@2.0.3(ajv@6.14.0):
     dependencies:
       '@babel/code-frame': 7.29.0
       '@humanwhocodes/momoa': 2.0.4
-      ajv: 6.12.6
+      ajv: 6.14.0
       chalk: 4.1.2
       jsonpointer: 5.0.1
       leven: 3.1.0
@@ -1253,9 +1253,9 @@ snapshots:
 
   escape-string-regexp@4.0.0: {}
 
-  eslint-config-prettier@10.1.8(eslint@10.0.0):
+  eslint-config-prettier@10.1.8(eslint@10.0.1):
     dependencies:
-      eslint: 10.0.0
+      eslint: 10.0.1
 
   eslint-scope@9.1.1:
     dependencies:
@@ -1268,9 +1268,9 @@ snapshots:
 
   eslint-visitor-keys@5.0.1: {}
 
-  eslint@10.0.0:
+  eslint@10.0.1:
     dependencies:
-      '@eslint-community/eslint-utils': 4.9.1(eslint@10.0.0)
+      '@eslint-community/eslint-utils': 4.9.1(eslint@10.0.1)
       '@eslint-community/regexpp': 4.12.2
       '@eslint/config-array': 0.23.2
       '@eslint/config-helpers': 0.5.2
@@ -1280,7 +1280,7 @@ snapshots:
       '@humanwhocodes/module-importer': 1.0.1
       '@humanwhocodes/retry': 0.4.3
       '@types/estree': 1.0.8
-      ajv: 6.12.6
+      ajv: 6.14.0
       cross-spawn: 7.0.6
       debug: 4.4.3
       escape-string-regexp: 4.0.0
@@ -1672,10 +1672,10 @@ snapshots:
   solhint@6.0.3:
     dependencies:
       '@solidity-parser/parser': 0.20.2
-      ajv: 6.12.6
-      ajv-errors: 1.0.1(ajv@6.12.6)
+      ajv: 6.14.0
+      ajv-errors: 1.0.1(ajv@6.14.0)
       ast-parents: 0.0.1
-      better-ajv-errors: 2.0.3(ajv@6.12.6)
+      better-ajv-errors: 2.0.3(ajv@6.14.0)
       chalk: 4.1.2
       commander: 10.0.1
       cosmiconfig: 8.3.6
