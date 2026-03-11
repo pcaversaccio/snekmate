@@ -15,10 +15,12 @@ contract ERC20Test is Test {
     string private constant _NAME_EIP712 = "MyToken";
     string private constant _VERSION_EIP712 = "1";
     uint256 private constant _INITIAL_SUPPLY = type(uint8).max;
-    bytes32 private constant _TYPE_HASH =
-        keccak256(bytes("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)"));
-    bytes32 private constant _PERMIT_TYPE_HASH =
-        keccak256(bytes("Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)"));
+    bytes32 private constant _TYPE_HASH = keccak256(
+        bytes("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)")
+    );
+    bytes32 private constant _PERMIT_TYPE_HASH = keccak256(
+        bytes("Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)")
+    );
 
     VyperDeployer private vyperDeployer = new VyperDeployer();
 

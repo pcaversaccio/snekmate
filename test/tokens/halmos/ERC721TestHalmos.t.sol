@@ -147,9 +147,8 @@ contract ERC721TestHalmos is Test, SymTest {
 
         address oldOwner = erc721.ownerOf(tokenId);
         address oldOtherTokenOwner = erc721.ownerOf(otherTokenId);
-        bool approved = (caller == oldOwner ||
-            erc721.isApprovedForAll(oldOwner, caller) ||
-            erc721.getApproved(tokenId) == caller);
+        bool approved =
+            (caller == oldOwner || erc721.isApprovedForAll(oldOwner, caller) || erc721.getApproved(tokenId) == caller);
 
         vm.startPrank(caller);
         if (svm.createBool("1337")) {

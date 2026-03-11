@@ -36,8 +36,8 @@ importers:
         specifier: ^0.18.0
         version: 0.18.0(prettier@3.8.1)
       prettier-plugin-solidity:
-        specifier: ^2.2.1
-        version: 2.2.1(prettier@3.8.1)
+        specifier: ^2.3.0
+        version: 2.3.0(prettier@3.8.1)
       solhint:
         specifier: ^6.0.3
         version: 6.0.3
@@ -171,8 +171,8 @@ packages:
     resolution: {integrity: sha512-jCs9ldd7NwzpgXDIf6P3+NrHh9/sD6CQdxHyjQI+h/6rDNo88ypBxxz45UDuZHz9r3tNz7N/VInSVoVdtXEI4A==}
     engines: {node: ^14.21.3 || >=16}
 
-  '@nomicfoundation/slang@1.3.1':
-    resolution: {integrity: sha512-gh0+JDjazmevEYCcwVgtuyfBJcV1209gIORZNRjUxbGzbQN0MOhQO9T0ptkzHKCf854gUy27SMxPbAyAu63fvQ==}
+  '@nomicfoundation/slang@1.3.4':
+    resolution: {integrity: sha512-ghzrPSYH1sZO65id6+Bq2Ood87HT54QP3RGC8EkmpcrJ6tT9Ky0RtaJfrzV5G4jpDsnNua6+YEDpzOMori04hQ==}
 
   '@openzeppelin/merkle-tree@1.0.8':
     resolution: {integrity: sha512-E2c9/Y3vjZXwVvPZKqCKUn7upnvam1P1ZhowJyZVQSkzZm5WhumtaRr+wkUXrZVfkIc7Gfrl7xzabElqDL09ow==}
@@ -744,8 +744,8 @@ packages:
     peerDependencies:
       prettier: ^3.6.0
 
-  prettier-plugin-solidity@2.2.1:
-    resolution: {integrity: sha512-LOHfxECJ/gHsY7qi4D7vanz8cVsCf6yFotBapJ5O0qaX0ZR1sGUzbWfMd4JeQYOItFl+wXW9IcjZOdfr6bmSvQ==}
+  prettier-plugin-solidity@2.3.0:
+    resolution: {integrity: sha512-3M/5w9gs7i2P0aHoyR/i61ZK7vb9AVYH/cS6YevNesS+qxvTZliGYBJNHgezaouqEAv81EEETJCmAs7/ghxNnA==}
     engines: {node: '>=20'}
     peerDependencies:
       prettier: '>=3.0.0'
@@ -1035,7 +1035,7 @@ snapshots:
 
   '@noble/hashes@1.8.0': {}
 
-  '@nomicfoundation/slang@1.3.1':
+  '@nomicfoundation/slang@1.3.4':
     dependencies:
       '@bytecodealliance/preview2-shim': 0.17.8
 
@@ -1600,9 +1600,9 @@ snapshots:
       prettier: 3.8.1
       sh-syntax: 0.5.8
 
-  prettier-plugin-solidity@2.2.1(prettier@3.8.1):
+  prettier-plugin-solidity@2.3.0(prettier@3.8.1):
     dependencies:
-      '@nomicfoundation/slang': 1.3.1
+      '@nomicfoundation/slang': 1.3.4
       '@solidity-parser/parser': 0.20.2
       prettier: 3.8.1
       semver: 7.7.4

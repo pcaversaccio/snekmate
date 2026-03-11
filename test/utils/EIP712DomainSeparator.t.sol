@@ -9,10 +9,12 @@ import {IEIP712DomainSeparator} from "./interfaces/IEIP712DomainSeparator.sol";
 contract EIP712DomainSeparatorTest is Test {
     string private constant _NAME = "WAGMI";
     string private constant _VERSION = "1";
-    bytes32 private constant _TYPE_HASH =
-        keccak256(bytes("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)"));
-    bytes32 private constant _PERMIT_TYPE_HASH =
-        keccak256(bytes("Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)"));
+    bytes32 private constant _TYPE_HASH = keccak256(
+        bytes("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)")
+    );
+    bytes32 private constant _PERMIT_TYPE_HASH = keccak256(
+        bytes("Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)")
+    );
 
     VyperDeployer private vyperDeployer = new VyperDeployer();
 

@@ -23,14 +23,20 @@ contract ERC4626VaultTest is ERC4626Test {
     string private constant _VERSION_EIP712 = "1";
     uint8 private constant _DECIMALS_OFFSET = 0;
     uint256 private constant _INITIAL_SUPPLY_UNDERLYING = type(uint8).max;
-    bytes32 private constant _TYPE_HASH =
-        keccak256(bytes("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)"));
-    bytes32 private constant _PERMIT_TYPE_HASH =
-        keccak256(bytes("Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)"));
+    bytes32 private constant _TYPE_HASH = keccak256(
+        bytes("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)")
+    );
+    bytes32 private constant _PERMIT_TYPE_HASH = keccak256(
+        bytes("Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)")
+    );
 
     VyperDeployer private vyperDeployer = new VyperDeployer();
-    ERC20Mock private underlying =
-        new ERC20Mock(_NAME_UNDERLYING, _SYMBOL_UNDERLYING, makeAddr("initialAccount"), _INITIAL_SUPPLY_UNDERLYING);
+    ERC20Mock private underlying = new ERC20Mock(
+        _NAME_UNDERLYING,
+        _SYMBOL_UNDERLYING,
+        makeAddr("initialAccount"),
+        _INITIAL_SUPPLY_UNDERLYING
+    );
 
     /* solhint-disable var-name-mixedcase */
     IERC4626Extended private ERC4626ExtendedDecimalsOffset0;
@@ -1306,8 +1312,12 @@ contract ERC4626VaultInvariants is Test {
 
     VyperDeployer private vyperDeployer = new VyperDeployer();
     address private deployer = address(vyperDeployer);
-    ERC20Mock private underlying =
-        new ERC20Mock(_NAME_UNDERLYING, _SYMBOL_UNDERLYING, deployer, _INITIAL_SUPPLY_UNDERLYING);
+    ERC20Mock private underlying = new ERC20Mock(
+        _NAME_UNDERLYING,
+        _SYMBOL_UNDERLYING,
+        deployer,
+        _INITIAL_SUPPLY_UNDERLYING
+    );
 
     // solhint-disable-next-line var-name-mixedcase
     IERC4626Extended private ERC4626Extended;

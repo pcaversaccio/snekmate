@@ -15,8 +15,9 @@ contract Create3Test is Test {
     string private constant _SYMBOL = "MTKN";
     uint256 private constant _INITIAL_SUPPLY = type(uint8).max;
     bytes32 private constant _SALT = keccak256("Long Live Vyper!");
-    bytes32 private constant _PROXY_BYTECODE_HASH =
-        keccak256(abi.encodePacked(hex"67_36_3d_3d_37_36_3d_34_f0_3d_52_60_08_60_18_f3"));
+    bytes32 private constant _PROXY_BYTECODE_HASH = keccak256(
+        abi.encodePacked(hex"67_36_3d_3d_37_36_3d_34_f0_3d_52_60_08_60_18_f3")
+    );
     bytes32 private constant _PROXY_RUNTIME_BYTECODE_HASH = keccak256(abi.encodePacked(hex"36_3d_3d_37_36_3d_34_f0"));
 
     VyperDeployer private vyperDeployer = new VyperDeployer();
