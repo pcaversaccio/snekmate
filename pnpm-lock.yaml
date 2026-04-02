@@ -39,8 +39,8 @@ importers:
         specifier: ^2.3.1
         version: 2.3.1(prettier@3.8.1)
       solhint:
-        specifier: ^6.2.0
-        version: 6.2.0
+        specifier: ^6.2.1
+        version: 6.2.1
 
 packages:
 
@@ -616,8 +616,8 @@ packages:
   lodash.truncate@4.4.2:
     resolution: {integrity: sha512-jttmRe7bRse52OsWIMDLaXxWqRAmtIUccAQ3garviCqJjafXOfNMO0yMfNpdD6zbGaTU0P5Nz7e7gAT6cKmJRw==}
 
-  lodash@4.17.21:
-    resolution: {integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==}
+  lodash@4.18.1:
+    resolution: {integrity: sha512-dMInicTPVE8d1e5otfwmmjlxkZoUpiVLwyeTdUsi/Caj/gfzzblBcCE5sRHV/AsjuCmxWrte2TNGSYuCeCq+0Q==}
 
   lowercase-keys@3.0.0:
     resolution: {integrity: sha512-ozCC6gdQ+glXOQsveKD0YsDy8DSQFjDTz4zyzEHNV5+JP5D62LmfDZ6o1cycFx9ouG940M5dE8C8CTewdj2YWQ==}
@@ -812,8 +812,8 @@ packages:
     resolution: {integrity: sha512-qMCMfhY040cVHT43K9BFygqYbUPFZKHOg7K73mtTWJRb8pyP3fzf4Ixd5SzdEJQ6MRUg/WBnOLxghZtKKurENQ==}
     engines: {node: '>=10'}
 
-  solhint@6.2.0:
-    resolution: {integrity: sha512-rFQw2ICWYl8n9Rzp4gIRzN3IqrUFz6fuwnb2TnaG1YN4trkplTeAcT1YXqRsj9Xy0jNcZ/tGtYRsduoaEHHDng==}
+  solhint@6.2.1:
+    resolution: {integrity: sha512-+VHSa84CRjm2s+KZWYxIDnI+NokcLsZHOSpRtg5nBFmnVfh6RPmPaFd5TN922Cfrm2i85kNoQtLiapALe26b5w==}
     engines: {node: '>=20'}
     hasBin: true
 
@@ -1472,7 +1472,7 @@ snapshots:
 
   lodash.truncate@4.4.2: {}
 
-  lodash@4.17.21: {}
+  lodash@4.18.1: {}
 
   lowercase-keys@3.0.0: {}
 
@@ -1636,7 +1636,7 @@ snapshots:
       astral-regex: 2.0.0
       is-fullwidth-code-point: 3.0.0
 
-  solhint@6.2.0:
+  solhint@6.2.1:
     dependencies:
       '@solidity-parser/parser': 0.20.2
       ajv: 8.18.0
@@ -1651,7 +1651,7 @@ snapshots:
       ignore: 5.3.2
       js-yaml: 4.1.1
       latest-version: 7.0.0
-      lodash: 4.17.21
+      lodash: 4.18.1
       pluralize: 8.0.0
       semver: 7.7.4
       table: 6.9.0
