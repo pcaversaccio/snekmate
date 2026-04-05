@@ -1,0 +1,69 @@
+# pragma version ~=0.4.3
+
+@view
+def get_minimum_delay() -> uint256:
+    ...
+
+@nonpayable
+def schedule(
+    target:      address,
+    amount:      uint256,
+    payload:     Bytes[1_024],
+    predecessor: bytes32,
+    salt:        bytes32,
+    delay:       uint256,
+):
+    ...
+
+def schedule_batch(
+    targets:     DynArray[address, 255],
+    amounts:     DynArray[uint256, 255],
+    payloads:    DynArray[Bytes[1_024], 255],
+    predecessor: bytes32,
+    salt:        bytes32,
+    delay:       uint256,
+): 
+    ...
+
+
+def execute(
+    target:      address,
+    amount:      uint256,
+    payload:     Bytes[1_024],
+    predecessor: bytes32,
+    salt:        bytes32,
+): 
+    ...
+
+def execute_batch(
+    targets:     DynArray[address, 255],
+    amounts:     DynArray[uint256, 255],
+    payloads:    DynArray[Bytes[1_024], 255],
+    predecessor: bytes32,
+    salt:        bytes32,
+): 
+    ...
+
+
+def cancel(id: bytes32): 
+    ...
+
+@view
+def hash_operation(
+    target:      address,
+    amount:      uint256,
+    payload:     Bytes[1_024],
+    predecessor: bytes32,
+    salt:        bytes32,
+) -> bytes32: 
+    ...
+
+@view
+def hash_operation_batch(
+    targets:     DynArray[address, 255],
+    amounts:     DynArray[uint256, 255],
+    payloads:    DynArray[Bytes[1_024], 255],
+    predecessor: bytes32,
+    salt:        bytes32,
+) -> bytes32:
+    ...
