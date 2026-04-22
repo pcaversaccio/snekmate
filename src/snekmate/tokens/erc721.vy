@@ -1008,10 +1008,33 @@ def _check_on_erc721_received(owner: address, to: address, token_id: uint256, da
 
 
 @internal
+def _before_token_transfer_default(owner: address, to: address, token_id: uint256):
+    """
+    @dev Default implementation for _before_token_transfer
+    To use it instead of providing you own override, do:
+    ```vyper
+    @override(erc721)
+    def _before_token_transfer(owner: address, to: address, token_id: uint256):
+        return _before_token_transfer_default(owner, to, token_id)
+    ```
+    """
+    if owner == empty(address):
+        self._add_token_to_all_tokens_enumeration(token_id)
+    elif owner != to:
+        self._remove_token_from_owner_enumeration(owner, token_id)
+
+    if to == empty(address):
+        self._remove_token_from_all_tokens_enumeration(token_id)
+    elif to != owner:
+        self._add_token_to_owner_enumeration(to, token_id)
+
+@internal
+@abstract
 def _before_token_transfer(owner: address, to: address, token_id: uint256):
     """
-    @dev Hook that is called before any token transfer.
+    @dev Abstract method that is called before any token transfer.
          This includes minting and burning.
+         If you do not need to modify it, use `_before_token_transfer_default` as the override
     @notice The calling conditions are:
             - when `owner` and `to` are both non-zero,
               `owner`'s tokens will be transferred to `to`,
@@ -1024,22 +1047,15 @@ def _before_token_transfer(owner: address, to: address, token_id: uint256):
     @param to The 20-byte receiver address.
     @param token_id The 32-byte identifier of the token.
     """
-    if owner == empty(address):
-        self._add_token_to_all_tokens_enumeration(token_id)
-    elif owner != to:
-        self._remove_token_from_owner_enumeration(owner, token_id)
-
-    if to == empty(address):
-        self._remove_token_from_all_tokens_enumeration(token_id)
-    elif to != owner:
-        self._add_token_to_owner_enumeration(to, token_id)
+    ...
 
 
 @internal
 def _after_token_transfer(owner: address, to: address, token_id: uint256):
     """
-    @dev Hook that is called after any token transfer.
+    @dev Abstract method that is called after any token transfer.
          This includes minting and burning.
+         If you do not need to modify it, the override can just `pass`
     @notice The calling conditions are:
             - when `owner` and `to` are both non-zero,
               `owner`'s tokens were transferred to `to`,
@@ -1052,7 +1068,7 @@ def _after_token_transfer(owner: address, to: address, token_id: uint256):
     @param to The 20-byte receiver address.
     @param token_id The 32-byte identifier of the token.
     """
-    pass
+    ...
 
 
 @internal
