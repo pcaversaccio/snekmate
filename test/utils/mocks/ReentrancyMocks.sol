@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.34;
+pragma solidity ^0.8.35;
 
 import {IBatchDistributor} from "../interfaces/IBatchDistributor.sol";
 import {ERC20Mock} from "./ERC20Mock.sol";
