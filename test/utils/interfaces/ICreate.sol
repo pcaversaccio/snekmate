@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: WTFPL
-pragma solidity ^0.8.34;
+pragma solidity ^0.8.35;
 
 interface ICreate {
     function deploy_create(bytes calldata initCode) external payable returns (address);
