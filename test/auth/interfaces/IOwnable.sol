@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: WTFPL
-pragma solidity ^0.8.34;
+pragma solidity ^0.8.35;
 
 interface IOwnable {
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
