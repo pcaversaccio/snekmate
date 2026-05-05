@@ -1,0 +1,4 @@
+minimumReleaseAge: 720 # Only install package versions that have been published for at least 12 hours.
+minimumReleaseAgeStrict: true
+allowBuilds:
+  keccak: true

@@ -108,7 +108,7 @@ jobs:
           FOUNDRY_DISABLE_NIGHTLY_WARNING: "1"
 
       - name: Install Homebrew
-        uses: Homebrew/actions/setup-homebrew@master
+        uses: Homebrew/actions/setup-homebrew@main
 
       - name: Install Echidna
         run: brew install echidna
