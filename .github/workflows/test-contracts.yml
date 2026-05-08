@@ -50,6 +50,9 @@ jobs:
         with:
           python-version: ${{ matrix.python_version }}
 
+      - name: Setup vyper-ape manually
+        run: pip install git+https://github.com/figtracer/ape-vyper@bump-vyper-cap-0-6
+
       - name: Check Ape compilation
         run: ape compile
 
