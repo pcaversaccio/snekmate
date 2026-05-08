@@ -3,6 +3,7 @@ contracts_folder: src/snekmate
 default_ecosystem: ethereum
 plugins:
   - name: vyper
+  - version: git+https://github.com/figtracer/ape-vyper.git@bump-vyper-cap-0-6
 vyper:
   evm_version: prague
 compile:
