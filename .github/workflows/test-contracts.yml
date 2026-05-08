@@ -68,6 +68,12 @@ jobs:
       - name: Show the Vyper version
         run: vyper --version
 
+      - name: Setup vyper-ape manually
+        run: pip install git+https://github.com/figtracer/ape-vyper@bump-vyper-cap-0-6
+
+      - name: Show the Vyper version
+        run: vyper --version
+
       - name: Install pnpm
         uses: pnpm/action-setup@v6
         with:
