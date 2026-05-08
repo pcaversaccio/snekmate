@@ -30,7 +30,6 @@ force = true                                                     # Perform alway
 verbosity = 4                                                    # Increase the verbosity level for the tests.
 fuzz = { runs = 10_000, max_test_rejects = 350_000 }             # Increase the number of fuzz runs and maximum number of combined inputs that may be rejected for the tests.
 invariant = { runs = 375, depth = 500 }                          # Increase the number of runs (while preserving the default depth) for each invariant test group.
-vyper = { path = "vyper", optimize = "gas" }                     # Enable experimental code generation using the Venom backend.
 
 # Default overrides for the Echidna tests.
 [profile.echidna]

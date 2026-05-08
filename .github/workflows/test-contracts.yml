@@ -89,6 +89,9 @@ jobs:
           FOUNDRY_PROFILE: ci
           FOUNDRY_DISABLE_NIGHTLY_WARNING: "1"
 
+      - name: Install Vyper
+        run: pip install git+https://github.com/vyperlang/vyper.git@master
+
       - name: Foundry tests
         run: forge test
         env:
