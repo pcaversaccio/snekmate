@@ -1,4 +1,4 @@
-# pragma version ~=0.4.3
+# pragma version ~=0.5.0a1
 # pragma nonreentrancy off
 """
 @title Elliptic Curve Digital Signature Algorithm (ECDSA) Secp256r1-Based Functions

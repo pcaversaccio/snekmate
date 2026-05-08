@@ -1,4 +1,4 @@
-# pragma version ~=0.4.3
+# pragma version ~=0.5.0a1
 # pragma nonreentrancy off
 """
 @title `message_hash_utils` Module Reference Implementation
