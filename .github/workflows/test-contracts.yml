@@ -53,6 +53,9 @@ jobs:
       - name: Setup vyper-ape manually
         run: pip install git+https://github.com/figtracer/ape-vyper@bump-vyper-cap-0-6
 
+      - name: Print list
+        run: ape plugins list
+
       - name: Check Ape compilation
         run: ape compile
 
