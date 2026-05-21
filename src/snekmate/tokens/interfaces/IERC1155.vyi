@@ -1,4 +1,4 @@
-# pragma version ~=0.5.0a1
+# pragma version ~=0.5.0a2
 """
 @title EIP-1155 Interface Definition
 @custom:contract-name IERC1155
@@ -11,13 +11,6 @@
         must implement all of the functions in the ERC-1155
         interface. For more details, please refer to:
         https://eips.ethereum.org/EIPS/eip-1155#specification.
-
-        Note that Vyper interfaces that implement functions
-        with return values that require an upper bound (e.g.
-        `Bytes`, `DynArray`, or `String`), the upper bound
-        defined in the interface represents the lower bound
-        of the implementation:
-        https://github.com/vyperlang/vyper/pull/3205.
 
         On how to use interfaces in Vyper, please visit:
         https://vyper.readthedocs.io/en/latest/interfaces.html#interfaces.
