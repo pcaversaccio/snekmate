@@ -1,21 +1,24 @@
 # 🕓 Changelog
 
-## [`0.1.3`](https://github.com/pcaversaccio/snekmate/releases/tag/v0.1.3) (Unreleased)
+## [`0.2.0`](https://github.com/pcaversaccio/snekmate/releases/tag/v0.2.0) (Unreleased)
 
 ### 💥 New Features
 
 - **Tokens**
-  - [`IERC721Metadata`](https://github.com/pcaversaccio/snekmate/blob/v0.1.3/src/snekmate/tokens/interfaces/IERC721Metadata.vyi): Add unbounded types in interfaces. ([#374](https://github.com/pcaversaccio/snekmate/pull/374))
-  - [`IERC1155`](https://github.com/pcaversaccio/snekmate/blob/v0.1.3/src/snekmate/tokens/interfaces/IERC1155.vyi): Add unbounded types in interfaces. ([#374](https://github.com/pcaversaccio/snekmate/pull/374))
-  - [`IERC1155MetadataURI`](https://github.com/pcaversaccio/snekmate/blob/v0.1.3/src/snekmate/tokens/interfaces/IERC1155MetadataURI.vyi): Add unbounded types in interfaces. ([#374](https://github.com/pcaversaccio/snekmate/pull/374))
+  - [`IERC721Metadata`](https://github.com/pcaversaccio/snekmate/blob/v0.2.0/src/snekmate/tokens/interfaces/IERC721Metadata.vyi): Add unbounded types in interfaces. ([#374](https://github.com/pcaversaccio/snekmate/pull/374))
+  - [`IERC721Receiver`](https://github.com/pcaversaccio/snekmate/blob/v0.2.0/src/snekmate/tokens/interfaces/IERC721Receiver.vyi): Add unbounded types in interfaces. ([#374](https://github.com/pcaversaccio/snekmate/pull/374))
+  - [`IERC1155`](https://github.com/pcaversaccio/snekmate/blob/v0.2.0/src/snekmate/tokens/interfaces/IERC1155.vyi): Add unbounded types in interfaces. ([#374](https://github.com/pcaversaccio/snekmate/pull/374))
+  - [`IERC1155MetadataURI`](https://github.com/pcaversaccio/snekmate/blob/v0.2.0/src/snekmate/tokens/interfaces/IERC1155MetadataURI.vyi): Add unbounded types in interfaces. ([#374](https://github.com/pcaversaccio/snekmate/pull/374))
+  - [`IERC1155Receiver`](https://github.com/pcaversaccio/snekmate/blob/v0.2.0/src/snekmate/tokens/interfaces/IERC1155Receiver.vyi): Add unbounded types in interfaces. ([#374](https://github.com/pcaversaccio/snekmate/pull/374))
 - **Utility Functions**
-  - [`eip7702_utils`](https://github.com/pcaversaccio/snekmate/blob/v0.1.3/src/snekmate/utils/eip7702_utils.vy): Add [EIP-7702](https://eips.ethereum.org/EIPS/eip-7702)-based utility functions. ([#335](https://github.com/pcaversaccio/snekmate/pull/335))
-  - [`IERC5267`](https://github.com/pcaversaccio/snekmate/blob/v0.1.3/src/snekmate/utils/interfaces/IERC5267.vyi): Add unbounded types in interfaces. ([#374](https://github.com/pcaversaccio/snekmate/pull/374))
+  - [`eip7702_utils`](https://github.com/pcaversaccio/snekmate/blob/v0.2.0/src/snekmate/utils/eip7702_utils.vy): Add [EIP-7702](https://eips.ethereum.org/EIPS/eip-7702)-based utility functions. ([#335](https://github.com/pcaversaccio/snekmate/pull/335))
+  - [`IERC1271`](https://github.com/pcaversaccio/snekmate/blob/v0.2.0/src/snekmate/utils/interfaces/IERC1271.vyi): Add unbounded types in interfaces. ([#374](https://github.com/pcaversaccio/snekmate/pull/374))
+  - [`IERC5267`](https://github.com/pcaversaccio/snekmate/blob/v0.2.0/src/snekmate/utils/interfaces/IERC5267.vyi): Add unbounded types in interfaces. ([#374](https://github.com/pcaversaccio/snekmate/pull/374))
 
 ### 🐛 Bug Fixes
 
 - **Utility Functions**
-  - [`base64`](https://github.com/pcaversaccio/snekmate/blob/v0.1.3/src/snekmate/utils/base64.vy): Fix `base64` `_decode` double padding detection. ([#345](https://github.com/pcaversaccio/snekmate/pull/345))
+  - [`base64`](https://github.com/pcaversaccio/snekmate/blob/v0.2.0/src/snekmate/utils/base64.vy): Fix `base64` `_decode` double padding detection. ([#345](https://github.com/pcaversaccio/snekmate/pull/345))
 
 ### 🥢 Test Coverage
 
@@ -27,7 +30,7 @@
 
 ### 👀 Full Changelog
 
-- [`v0.1.2...v0.1.3`](https://github.com/pcaversaccio/snekmate/compare/v0.1.2...v0.1.3)
+- [`v0.1.2...v0.2.0`](https://github.com/pcaversaccio/snekmate/compare/v0.1.2...v0.2.0)
 
 ## [`0.1.2`](https://github.com/pcaversaccio/snekmate/releases/tag/v0.1.2) (25-06-2025)
 
