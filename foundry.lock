@@ -2,7 +2,7 @@
   "lib/create-util": {
     "branch": {
       "name": "main",
-      "rev": "c00091bdd71a14d8ac61ef4dee21e8e39127ea7f"
+      "rev": "4f02ca8b3a22b272a9c35140ea0848fb27f584f7"
     }
   },
   "lib/erc4626-tests": {
@@ -14,7 +14,7 @@
   "lib/forge-std": {
     "branch": {
       "name": "master",
-      "rev": "7e403a0723847e71b326a05e1bff9cabd4e75ccc"
+      "rev": "b3bc8b154382a75d0b0ef22d7fd4a0a5f0feee0e"
     }
   },
   "lib/halmos-cheatcodes": {
@@ -50,7 +50,7 @@
   "lib/solady": {
     "branch": {
       "name": "main",
-      "rev": "eac28eab2fe0f8a75539b0207a94bcc551c3d960"
+      "rev": "92539ab59f1e2163d0ee1f7e78193845bbde88c9"
     }
   },
   "lib/solidity-bytes-utils": {
