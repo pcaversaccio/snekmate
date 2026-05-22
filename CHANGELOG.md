@@ -5,12 +5,12 @@
 ### 💥 New Features
 
 - **Tokens**
-  - [`IERC721Metadata`](https://github.com/pcaversaccio/snekmate/blob/v0.1.3/src/snekmate/tokens/interfaces/IERC721Metadata.vyi): Add unbounded bytestring return types in interfaces. ([#374](https://github.com/pcaversaccio/snekmate/pull/374))
-  - [`IERC1155`](https://github.com/pcaversaccio/snekmate/blob/v0.1.3/src/snekmate/tokens/interfaces/IERC1155.vyi): Add unbounded bytestring return types in interfaces. ([#374](https://github.com/pcaversaccio/snekmate/pull/374))
-  - [`IERC1155MetadataURI`](https://github.com/pcaversaccio/snekmate/blob/v0.1.3/src/snekmate/tokens/interfaces/IERC1155MetadataURI.vyi): Add unbounded bytestring return types in interfaces. ([#374](https://github.com/pcaversaccio/snekmate/pull/374))
+  - [`IERC721Metadata`](https://github.com/pcaversaccio/snekmate/blob/v0.1.3/src/snekmate/tokens/interfaces/IERC721Metadata.vyi): Add unbounded types in interfaces. ([#374](https://github.com/pcaversaccio/snekmate/pull/374))
+  - [`IERC1155`](https://github.com/pcaversaccio/snekmate/blob/v0.1.3/src/snekmate/tokens/interfaces/IERC1155.vyi): Add unbounded types in interfaces. ([#374](https://github.com/pcaversaccio/snekmate/pull/374))
+  - [`IERC1155MetadataURI`](https://github.com/pcaversaccio/snekmate/blob/v0.1.3/src/snekmate/tokens/interfaces/IERC1155MetadataURI.vyi): Add unbounded types in interfaces. ([#374](https://github.com/pcaversaccio/snekmate/pull/374))
 - **Utility Functions**
   - [`eip7702_utils`](https://github.com/pcaversaccio/snekmate/blob/v0.1.3/src/snekmate/utils/eip7702_utils.vy): Add [EIP-7702](https://eips.ethereum.org/EIPS/eip-7702)-based utility functions. ([#335](https://github.com/pcaversaccio/snekmate/pull/335))
-  - [`IERC5267`](https://github.com/pcaversaccio/snekmate/blob/v0.1.3/src/snekmate/utils/interfaces/IERC5267.vyi): Add unbounded bytestring return types in interfaces. ([#374](https://github.com/pcaversaccio/snekmate/pull/374))
+  - [`IERC5267`](https://github.com/pcaversaccio/snekmate/blob/v0.1.3/src/snekmate/utils/interfaces/IERC5267.vyi): Add unbounded types in interfaces. ([#374](https://github.com/pcaversaccio/snekmate/pull/374))
 
 ### 🐛 Bug Fixes
 

@@ -81,7 +81,7 @@ def supportsInterface(interfaceId: bytes4) -> bool:
 
 
 @external
-def safeTransferFrom(_from: address, _to: address, _id: uint256, _value: uint256, _data: Bytes[1_024]):
+def safeTransferFrom(_from: address, _to: address, _id: uint256, _value: uint256, _data: Bytes[...]):
     """
     @dev Transfers `_value` tokens of token type `_id` from
          `_from` to `_to`.
@@ -106,15 +106,15 @@ def safeTransferFrom(_from: address, _to: address, _id: uint256, _value: uint256
     @param _id The 32-byte identifier of the token.
     @param _value The 32-byte token amount that is
            being transferred.
-    @param _data The maximum 1,024-byte additional data
-           with no specified format.
+    @param _data The unbounded additional data with
+           no specified format.
     """
     ...
 
 
 @external
 def safeBatchTransferFrom(
-    _from: address, _to: address, _ids: DynArray[uint256, 128], _values: DynArray[uint256, 128], _data: Bytes[1_024]
+    _from: address, _to: address, _ids: DynArray[uint256, ...], _values: DynArray[uint256, ...], _data: Bytes[...]
 ):
     """
     @dev Batched version of `safeTransferFrom`.
@@ -138,8 +138,8 @@ def safeBatchTransferFrom(
     @param _values The 32-byte array of token amounts that are being
            transferred. Note that the order and length must match
            the 32-byte `_ids` array.
-    @param _data The maximum 1,024-byte additional data
-           with no specified format.
+    @param _data The unbounded additional data with no
+           specified format.
     """
     ...
 
@@ -160,7 +160,7 @@ def balanceOf(_owner: address, _id: uint256) -> uint256:
 
 @external
 @view
-def balanceOfBatch(_owners: DynArray[address, 128], _ids: DynArray[uint256, 128]) -> DynArray[uint256, 128]:
+def balanceOfBatch(_owners: DynArray[address, ...], _ids: DynArray[uint256, ...]) -> DynArray[uint256, ...]:
     """
     @dev Batched version of `balanceOf`.
     @notice Note that `_owners` and `_ids` must have the
