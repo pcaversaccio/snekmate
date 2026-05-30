@@ -13,13 +13,6 @@
         more details, please refer to:
         https://eips.ethereum.org/EIPS/eip-5267.
 
-        Note that Vyper interfaces that implement functions
-        with return values that require an upper bound (e.g.
-        `Bytes`, `DynArray`, or `String`), the upper bound
-        defined in the interface represents the lower bound
-        of the implementation:
-        https://github.com/vyperlang/vyper/pull/3205.
-
         On how to use interfaces in Vyper, please visit:
         https://vyper.readthedocs.io/en/latest/interfaces.html#interfaces.
 """
@@ -33,7 +26,7 @@ event EIP712DomainChanged:
 
 @external
 @view
-def eip712Domain() -> (bytes1, String[50], String[20], uint256, address, bytes32, DynArray[uint256, 32]):
+def eip712Domain() -> (bytes1, String[...], String[...], uint256, address, bytes32, DynArray[uint256, ...]):
     """
     @dev Returns the fields and values that describe the domain
          separator used by this contract for EIP-712 signatures.
@@ -43,11 +36,10 @@ def eip712Domain() -> (bytes1, String[50], String[20], uint256, address, bytes32
             order in which they are listed in the function type.
     @return bytes1 The 1-byte bit map where bit `i` is set to `1`
             if and only if domain field `i` is present (`0 ≤ i ≤ 4`).
-    @return String The maximum 50-character user-readable string name
-            of the signing domain, i.e. the name of the dApp or protocol.
-    @return String The maximum 20-character current main version of
-            the signing domain. Signatures from different versions are
-            not compatible.
+    @return String The unbounded user-readable string name of the
+            signing domain, i.e. the name of the dApp or protocol.
+    @return String The unbounded current main version of the signing
+            domain. Signatures from different versions are not compatible.
     @return uint256 The 32-byte EIP-155 chain ID.
     @return address The 20-byte address of the verifying contract.
     @return bytes32 The 32-byte disambiguation salt for the protocol.
