@@ -1,4 +1,4 @@
-# pragma version ~=0.5.0a2
+# pragma version ~=0.5.0a3
 # pragma nonreentrancy off
 """
 @title `batch_distributor` Module Reference Implementation
