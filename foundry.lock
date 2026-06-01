@@ -2,7 +2,7 @@
   "lib/create-util": {
     "branch": {
       "name": "main",
-      "rev": "4f02ca8b3a22b272a9c35140ea0848fb27f584f7"
+      "rev": "ad90eed57bd2c6d6aa05b9e0c904e31a41ebe9b5"
     }
   },
   "lib/erc4626-tests": {
@@ -32,7 +32,7 @@
   "lib/openzeppelin-contracts": {
     "branch": {
       "name": "master",
-      "rev": "cd05883078060e0cd8a7bd36636944570dbe1722"
+      "rev": "74edc4baff50b93c06977021ee9ba25987803291"
     }
   },
   "lib/prb-test": {
@@ -50,7 +50,7 @@
   "lib/solady": {
     "branch": {
       "name": "main",
-      "rev": "92539ab59f1e2163d0ee1f7e78193845bbde88c9"
+      "rev": "166f85b9576f311446b0f9b3082565bbe0c17af5"
     }
   },
   "lib/solidity-bytes-utils": {

@@ -1,5 +1,5 @@
-Vyper version: 0.5.0a2+commit.243d6557
-Forge version: forge 1.7.2-nightly (4079946 2026-05-21T07:09:56.093307550Z)
+Vyper version: 0.5.0a3+commit.b4145b73
+Forge version: forge 1.7.2-nightly (9022115 2026-06-01T09:37:43.127411618Z)
 Vyper config:
 {
   "optimize": "gas"
