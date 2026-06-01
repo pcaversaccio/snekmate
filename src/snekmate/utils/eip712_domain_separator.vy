@@ -1,4 +1,4 @@
-# pragma version ~=0.5.0a2
+# pragma version ~=0.5.0a3
 # pragma nonreentrancy off
 """
 @title EIP-712 Domain Separator
@@ -8,7 +8,7 @@
 @notice These functions are part of EIP-712: https://eips.ethereum.org/EIPS/eip-712.
         These functions implement the version of encoding known
         as "v4" as implemented by the JSON-RPC method:
-        https://docs.metamask.io/guide/signing-data.html#sign-typed-data-v4.
+        https://docs.metamask.io/metamask-connect/evm/reference/json-rpc-api/eth_signTypedData_v4.
         In addition, this contract also implements EIP-5267:
         https://eips.ethereum.org/EIPS/eip-5267.
         The implementation is inspired by OpenZeppelin's implementation here:

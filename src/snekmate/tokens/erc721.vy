@@ -1,4 +1,4 @@
-# pragma version ~=0.5.0a2
+# pragma version ~=0.5.0a3
 # pragma nonreentrancy off
 """
 @title Modern and Gas-Efficient ERC-721 + EIP-4494 Implementation
