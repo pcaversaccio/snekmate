@@ -29,7 +29,7 @@ invariant = { runs = 256, depth = 15 }                           # Configure the
 force = true                                                     # Perform always a clean build.
 verbosity = 4                                                    # Increase the verbosity level for the tests.
 fuzz = { runs = 10_000, max_test_rejects = 350_000 }             # Increase the number of fuzz runs and maximum number of combined inputs that may be rejected for the tests.
-invariant = { runs = 375, depth = 500 }                          # Increase the number of runs (while preserving the default depth) for each invariant test contract campaign.
+invariant = { runs = 375, depth = 500 }                          # Increase the number of runs and handler calls per run for each invariant test contract campaign.
 
 # Default overrides for the Echidna tests.
 [profile.echidna]
@@ -49,7 +49,7 @@ vyper = { experimental_codegen = true }                          # Enable experi
 force = true                                                     # Perform always a clean build.
 verbosity = 4                                                    # Increase the verbosity level for the tests.
 fuzz = { runs = 10_000, max_test_rejects = 350_000 }             # Increase the number of fuzz runs and maximum number of combined inputs that may be rejected for the tests.
-invariant = { runs = 375, depth = 500 }                          # Increase the number of runs (while preserving the default depth) for each invariant test contract campaign.
+invariant = { runs = 375, depth = 500 }                          # Increase the number of runs and handler calls per run for each invariant test contract campaign.
 vyper = { experimental_codegen = true }                          # Enable experimental code generation using the Venom backend.
 
 # Default overrides for the the Venom-based Echidna tests.
