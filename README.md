@@ -88,6 +88,7 @@ src
         ├── eip7702_utils — "EIP-7702 Utility Functions"
         ├── math — "Standard Mathematical Utility Functions"
         ├── merkle_proof_verification — "Merkle Tree Proof Verification Functions"
+        ├── circuit_breaker — "One-Way Circuit Breaker Functions"
         ├── multicall — "Multicall Functions"
         ├── pausable — "Pausable Functions"
         ├── interfaces
@@ -108,6 +109,7 @@ src
             ├── eip7702_utils_mock — "`eip7702_utils` Module Reference Implementation"
             ├── math_mock — "`math` Module Reference Implementation"
             ├── merkle_proof_verification_mock — "`merkle_proof_verification` Module Reference Implementation"
+            ├── circuit_breaker_mock — "`circuit_breaker` Module Reference Implementation"
             ├── multicall_mock — "`multicall` Module Reference Implementation"
             └── pausable_mock — "`pausable` Module Reference Implementation"
 ```
@@ -210,6 +212,7 @@ This repository contains [Foundry](https://github.com/foundry-rs/foundry)-based 
 | `eip7702_utils`             |       ✅       |            ✅            |         ❌          |
 | `math`                      |       ✅       |            ✅            |         ❌          |
 | `merkle_proof_verification` |       ✅       |            ✅            |         ❌          |
+| `circuit_breaker`           |       ✅       |            ✅            |         ✅          |
 | `multicall`                 |       ✅       |            ❌            |         ❌          |
 | `pausable`                  |       ✅       |            ✅            |         ✅          |
 
