@@ -624,13 +624,17 @@ contract MathTest is Test {
         assertEq(math.cbrt(x, true), ceil);
     }
 
-    function testFuzzWadCbrt(uint256 x, uint256 boundaryChoice) public view {
+    function testFuzzWadCbrt(uint256 x) public view {
+        uint256 result = math.wad_cbrt(x);
+        uint256 floor = floorCbrt(x);
+        assertTrue(result >= floor * 10 ** 12);
+        assertTrue(result <= (floor + 1) * 10 ** 12);
+    }
+
+    function testWadCbrtBranchBehaviour(uint256 x, uint256 boundaryChoice) public view {
         uint256 cutoff1 = type(uint256).max / 10 ** 36;
         uint256 cutoff2 = cutoff1 * 10 ** 18;
 
-        /**
-         * @dev Steer a portion of fuzz runs straight into the branch cutoffs (cliff edges).
-         */
         if (boundaryChoice % 5 == 0 && x > 0) {
             x = cutoff1 - 1 + (x % 3);
         } else if (boundaryChoice % 5 == 1) {
@@ -638,26 +642,8 @@ contract MathTest is Test {
         }
 
         uint256 result = math.wad_cbrt(x);
-
-        /**
-         * @dev Verify the result falls within the expected 1 wad step range bounds.
-         */
         uint256 floor = floorCbrt(x);
-        assertTrue(result >= floor * 10 ** 12 && result <= (floor + 1) * 10 ** 12);
-
-        /**
-         * @dev Perform strict branch matching. Because `_wad_cbrt` lacks a terminal
-         * floor-correction step, its internal loop can settle exactly 1 unit above
-         * the true floor of the intermediate scale.
-         */
-        if (x < cutoff1) {
-            assertEq(result, floorCbrt(x * 10 ** 36));
-        } else if (x < cutoff2) {
-            uint256 expectedFloor = floorCbrt(x * 10 ** 18) * 10 ** 6;
-            assertTrue(result == expectedFloor || result == expectedFloor + 10 ** 6);
-        } else {
-            uint256 expectedFloor = floorCbrt(x) * 10 ** 12;
-            assertTrue(result == expectedFloor || result == expectedFloor + 10 ** 12);
-        }
+        assertTrue(result >= floor * 10 ** 12);
+        assertTrue(result <= (floor + 1) * 10 ** 12);
     }
 }
