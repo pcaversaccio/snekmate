@@ -353,6 +353,7 @@ contract MathTest is Test {
         assertEq(math.cbrt(type(uint64).max, false), 2_642_245);
         assertEq(math.cbrt(type(uint128).max, false), 6_981_463_658_331);
         assertEq(math.cbrt(type(uint256).max, false), 48_740_834_812_604_276_470_692_694);
+        assertEq(math.cbrt(120_358_395_235_964_652_865_782_901_274_721_597_874_667, false), 49_373_297_051_988);
     }
 
     function testCbrtRoundUp() public view {
@@ -373,6 +374,7 @@ contract MathTest is Test {
         assertEq(math.cbrt(type(uint64).max, true), 2_642_246);
         assertEq(math.cbrt(type(uint128).max, true), 6_981_463_658_332);
         assertEq(math.cbrt(type(uint256).max, true), 48_740_834_812_604_276_470_692_695);
+        assertEq(math.cbrt(120_358_395_235_964_652_865_782_901_274_721_597_874_667, true), 49_373_297_051_989);
     }
 
     function testWadCbrt() public view {
@@ -593,6 +595,29 @@ contract MathTest is Test {
         } else {
             assertEq(result, floor);
         }
+    }
+
+    function testFuzzCbrtEdgeCases(uint256 seedRoot, uint256 offsetChoice) public view {
+        uint256 maxRoot = 48_740_834_812_604_276_470_692_694;
+        uint256 r = bound(seedRoot, 0, maxRoot);
+        uint256 x = r * r * r;
+
+        /**
+         * @dev Perturb the perfect cube to rigorously test the `floor`/`ceil` transition thresholds.
+         */
+        if (offsetChoice % 3 == 0 && x > 0) {
+            x -= 1;
+        } else if (offsetChoice % 3 == 1 && x < type(uint256).max) {
+            x += 1;
+        }
+
+        uint256 floor = floorCbrt(x);
+        assertEq(math.cbrt(x, false), floor);
+        /**
+         * @dev Validate the round-up behaviour (must increment if `x` is not a perfect cube).
+         */
+        uint256 ceil = (floor * floor * floor == x) ? floor : floor + 1;
+        assertEq(math.cbrt(x, true), ceil);
     }
 
     function testFuzzWadCbrt(uint256 x) public view {
