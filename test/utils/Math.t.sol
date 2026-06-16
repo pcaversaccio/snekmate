@@ -598,6 +598,15 @@ contract MathTest is Test {
             assertEq(result, ceil);
         } else {
             assertEq(result, floor);
+            /**
+             * @dev Directly assert the floor contract: `result**3 <= x < (result + 1)**3`.
+             */
+            assertTrue(result == 0 || result * result * result <= x);
+            uint256 maxRoot = 48_740_834_812_604_276_470_692_694;
+            if (result < maxRoot) {
+                uint256 rp1 = result + 1;
+                assertTrue(rp1 * rp1 * rp1 > x);
+            }
         }
     }
 
@@ -608,6 +617,7 @@ contract MathTest is Test {
 
         /**
          * @dev Perturb the perfect cube to rigorously test the `floor`/`ceil` transition thresholds.
+         * The three cases cover `n**3 - 1`, `n**3 + 1`, and `n**3` (perfect cube) respectively.
          */
         if (offsetChoice % 3 == 0 && x > 0) {
             x -= 1;
@@ -617,6 +627,11 @@ contract MathTest is Test {
 
         uint256 floor = floorCbrt(x);
         assertEq(math.cbrt(x, false), floor);
+        assertTrue(floor == 0 || floor * floor * floor <= x);
+        if (floor < maxRoot) {
+            uint256 fp1 = floor + 1;
+            assertTrue(fp1 * fp1 * fp1 > x);
+        }
         /**
          * @dev Validate the round-up behaviour (must increment if `x` is not a perfect cube).
          */
@@ -635,10 +650,14 @@ contract MathTest is Test {
         uint256 cutoff1 = type(uint256).max / 10 ** 36;
         uint256 cutoff2 = cutoff1 * 10 ** 18;
 
-        if (boundaryChoice % 5 == 0 && x > 0) {
-            x = cutoff1 - 1 + (x % 3);
+        /**
+         * @dev Clamp the offset to `{0, 1}` so the steered value stays within
+         * `[cutoff - 1, cutoff]` and does not bleed into the adjacent branch.
+         */
+        if (boundaryChoice % 5 == 0) {
+            x = cutoff1 - 1 + (x % 2);
         } else if (boundaryChoice % 5 == 1) {
-            x = cutoff2 - 1 + (x % 3);
+            x = cutoff2 - 1 + (x % 2);
         }
 
         uint256 result = math.wad_cbrt(x);

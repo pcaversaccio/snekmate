@@ -583,10 +583,10 @@ def _cbrt(x: uint256, roundup: bool) -> uint256:
     ) | 1
 
     # 5 Newton-Raphson iterations suffice here (vs 7 in `_wad_cbrt`) because the
-    # `0x90_B5_E5` seed yields "~3" correct bits vs "~1.4" for the "1260 / 1000"
-    # seed, and each step doubles them ("~3->~6->~12->~25->~50->~100"), clearing
-    # the "~86"-bit output range of `cbrt(2**256-1)` with margin. The iterations
-    # are unrolled. This reduces the gas cost, but requires more bytecode.
+    # `0x90_B5_E5` seed yields ~3 correct bits vs ~1.4 for the "1,260 / 1,000" seed,
+    # and each step doubles them ("~3->~6->~12->~25->~50->~100"), clearing the ~86-bit
+    # output range of `cbrt(2**256 - 1)` with margin. The iterations are unrolled.
+    # This reduces the gas cost, but requires more bytecode.
     y = unsafe_div(unsafe_add(unsafe_mul(2, y), unsafe_div(x, unsafe_mul(y, y))), 3)
     y = unsafe_div(unsafe_add(unsafe_mul(2, y), unsafe_div(x, unsafe_mul(y, y))), 3)
     y = unsafe_div(unsafe_add(unsafe_mul(2, y), unsafe_div(x, unsafe_mul(y, y))), 3)
