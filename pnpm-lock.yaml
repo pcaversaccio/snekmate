@@ -30,14 +30,14 @@ importers:
         specifier: ^0.6.0
         version: 0.6.0
       prettier:
-        specifier: ^3.8.3
-        version: 3.8.3
+        specifier: ^3.8.4
+        version: 3.8.4
       prettier-plugin-sh:
         specifier: ^0.18.1
-        version: 0.18.1(prettier@3.8.3)
+        version: 0.18.1(prettier@3.8.4)
       prettier-plugin-solidity:
         specifier: ^2.3.1
-        version: 2.3.1(prettier@3.8.3)
+        version: 2.3.1(prettier@3.8.4)
       solhint:
         specifier: ^6.2.1
         version: 6.2.1
@@ -745,8 +745,8 @@ packages:
     peerDependencies:
       prettier: '>=3.0.0'
 
-  prettier@3.8.3:
-    resolution: {integrity: sha512-7igPTM53cGHMW8xWuVTydi2KO233VFiTNyF5hLJqpilHfmn8C8gPf+PS7dUT64YcXFbiMGZxS9pCSxL/Dxm/Jw==}
+  prettier@3.8.4:
+    resolution: {integrity: sha512-N2MylSdi48+5N/6S5j+maeHbUSIzzZ5uOcX5Hm4QpV8Dkb1HFjfAKTKX6yNPJQD9AhcT3ifHNB66tWTTJDi11Q==}
     engines: {node: '>=14'}
     hasBin: true
 
@@ -795,8 +795,8 @@ packages:
   safe-buffer@5.2.1:
     resolution: {integrity: sha512-rp3So07KcdmmKbGvgaNxQSJr7bGVSVk5S9Eq1F+ppbRo70+YeaDxkw5Dd8NPN+GD6bjnYm2VuPuCXmpuYvmCXQ==}
 
-  semver@7.8.2:
-    resolution: {integrity: sha512-c8jsqUZm3omBOI66G90z1Dyw5z622G8oLG+omfsHBJf3CWQTlOcwOjvOG6wtiNfW6anKm/eA39LMwMtMez2TiQ==}
+  semver@7.8.4:
+    resolution: {integrity: sha512-rUCObTnP32Q08R2uuIrt7r9PlEonuTmtuXYcW6s5kjdlj3xbnwe+21yXptAUYcMAABLkYYTtnmzb3w3EDZfueA==}
     engines: {node: '>=10'}
     hasBin: true
 
@@ -1004,7 +1004,7 @@ snapshots:
       '@types/debug': 4.1.13
       debug: 4.4.3
       pony-cause: 2.1.11
-      semver: 7.8.2
+      semver: 7.8.4
       uuid: 9.0.1
     transitivePeerDependencies:
       - supports-color
@@ -1542,7 +1542,7 @@ snapshots:
       got: 12.6.1
       registry-auth-token: 5.1.1
       registry-url: 6.0.1
-      semver: 7.8.2
+      semver: 7.8.4
 
   parent-module@1.0.1:
     dependencies:
@@ -1574,20 +1574,20 @@ snapshots:
 
   prelude-ls@1.2.1: {}
 
-  prettier-plugin-sh@0.18.1(prettier@3.8.3):
+  prettier-plugin-sh@0.18.1(prettier@3.8.4):
     dependencies:
       '@reteps/dockerfmt': 0.5.2
-      prettier: 3.8.3
+      prettier: 3.8.4
       sh-syntax: 0.5.8
 
-  prettier-plugin-solidity@2.3.1(prettier@3.8.3):
+  prettier-plugin-solidity@2.3.1(prettier@3.8.4):
     dependencies:
       '@nomicfoundation/slang': 1.3.4
       '@solidity-parser/parser': 0.20.2
-      prettier: 3.8.3
-      semver: 7.8.2
+      prettier: 3.8.4
+      semver: 7.8.4
 
-  prettier@3.8.3: {}
+  prettier@3.8.4: {}
 
   proto-list@1.2.4: {}
 
@@ -1628,7 +1628,7 @@ snapshots:
 
   safe-buffer@5.2.1: {}
 
-  semver@7.8.2: {}
+  semver@7.8.4: {}
 
   sh-syntax@0.5.8:
     dependencies:
@@ -1663,11 +1663,11 @@ snapshots:
       latest-version: 7.0.0
       lodash: 4.18.1
       pluralize: 8.0.0
-      semver: 7.8.2
+      semver: 7.8.4
       table: 6.9.0
       text-table: 0.2.0
     optionalDependencies:
-      prettier: 3.8.3
+      prettier: 3.8.4
     transitivePeerDependencies:
       - typescript
 
