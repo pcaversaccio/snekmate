@@ -35,7 +35,9 @@
 
         external
         def foo():
-            assert access_control.hasRole[MY_ROLE][msg.sender], IAccessControl.AccessControlUnauthorizedAccount(msg.sender, MY_ROLE)
+            assert access_control.hasRole[MY_ROLE][msg.sender], IAccessControl.AccessControlUnauthorizedAccount(
+                account=msg.sender, neededRole=MY_ROLE
+            )
             ...
 
         OR
@@ -197,7 +199,9 @@ def _check_role(role: bytes32, account: address):
     @param role The 32-byte role definition.
     @param account The 20-byte address of the account.
     """
-    assert self.hasRole[role][account], IAccessControl.AccessControlUnauthorizedAccount(account, role)
+    assert self.hasRole[role][account], IAccessControl.AccessControlUnauthorizedAccount(
+        account=account, neededRole=role
+    )
 
 
 @internal
