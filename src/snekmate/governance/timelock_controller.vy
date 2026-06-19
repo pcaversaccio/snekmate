@@ -220,14 +220,6 @@ event MinimumDelayChange:
     new_duration: uint256
 
 
-# @dev Mismatch between the parameters length for
-# an operation call.
-error TimelockControllerInvalidOperationLength:
-    targets: uint256
-    payloads: uint256
-    amounts: uint256
-
-
 # @dev The current state of an operation is not as
 # required. The `expected_states` is a bitmap with
 # the bits enabled for each `OperationState` flag
@@ -244,20 +236,28 @@ error TimelockControllerInsufficientDelay:
     min_delay: uint256
 
 
+# @dev Mismatch between the parameters length for
+# an operation call.
+error TimelockControllerInvalidOperationLength:
+    targets: uint256
+    payloads: uint256
+    amounts: uint256
+
+
 # @dev The predecessor to an operation is not yet
 # done.
 error TimelockControllerUnexecutedPredecessor:
     predecessor_id: bytes32
 
 
-# @dev The `caller` account is not authorised.
-error TimelockControllerUnauthorisedCaller:
-    caller: address
-
-
 # @dev A call to an address `target` failed.
 error TimelockControllerFailedCall:
     target: address
+
+
+# @dev The `caller` account is not authorised.
+error TimelockControllerUnauthorisedCaller:
+    caller: address
 
 
 @deploy
