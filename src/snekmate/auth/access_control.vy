@@ -35,7 +35,7 @@
 
         external
         def foo():
-            assert access_control.hasRole[MY_ROLE][msg.sender], "access_control: account is missing role"
+            assert access_control.hasRole[MY_ROLE][msg.sender], IAccessControl.AccessControlUnauthorizedAccount(msg.sender, MY_ROLE)
             ...
 
         OR
@@ -171,7 +171,7 @@ def renounceRole(role: bytes32, account: address):
     @param role The 32-byte role definition.
     @param account The 20-byte address of the account.
     """
-    assert account == msg.sender, "access_control: can only renounce roles for itself"
+    assert account == msg.sender, IAccessControl.AccessControlBadConfirmation()
     self._revoke_role(role, account)
 
 
@@ -197,7 +197,7 @@ def _check_role(role: bytes32, account: address):
     @param role The 32-byte role definition.
     @param account The 20-byte address of the account.
     """
-    assert self.hasRole[role][account], "access_control: account is missing role"
+    assert self.hasRole[role][account], IAccessControl.AccessControlUnauthorizedAccount(account, role)
 
 
 @internal

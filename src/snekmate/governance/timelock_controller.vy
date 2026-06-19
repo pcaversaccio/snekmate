@@ -220,6 +220,46 @@ event MinimumDelayChange:
     new_duration: uint256
 
 
+# @dev Mismatch between the parameters length for
+# an operation call.
+error TimelockControllerInvalidOperationLength:
+    targets: uint256
+    payloads: uint256
+    amounts: uint256
+
+
+# @dev The current state of an operation is not as
+# required. The `expected_states` is a bitmap with
+# the bits enabled for each `OperationState` flag
+# member, counting from right to left.
+error TimelockControllerUnexpectedOperationState:
+    operation_id: bytes32
+    expected_states: bytes32
+
+
+# @dev The schedule operation does not meet the
+# minimum delay.
+error TimelockControllerInsufficientDelay:
+    delay: uint256
+    min_delay: uint256
+
+
+# @dev The predecessor to an operation is not yet
+# done.
+error TimelockControllerUnexecutedPredecessor:
+    predecessor_id: bytes32
+
+
+# @dev The `caller` account is not authorised.
+error TimelockControllerUnauthorisedCaller:
+    caller: address
+
+
+# @dev A call to an address `target` failed.
+error TimelockControllerFailedCall:
+    target: address
+
+
 @deploy
 @payable
 def __init__(
@@ -473,7 +513,9 @@ def schedule_batch(
            Must be greater than or equal to the minimum delay.
     """
     access_control._check_role(PROPOSER_ROLE, msg.sender)
-    assert ((len(targets) == len(amounts)) and (len(targets) == len(payloads))), "timelock_controller: length mismatch"
+    assert (len(targets) == len(amounts)) and (len(targets) == len(payloads)), TimelockControllerInvalidOperationLength(
+        targets=len(targets), payloads=len(payloads), amounts=len(amounts)
+    )
     id: bytes32 = self._hash_operation_batch(targets, amounts, payloads, predecessor, salt)
 
     self._schedule(id, delay)
@@ -505,7 +547,12 @@ def cancel(id: bytes32):
     @param id The 32-byte operation identifier.
     """
     access_control._check_role(CANCELLER_ROLE, msg.sender)
-    assert self._is_operation_pending(id), "timelock_controller: operation cannot be cancelled"
+    assert self._is_operation_pending(id), TimelockControllerUnexpectedOperationState(
+        operation_id=id,
+        expected_states=convert(
+            convert(OperationState.WAITING, uint256) | convert(OperationState.READY, uint256), bytes32
+        ),
+    )
     self.get_timestamp[id] = empty(uint256)
     log Cancelled(id=id)
 
@@ -565,7 +612,9 @@ def execute_batch(
                      the operation during reentrancy are caught.
     """
     self._only_role_or_open_role(EXECUTOR_ROLE)
-    assert ((len(targets) == len(amounts)) and (len(targets) == len(payloads))), "timelock_controller: length mismatch"
+    assert (len(targets) == len(amounts)) and (len(targets) == len(payloads)), TimelockControllerInvalidOperationLength(
+        targets=len(targets), payloads=len(payloads), amounts=len(amounts)
+    )
     id: bytes32 = self._hash_operation_batch(targets, amounts, payloads, predecessor, salt)
 
     self._before_call(id, predecessor)
@@ -593,7 +642,7 @@ def update_delay(new_delay: uint256):
             call to this function.
     @param new_delay The new 32-byte minimum delay in seconds.
     """
-    assert msg.sender == self, "timelock_controller: caller must be timelock"
+    assert msg.sender == self, TimelockControllerUnauthorisedCaller(caller=msg.sender)
     log MinimumDelayChange(old_duration=self.get_minimum_delay, new_duration=new_delay)
     self.get_minimum_delay = new_delay
 
@@ -809,8 +858,11 @@ def _schedule(id: bytes32, delay: uint256):
            becomes valid. Must be greater than or equal
            to the minimum delay.
     """
-    assert not self._is_operation(id), "timelock_controller: operation already scheduled"
-    assert delay >= self.get_minimum_delay, "timelock_controller: insufficient delay"
+    assert not self._is_operation(id), TimelockControllerUnexpectedOperationState(
+        operation_id=id, expected_states=convert(convert(OperationState.UNSET, uint256), bytes32)
+    )
+    min_delay: uint256 = self.get_minimum_delay
+    assert delay >= min_delay, TimelockControllerInsufficientDelay(delay=delay, min_delay=min_delay)
     self.get_timestamp[id] = block.timestamp + delay
 
 
@@ -833,7 +885,7 @@ def _execute(target: address, amount: uint256, payload: Bytes[1_024]):
             # Bubble up the revert reason.
             raw_revert(return_data)
 
-        raise "timelock_controller: underlying transaction reverted"
+        raise TimelockControllerFailedCall(target=target)
 
 
 @internal
@@ -846,10 +898,12 @@ def _before_call(id: bytes32, predecessor: bytes32):
     @param predecessor The 32-byte hash of the preceding
            operation.
     """
-    assert self._is_operation_ready(id), "timelock_controller: operation is not ready"
-    assert (
-        predecessor == empty(bytes32) or self._is_operation_done(predecessor)
-    ), "timelock_controller: missing dependency"
+    assert self._is_operation_ready(id), TimelockControllerUnexpectedOperationState(
+        operation_id=id, expected_states=convert(convert(OperationState.READY, uint256), bytes32)
+    )
+    assert predecessor == empty(bytes32) or self._is_operation_done(predecessor), TimelockControllerUnexecutedPredecessor(
+        predecessor_id=predecessor
+    )
 
 
 @internal
@@ -859,7 +913,9 @@ def _after_call(id: bytes32):
          executing (an) operation call(s).
     @param id The 32-byte operation identifier.
     """
-    assert self._is_operation_ready(id), "timelock_controller: operation is not ready"
+    assert self._is_operation_ready(id), TimelockControllerUnexpectedOperationState(
+        operation_id=id, expected_states=convert(convert(OperationState.READY, uint256), bytes32)
+    )
     self.get_timestamp[id] = _DONE_TIMESTAMP
 
 
