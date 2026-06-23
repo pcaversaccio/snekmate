@@ -901,9 +901,9 @@ def _before_call(id: bytes32, predecessor: bytes32):
     assert self._is_operation_ready(id), TimelockControllerUnexpectedOperationState(
         operation_id=id, expected_states=convert(convert(OperationState.READY, uint256), bytes32)
     )
-    assert predecessor == empty(bytes32) or self._is_operation_done(predecessor), TimelockControllerUnexecutedPredecessor(
-        predecessor_id=predecessor
-    )
+    assert predecessor == empty(bytes32) or self._is_operation_done(
+        predecessor
+    ), TimelockControllerUnexecutedPredecessor(predecessor_id=predecessor)
 
 
 @internal
