@@ -513,9 +513,9 @@ def schedule_batch(
            Must be greater than or equal to the minimum delay.
     """
     access_control._check_role(PROPOSER_ROLE, msg.sender)
-    assert (len(targets) == len(amounts)) and (len(targets) == len(payloads)), TimelockControllerInvalidOperationLength(
-        targets=len(targets), payloads=len(payloads), amounts=len(amounts)
-    )
+    assert (
+        (len(targets) == len(amounts)) and (len(targets) == len(payloads))
+    ), TimelockControllerInvalidOperationLength(targets=len(targets), payloads=len(payloads), amounts=len(amounts))
     id: bytes32 = self._hash_operation_batch(targets, amounts, payloads, predecessor, salt)
 
     self._schedule(id, delay)
@@ -612,9 +612,9 @@ def execute_batch(
                      the operation during reentrancy are caught.
     """
     self._only_role_or_open_role(EXECUTOR_ROLE)
-    assert (len(targets) == len(amounts)) and (len(targets) == len(payloads)), TimelockControllerInvalidOperationLength(
-        targets=len(targets), payloads=len(payloads), amounts=len(amounts)
-    )
+    assert (
+        (len(targets) == len(amounts)) and (len(targets) == len(payloads))
+    ), TimelockControllerInvalidOperationLength(targets=len(targets), payloads=len(payloads), amounts=len(amounts))
     id: bytes32 = self._hash_operation_batch(targets, amounts, payloads, predecessor, salt)
 
     self._before_call(id, predecessor)
