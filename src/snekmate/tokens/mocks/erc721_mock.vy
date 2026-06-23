@@ -1,4 +1,4 @@
-# pragma version ~=0.5.0a3
+# pragma version ~=0.5.0a4
 # pragma nonreentrancy off
 """
 @title `erc721` Module Reference Implementation
