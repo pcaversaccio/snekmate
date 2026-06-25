@@ -548,10 +548,7 @@ def cancel(id: bytes32):
     """
     access_control._check_role(CANCELLER_ROLE, msg.sender)
     assert self._is_operation_pending(id), TimelockControllerUnexpectedOperationState(
-        operation_id=id,
-        expected_states=convert(
-            convert(OperationState.WAITING, uint256) | convert(OperationState.READY, uint256), bytes32
-        ),
+        operation_id=id, expected_states=convert(OperationState.WAITING | OperationState.READY, bytes32)
     )
     self.get_timestamp[id] = empty(uint256)
     log Cancelled(id=id)
@@ -859,7 +856,7 @@ def _schedule(id: bytes32, delay: uint256):
            to the minimum delay.
     """
     assert not self._is_operation(id), TimelockControllerUnexpectedOperationState(
-        operation_id=id, expected_states=convert(convert(OperationState.UNSET, uint256), bytes32)
+        operation_id=id, expected_states=convert(OperationState.UNSET, bytes32)
     )
     min_delay: uint256 = self.get_minimum_delay
     assert delay >= min_delay, TimelockControllerInsufficientDelay(delay=delay, min_delay=min_delay)
@@ -899,7 +896,7 @@ def _before_call(id: bytes32, predecessor: bytes32):
            operation.
     """
     assert self._is_operation_ready(id), TimelockControllerUnexpectedOperationState(
-        operation_id=id, expected_states=convert(convert(OperationState.READY, uint256), bytes32)
+        operation_id=id, expected_states=convert(OperationState.READY, bytes32)
     )
     assert predecessor == empty(bytes32) or self._is_operation_done(
         predecessor
@@ -914,7 +911,7 @@ def _after_call(id: bytes32):
     @param id The 32-byte operation identifier.
     """
     assert self._is_operation_ready(id), TimelockControllerUnexpectedOperationState(
-        operation_id=id, expected_states=convert(convert(OperationState.READY, uint256), bytes32)
+        operation_id=id, expected_states=convert(OperationState.READY, bytes32)
     )
     self.get_timestamp[id] = _DONE_TIMESTAMP
 
