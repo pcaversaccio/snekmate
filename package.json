@@ -22,7 +22,7 @@
   "bugs": {
     "url": "https://github.com/pcaversaccio/snekmate/issues"
   },
-  "packageManager": "pnpm@11.8.0",
+  "packageManager": "pnpm@11.9.0",
   "scripts": {
     "prettier:check": "prettier -c \"**/*.{md,sol,js,json,yml,yaml,sh}\"",
     "prettier:fix": "prettier -w \"**/*.{md,sol,js,json,yml,yaml,sh}\"",
