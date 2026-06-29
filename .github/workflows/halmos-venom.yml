@@ -67,7 +67,7 @@ jobs:
         run: |
           set -Eeuo pipefail
           wget -q https://github.com/SRI-CSL/yices2/releases/download/yices-2.7.0/yices-2.7.0-x86_64-pc-linux-gnu-static-gmp.tar.gz
-          echo "49566b6f817692820538df78fe406878400d79810631c9372b2495bc81d3e00a  yices-2.7.0-x86_64-pc-linux-gnu-static-gmp.tar.gz" | sha256sum -c -
+          echo "49566b6f817692820538df78fe406878400d79810631c9372b2495bc81d3e00a yices-2.7.0-x86_64-pc-linux-gnu-static-gmp.tar.gz" | sha256sum -c -
           sudo tar -xzf yices-2.7.0-x86_64-pc-linux-gnu-static-gmp.tar.gz --strip-components=2 -C /usr/local/bin yices-2.7.0/bin
           rm yices-2.7.0-x86_64-pc-linux-gnu-static-gmp.tar.gz
 
@@ -75,7 +75,7 @@ jobs:
         run: |
           set -Eeuo pipefail
           wget -q https://github.com/bitwuzla/bitwuzla/releases/download/0.8.2/Bitwuzla-Linux-x86_64-static.zip
-          echo "aa09f2b45f96695f9f755e8371c1b362915a870cc0f3bc3585ed7e236e088b7b  Bitwuzla-Linux-x86_64-static.zip" | sha256sum -c -
+          echo "aa09f2b45f96695f9f755e8371c1b362915a870cc0f3bc3585ed7e236e088b7b Bitwuzla-Linux-x86_64-static.zip" | sha256sum -c -
           unzip -q Bitwuzla-Linux-x86_64-static.zip
           sudo mv Bitwuzla-Linux-x86_64-static/bin/* /usr/local/bin/
           rm -rf Bitwuzla-Linux-x86_64-static.zip Bitwuzla-Linux-x86_64-static

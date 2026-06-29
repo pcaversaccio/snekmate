@@ -113,11 +113,13 @@ jobs:
           FOUNDRY_PROFILE: default
           FOUNDRY_DISABLE_NIGHTLY_WARNING: "1"
 
-      - name: Install Homebrew
-        uses: Homebrew/actions/setup-homebrew@841d750a0ed9262d3c3ca31f2173974696bc261a # This GitHub Action does not publish release versions.
-
       - name: Install Echidna
-        run: brew install echidna@2.3.2
+        run: |
+          set -Eeuo pipefail
+          wget -q https://github.com/crytic/echidna/releases/download/v2.3.2/echidna-2.3.2-x86_64-linux.tar.gz
+          echo "38e4eb12627d8dea2a9eabfaebbcdb4d9ad0bde633aafbcae4d69656d6bcdb4a echidna-2.3.2-x86_64-linux.tar.gz" | sha256sum -c -
+          sudo tar -xzf echidna-2.3.2-x86_64-linux.tar.gz -C /usr/local/bin
+          rm echidna-2.3.2-x86_64-linux.tar.gz
 
       - name: Show the Echidna version
         run: echidna --version
