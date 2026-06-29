@@ -11,13 +11,14 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-permissions:
-  contents: read
+permissions: {}
 
 jobs:
   halmos:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 90
+    permissions:
+      contents: read
     strategy:
       matrix:
         os:
@@ -43,7 +44,7 @@ jobs:
           architecture: ${{ matrix.architecture }}
 
       - name: Install Vyper
-        run: pip install git+https://github.com/vyperlang/vyper.git@master
+        run: python -m pip install git+https://github.com/vyperlang/vyper.git@master
 
       - name: Show the Vyper version
         run: vyper --version
@@ -54,10 +55,10 @@ jobs:
           version: nightly
 
       - name: Install `setuptools`
-        run: pip install setuptools==82.0.1
+        run: python -m pip install setuptools==82.0.1
 
       - name: Install Halmos
-        run: pip install git+https://github.com/a16z/halmos.git@main
+        run: python -m pip install git+https://github.com/a16z/halmos.git@main
 
       - name: Show the Halmos version
         run: halmos --version
@@ -89,7 +90,7 @@ jobs:
         run: bitwuzla --version
 
       - name: Install `jsi`
-        run: pip install just-solve-it==0.1.2
+        run: python -m pip install just-solve-it==0.1.2
 
       - name: Show the Foundry Halmos config
         run: forge config

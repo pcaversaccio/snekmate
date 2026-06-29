@@ -6,13 +6,14 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-permissions:
-  contents: read
+permissions: {}
 
 jobs:
   prettify-n-lint:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 15
+    permissions:
+      contents: read
     strategy:
       matrix:
         os:
@@ -73,6 +74,8 @@ jobs:
   codespell:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 5
+    permissions:
+      contents: read
     strategy:
       matrix:
         os:
@@ -94,6 +97,8 @@ jobs:
   validate-links:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 20
+    permissions:
+      contents: read
     strategy:
       matrix:
         os:

@@ -11,9 +11,14 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+permissions: {}
+
 jobs:
   tests:
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
+    permissions:
+      contents: read
     strategy:
       matrix:
         os:
@@ -32,6 +37,7 @@ jobs:
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           submodules: recursive
+          persist-credentials: false
 
       - name: Setup Python
         uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
@@ -40,7 +46,7 @@ jobs:
           architecture: ${{ matrix.architecture }}
 
       - name: Install Vyper
-        run: pip install git+https://github.com/vyperlang/vyper.git@master
+        run: python -m pip install git+https://github.com/vyperlang/vyper.git@master
 
       - name: Show the Vyper version
         run: vyper --version
@@ -111,7 +117,7 @@ jobs:
         uses: Homebrew/actions/setup-homebrew@841d750a0ed9262d3c3ca31f2173974696bc261a # This GitHub Action does not publish release versions.
 
       - name: Install Echidna
-        run: brew install echidna
+        run: brew install echidna@2.3.2
 
       - name: Show the Echidna version
         run: echidna --version
