@@ -40,7 +40,7 @@ importers:
         version: 2.3.1(prettier@3.8.4)
       solhint:
         specifier: ^6.2.1
-        version: 6.2.1
+        version: 6.2.3
 
 packages:
 
@@ -259,11 +259,6 @@ packages:
 
   aes-js@4.0.0-beta.5:
     resolution: {integrity: sha512-G965FqalsNyrPqgEGON7nIx1e/OVENSgiEIzyC63haUMuvNnwIgIjMs52hlTCKhkBny7A2ORNlfY9Zu+jmGk1Q==}
-
-  ajv-errors@3.0.0:
-    resolution: {integrity: sha512-V3wD15YHfHz6y0KdhYFjyy9vWtEVALT9UrxfN3zqlI6dMioHnJrqOYfyPKol3oqrnCM9uwkcdCwkJ0WUcbLMTQ==}
-    peerDependencies:
-      ajv: ^8.0.1
 
   ajv@6.15.0:
     resolution: {integrity: sha512-fgFx7Hfoq60ytK2c7DhnF8jIvzYgOMxfugjLOSMHjLIPgenqa7S7oaagATUq99mV6IYvN2tRmC0wnTYX6iPbMw==}
@@ -800,6 +795,11 @@ packages:
     engines: {node: '>=10'}
     hasBin: true
 
+  semver@7.8.5:
+    resolution: {integrity: sha512-Y7/KDsb8LjooZpwaqGyulO6DQlksgCncchHGk+sZIY4SBvUocMBEFH5Ur1fI4dV+Jvl0w6cjvucaIi40puRioA==}
+    engines: {node: '>=10'}
+    hasBin: true
+
   sh-syntax@0.5.8:
     resolution: {integrity: sha512-JfVoxf4FxQI5qpsPbkHhZo+n6N9YMJobyl4oGEUBb/31oQYlgTjkXQD8PBiafS2UbWoxrTO0Z5PJUBXEPAG1Zw==}
     engines: {node: '>=16.0.0'}
@@ -816,8 +816,8 @@ packages:
     resolution: {integrity: sha512-qMCMfhY040cVHT43K9BFygqYbUPFZKHOg7K73mtTWJRb8pyP3fzf4Ixd5SzdEJQ6MRUg/WBnOLxghZtKKurENQ==}
     engines: {node: '>=10'}
 
-  solhint@6.2.1:
-    resolution: {integrity: sha512-+VHSa84CRjm2s+KZWYxIDnI+NokcLsZHOSpRtg5nBFmnVfh6RPmPaFd5TN922Cfrm2i85kNoQtLiapALe26b5w==}
+  solhint@6.2.3:
+    resolution: {integrity: sha512-w8prJP3kaf3G9hkmH5RmkCanvTULHWpdn+t4MieMEMZDhC2gFoUbRjS0TmslgxzGIItoOtP/J5PvU0FrvC08wA==}
     engines: {node: '>=20'}
     hasBin: true
 
@@ -1004,7 +1004,7 @@ snapshots:
       '@types/debug': 4.1.13
       debug: 4.4.3
       pony-cause: 2.1.11
-      semver: 7.8.4
+      semver: 7.8.5
       uuid: 9.0.1
     transitivePeerDependencies:
       - supports-color
@@ -1113,10 +1113,6 @@ snapshots:
   acorn@8.17.0: {}
 
   aes-js@4.0.0-beta.5: {}
-
-  ajv-errors@3.0.0(ajv@8.20.0):
-    dependencies:
-      ajv: 8.20.0
 
   ajv@6.15.0:
     dependencies:
@@ -1542,7 +1538,7 @@ snapshots:
       got: 12.6.1
       registry-auth-token: 5.1.1
       registry-url: 6.0.1
-      semver: 7.8.4
+      semver: 7.8.5
 
   parent-module@1.0.1:
     dependencies:
@@ -1630,6 +1626,8 @@ snapshots:
 
   semver@7.8.4: {}
 
+  semver@7.8.5: {}
+
   sh-syntax@0.5.8:
     dependencies:
       tslib: 2.8.1
@@ -1646,11 +1644,10 @@ snapshots:
       astral-regex: 2.0.0
       is-fullwidth-code-point: 3.0.0
 
-  solhint@6.2.1:
+  solhint@6.2.3:
     dependencies:
       '@solidity-parser/parser': 0.20.2
       ajv: 8.20.0
-      ajv-errors: 3.0.0(ajv@8.20.0)
       ast-parents: 0.0.1
       better-ajv-errors: 2.0.3(ajv@8.20.0)
       chalk: 4.1.2
@@ -1663,7 +1660,7 @@ snapshots:
       latest-version: 7.0.0
       lodash: 4.18.1
       pluralize: 8.0.0
-      semver: 7.8.4
+      semver: 7.8.5
       table: 6.9.0
       text-table: 0.2.0
     optionalDependencies:
