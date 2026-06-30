@@ -52,7 +52,7 @@ jobs:
         run: vyper --version
 
       - name: Setup Ape
-        uses: ApeWorX/github-action@18c1ff2c8f7c209c0b5827e568daefbd106b9c43 # v3.6.0
+        uses: ApeWorX/github-action@e375cf9d3697af2e21f6ddc5dfab209789b3054e # v3.7.0
         with:
           python-version: ${{ matrix.python_version }}
 
