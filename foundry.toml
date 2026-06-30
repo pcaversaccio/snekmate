@@ -52,7 +52,7 @@ fuzz = { runs = 10_000, max_test_rejects = 350_000 }                            
 invariant = { runs = 375, depth = 500 }                                                # Increase the number of runs and handler calls per run for each invariant test contract campaign.
 vyper = { experimental_codegen = true }                                                # Enable experimental code generation using the Venom backend.
 
-# Default overrides for the the Venom-based Echidna tests.
+# Default overrides for the Venom-based Echidna tests.
 [profile.echidna-venom]
 force = true                                                                           # Perform always a clean build.
 skip = ["src/snekmate/**/*.{vy,vyi}"]                                                  # Skip all Vyper compilations.
