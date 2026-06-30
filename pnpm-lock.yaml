@@ -9,37 +9,37 @@ importers:
   .:
     devDependencies:
       '@eslint/js':
-        specifier: ^10.0.1
+        specifier: 10.0.1
         version: 10.0.1(eslint@10.5.0)
       '@openzeppelin/merkle-tree':
-        specifier: ^1.0.8
+        specifier: 1.0.8
         version: 1.0.8
       eslint:
-        specifier: ^10.5.0
+        specifier: 10.5.0
         version: 10.5.0
       eslint-config-prettier:
-        specifier: ^10.1.8
+        specifier: 10.1.8
         version: 10.1.8(eslint@10.5.0)
       ethers:
-        specifier: ^6.17.0
+        specifier: 6.17.0
         version: 6.17.0
       keccak256:
-        specifier: ^1.0.6
+        specifier: 1.0.6
         version: 1.0.6
       merkletreejs:
-        specifier: ^0.6.0
+        specifier: 0.6.0
         version: 0.6.0
       prettier:
-        specifier: ^3.8.4
+        specifier: 3.8.4
         version: 3.8.4
       prettier-plugin-sh:
-        specifier: ^0.18.1
+        specifier: 0.18.1
         version: 0.18.1(prettier@3.8.4)
       prettier-plugin-solidity:
-        specifier: ^2.3.1
+        specifier: 2.3.1
         version: 2.3.1(prettier@3.8.4)
       solhint:
-        specifier: ^6.2.3
+        specifier: 6.2.3
         version: 6.2.3
 
 packages:
