@@ -66,4 +66,4 @@ jobs:
             *-rc.*)    TAG="next" ;;
             *)         TAG="latest" ;;
           esac
-          pnpm publish --no-git-checks --tag $TAG
+          pnpm publish --no-git-checks --tag "$TAG"
