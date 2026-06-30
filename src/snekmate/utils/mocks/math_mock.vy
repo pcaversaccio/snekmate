@@ -202,10 +202,11 @@ def wad_exp(x: int256) -> int256:
 def cbrt(x: uint256, roundup: bool) -> uint256:
     """
     @dev Calculates the cube root of an unsigned integer.
-    @notice Note that this function consumes about 1,600 to 1,800 gas units
-            depending on the value of `x` and `roundup`. The implementation is
-            inspired by Curve Finance's implementation under the MIT license here:
-            https://github.com/curvefi/tricrypto-ng/blob/main/contracts/main/CurveCryptoMathOptimized3.vy.
+    @notice Note that this function consumes about 1,100 to 1,400 gas units
+            depending on the value of `x` and `roundup`. The 5 Newton-Raphson
+            iterations implementation is inspired by 0x's implementation under
+            the MIT license here:
+            https://github.com/0xProject/0x-settler/blob/master/src/vendor/Cbrt.sol.
     @param x The 32-byte variable from which the cube root is calculated.
     @param roundup The Boolean variable that specifies whether
            to round up or not. The default `False` is round down.

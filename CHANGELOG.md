@@ -7,6 +7,11 @@
 - **Utility Functions**
   - [`eip7702_utils`](https://github.com/pcaversaccio/snekmate/blob/v0.1.3/src/snekmate/utils/eip7702_utils.vy): Add [EIP-7702](https://eips.ethereum.org/EIPS/eip-7702)-based utility functions. ([#335](https://github.com/pcaversaccio/snekmate/pull/335))
 
+### 🔒 Security Fixes
+
+- **Utility Functions**
+  - [`math`](https://github.com/pcaversaccio/snekmate/blob/v0.1.3/src/snekmate/utils/math.vy): Fix precision bug in `_cbrt` for large inputs and optimise gas usage. ([#381](https://github.com/pcaversaccio/snekmate/pull/381))
+
 ### 🐛 Bug Fixes
 
 - **Utility Functions**
