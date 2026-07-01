@@ -10,6 +10,7 @@
 ### 🔒 Security Fixes
 
 - Harden GitHub Actions workflows. ([#388](https://github.com/pcaversaccio/snekmate/pull/388))
+- Harden `npm` release workflow against cache poisoning risks. ([#390](https://github.com/pcaversaccio/snekmate/pull/390))
 
 ### 🐛 Bug Fixes
 
