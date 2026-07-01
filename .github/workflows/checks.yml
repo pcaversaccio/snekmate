@@ -22,8 +22,6 @@ jobs:
           - 3.14
         architecture:
           - x64
-        node_version:
-          - 26
 
     steps:
       - name: Checkout
