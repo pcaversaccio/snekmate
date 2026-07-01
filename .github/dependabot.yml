@@ -5,6 +5,8 @@ updates:
     schedule:
       interval: "weekly"
       day: "monday"
+    cooldown:
+      default-days: 7
     target-branch: "main"
     labels:
       - "dependencies 🔁"
@@ -20,6 +22,8 @@ updates:
     schedule:
       interval: "weekly"
       day: "monday"
+    cooldown:
+      default-days: 7
     target-branch: "main"
     labels:
       - "dependencies 🔁"
