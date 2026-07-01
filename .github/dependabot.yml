@@ -5,6 +5,8 @@ updates:
     schedule:
       interval: "weekly"
       day: "monday"
+    cooldown:
+      default-days: 7
     target-branch: "main"
     labels:
       - "dependencies 🔁"
@@ -14,14 +16,14 @@ updates:
       npm-dependencies:
         patterns:
           - "*"
-    cooldown:
-      default-days: 7
 
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
       day: "monday"
+    cooldown:
+      default-days: 7
     target-branch: "main"
     labels:
       - "dependencies 🔁"
@@ -31,5 +33,3 @@ updates:
       github-actions-dependencies:
         patterns:
           - "*"
-    cooldown:
-      default-days: 7
