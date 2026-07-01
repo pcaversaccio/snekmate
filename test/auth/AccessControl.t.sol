@@ -20,6 +20,7 @@ contract AccessControlTest is Test {
     IAccessControlExtended private accessControlInitialEvent;
 
     address private deployer = address(vyperDeployer);
+    address private self = address(this);
 
     function setUp() public {
         accessControl = IAccessControlExtended(
@@ -121,7 +122,12 @@ contract AccessControlTest is Test {
     }
 
     function testGrantRoleNonAdmin() public {
-        vm.expectRevert(bytes("access_control: account is missing role"));
+        bytes memory expectedErr = abi.encodeWithSelector(
+            IAccessControl.AccessControlUnauthorizedAccount.selector,
+            self,
+            accessControl.getRoleAdmin(MINTER_ROLE)
+        );
+        vm.expectRevert(expectedErr);
         accessControl.grantRole(MINTER_ROLE, makeAddr("account"));
     }
 
@@ -176,13 +182,23 @@ contract AccessControlTest is Test {
         accessControl.revokeRole(DEFAULT_ADMIN_ROLE, admin);
         assertTrue(!accessControl.hasRole(DEFAULT_ADMIN_ROLE, admin));
 
-        vm.expectRevert(bytes("access_control: account is missing role"));
+        bytes memory expectedErr = abi.encodeWithSelector(
+            IAccessControl.AccessControlUnauthorizedAccount.selector,
+            admin,
+            accessControl.getRoleAdmin(MINTER_ROLE)
+        );
+        vm.expectRevert(expectedErr);
         accessControl.revokeRole(MINTER_ROLE, admin);
         vm.stopPrank();
     }
 
     function testRevokeRoleNonAdmin() public {
-        vm.expectRevert(bytes("access_control: account is missing role"));
+        bytes memory expectedErr = abi.encodeWithSelector(
+            IAccessControl.AccessControlUnauthorizedAccount.selector,
+            self,
+            accessControl.getRoleAdmin(MINTER_ROLE)
+        );
+        vm.expectRevert(expectedErr);
         accessControl.revokeRole(MINTER_ROLE, makeAddr("account"));
     }
 
@@ -251,7 +267,7 @@ contract AccessControlTest is Test {
     }
 
     function testRenounceRoleNonMsgSender() public {
-        vm.expectRevert(bytes("access_control: can only renounce roles for itself"));
+        vm.expectRevert(IAccessControl.AccessControlBadConfirmation.selector);
         accessControl.renounceRole(MINTER_ROLE, makeAddr("account"));
     }
 
@@ -285,6 +301,16 @@ contract AccessControlTest is Test {
         vm.stopPrank();
     }
 
+    function testSetRoleAdminNonAdmin() public {
+        bytes memory expectedErr = abi.encodeWithSelector(
+            IAccessControl.AccessControlUnauthorizedAccount.selector,
+            self,
+            accessControl.getRoleAdmin(MINTER_ROLE)
+        );
+        vm.expectRevert(expectedErr);
+        accessControl.set_role_admin(MINTER_ROLE, PAUSER_ROLE);
+    }
+
     function testSetRoleAdminPreviousAdminCallsGrantRole() public {
         address admin = deployer;
         address otherAdmin = makeAddr("otherAdmin");
@@ -300,7 +326,12 @@ contract AccessControlTest is Test {
         accessControl.grantRole(otherAdminRole, otherAdmin);
         assertTrue(accessControl.hasRole(otherAdminRole, otherAdmin));
 
-        vm.expectRevert(bytes("access_control: account is missing role"));
+        bytes memory expectedErr = abi.encodeWithSelector(
+            IAccessControl.AccessControlUnauthorizedAccount.selector,
+            admin,
+            accessControl.getRoleAdmin(MINTER_ROLE)
+        );
+        vm.expectRevert(expectedErr);
         accessControl.grantRole(MINTER_ROLE, account);
         vm.stopPrank();
     }
@@ -322,7 +353,12 @@ contract AccessControlTest is Test {
         accessControl.grantRole(otherAdminRole, otherAdmin);
         assertTrue(accessControl.hasRole(otherAdminRole, otherAdmin));
 
-        vm.expectRevert(bytes("access_control: account is missing role"));
+        bytes memory expectedErr = abi.encodeWithSelector(
+            IAccessControl.AccessControlUnauthorizedAccount.selector,
+            admin,
+            accessControl.getRoleAdmin(MINTER_ROLE)
+        );
+        vm.expectRevert(expectedErr);
         accessControl.revokeRole(MINTER_ROLE, account);
         vm.stopPrank();
     }
@@ -368,9 +404,15 @@ contract AccessControlTest is Test {
 
     function testFuzzGrantRoleNonAdmin(address nonAdmin, address account) public {
         vm.assume(nonAdmin != deployer);
-        vm.prank(nonAdmin);
-        vm.expectRevert(bytes("access_control: account is missing role"));
+        vm.startPrank(nonAdmin);
+        bytes memory expectedErr = abi.encodeWithSelector(
+            IAccessControl.AccessControlUnauthorizedAccount.selector,
+            nonAdmin,
+            accessControl.getRoleAdmin(MINTER_ROLE)
+        );
+        vm.expectRevert(expectedErr);
         accessControl.grantRole(MINTER_ROLE, account);
+        vm.stopPrank();
     }
 
     function testFuzzRevokeRoleSuccess(address account) public {
@@ -417,9 +459,15 @@ contract AccessControlTest is Test {
 
     function testFuzzRevokeRoleNonAdmin(address nonAdmin, address account) public {
         vm.assume(nonAdmin != deployer);
-        vm.prank(nonAdmin);
-        vm.expectRevert(bytes("access_control: account is missing role"));
+        vm.startPrank(nonAdmin);
+        bytes memory expectedErr = abi.encodeWithSelector(
+            IAccessControl.AccessControlUnauthorizedAccount.selector,
+            nonAdmin,
+            accessControl.getRoleAdmin(MINTER_ROLE)
+        );
+        vm.expectRevert(expectedErr);
         accessControl.revokeRole(MINTER_ROLE, account);
+        vm.stopPrank();
     }
 
     function testFuzzRenounceRoleSuccess(address account) public {
@@ -473,8 +521,8 @@ contract AccessControlTest is Test {
     }
 
     function testFuzzRenounceRoleNonMsgSender(address account) public {
-        vm.assume(address(this) != account);
-        vm.expectRevert(bytes("access_control: can only renounce roles for itself"));
+        vm.assume(self != account);
+        vm.expectRevert(IAccessControl.AccessControlBadConfirmation.selector);
         accessControl.renounceRole(MINTER_ROLE, account);
     }
 
@@ -507,6 +555,18 @@ contract AccessControlTest is Test {
         vm.stopPrank();
     }
 
+    function testFuzzSetRoleAdminNonAdmin(address nonAdmin) public {
+        vm.assume(nonAdmin != deployer);
+        bytes memory expectedErr = abi.encodeWithSelector(
+            IAccessControl.AccessControlUnauthorizedAccount.selector,
+            nonAdmin,
+            accessControl.getRoleAdmin(MINTER_ROLE)
+        );
+        vm.expectRevert(expectedErr);
+        vm.prank(nonAdmin);
+        accessControl.set_role_admin(MINTER_ROLE, PAUSER_ROLE);
+    }
+
     function testFuzzSetRoleAdminPreviousAdminCallsGrantRole(address otherAdmin, address account) public {
         vm.assume(otherAdmin != deployer);
         address admin = deployer;
@@ -521,7 +581,12 @@ contract AccessControlTest is Test {
         accessControl.grantRole(otherAdminRole, otherAdmin);
         assertTrue(accessControl.hasRole(otherAdminRole, otherAdmin));
 
-        vm.expectRevert(bytes("access_control: account is missing role"));
+        bytes memory expectedErr = abi.encodeWithSelector(
+            IAccessControl.AccessControlUnauthorizedAccount.selector,
+            admin,
+            accessControl.getRoleAdmin(MINTER_ROLE)
+        );
+        vm.expectRevert(expectedErr);
         accessControl.grantRole(MINTER_ROLE, account);
         vm.stopPrank();
     }
@@ -542,7 +607,12 @@ contract AccessControlTest is Test {
         accessControl.grantRole(otherAdminRole, otherAdmin);
         assertTrue(accessControl.hasRole(otherAdminRole, otherAdmin));
 
-        vm.expectRevert(bytes("access_control: account is missing role"));
+        bytes memory expectedErr = abi.encodeWithSelector(
+            IAccessControl.AccessControlUnauthorizedAccount.selector,
+            admin,
+            accessControl.getRoleAdmin(MINTER_ROLE)
+        );
+        vm.expectRevert(expectedErr);
         accessControl.revokeRole(MINTER_ROLE, account);
         vm.stopPrank();
     }
