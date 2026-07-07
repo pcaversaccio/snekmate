@@ -154,7 +154,7 @@ def __init__(base_uri_: String[80]):
     @param base_uri_ The maximum 80-character user-readable
            string base URI for computing `uri`.
     """
-    _BASE_URI = base_uri_
+    self._BASE_URI = base_uri_
 
     self.is_minter[msg.sender] = True
     log RoleMinterChanged(minter=msg.sender, status=True)
@@ -729,14 +729,14 @@ def _uri(id: uint256) -> String[512]:
     """
     token_uri: String[432] = self._token_uris[id]
 
-    base_uri_length: uint256 = len(_BASE_URI)
+    base_uri_length: uint256 = len(self._BASE_URI)
     # If there is no base URI, return the token URI.
     if base_uri_length == empty(uint256):
         return token_uri
     # If both are set, concatenate the base URI
     # and token URI.
     elif len(token_uri) != empty(uint256):
-        return concat(_BASE_URI, token_uri)
+        return concat(self._BASE_URI, token_uri)
     # If there is no token URI but a base URI,
     # concatenate the base URI and token ID.
     elif base_uri_length != empty(uint256):
@@ -746,7 +746,7 @@ def _uri(id: uint256) -> String[512]:
         # it is recommended to remove the following
         # concatenation and simply return `_BASE_URI`
         # for easier off-chain handling.
-        return concat(_BASE_URI, uint2str(id))
+        return concat(self._BASE_URI, uint2str(id))
 
     return ""
 

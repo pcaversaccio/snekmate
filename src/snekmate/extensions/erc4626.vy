@@ -189,8 +189,8 @@ def __init__(
            main version of the signing domain. Signatures
            from different versions are not compatible.
     """
-    _ASSET = asset_
-    asset = _ASSET.address
+    self._ASSET = asset_
+    self.asset = self._ASSET.address
 
     success: bool = empty(bool)
     decoded_decimals: uint8 = empty(uint8)
@@ -198,8 +198,8 @@ def __init__(
     # value of `False` indicates that the attempt failed in
     # some way.
     success, decoded_decimals = self._try_get_underlying_decimals(asset_)
-    _UNDERLYING_DECIMALS = decoded_decimals if success else 18
-    _DECIMALS_OFFSET = decimals_offset_
+    self._UNDERLYING_DECIMALS = decoded_decimals if success else 18
+    self._DECIMALS_OFFSET = decimals_offset_
 
     # Please note that the `ownable` module is merely used to
     # initialise the `erc20` module, but none of the associated
@@ -207,7 +207,7 @@ def __init__(
     ownable.__init__()
     # The following line uses intentionally checked arithmetic
     # to prevent a theoretically possible overflow.
-    erc20.__init__(name_, symbol_, _UNDERLYING_DECIMALS + _DECIMALS_OFFSET, name_eip712_, version_eip712_)
+    erc20.__init__(name_, symbol_, self._UNDERLYING_DECIMALS + self._DECIMALS_OFFSET, name_eip712_, version_eip712_)
 
 
 @external
@@ -485,7 +485,7 @@ def _total_assets() -> uint256:
             https://eips.ethereum.org/EIPS/eip-4626#totalassets.
     @return uint256 The 32-byte total managed assets.
     """
-    return staticcall _ASSET.balanceOf(self)
+    return staticcall self._ASSET.balanceOf(self)
 
 
 @internal
@@ -500,7 +500,7 @@ def _convert_to_shares(assets: uint256, roundup: bool) -> uint256:
     @return uint256 The converted 32-byte shares amount.
     """
     return math._mul_div(
-        assets, erc20.totalSupply + 10 ** convert(_DECIMALS_OFFSET, uint256), self._total_assets() + 1, roundup
+        assets, erc20.totalSupply + 10 ** convert(self._DECIMALS_OFFSET, uint256), self._total_assets() + 1, roundup
     )
 
 
@@ -516,7 +516,7 @@ def _convert_to_assets(shares: uint256, roundup: bool) -> uint256:
     @return uint256 The converted 32-byte assets amount.
     """
     return math._mul_div(
-        shares, self._total_assets() + 1, erc20.totalSupply + 10 ** convert(_DECIMALS_OFFSET, uint256), roundup
+        shares, self._total_assets() + 1, erc20.totalSupply + 10 ** convert(self._DECIMALS_OFFSET, uint256), roundup
     )
 
 
@@ -670,7 +670,7 @@ def _deposit(sender: address, receiver: address, assets: uint256, shares: uint25
     # always performs an external code size check on the target address unless
     # you add the kwarg `skip_contract_check=True`. If the check fails (i.e.
     # the target address is an EOA), the call reverts.
-    assert extcall _ASSET.transferFrom(
+    assert extcall self._ASSET.transferFrom(
         sender, self, assets, default_return_value=True
     ), "erc4626: transferFrom operation did not succeed"
     erc20._mint(receiver, shares)
@@ -712,7 +712,7 @@ def _withdraw(sender: address, receiver: address, owner: address, assets: uint25
     # always performs an external code size check on the target address unless
     # you add the kwarg `skip_contract_check=True`. If the check fails (i.e.
     # the target address is an EOA), the call reverts.
-    assert extcall _ASSET.transfer(
+    assert extcall self._ASSET.transfer(
         receiver, assets, default_return_value=True
     ), "erc4626: transfer operation did not succeed"
     log IERC4626.Withdraw(sender=sender, receiver=receiver, owner=owner, assets=assets, shares=shares)
