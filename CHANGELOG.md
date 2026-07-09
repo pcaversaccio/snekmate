@@ -7,6 +7,17 @@
 - **Utility Functions**
   - [`eip7702_utils`](https://github.com/pcaversaccio/snekmate/blob/v0.1.3/src/snekmate/utils/eip7702_utils.vy): Add [EIP-7702](https://eips.ethereum.org/EIPS/eip-7702)-based utility functions. ([#335](https://github.com/pcaversaccio/snekmate/pull/335))
 
+### ♻️ Refactoring
+
+- **Extensions**
+  - [`erc4626`](https://github.com/pcaversaccio/snekmate/blob/v0.1.3/src/snekmate/extensions/erc4626.vy): Access `immutable`s through `self`. ([#392](https://github.com/pcaversaccio/snekmate/pull/392))
+- **Tokens**
+  - [`erc20`](https://github.com/pcaversaccio/snekmate/blob/v0.1.3/src/snekmate/tokens/erc20.vy): Access `immutable`s through `self`. ([#392](https://github.com/pcaversaccio/snekmate/pull/392))
+  - [`erc721`](https://github.com/pcaversaccio/snekmate/blob/v0.1.3/src/snekmate/tokens/erc721.vy): Access `immutable`s through `self`. ([#392](https://github.com/pcaversaccio/snekmate/pull/392))
+  - [`erc1155`](https://github.com/pcaversaccio/snekmate/blob/v0.1.3/src/snekmate/tokens/erc1155.vy): Access `immutable`s through `self`. ([#392](https://github.com/pcaversaccio/snekmate/pull/392))
+- **Utility Functions**
+  - [`eip712_domain_separator`](https://github.com/pcaversaccio/snekmate/blob/v0.1.3/src/snekmate/utils/eip712_domain_separator.vy): Access `immutable`s through `self`. ([#392](https://github.com/pcaversaccio/snekmate/pull/392))
+
 ### 🔒 Security Fixes
 
 - Harden GitHub Actions workflows. ([#388](https://github.com/pcaversaccio/snekmate/pull/388))
