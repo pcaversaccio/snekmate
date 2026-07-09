@@ -17,6 +17,7 @@ via_ir = false                                                                  
 vyper = { optimize = "gas" }                                                           # Configure the Vyper compiler optimisation mode.
 verbosity = 3                                                                          # Set the verbosity level for the tests.
 ffi = true                                                                             # Enable the foreign function interface (ffi) cheatcode.
+isolate = true                                                                         # Enable call isolation for the tests.
 allow_internal_expect_revert = true                                                    # Enable `expectRevert` for `internal` functions.
 no_match_path = "test/**/{echidna,halmos}/**/*"                                        # Run only tests in the test directory that do not match the specified glob pattern.
 fs_permissions = [{ access = "read", path = "test/utils/test-data/wycheproof.jsonl" }] # Configure read access to the `wycheproof.jsonl` file.
