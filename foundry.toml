@@ -1,64 +1,64 @@
 # Defaults for all profiles.
 [profile.default]
-src = "src/snekmate"                                             # Set the source directory.
-test = "test"                                                    # Set the test directory.
-out = "out"                                                      # Set the output directory for the artifacts.
-libs = ["lib"]                                                   # Configure an array of library directories.
-cache = true                                                     # Enable caching.
-cache_path = "cache"                                             # Set the path to the cache.
-force = false                                                    # Do not ignore the cache.
-skip = ["src/snekmate/**/*[!c][!k].vy", "src/snekmate/**/*.vyi"] # Skip the Vyper compilation of non-mock and interface files.
-solc_version = "0.8.35"                                          # Set the Solidity compiler version.
-ignored_error_codes = [2_424, 3_860, 4_591]                      # Ignore the deprecated `memory-safe-assembly` warning, the contract initcode size warning, and the warning about too many warnings.
-evm_version = "prague"                                           # Set the EVM target version.
-optimizer = true                                                 # Enable the Solidity compiler optimiser.
-optimizer_runs = 200                                             # Configure the number of optimiser runs.
-via_ir = false                                                   # Prevent the compilation pipeline from running through the Yul intermediate representation.
-vyper = { optimize = "gas" }                                     # Configure the Vyper compiler optimisation mode.
-verbosity = 3                                                    # Set the verbosity level for the tests.
-ffi = true                                                       # Enable the foreign function interface (ffi) cheatcode.
-allow_internal_expect_revert = true                              # Enable `expectRevert` for `internal` functions.
-no_match_path = "test/**/{echidna,halmos}/**/*"                  # Run only tests in the test directory that do not match the specified glob pattern.
-fs_permissions = [{ access = "read-write", path = "./" }]        # Configure read-write access to the project root.
-lint = { lint_on_build = false }                                 # Do not run automatic linting during builds.
-fuzz = { runs = 256, max_test_rejects = 65_536 }                 # Configure the number of fuzz runs and maximum number of combined inputs that may be rejected for the tests.
-invariant = { runs = 256, depth = 15 }                           # Configure the number of runs and handler calls per run for each invariant test contract campaign.
+src = "src/snekmate"                                                                   # Set the source directory.
+test = "test"                                                                          # Set the test directory.
+out = "out"                                                                            # Set the output directory for the artifacts.
+libs = ["lib"]                                                                         # Configure an array of library directories.
+cache = true                                                                           # Enable caching.
+cache_path = "cache"                                                                   # Set the path to the cache.
+force = false                                                                          # Do not ignore the cache.
+skip = ["src/snekmate/**/*[!c][!k].vy", "src/snekmate/**/*.vyi"]                       # Skip the Vyper compilation of non-mock and interface files.
+solc_version = "0.8.35"                                                                # Set the Solidity compiler version.
+ignored_error_codes = [2_424, 3_860, 4_591]                                            # Ignore the deprecated `memory-safe-assembly` warning, the contract initcode size warning, and the warning about too many warnings.
+evm_version = "prague"                                                                 # Set the EVM target version.
+optimizer = true                                                                       # Enable the Solidity compiler optimiser.
+optimizer_runs = 200                                                                   # Configure the number of optimiser runs.
+via_ir = false                                                                         # Prevent the compilation pipeline from running through the Yul intermediate representation.
+vyper = { optimize = "gas" }                                                           # Configure the Vyper compiler optimisation mode.
+verbosity = 3                                                                          # Set the verbosity level for the tests.
+ffi = true                                                                             # Enable the foreign function interface (ffi) cheatcode.
+allow_internal_expect_revert = true                                                    # Enable `expectRevert` for `internal` functions.
+no_match_path = "test/**/{echidna,halmos}/**/*"                                        # Run only tests in the test directory that do not match the specified glob pattern.
+fs_permissions = [{ access = "read", path = "test/utils/test-data/wycheproof.jsonl" }] # Configure read access to the `wycheproof.jsonl` file.
+lint = { lint_on_build = false }                                                       # Do not run automatic linting during builds.
+fuzz = { runs = 256, max_test_rejects = 65_536 }                                       # Configure the number of fuzz runs and maximum number of combined inputs that may be rejected for the tests.
+invariant = { runs = 256, depth = 15 }                                                 # Configure the number of runs and handler calls per run for each invariant test contract campaign.
 
 # Default overrides for the CI runs.
 [profile.ci]
-force = true                                                     # Perform always a clean build.
-verbosity = 4                                                    # Increase the verbosity level for the tests.
-fuzz = { runs = 10_000, max_test_rejects = 350_000 }             # Increase the number of fuzz runs and maximum number of combined inputs that may be rejected for the tests.
-invariant = { runs = 375, depth = 500 }                          # Increase the number of runs and handler calls per run for each invariant test contract campaign.
+force = true                                                                           # Perform always a clean build.
+verbosity = 4                                                                          # Increase the verbosity level for the tests.
+fuzz = { runs = 10_000, max_test_rejects = 350_000 }                                   # Increase the number of fuzz runs and maximum number of combined inputs that may be rejected for the tests.
+invariant = { runs = 375, depth = 500 }                                                # Increase the number of runs and handler calls per run for each invariant test contract campaign.
 
 # Default overrides for the Echidna tests.
 [profile.echidna]
-force = true                                                     # Perform always a clean build.
-skip = ["src/snekmate/**/*.{vy,vyi}"]                            # Skip all Vyper compilations.
+force = true                                                                           # Perform always a clean build.
+skip = ["src/snekmate/**/*.{vy,vyi}"]                                                  # Skip all Vyper compilations.
 
 # Default overrides for the Halmos tests.
 [profile.halmos]
-force = true                                                     # Perform always a clean build.
+force = true                                                                           # Perform always a clean build.
 
 # Default overrides for the Venom-based tests.
 [profile.default-venom]
-vyper = { experimental_codegen = true }                          # Enable experimental code generation using the Venom backend.
+vyper = { experimental_codegen = true }                                                # Enable experimental code generation using the Venom backend.
 
 # Default overrides for the Venom-based CI tests.
 [profile.ci-venom]
-force = true                                                     # Perform always a clean build.
-verbosity = 4                                                    # Increase the verbosity level for the tests.
-fuzz = { runs = 10_000, max_test_rejects = 350_000 }             # Increase the number of fuzz runs and maximum number of combined inputs that may be rejected for the tests.
-invariant = { runs = 375, depth = 500 }                          # Increase the number of runs and handler calls per run for each invariant test contract campaign.
-vyper = { experimental_codegen = true }                          # Enable experimental code generation using the Venom backend.
+force = true                                                                           # Perform always a clean build.
+verbosity = 4                                                                          # Increase the verbosity level for the tests.
+fuzz = { runs = 10_000, max_test_rejects = 350_000 }                                   # Increase the number of fuzz runs and maximum number of combined inputs that may be rejected for the tests.
+invariant = { runs = 375, depth = 500 }                                                # Increase the number of runs and handler calls per run for each invariant test contract campaign.
+vyper = { experimental_codegen = true }                                                # Enable experimental code generation using the Venom backend.
 
-# Default overrides for the the Venom-based Echidna tests.
+# Default overrides for the Venom-based Echidna tests.
 [profile.echidna-venom]
-force = true                                                     # Perform always a clean build.
-skip = ["src/snekmate/**/*.{vy,vyi}"]                            # Skip all Vyper compilations.
-vyper = { experimental_codegen = true }                          # Enable experimental code generation using the Venom backend.
+force = true                                                                           # Perform always a clean build.
+skip = ["src/snekmate/**/*.{vy,vyi}"]                                                  # Skip all Vyper compilations.
+vyper = { experimental_codegen = true }                                                # Enable experimental code generation using the Venom backend.
 
 # Default overrides for the Venom-based Halmos tests.
 [profile.halmos-venom]
-force = true                                                     # Perform always a clean build.
-vyper = { experimental_codegen = true }                          # Enable experimental code generation using the Venom backend.
+force = true                                                                           # Perform always a clean build.
+vyper = { experimental_codegen = true }                                                # Enable experimental code generation using the Venom backend.

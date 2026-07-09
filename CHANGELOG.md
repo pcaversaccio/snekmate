@@ -7,8 +7,20 @@
 - **Utility Functions**
   - [`eip7702_utils`](https://github.com/pcaversaccio/snekmate/blob/v0.1.3/src/snekmate/utils/eip7702_utils.vy): Add [EIP-7702](https://eips.ethereum.org/EIPS/eip-7702)-based utility functions. ([#335](https://github.com/pcaversaccio/snekmate/pull/335))
 
+### ♻️ Refactoring
+
+- **Extensions**
+  - [`erc4626`](https://github.com/pcaversaccio/snekmate/blob/v0.1.3/src/snekmate/extensions/erc4626.vy): Access `immutable`s through `self`. ([#392](https://github.com/pcaversaccio/snekmate/pull/392))
+- **Tokens**
+  - [`erc20`](https://github.com/pcaversaccio/snekmate/blob/v0.1.3/src/snekmate/tokens/erc20.vy): Access `immutable`s through `self`. ([#392](https://github.com/pcaversaccio/snekmate/pull/392))
+  - [`erc721`](https://github.com/pcaversaccio/snekmate/blob/v0.1.3/src/snekmate/tokens/erc721.vy): Access `immutable`s through `self`. ([#392](https://github.com/pcaversaccio/snekmate/pull/392))
+  - [`erc1155`](https://github.com/pcaversaccio/snekmate/blob/v0.1.3/src/snekmate/tokens/erc1155.vy): Access `immutable`s through `self`. ([#392](https://github.com/pcaversaccio/snekmate/pull/392))
+- **Utility Functions**
+  - [`eip712_domain_separator`](https://github.com/pcaversaccio/snekmate/blob/v0.1.3/src/snekmate/utils/eip712_domain_separator.vy): Access `immutable`s through `self`. ([#392](https://github.com/pcaversaccio/snekmate/pull/392))
+
 ### 🔒 Security Fixes
 
+- Harden GitHub Actions workflows. ([#388](https://github.com/pcaversaccio/snekmate/pull/388))
 - **Utility Functions**
   - [`math`](https://github.com/pcaversaccio/snekmate/blob/v0.1.3/src/snekmate/utils/math.vy): Fix precision bug in `_cbrt` for large inputs and optimise gas usage. ([#381](https://github.com/pcaversaccio/snekmate/pull/381))
 
@@ -24,6 +36,7 @@
 ### 🔖 Release Management
 
 - Use trusted publishing for `npm` package. ([#341](https://github.com/pcaversaccio/snekmate/pull/341))
+- Harden `npm` release workflow against cache poisoning risks. ([#390](https://github.com/pcaversaccio/snekmate/pull/390))
 
 ### 👀 Full Changelog
 

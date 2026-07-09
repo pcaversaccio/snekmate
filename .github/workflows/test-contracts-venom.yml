@@ -11,9 +11,14 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+permissions: {}
+
 jobs:
   tests:
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
+    permissions:
+      contents: read
     strategy:
       matrix:
         os:
@@ -29,46 +34,34 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           submodules: recursive
+          persist-credentials: false
 
       - name: Setup Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
         with:
           python-version: ${{ matrix.python_version }}
           architecture: ${{ matrix.architecture }}
 
       - name: Install Vyper
-        run: pip install git+https://github.com/vyperlang/vyper.git@master
+        run: python -m pip install git+https://github.com/vyperlang/vyper.git@master
 
       - name: Install pnpm
-        uses: pnpm/action-setup@v6
+        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
         with:
-          run_install: false
-
-      - name: Get pnpm cache directory path
-        id: pnpm-cache-dir-path
-        run: echo "dir=$(pnpm store path --silent)" >> $GITHUB_OUTPUT
-
-      - name: Restore pnpm cache
-        uses: actions/cache@v6
-        id: pnpm-cache
-        with:
-          path: ${{ steps.pnpm-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: ${{ runner.os }}-pnpm-store-
+          cache: true
+          run_install: |
+            - args: [--prefer-offline, --frozen-lockfile]
 
       - name: Use Node.js ${{ matrix.node_version }}
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
         with:
           node-version: ${{ matrix.node_version }}
 
-      - name: Install pnpm project with a clean slate
-        run: pnpm install --prefer-offline --frozen-lockfile
-
       - name: Install Foundry
-        uses: foundry-rs/foundry-toolchain@v1
+        uses: foundry-rs/foundry-toolchain@c7450ba673e133f5ee30098b3b54f444d3a2ca2d # v1.8.0
         with:
           version: nightly
 
@@ -96,11 +89,19 @@ jobs:
           FOUNDRY_PROFILE: default-venom
           FOUNDRY_DISABLE_NIGHTLY_WARNING: "1"
 
-      - name: Install Homebrew
-        uses: Homebrew/actions/setup-homebrew@main
+      - name: Install Slither
+        run: python -m pip install slither-analyzer==0.11.5
+
+      - name: Show the Slither version
+        run: slither --version
 
       - name: Install Echidna
-        run: brew install echidna
+        run: |
+          set -Eeuo pipefail
+          wget -q https://github.com/crytic/echidna/releases/download/v2.3.2/echidna-2.3.2-x86_64-linux.tar.gz
+          echo "38e4eb12627d8dea2a9eabfaebbcdb4d9ad0bde633aafbcae4d69656d6bcdb4a echidna-2.3.2-x86_64-linux.tar.gz" | sha256sum -c -
+          sudo tar -xzf echidna-2.3.2-x86_64-linux.tar.gz -C /usr/local/bin
+          rm echidna-2.3.2-x86_64-linux.tar.gz
 
       - name: Show the Echidna version
         run: echidna --version

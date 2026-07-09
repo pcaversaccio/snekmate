@@ -5,8 +5,31 @@ updates:
     schedule:
       interval: "weekly"
       day: "monday"
+    cooldown:
+      default-days: 7
     target-branch: "main"
     labels:
       - "dependencies 🔁"
     assignees:
       - "pcaversaccio"
+    groups:
+      npm-dependencies:
+        patterns:
+          - "*"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    cooldown:
+      default-days: 7
+    target-branch: "main"
+    labels:
+      - "dependencies 🔁"
+    assignees:
+      - "pcaversaccio"
+    groups:
+      github-actions-dependencies:
+        patterns:
+          - "*"
