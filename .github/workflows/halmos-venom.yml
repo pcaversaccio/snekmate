@@ -55,7 +55,7 @@ jobs:
           version: nightly
 
       - name: Install `setuptools`
-        run: python -m pip install setuptools==82.0.1
+        run: python -m pip install setuptools==83.0.0
 
       - name: Install Halmos
         run: python -m pip install git+https://github.com/a16z/halmos.git@main
