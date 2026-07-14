@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: WTFPL
-pragma solidity ^0.8.35;
+pragma solidity ^0.8.36;
 
 interface IMerkleProofVerification {
     function verify(bytes32[] calldata proof, bytes32 root, bytes32 leaf) external pure returns (bool);
