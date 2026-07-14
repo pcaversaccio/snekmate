@@ -76,13 +76,13 @@ def __init__(name_: String[50], version_: String[20]):
            the signing domain. Signatures from different versions are
            not compatible.
     """
-    _NAME = name_
-    _VERSION = version_
-    _HASHED_NAME = keccak256(name_)
-    _HASHED_VERSION = keccak256(version_)
-    _CACHED_DOMAIN_SEPARATOR = self._build_domain_separator()
-    _CACHED_CHAIN_ID = chain.id
-    _CACHED_SELF = self
+    self._NAME = name_
+    self._VERSION = version_
+    self._HASHED_NAME = keccak256(name_)
+    self._HASHED_VERSION = keccak256(version_)
+    self._CACHED_DOMAIN_SEPARATOR = self._build_domain_separator()
+    self._CACHED_CHAIN_ID = chain.id
+    self._CACHED_SELF = self
 
 
 @external
@@ -108,7 +108,7 @@ def eip712Domain() -> (bytes1, String[50], String[20], uint256, address, bytes32
     @return DynArray The 32-byte array of EIP-712 extensions.
     """
     # Note that `0x0F` equals `01111`.
-    return (0x0F, _NAME, _VERSION, chain.id, self, empty(bytes32), empty(DynArray[uint256, 32]))
+    return (0x0F, self._NAME, self._VERSION, chain.id, self, empty(bytes32), empty(DynArray[uint256, 32]))
 
 
 @internal
@@ -118,8 +118,8 @@ def _domain_separator_v4() -> bytes32:
     @dev Returns the domain separator for the current chain.
     @return bytes32 The 32-byte domain separator.
     """
-    if self == _CACHED_SELF and chain.id == _CACHED_CHAIN_ID:
-        return _CACHED_DOMAIN_SEPARATOR
+    if self == self._CACHED_SELF and chain.id == self._CACHED_CHAIN_ID:
+        return self._CACHED_DOMAIN_SEPARATOR
 
     return self._build_domain_separator()
 
@@ -131,7 +131,7 @@ def _build_domain_separator() -> bytes32:
     @dev Builds the domain separator for the current chain.
     @return bytes32 The 32-byte domain separator.
     """
-    return keccak256(abi_encode(_TYPE_HASH, _HASHED_NAME, _HASHED_VERSION, chain.id, self))
+    return keccak256(abi_encode(_TYPE_HASH, self._HASHED_NAME, self._HASHED_VERSION, chain.id, self))
 
 
 @internal

@@ -274,9 +274,9 @@ def __init__(
     """
     self._counter = empty(uint256)
 
-    name = name_
-    symbol = symbol_
-    _BASE_URI = base_uri_
+    self.name = name_
+    self.symbol = symbol_
+    self._BASE_URI = base_uri_
 
     self.is_minter[msg.sender] = True
     log RoleMinterChanged(minter=msg.sender, status=True)
@@ -471,18 +471,18 @@ def tokenURI(token_id: uint256) -> String[512]:
     self._require_minted(token_id)
     token_uri: String[432] = self._token_uris[token_id]
 
-    base_uri_length: uint256 = len(_BASE_URI)
+    base_uri_length: uint256 = len(self._BASE_URI)
     # If there is no base URI, return the token URI.
     if base_uri_length == empty(uint256):
         return token_uri
     # If both are set, concatenate the base URI
     # and token URI.
     elif len(token_uri) != empty(uint256):
-        return concat(_BASE_URI, token_uri)
+        return concat(self._BASE_URI, token_uri)
     # If there is no token URI but a base URI,
     # concatenate the base URI and token ID.
     elif base_uri_length != empty(uint256):
-        return concat(_BASE_URI, uint2str(token_id))
+        return concat(self._BASE_URI, uint2str(token_id))
 
     return ""
 

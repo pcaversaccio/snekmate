@@ -6,9 +6,14 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+permissions: {}
+
 jobs:
   prettify-n-lint:
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    permissions:
+      contents: read
     strategy:
       matrix:
         os:
@@ -17,55 +22,40 @@ jobs:
           - 3.14
         architecture:
           - x64
-        node_version:
-          - 26
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
 
       - name: Install pnpm
-        uses: pnpm/action-setup@v6
+        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
         with:
-          run_install: false
-
-      - name: Get pnpm cache directory path
-        id: pnpm-cache-dir-path
-        run: echo "dir=$(pnpm store path --silent)" >> $GITHUB_OUTPUT
-
-      - name: Restore pnpm cache
-        uses: actions/cache@v6
-        id: pnpm-cache
-        with:
-          path: ${{ steps.pnpm-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: ${{ runner.os }}-pnpm-store-
-
-      - name: Use Node.js ${{ matrix.node_version }}
-        uses: actions/setup-node@v6
-        with:
-          node-version: ${{ matrix.node_version }}
-
-      - name: Install pnpm project with a clean slate
-        run: pnpm install --prefer-offline --frozen-lockfile
+          cache: true
+          run_install: |
+            - args: [--prefer-offline, --frozen-lockfile]
 
       - name: Prettier and lint
         run: pnpm lint:check
 
       - name: Setup Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
         with:
           python-version: ${{ matrix.python_version }}
           architecture: ${{ matrix.architecture }}
 
       - name: Check formatting with Black
-        uses: psf/black@stable
+        uses: psf/black@87928e6d6761a4a6d22250e1fee5601b3998086e # v26.5.1
         with:
           options: "--check --verbose"
           src: "./lib/utils"
 
   codespell:
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 5
+    permissions:
+      contents: read
     strategy:
       matrix:
         os:
@@ -73,10 +63,12 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
 
       - name: Run codespell
-        uses: codespell-project/actions-codespell@v2
+        uses: codespell-project/actions-codespell@8f01853be192eb0f849a5c7d721450e7a467c579 # v2.2.0
         with:
           check_filenames: true
           skip: ./.git,pnpm-lock.yaml
@@ -84,6 +76,9 @@ jobs:
 
   validate-links:
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    permissions:
+      contents: read
     strategy:
       matrix:
         os:
@@ -93,16 +88,18 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
 
       - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
+        uses: ruby/setup-ruby@d45b1a4e94b71acab930e56e79c6aa188764e7f9 # v1.316.0
         with:
           ruby-version: ${{ matrix.ruby_version }}
           bundler-cache: true
 
       - name: Install awesome_bot
-        run: gem install awesome_bot
+        run: gem install awesome_bot -v 1.20.0
 
       - name: Validate URLs
         run: |

@@ -202,9 +202,9 @@ def __init__(
            main version of the signing domain. Signatures
            from different versions are not compatible.
     """
-    name = name_
-    symbol = symbol_
-    decimals = decimals_
+    self.name = name_
+    self.symbol = symbol_
+    self.decimals = decimals_
 
     self.is_minter[msg.sender] = True
     log RoleMinterChanged(minter=msg.sender, status=True)
