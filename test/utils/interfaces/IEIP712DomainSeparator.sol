@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: WTFPL
-pragma solidity ^0.8.35;
+pragma solidity ^0.8.36;
 
 import {IERC5267} from "openzeppelin/interfaces/IERC5267.sol";
 
