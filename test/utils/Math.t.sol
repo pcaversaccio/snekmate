@@ -395,10 +395,12 @@ contract MathTest is Test {
         assertEq(math.wad_cbrt(type(uint64).max), 2_642_245_949_629_133_047);
         assertEq(math.wad_cbrt(type(uint128).max), 6_981_463_658_331_559_092_288_464);
         assertEq(math.wad_cbrt(type(uint256).max), 48_740_834_812_604_276_470_692_694_000_000_000_000);
+        assertEq(math.wad_cbrt(type(uint256).max) % 10 ** 12, 0);
         assertEq(
             math.wad_cbrt(120_358_395_235_964_652_865_782_901_274_721_597_874_667),
             49_373_297_051_989_000_000_000_000
         );
+        assertEq(math.wad_cbrt(120_358_395_235_964_652_865_782_901_274_721_597_874_667) % 10 ** 6, 0);
     }
 
     /**

@@ -609,7 +609,9 @@ def _cbrt(x: uint256, roundup: bool) -> uint256:
 def _wad_cbrt(x: uint256) -> uint256:
     """
     @dev Calculates the cube root of an unsigned integer with a precision
-         of 1e18.
+         of 1e18. For very large inputs, the implementation intentionally
+         reduces fractional precision to avoid intermediate arithmetic
+         overflows.
     @notice Note that this function consumes about 1,500 to 1,700 gas units
             depending on the value of `x`. The implementation is inspired
             by Curve Finance's implementation under the MIT license here:
