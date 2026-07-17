@@ -224,6 +224,30 @@ def wad_cbrt(x: uint256) -> uint256:
             depending on the value of `x`. The implementation is inspired
             by Curve Finance's implementation under the MIT license here:
             https://github.com/curvefi/tricrypto-ng/blob/main/contracts/main/CurveCryptoMathOptimized3.vy.
+    @custom:security The result is a "wad" cube root, i.e. for an input
+                     `x = v * 1e18` it returns approximately `cbrt(v) * 1e18`.
+                     To avoid a 512-bit overflow, the internal scaling is
+                     branch-dependent on the magnitude of `x`, which means
+                     the number of accurate fractional digits of `cbrt(v)`
+                     degrades for large inputs:
+                     - `x < max_value(uint256) / 10**36` (small tier): the
+                       result is `floor(cbrt(v) * 10**18)` and keeps the full
+                       18-digit wad precision.
+                     - `max_value(uint256) / 10**36 <= x < max_value(uint256) / 10**36 * 10**18`
+                       (medium tier): the result is divisible by `10**6` and
+                       keeps only ~12 fractional digits of `cbrt(v)`
+                       (the last 6 wad digits are always zero).
+                     - `x >= max_value(uint256) / 10**36 * 10**18` (large
+                       tier): the result is divisible by `10**12` and keeps
+                       only ~6 fractional digits of `cbrt(v)` (the last 12
+                       wad digits are always zero).
+                     Consumers that require full wad precision across the
+                     entire `uint256` range (e.g. AMM/pricing maths whose
+                     inputs may cross these cut-offs) should be aware of this
+                     step-wise precision loss, or pre-scale / bound their
+                     inputs. This approximation trade-off is intentional;
+                     see also the related `_cbrt` precision hardening in
+                     https://github.com/pcaversaccio/snekmate/pull/381.
     @param x The 32-byte variable from which the cube root is calculated.
     @return The 32-byte cubic root of `x` with a precision of 1e18.
     """
