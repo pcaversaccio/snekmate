@@ -13,6 +13,7 @@ contract OwnableTest is Test {
     IOwnable private ownableInitialEvent;
 
     address private deployer = address(vyperDeployer);
+    address private self = address(this);
     address private zeroAddress = address(0);
 
     function setUp() public {
@@ -44,13 +45,15 @@ contract OwnableTest is Test {
     }
 
     function testTransferOwnershipNonOwner() public {
-        vm.expectRevert(bytes("ownable: caller is not the owner"));
+        bytes memory expectedErr = abi.encodeWithSelector(IOwnable.OwnableUnauthorizedAccount.selector, self);
+        vm.expectRevert(expectedErr);
         ownable.transfer_ownership(makeAddr("newOwner"));
     }
 
     function testTransferOwnershipToZeroAddress() public {
         vm.prank(deployer);
-        vm.expectRevert(bytes("ownable: new owner is the zero address"));
+        bytes memory expectedErr = abi.encodeWithSelector(IOwnable.OwnableInvalidOwner.selector, zeroAddress);
+        vm.expectRevert(expectedErr);
         ownable.transfer_ownership(zeroAddress);
     }
 
@@ -66,7 +69,8 @@ contract OwnableTest is Test {
     }
 
     function testRenounceOwnershipNonOwner() public {
-        vm.expectRevert(bytes("ownable: caller is not the owner"));
+        bytes memory expectedErr = abi.encodeWithSelector(IOwnable.OwnableUnauthorizedAccount.selector, self);
+        vm.expectRevert(expectedErr);
         ownable.renounce_ownership();
     }
 
@@ -91,7 +95,8 @@ contract OwnableTest is Test {
     function testFuzzTransferOwnershipNonOwner(address nonOwner, address newOwner) public {
         vm.assume(nonOwner != deployer);
         vm.prank(nonOwner);
-        vm.expectRevert(bytes("ownable: caller is not the owner"));
+        bytes memory expectedErr = abi.encodeWithSelector(IOwnable.OwnableUnauthorizedAccount.selector, nonOwner);
+        vm.expectRevert(expectedErr);
         ownable.transfer_ownership(newOwner);
     }
 
@@ -117,7 +122,8 @@ contract OwnableTest is Test {
     function testFuzzRenounceOwnershipNonOwner(address nonOwner) public {
         vm.assume(nonOwner != deployer);
         vm.prank(nonOwner);
-        vm.expectRevert(bytes("ownable: caller is not the owner"));
+        bytes memory expectedErr = abi.encodeWithSelector(IOwnable.OwnableUnauthorizedAccount.selector, nonOwner);
+        vm.expectRevert(expectedErr);
         ownable.renounce_ownership();
     }
 }
