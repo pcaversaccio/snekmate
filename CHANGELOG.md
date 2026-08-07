@@ -4,6 +4,9 @@
 
 ### 💥 New Features
 
+- **Authentication**
+  - [`ownable`](https://github.com/pcaversaccio/snekmate/blob/v0.1.3/src/snekmate/auth/ownable.vy): Migrate `ownable` to custom `error`s. ([#401](https://github.com/pcaversaccio/snekmate/pull/401))
+  - [`ownable_2step`](https://github.com/pcaversaccio/snekmate/blob/v0.1.3/src/snekmate/auth/ownable_2step.vy): Migrate `ownable_2step` to custom `error`s. ([#401](https://github.com/pcaversaccio/snekmate/pull/401))
 - **Utility Functions**
   - [`eip7702_utils`](https://github.com/pcaversaccio/snekmate/blob/v0.1.3/src/snekmate/utils/eip7702_utils.vy): Add [EIP-7702](https://eips.ethereum.org/EIPS/eip-7702)-based utility functions. ([#335](https://github.com/pcaversaccio/snekmate/pull/335))
 
