@@ -3,7 +3,7 @@
 @title ERC-721 Custom Error Interface Definition
 @custom:contract-name IERC721Errors
 @license GNU Affero General Public License v3.0 only
-@author pcaversaccio
+@author rafael-abuawad
 @notice The custom errors defined by ERC-6093 for
         ERC-721 tokens.
 """
