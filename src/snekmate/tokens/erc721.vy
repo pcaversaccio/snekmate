@@ -59,6 +59,12 @@ from ethereum.ercs import IERC721
 implements: IERC721
 
 
+# @dev We import and implement the ERC-6093
+# custom error interface.
+from .interfaces import IERC721Errors
+implements: IERC721Errors
+
+
 # @dev We import and implement the `IERC721Metadata`
 # interface, which is written using standard Vyper
 # syntax.
@@ -246,6 +252,16 @@ event RoleMinterChanged:
     status: bool
 
 
+# @dev The caller is not an authorised minter.
+error ERC721UnauthorizedMinter:
+    account: address
+
+
+# @dev The minter address is invalid.
+error ERC721InvalidMinter:
+    minter: address
+
+
 @deploy
 @payable
 def __init__(
@@ -345,10 +361,10 @@ def approve(to: address, token_id: uint256):
     @param token_id The 32-byte identifier of the token.
     """
     owner: address = self._owner_of(token_id)
-    assert to != owner, "erc721: approval to current owner"
+    assert to != owner, IERC721Errors.ERC721InvalidOperator(operator=to)
     assert (
         msg.sender == owner or self.isApprovedForAll[owner][msg.sender]
-    ), "erc721: approve caller is not token owner or approved for all"
+    ), IERC721Errors.ERC721InvalidApprover(approver=msg.sender)
     self._approve(to, token_id)
 
 
@@ -406,7 +422,9 @@ def transferFrom(owner: address, to: address, token_id: uint256):
     @param to The 20-byte receiver address.
     @param token_id The 32-byte identifier of the token.
     """
-    assert self._is_approved_or_owner(msg.sender, token_id), "erc721: caller is not token owner or approved"
+    assert self._is_approved_or_owner(msg.sender, token_id), IERC721Errors.ERC721InsufficientApproval(
+        operator=msg.sender, tokenId=token_id
+    )
     self._transfer(owner, to, token_id)
 
 
@@ -453,7 +471,9 @@ def safeTransferFrom(owner: address, to: address, token_id: uint256, data: Bytes
            with no specified format that is sent
            to `to`.
     """
-    assert self._is_approved_or_owner(msg.sender, token_id), "erc721: caller is not token owner or approved"
+    assert self._is_approved_or_owner(msg.sender, token_id), IERC721Errors.ERC721InsufficientApproval(
+        operator=msg.sender, tokenId=token_id
+    )
     self._safe_transfer(owner, to, token_id, data)
 
 
@@ -510,7 +530,9 @@ def tokenByIndex(index: uint256) -> uint256:
     @return uint256 The 32-byte token ID at index
             `index`.
     """
-    assert index < self._total_supply(), "erc721: global index out of bounds"
+    assert index < self._total_supply(), IERC721Enumerable.ERC721OutOfBoundsIndex(
+        owner=empty(address), index=index
+    )
     return self._all_tokens[index]
 
 
@@ -528,7 +550,9 @@ def tokenOfOwnerByIndex(owner: address, index: uint256) -> uint256:
     @return uint256 The 32-byte token ID owned by
             `owner` at index `index`.
     """
-    assert index < self._balance_of(owner), "erc721: owner index out of bounds"
+    assert index < self._balance_of(owner), IERC721Enumerable.ERC721OutOfBoundsIndex(
+        owner=owner, index=index
+    )
     return self._owned_tokens[owner][index]
 
 
@@ -540,7 +564,9 @@ def burn(token_id: uint256):
             or be an approved operator.
     @param token_id The 32-byte identifier of the token.
     """
-    assert self._is_approved_or_owner(msg.sender, token_id), "erc721: caller is not token owner or approved"
+    assert self._is_approved_or_owner(msg.sender, token_id), IERC721Errors.ERC721InsufficientApproval(
+        operator=msg.sender, tokenId=token_id
+    )
     self._burn(token_id)
 
 
@@ -556,7 +582,7 @@ def safe_mint(owner: address, uri: String[432]):
     @param uri The maximum 432-character user-readable
            string URI for computing `tokenURI`.
     """
-    assert self.is_minter[msg.sender], "erc721: access is denied"
+    assert self.is_minter[msg.sender], ERC721UnauthorizedMinter(account=msg.sender)
     # New tokens will be automatically assigned an incremental ID.
     # The first token ID will be zero.
     token_id: uint256 = self._counter
@@ -584,10 +610,10 @@ def set_minter(minter: address, status: bool):
     @param status The Boolean variable that sets the status.
     """
     ownable._check_owner()
-    assert minter != empty(address), "erc721: minter is the zero address"
+    assert minter != empty(address), ERC721InvalidMinter(minter=minter)
     # We ensured in the previous step `ownable._check_owner`
     # that `msg.sender` is the `owner`.
-    assert minter != msg.sender, "erc721: minter is owner address"
+    assert minter != msg.sender, ERC721InvalidMinter(minter=minter)
     self.is_minter[minter] = status
     log RoleMinterChanged(minter=minter, status=status)
 
@@ -612,7 +638,7 @@ def permit(spender: address, token_id: uint256, deadline: uint256, v: uint8, r: 
     @param r The secp256k1 32-byte signature parameter `r`.
     @param s The secp256k1 32-byte signature parameter `s`.
     """
-    assert block.timestamp <= deadline, "erc721: expired deadline"
+    assert block.timestamp <= deadline, IERC721Permit.ERC4494ExpiredSignature(deadline=deadline)
 
     current_nonce: uint256 = self.nonces[token_id]
     self.nonces[token_id] = unsafe_add(current_nonce, 1)
@@ -621,7 +647,9 @@ def permit(spender: address, token_id: uint256, deadline: uint256, v: uint8, r: 
     hash: bytes32 = eip712_domain_separator._hash_typed_data_v4(struct_hash)
 
     signer: address = ecdsa._recover_vrs(hash, convert(v, uint256), convert(r, uint256), convert(s, uint256))
-    assert signer == self._owner_of(token_id), "erc721: invalid signature"
+    assert signer == self._owner_of(token_id), IERC721Permit.ERC4494InvalidSigner(
+        signer=signer, owner=self._owner_of(token_id)
+    )
 
     self._approve(spender, token_id)
 
@@ -651,7 +679,7 @@ def transfer_ownership(new_owner: address):
     @param new_owner The 20-byte address of the new owner.
     """
     ownable._check_owner()
-    assert new_owner != empty(address), "erc721: new owner is the zero address"
+    assert new_owner != empty(address), ownable.OwnableInvalidOwner(owner=new_owner)
 
     self.is_minter[msg.sender] = False
     log RoleMinterChanged(minter=msg.sender, status=False)
@@ -695,7 +723,7 @@ def _balance_of(owner: address) -> uint256:
     @return uint256 The 32-byte token amount owned
             by `owner`.
     """
-    assert owner != empty(address), "erc721: the zero address is not a valid owner"
+    assert owner != empty(address), IERC721Errors.ERC721InvalidOwner(owner=owner)
     return self._balances[owner]
 
 
@@ -710,7 +738,7 @@ def _owner_of(token_id: uint256) -> address:
     @return address The 20-byte owner address.
     """
     owner: address = self._owners[token_id]
-    assert owner != empty(address), "erc721: invalid token ID"
+    assert owner != empty(address), IERC721Errors.ERC721NonexistentToken(tokenId=token_id)
     return owner
 
 
@@ -721,7 +749,7 @@ def _require_minted(token_id: uint256):
     @dev Reverts if the `token_id` has not yet been minted.
     @param token_id The 32-byte identifier of the token.
     """
-    assert self._exists(token_id), "erc721: invalid token ID"
+    assert self._exists(token_id), IERC721Errors.ERC721NonexistentToken(tokenId=token_id)
 
 
 @internal
@@ -774,7 +802,7 @@ def _set_approval_for_all(owner: address, operator: address, approved: bool):
     @param approved The Boolean variable that sets the
            approval status.
     """
-    assert owner != operator, "erc721: approve to caller"
+    assert owner != operator, IERC721Errors.ERC721InvalidOperator(operator=operator)
     self.isApprovedForAll[owner][operator] = approved
     log IERC721.ApprovalForAll(owner=owner, operator=operator, approved=approved)
 
@@ -817,7 +845,7 @@ def _safe_mint(owner: address, token_id: uint256, data: Bytes[1_024]):
     self._mint(owner, token_id)
     assert self._check_on_erc721_received(
         empty(address), owner, token_id, data
-    ), "erc721: transfer to non-IERC721Receiver implementer"
+    ), IERC721Errors.ERC721InvalidReceiver(receiver=owner)
 
 
 @internal
@@ -832,13 +860,13 @@ def _mint(owner: address, token_id: uint256):
     @param owner The 20-byte owner address.
     @param token_id The 32-byte identifier of the token.
     """
-    assert owner != empty(address), "erc721: mint to the zero address"
-    assert not self._exists(token_id), "erc721: token already minted"
+    assert owner != empty(address), IERC721Errors.ERC721InvalidReceiver(receiver=owner)
+    assert not self._exists(token_id), IERC721Errors.ERC721InvalidSender(sender=empty(address))
 
     self._before_token_transfer(empty(address), owner, token_id)
     # Checks that the `token_id` was not minted by the
     # `_before_token_transfer` hook.
-    assert not self._exists(token_id), "erc721: token already minted"
+    assert not self._exists(token_id), IERC721Errors.ERC721InvalidSender(sender=empty(address))
 
     # Theoretically, the following line could overflow
     # if all 2**256 token IDs were minted to the same owner.
@@ -887,7 +915,7 @@ def _safe_transfer(owner: address, to: address, token_id: uint256, data: Bytes[1
     self._transfer(owner, to, token_id)
     assert self._check_on_erc721_received(
         owner, to, token_id, data
-    ), "erc721: transfer to non-IERC721Receiver implementer"
+    ), IERC721Errors.ERC721InvalidReceiver(receiver=to)
 
 
 @internal
@@ -903,13 +931,19 @@ def _transfer(owner: address, to: address, token_id: uint256):
     @param to The 20-byte receiver address.
     @param token_id The 32-byte identifier of the token.
     """
-    assert self._owner_of(token_id) == owner, "erc721: transfer from incorrect owner"
-    assert to != empty(address), "erc721: transfer to the zero address"
+    current_owner: address = self._owner_of(token_id)
+    assert current_owner == owner, IERC721Errors.ERC721IncorrectOwner(
+        sender=owner, tokenId=token_id, owner=current_owner
+    )
+    assert to != empty(address), IERC721Errors.ERC721InvalidReceiver(receiver=to)
 
     self._before_token_transfer(owner, to, token_id)
     # Checks that the `token_id` was not transferred by the
     # `_before_token_transfer` hook.
-    assert self._owner_of(token_id) == owner, "erc721: transfer from incorrect owner"
+    current_owner = self._owner_of(token_id)
+    assert current_owner == owner, IERC721Errors.ERC721IncorrectOwner(
+        sender=owner, tokenId=token_id, owner=current_owner
+    )
 
     self._token_approvals[token_id] = empty(address)
     # See comment why an overflow is not possible in the
@@ -931,7 +965,7 @@ def _set_token_uri(token_id: uint256, token_uri: String[432]):
     @param token_uri The maximum 432-character user-readable
            string URI for computing `tokenURI`.
     """
-    assert self._exists(token_id), "erc721: URI set of nonexistent token"
+    assert self._exists(token_id), IERC721Errors.ERC721NonexistentToken(tokenId=token_id)
     self._token_uris[token_id] = token_uri
     log IERC4906.MetadataUpdate(_tokenId=token_id)
 
@@ -1000,7 +1034,7 @@ def _check_on_erc721_received(owner: address, to: address, token_id: uint256, da
         return_value: bytes4 = extcall IERC721Receiver(to).onERC721Received(msg.sender, owner, token_id, data)
         assert return_value == method_id(
             "onERC721Received(address,address,uint256,bytes)", output_type=bytes4
-        ), "erc721: transfer to non-IERC721Receiver implementer"
+        ), IERC721Errors.ERC721InvalidReceiver(receiver=to)
         return True
 
     # EOA case.

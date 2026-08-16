@@ -1,0 +1,49 @@
+# pragma version ~=0.5.0a4
+"""
+@title ERC-1155 Custom Error Interface Definition
+@custom:contract-name IERC1155Errors
+@license GNU Affero General Public License v3.0 only
+@author pcaversaccio
+@notice The custom errors defined by ERC-6093 for
+        ERC-1155 tokens.
+"""
+
+
+# @dev The `sender` does not have enough tokens.
+error ERC1155InsufficientBalance:
+    sender: address
+    balance: uint256
+    needed: uint256
+    tokenId: uint256
+
+
+# @dev The `sender` is not a valid token sender.
+error ERC1155InvalidSender:
+    sender: address
+
+
+# @dev The `receiver` is not a valid token receiver.
+error ERC1155InvalidReceiver:
+    receiver: address
+
+
+# @dev The `operator` is missing approval for all tokens.
+error ERC1155MissingApprovalForAll:
+    operator: address
+    owner: address
+
+
+# @dev The `approver` is not a valid token approver.
+error ERC1155InvalidApprover:
+    approver: address
+
+
+# @dev The `operator` is not a valid token operator.
+error ERC1155InvalidOperator:
+    operator: address
+
+
+# @dev The token ID and amount arrays have different lengths.
+error ERC1155InvalidArrayLength:
+    idsLength: uint256
+    valuesLength: uint256

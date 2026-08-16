@@ -64,6 +64,12 @@ from ethereum.ercs import IERC20Detailed
 implements: IERC20Detailed
 
 
+# @dev We import and implement the ERC-6093
+# custom error interface.
+from .interfaces import IERC20Errors
+implements: IERC20Errors
+
+
 # @dev We import and implement the `IERC20Permit`
 # interface, which is written using standard Vyper
 # syntax.
@@ -175,6 +181,16 @@ nonces: public(HashMap[address, uint256])
 event RoleMinterChanged:
     minter: indexed(address)
     status: bool
+
+
+# @dev The caller is not an authorised minter.
+error ERC20UnauthorizedMinter:
+    account: address
+
+
+# @dev The minter address is invalid.
+error ERC20InvalidMinter:
+    minter: address
 
 
 @deploy
@@ -322,7 +338,7 @@ def mint(owner: address, amount: uint256):
     @param owner The 20-byte owner address.
     @param amount The 32-byte token amount to be created.
     """
-    assert self.is_minter[msg.sender], "erc20: access is denied"
+    assert self.is_minter[msg.sender], ERC20UnauthorizedMinter(account=msg.sender)
     self._mint(owner, amount)
 
 
@@ -339,10 +355,10 @@ def set_minter(minter: address, status: bool):
     @param status The Boolean variable that sets the status.
     """
     ownable._check_owner()
-    assert minter != empty(address), "erc20: minter is the zero address"
+    assert minter != empty(address), ERC20InvalidMinter(minter=minter)
     # We ensured in the previous step `ownable._check_owner`
     # that `msg.sender` is the `owner`.
-    assert minter != msg.sender, "erc20: minter is owner address"
+    assert minter != msg.sender, ERC20InvalidMinter(minter=minter)
     self.is_minter[minter] = status
     log RoleMinterChanged(minter=minter, status=status)
 
@@ -369,7 +385,7 @@ def permit(owner: address, spender: address, amount: uint256, deadline: uint256,
     @param r The secp256k1 32-byte signature parameter `r`.
     @param s The secp256k1 32-byte signature parameter `s`.
     """
-    assert block.timestamp <= deadline, "erc20: expired deadline"
+    assert block.timestamp <= deadline, IERC20Permit.ERC2612ExpiredSignature(deadline=deadline)
 
     current_nonce: uint256 = self.nonces[owner]
     self.nonces[owner] = unsafe_add(current_nonce, 1)
@@ -378,7 +394,7 @@ def permit(owner: address, spender: address, amount: uint256, deadline: uint256,
     hash: bytes32 = eip712_domain_separator._hash_typed_data_v4(struct_hash)
 
     signer: address = ecdsa._recover_vrs(hash, convert(v, uint256), convert(r, uint256), convert(s, uint256))
-    assert signer == owner, "erc20: invalid signature"
+    assert signer == owner, IERC20Permit.ERC2612InvalidSigner(signer=signer, owner=owner)
 
     self._approve(owner, spender, amount)
 
@@ -408,7 +424,7 @@ def transfer_ownership(new_owner: address):
     @param new_owner The 20-byte address of the new owner.
     """
     ownable._check_owner()
-    assert new_owner != empty(address), "erc20: new owner is the zero address"
+    assert new_owner != empty(address), ownable.OwnableInvalidOwner(owner=new_owner)
 
     self.is_minter[msg.sender] = False
     log RoleMinterChanged(minter=msg.sender, status=False)
@@ -453,13 +469,15 @@ def _transfer(owner: address, to: address, amount: uint256):
     @param to The 20-byte receiver address.
     @param amount The 32-byte token amount to be transferred.
     """
-    assert owner != empty(address), "erc20: transfer from the zero address"
-    assert to != empty(address), "erc20: transfer to the zero address"
+    assert owner != empty(address), IERC20Errors.ERC20InvalidSender(sender=owner)
+    assert to != empty(address), IERC20Errors.ERC20InvalidReceiver(receiver=to)
 
     self._before_token_transfer(owner, to, amount)
 
     owner_balanceOf: uint256 = self.balanceOf[owner]
-    assert owner_balanceOf >= amount, "erc20: transfer amount exceeds balance"
+    assert owner_balanceOf >= amount, IERC20Errors.ERC20InsufficientBalance(
+        sender=owner, balance=owner_balanceOf, needed=amount
+    )
     self.balanceOf[owner] = unsafe_sub(owner_balanceOf, amount)
     self.balanceOf[to] = unsafe_add(self.balanceOf[to], amount)
     log IERC20.Transfer(sender=owner, receiver=to, value=amount)
@@ -479,7 +497,7 @@ def _mint(owner: address, amount: uint256):
     @param owner The 20-byte owner address.
     @param amount The 32-byte token amount to be created.
     """
-    assert owner != empty(address), "erc20: mint to the zero address"
+    assert owner != empty(address), IERC20Errors.ERC20InvalidReceiver(receiver=owner)
 
     self._before_token_transfer(empty(address), owner, amount)
 
@@ -501,12 +519,14 @@ def _burn(owner: address, amount: uint256):
     @param owner The 20-byte owner address.
     @param amount The 32-byte token amount to be destroyed.
     """
-    assert owner != empty(address), "erc20: burn from the zero address"
+    assert owner != empty(address), IERC20Errors.ERC20InvalidSender(sender=owner)
 
     self._before_token_transfer(owner, empty(address), amount)
 
     account_balance: uint256 = self.balanceOf[owner]
-    assert account_balance >= amount, "erc20: burn amount exceeds balance"
+    assert account_balance >= amount, IERC20Errors.ERC20InsufficientBalance(
+        sender=owner, balance=account_balance, needed=amount
+    )
     self.balanceOf[owner] = unsafe_sub(account_balance, amount)
     self.totalSupply = unsafe_sub(self.totalSupply, amount)
     log IERC20.Transfer(sender=owner, receiver=empty(address), value=amount)
@@ -526,8 +546,8 @@ def _approve(owner: address, spender: address, amount: uint256):
     @param amount The 32-byte token amount that is
            allowed to be spent by the `spender`.
     """
-    assert owner != empty(address), "erc20: approve from the zero address"
-    assert spender != empty(address), "erc20: approve to the zero address"
+    assert owner != empty(address), IERC20Errors.ERC20InvalidApprover(approver=owner)
+    assert spender != empty(address), IERC20Errors.ERC20InvalidSpender(spender=spender)
 
     self.allowance[owner][spender] = amount
     log IERC20.Approval(owner=owner, spender=spender, value=amount)
@@ -555,7 +575,9 @@ def _spend_allowance(owner: address, spender: address, amount: uint256):
         # of `0`. However, this poisoning attack is not an on-chain
         # vulnerability. All assets are safe. It is an off-chain
         # log interpretation issue.
-        assert current_allowance >= amount, "erc20: insufficient allowance"
+        assert current_allowance >= amount, IERC20Errors.ERC20InsufficientAllowance(
+            spender=spender, allowance=current_allowance, needed=amount
+        )
         self._approve(owner, spender, unsafe_sub(current_allowance, amount))
 
 

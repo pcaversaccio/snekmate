@@ -107,7 +107,7 @@ def _customMint(owner: address, id: uint256, amount: uint256):
     @param id The 32-byte identifier of the token.
     @param amount The 32-byte token amount to be created.
     """
-    assert owner != empty(address), "ERC1155Mock: mint to the zero address"
+    assert owner != empty(address), erc1155.IERC1155Errors.ERC1155InvalidReceiver(receiver=owner)
 
     erc1155._before_token_transfer(
         empty(address), owner, erc1155._as_singleton_array(id), erc1155._as_singleton_array(amount), b""

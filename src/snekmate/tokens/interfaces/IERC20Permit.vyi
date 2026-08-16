@@ -21,6 +21,17 @@
 """
 
 
+# @dev The permit deadline has expired.
+error ERC2612ExpiredSignature:
+    deadline: uint256
+
+
+# @dev The permit signature does not match the owner.
+error ERC2612InvalidSigner:
+    signer: address
+    owner: address
+
+
 @external
 def permit(owner: address, spender: address, amount: uint256, deadline: uint256, v: uint8, r: bytes32, s: bytes32):
     """
