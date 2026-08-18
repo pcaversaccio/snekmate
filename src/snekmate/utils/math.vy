@@ -551,10 +551,11 @@ def _wad_exp(x: int256) -> int256:
 def _cbrt(x: uint256, roundup: bool) -> uint256:
     """
     @dev Calculates the cube root of an unsigned integer.
-    @notice Note that this function consumes about 1,600 to 1,800 gas units
-            depending on the value of `x` and `roundup`. The implementation is
-            inspired by Curve Finance's implementation under the MIT license here:
-            https://github.com/curvefi/tricrypto-ng/blob/main/contracts/main/CurveCryptoMathOptimized3.vy.
+    @notice Note that this function consumes about 1,100 to 1,400 gas units
+            depending on the value of `x` and `roundup`. The 5 Newton-Raphson
+            iterations implementation is inspired by 0x's implementation under
+            the MIT license here:
+            https://github.com/0xProject/0x-settler/blob/master/src/vendor/Cbrt.sol.
     @param x The 32-byte variable from which the cube root is calculated.
     @param roundup The Boolean variable that specifies whether
            to round up or not. The default `False` is round down.
@@ -565,7 +566,37 @@ def _cbrt(x: uint256, roundup: bool) -> uint256:
     if x == empty(uint256):
         return empty(uint256)
 
-    y: uint256 = unsafe_div(self._wad_cbrt(x), 10 ** 12)
+    # Compute the binary logarithm of `x`.
+    log2x: uint256 = self._log2(x, False)
+
+    # The initial guess is "z ≈ 2**(b//3) * c" (the operator `//` means integer
+    # division), with "c ∈ {144,181,229}/128" selected by "b % 3" to centre each
+    # octave's cube-root ratio on `1.0`. Furthermore, `9_483_749 == 0x90_B5_E5`
+    # packs the three 8-bit multipliers big-endian (see https://atarpara.github.io/solady-cbrt)
+    # and `| 1` keeps `y >= 1` when the shift underflows.
+    y: uint256 = (
+        (
+            ((9_483_749 >> unsafe_mul(8, unsafe_sub(2, log2x % 3))) & convert(max_value(uint8), uint256))
+            << unsafe_div(log2x, 3)
+        )
+        >> 7
+    ) | 1
+
+    # 5 Newton-Raphson iterations suffice here (vs 7 in `_wad_cbrt`) because the
+    # `0x90_B5_E5` seed yields ~3 correct bits vs ~1.4 for the "1,260 / 1,000" seed,
+    # and each step doubles them ("~3->~6->~12->~25->~50->~100"), clearing the ~86-bit
+    # output range of `cbrt(2**256 - 1)` with margin. The iterations are unrolled.
+    # This reduces the gas cost, but requires more bytecode.
+    y = unsafe_div(unsafe_add(unsafe_mul(2, y), unsafe_div(x, unsafe_mul(y, y))), 3)
+    y = unsafe_div(unsafe_add(unsafe_mul(2, y), unsafe_div(x, unsafe_mul(y, y))), 3)
+    y = unsafe_div(unsafe_add(unsafe_mul(2, y), unsafe_div(x, unsafe_mul(y, y))), 3)
+    y = unsafe_div(unsafe_add(unsafe_mul(2, y), unsafe_div(x, unsafe_mul(y, y))), 3)
+    y = unsafe_div(unsafe_add(unsafe_mul(2, y), unsafe_div(x, unsafe_mul(y, y))), 3)
+
+    # Correct potential Newton-Raphson overshoot when `y` exceeds the floor of the
+    # cube root of `x`, using "(x // y**2) < y" to avoid forming "y**3".
+    if unsafe_div(x, unsafe_mul(y, y)) < y:
+        y = unsafe_sub(y, 1)
 
     if roundup and unsafe_mul(unsafe_mul(y, y), y) != x:
         y = unsafe_add(y, 1)
@@ -578,7 +609,9 @@ def _cbrt(x: uint256, roundup: bool) -> uint256:
 def _wad_cbrt(x: uint256) -> uint256:
     """
     @dev Calculates the cube root of an unsigned integer with a precision
-         of 1e18.
+         of 1e18. For very large inputs, the implementation intentionally
+         reduces fractional precision to avoid intermediate arithmetic
+         overflows.
     @notice Note that this function consumes about 1,500 to 1,700 gas units
             depending on the value of `x`. The implementation is inspired
             by Curve Finance's implementation under the MIT license here:
