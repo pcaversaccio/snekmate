@@ -4,6 +4,10 @@
 
 ### 💥 New Features
 
+- **Authentication**
+  - [`access_control`](https://github.com/pcaversaccio/snekmate/blob/v0.1.3/src/snekmate/auth/access_control.vy): Migrate `access_control` to custom `error`s. ([#383](https://github.com/pcaversaccio/snekmate/pull/383))
+- **Governance**
+  - [`timelock_controller`](https://github.com/pcaversaccio/snekmate/blob/v0.1.3/src/snekmate/governance/timelock_controller.vy): Migrate `timelock_controller` to custom `error`s. ([#383](https://github.com/pcaversaccio/snekmate/pull/383))
 - **Utility Functions**
   - [`eip7702_utils`](https://github.com/pcaversaccio/snekmate/blob/v0.1.3/src/snekmate/utils/eip7702_utils.vy): Add [EIP-7702](https://eips.ethereum.org/EIPS/eip-7702)-based utility functions. ([#335](https://github.com/pcaversaccio/snekmate/pull/335))
 
