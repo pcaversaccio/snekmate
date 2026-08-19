@@ -3,10 +3,14 @@
 @title ERC-20 Custom Error Interface Definition
 @custom:contract-name IERC20Errors
 @license GNU Affero General Public License v3.0 only
+@author rafael-abuawad
 @notice The custom errors defined by ERC-6093 for
-        ERC-20 tokens.
-        For more details, please refer to:
-        https://eips.ethereum.org/EIPS/eip-6093#erc-20
+        ERC-20 tokens. For more details, please
+        refer to:
+        https://eips.ethereum.org/EIPS/eip-6093#erc-20.
+
+        On how to use interfaces in Vyper, please visit:
+        https://vyper.readthedocs.io/en/latest/interfaces.html#interfaces.
 """
 
 
