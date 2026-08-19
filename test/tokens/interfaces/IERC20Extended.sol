@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: WTFPL
-pragma solidity ^0.8.34;
+pragma solidity ^0.8.36;
 
 import {IERC20Metadata} from "openzeppelin/token/ERC20/extensions/IERC20Metadata.sol";
 import {IERC20Permit} from "openzeppelin/token/ERC20/extensions/IERC20Permit.sol";
@@ -9,6 +9,17 @@ interface IERC20Extended is IERC20Metadata, IERC20Permit, IERC5267 {
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
 
     event RoleMinterChanged(address indexed minter, bool status);
+
+    error ERC20InsufficientBalance(address sender, uint256 balance, uint256 needed);
+    error ERC20InvalidSender(address sender);
+    error ERC20InvalidReceiver(address receiver);
+    error ERC20InsufficientAllowance(address spender, uint256 allowance, uint256 needed);
+    error ERC20InvalidApprover(address approver);
+    error ERC20InvalidSpender(address spender);
+    error ERC2612ExpiredSignature(uint256 deadline);
+    error ERC2612InvalidSigner(address signer, address owner);
+    error ERC20UnauthorizedMinter(address account);
+    error ERC20InvalidMinter(address minter);
 
     function burn(uint256 amount) external;
 
