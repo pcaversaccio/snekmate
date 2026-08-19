@@ -383,7 +383,7 @@ def permit(owner: address, spender: address, amount: uint256, deadline: uint256,
     @param r The secp256k1 32-byte signature parameter `r`.
     @param s The secp256k1 32-byte signature parameter `s`.
     """
-    assert block.timestamp <= deadline, IERC20Permit.ERC2612InvalidSigner(signer=signer, owner=owner)
+    assert block.timestamp <= deadline, IERC20Permit.ERC2612ExpiredSignature(deadline=deadline)
 
     current_nonce: uint256 = self.nonces[owner]
     self.nonces[owner] = unsafe_add(current_nonce, 1)
@@ -392,7 +392,7 @@ def permit(owner: address, spender: address, amount: uint256, deadline: uint256,
     hash: bytes32 = eip712_domain_separator._hash_typed_data_v4(struct_hash)
 
     signer: address = ecdsa._recover_vrs(hash, convert(v, uint256), convert(r, uint256), convert(s, uint256))
-    assert signer == owner, IERC20Permit.ERC2612InvalidSigner(signer=signer, owner
+    assert signer == owner, IERC20Permit.ERC2612InvalidSigner(signer=signer, owner=owner)
 
     self._approve(owner, spender, amount)
 
@@ -522,7 +522,7 @@ def _burn(owner: address, amount: uint256):
     self._before_token_transfer(owner, empty(address), amount)
 
     account_balance: uint256 = self.balanceOf[owner]
-    assert account_balance >= amount, IERC20.ERC20InsufficientBalance(
+    assert account_balance >= amount, IERC20Errors.ERC20InsufficientBalance(
         sender=owner, balance=account_balance, needed=amount
     )
     self.balanceOf[owner] = unsafe_sub(account_balance, amount)
@@ -573,7 +573,9 @@ def _spend_allowance(owner: address, spender: address, amount: uint256):
         # of `0`. However, this poisoning attack is not an on-chain
         # vulnerability. All assets are safe. It is an off-chain
         # log interpretation issue.
-        assert current_allowance >= amount, "erc20: insufficient allowance"
+        assert current_allowance >= amount, IERC20Errors.ERC20InsufficientAllowance(
+            spender=spender, allowance=current_allowance, needed=amount
+        )
         self._approve(owner, spender, unsafe_sub(current_allowance, amount))
 
 
