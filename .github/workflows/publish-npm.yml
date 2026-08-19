@@ -5,58 +5,53 @@ on:
     types: [published]
   workflow_dispatch:
 
+permissions: {}
+
 jobs:
   publish:
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      id-token: write
     environment:
       name: npm
       url: https://www.npmjs.com/package/snekmate
-    permissions:
-      id-token: write
     strategy:
       matrix:
         os:
           - ubuntu-latest
         node_version:
-          - 24
+          - 26
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       - name: Install pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
         with:
-          run_install: false
-
-      - name: Get pnpm cache directory path
-        id: pnpm-cache-dir-path
-        run: echo "dir=$(pnpm store path --silent)" >> $GITHUB_OUTPUT
-
-      - name: Restore pnpm cache
-        uses: actions/cache@v5
-        id: pnpm-cache
-        with:
-          path: ${{ steps.pnpm-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: ${{ runner.os }}-pnpm-store-
+          cache: false
+          run_install: |
+            - args: [--prefer-offline, --frozen-lockfile]
 
       - name: Setup .npmrc file to publish to npm
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: ${{ matrix.node_version }}
+          package-manager-cache: false
           registry-url: "https://registry.npmjs.org"
-
-      - name: Install pnpm project with a clean slate
-        run: pnpm install --prefer-offline --frozen-lockfile
 
       - name: Publish to npm
         run: |
+          set -Eeuo pipefail
           VERSION=$(node -p "require('./package.json').version")
-          case $VERSION in
+          case "$VERSION" in
             *-alpha.*) TAG="alpha" ;;
             *-beta.*)  TAG="beta" ;;
             *-rc.*)    TAG="next" ;;
             *)         TAG="latest" ;;
           esac
-          pnpm publish --no-git-checks --tag $TAG
+          pnpm publish --no-git-checks --tag "$TAG"

@@ -11,6 +11,6 @@
   ],
   "lockFileMaintenance": {
     "extends": ["group:all"],
-    "commitMessageAction": "Update"
+    "commitMessageAction": "Update `pnpm-lock.yaml`"
   }
 }
