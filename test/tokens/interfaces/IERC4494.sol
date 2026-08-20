@@ -4,6 +4,9 @@ pragma solidity ^0.8.34;
 import {IERC165} from "openzeppelin/utils/introspection/IERC165.sol";
 
 interface IERC4494 is IERC165 {
+    error ERC4494ExpiredSignature(uint256 deadline);
+    error ERC4494InvalidSigner(address signer, address owner);
+
     function permit(address spender, uint256 tokenId, uint256 deadline, uint8 v, bytes32 r, bytes32 s) external;
 
     function nonces(uint256 tokenId) external view returns (uint256);
