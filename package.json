@@ -49,6 +49,6 @@
     "prettier": "3.9.6",
     "prettier-plugin-sh": "0.19.0",
     "prettier-plugin-solidity": "2.4.1",
-    "solhint": "6.2.3"
+    "solhint": "6.2.4"
   }
 }
