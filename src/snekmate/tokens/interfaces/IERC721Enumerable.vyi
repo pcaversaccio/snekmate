@@ -33,6 +33,13 @@ implements: IERC165
 from ethereum.ercs import IERC721
 
 
+# @dev The requested index is outside the token collection
+# or owner's token list.
+error ERC721OutOfBoundsIndex:
+  owner: address
+  index: uint256
+
+
 @external
 @view
 def supportsInterface(interfaceId: bytes4) -> bool:
