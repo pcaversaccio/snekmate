@@ -13,6 +13,7 @@ contract Ownable2StepTest is Test {
     IOwnable2Step private ownable2StepInitialEvent;
 
     address private deployer = address(vyperDeployer);
+    address private self = address(this);
     address private zeroAddress = address(0);
 
     function setUp() public {
@@ -50,7 +51,8 @@ contract Ownable2StepTest is Test {
     }
 
     function testTransferOwnershipNonOwner() public {
-        vm.expectRevert(bytes("ownable: caller is not the owner"));
+        bytes memory expectedErr = abi.encodeWithSelector(IOwnable2Step.OwnableUnauthorizedAccount.selector, self);
+        vm.expectRevert(expectedErr);
         ownable2Step.transfer_ownership(makeAddr("newOwner"));
     }
 
@@ -85,7 +87,8 @@ contract Ownable2StepTest is Test {
         assertEq(ownable2Step.owner(), oldOwner);
         assertEq(ownable2Step.pending_owner(), newOwner);
 
-        vm.expectRevert(bytes("ownable_2step: caller is not the new owner"));
+        bytes memory expectedErr = abi.encodeWithSelector(IOwnable2Step.OwnableUnauthorizedAccount.selector, oldOwner);
+        vm.expectRevert(expectedErr);
         ownable2Step.accept_ownership();
         vm.stopPrank();
     }
@@ -110,7 +113,8 @@ contract Ownable2StepTest is Test {
         vm.stopPrank();
 
         vm.startPrank(newOwner1);
-        vm.expectRevert(bytes("ownable_2step: caller is not the new owner"));
+        bytes memory expectedErr1 = abi.encodeWithSelector(IOwnable2Step.OwnableUnauthorizedAccount.selector, newOwner1);
+        vm.expectRevert(expectedErr1);
         ownable2Step.accept_ownership();
         vm.stopPrank();
 
@@ -123,7 +127,8 @@ contract Ownable2StepTest is Test {
         vm.stopPrank();
 
         vm.startPrank(newOwner2);
-        vm.expectRevert(bytes("ownable_2step: caller is not the new owner"));
+        bytes memory expectedErr2 = abi.encodeWithSelector(IOwnable2Step.OwnableUnauthorizedAccount.selector, newOwner2);
+        vm.expectRevert(expectedErr2);
         ownable2Step.accept_ownership();
         vm.stopPrank();
     }
@@ -140,7 +145,8 @@ contract Ownable2StepTest is Test {
     }
 
     function testRenounceOwnershipNonOwner() public {
-        vm.expectRevert(bytes("ownable: caller is not the owner"));
+        bytes memory expectedErr = abi.encodeWithSelector(IOwnable2Step.OwnableUnauthorizedAccount.selector, self);
+        vm.expectRevert(expectedErr);
         ownable2Step.renounce_ownership();
     }
 
@@ -161,7 +167,8 @@ contract Ownable2StepTest is Test {
         vm.stopPrank();
 
         vm.startPrank(newOwner);
-        vm.expectRevert(bytes("ownable_2step: caller is not the new owner"));
+        bytes memory expectedErr = abi.encodeWithSelector(IOwnable2Step.OwnableUnauthorizedAccount.selector, newOwner);
+        vm.expectRevert(expectedErr);
         ownable2Step.accept_ownership();
         vm.stopPrank();
     }
@@ -188,7 +195,8 @@ contract Ownable2StepTest is Test {
     function testFuzzTransferOwnershipNonOwner(address nonOwner, address newOwner) public {
         vm.assume(nonOwner != deployer);
         vm.prank(nonOwner);
-        vm.expectRevert(bytes("ownable: caller is not the owner"));
+        bytes memory expectedErr = abi.encodeWithSelector(IOwnable2Step.OwnableUnauthorizedAccount.selector, nonOwner);
+        vm.expectRevert(expectedErr);
         ownable2Step.transfer_ownership(newOwner);
     }
 
@@ -236,7 +244,8 @@ contract Ownable2StepTest is Test {
         assertEq(ownable2Step.owner(), oldOwner);
         assertEq(ownable2Step.pending_owner(), newOwner);
 
-        vm.expectRevert(bytes("ownable_2step: caller is not the new owner"));
+        bytes memory expectedErr = abi.encodeWithSelector(IOwnable2Step.OwnableUnauthorizedAccount.selector, oldOwner);
+        vm.expectRevert(expectedErr);
         ownable2Step.accept_ownership();
         vm.stopPrank();
     }
@@ -272,7 +281,8 @@ contract Ownable2StepTest is Test {
     function testFuzzRenounceOwnershipNonOwner(address nonOwner) public {
         vm.assume(nonOwner != deployer);
         vm.prank(nonOwner);
-        vm.expectRevert(bytes("ownable: caller is not the owner"));
+        bytes memory expectedErr = abi.encodeWithSelector(IOwnable2Step.OwnableUnauthorizedAccount.selector, nonOwner);
+        vm.expectRevert(expectedErr);
         ownable2Step.renounce_ownership();
     }
 
@@ -293,7 +303,8 @@ contract Ownable2StepTest is Test {
         vm.stopPrank();
 
         vm.startPrank(newOwner);
-        vm.expectRevert(bytes("ownable_2step: caller is not the new owner"));
+        bytes memory expectedErr = abi.encodeWithSelector(IOwnable2Step.OwnableUnauthorizedAccount.selector, newOwner);
+        vm.expectRevert(expectedErr);
         ownable2Step.accept_ownership();
         vm.stopPrank();
     }
