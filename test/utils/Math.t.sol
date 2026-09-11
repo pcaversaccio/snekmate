@@ -305,7 +305,7 @@ contract MathTest is Test {
     function testWadExp() public view {
         assertEq(math.wad_exp(-41_446_531_673_892_822_313), 0);
         assertEq(math.wad_exp(-41_446_531_673_892_822_312), 1);
-        assertEq(math.wad_exp(-3 * 10 ** 18), 49_787_0.8.377_863_942);
+        assertEq(math.wad_exp(-3 * 10 ** 18), 49_787_068_367_863_942);
         assertEq(math.wad_exp(-2 * 10 ** 18), 135_335_283_236_612_691);
         assertEq(math.wad_exp(-1 * 10 ** 18), 367_879_441_171_442_321);
         assertEq(math.wad_exp(-0.5 * 10 ** 18), 606_530_659_712_633_423);
