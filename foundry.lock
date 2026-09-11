@@ -2,7 +2,7 @@
   "lib/create-util": {
     "branch": {
       "name": "main",
-      "rev": "a2927bd2afce8f669e60afdc37e08a1f55ebb651"
+      "rev": "8af5bcaec42a85cd1ba433aa764416cfc92c8d9c"
     }
   },
   "lib/erc4626-tests": {
@@ -14,7 +14,7 @@
   "lib/forge-std": {
     "branch": {
       "name": "master",
-      "rev": "16cb9c998736cab8f14aebd5199cdf6a02fde055"
+      "rev": "7fdf81f9ceb2f6ebbb8f9f1c6c5274d5bcc9a1f5"
     }
   },
   "lib/halmos-cheatcodes": {
@@ -32,7 +32,7 @@
   "lib/openzeppelin-contracts": {
     "branch": {
       "name": "master",
-      "rev": "bbf3600dc2fd09c7409c5e9d65e2faea36f35115"
+      "rev": "6bc7bf38645e87468779c8118f6ba4b8bc6d4067"
     }
   },
   "lib/prb-test": {
