@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: WTFPL
-pragma solidity ^0.8.36;
+pragma solidity ^0.8.37;
 
 interface IMulticall {
     struct Batch {
