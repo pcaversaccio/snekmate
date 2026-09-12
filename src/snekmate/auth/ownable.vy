@@ -29,6 +29,18 @@ owner: public(address)
 event OwnershipTransferred:
     previous_owner: indexed(address)
     new_owner: indexed(address)
+    
+
+# @dev The caller account is not authorized to
+# perform an operation.
+error OwnableUnauthorizedAccount:
+    account: address
+
+
+# @dev The owner is not a valid owner account.
+# (eg. `empty(address)`)
+error OwnableInvalidOwner:
+    owner: address
 
 
 @deploy
