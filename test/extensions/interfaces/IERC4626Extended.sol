@@ -7,4 +7,7 @@ import {IERC4626} from "openzeppelin/interfaces/IERC4626.sol";
 import {IERC5267} from "openzeppelin/interfaces/IERC5267.sol";
 
 // solhint-disable-next-line no-empty-blocks
-interface IERC4626Extended is IERC20Metadata, IERC20Permit, IERC4626, IERC5267 {}
+interface IERC4626Extended is IERC20Metadata, IERC20Permit, IERC4626, IERC5267 {
+    error ERC2612ExpiredSignature(uint256 deadline);
+    error ERC2612InvalidSigner(address signer, address owner);
+}
