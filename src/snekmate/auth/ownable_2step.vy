@@ -94,7 +94,7 @@ def accept_ownership():
     @notice Note that this function can only be
             called by the current `pending_owner`.
     """
-    assert self.pending_owner == msg.sender, "ownable_2step: caller is not the new owner"
+    assert self.pending_owner == msg.sender, ownable.OwnableUnauthorizedAccount(account=msg.sender)
     self._transfer_ownership(msg.sender)
 
 
