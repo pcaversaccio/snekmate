@@ -4,6 +4,8 @@
 
 ### 💥 New Features
 
+- **Tokens**
+  - [`erc1155`](https://github.com/pcaversaccio/snekmate/blob/v0.1.3/src/snekmate/tokens/erc1155.vy): Migrate `erc1155` to custom `error`s.
 - **Utility Functions**
   - [`eip7702_utils`](https://github.com/pcaversaccio/snekmate/blob/v0.1.3/src/snekmate/utils/eip7702_utils.vy): Add [EIP-7702](https://eips.ethereum.org/EIPS/eip-7702)-based utility functions. ([#335](https://github.com/pcaversaccio/snekmate/pull/335))
 

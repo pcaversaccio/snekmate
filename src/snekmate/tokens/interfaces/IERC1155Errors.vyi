@@ -1,0 +1,57 @@
+# pragma version ~=0.5.0a4
+"""
+@title ERC-1155 Custom Error Interface Definition
+@custom:contract-name IERC1155Errors
+@license GNU Affero General Public License v3.0 only
+@author rafael-abuawad
+@notice The custom error interface definition for ERC-1155
+        compliant smart contracts as defined in:
+        https://eips.ethereum.org/EIPS/eip-6093.
+"""
+
+
+# @dev Indicates an error related to the current `balance`
+# of a `sender`. Used in transfers.
+error ERC1155InsufficientBalance:
+    sender: address
+    balance: uint256
+    needed: uint256
+    tokenId: uint256
+
+
+# @dev Indicates a failure with the token `sender`.
+# Used in transfers.
+error ERC1155InvalidSender:
+    sender: address
+
+
+# @dev Indicates a failure with the token `receiver`.
+# Used in transfers.
+error ERC1155InvalidReceiver:
+    receiver: address
+
+
+# @dev Indicates a failure with the `operator`'s approval.
+# Used in transfers.
+error ERC1155MissingApprovalForAll:
+    operator: address
+    owner: address
+
+
+# @dev Indicates a failure with the `approver` of a token
+# to be approved. Used in approvals.
+error ERC1155InvalidApprover:
+    approver: address
+
+
+# @dev Indicates a failure with the `operator` to be
+# approved. Used in approvals.
+error ERC1155InvalidOperator:
+    operator: address
+
+
+# @dev Indicates an array length mismatch between `ids`
+# and `values`. Used in batch operations.
+error ERC1155InvalidArrayLength:
+    idsLength: uint256
+    valuesLength: uint256
