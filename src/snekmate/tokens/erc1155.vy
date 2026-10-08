@@ -45,6 +45,10 @@ from .interfaces import IERC1155
 implements: IERC1155
 
 
+# @dev We import the ERC-6093 custom error interface.
+from .interfaces import IERC1155Errors
+
+
 # @dev We import and implement the `IERC1155MetadataURI`
 # interface, which is written using standard Vyper
 # syntax.
@@ -140,6 +144,24 @@ event RoleMinterChanged:
     status: bool
 
 
+# @dev The caller is not an authorized `minter`.
+error ERC1155UnauthorizedMinter:
+    account: address
+
+
+# @dev The `minter` address is invalid.
+error ERC1155InvalidMinter:
+    minter: address
+
+
+# @dev The burn amount exceeds the total supply
+# of a token type `id`.
+error ERC1155InsufficientSupply:
+    supply: uint256
+    needed: uint256
+    tokenId: uint256
+
+
 @deploy
 @payable
 def __init__(base_uri_: String[80]):
@@ -204,7 +226,7 @@ def safeTransferFrom(owner: address, to: address, id: uint256, amount: uint256, 
     """
     assert (
         owner == msg.sender or self.isApprovedForAll[owner][msg.sender]
-    ), "erc1155: caller is not token owner or approved"
+    ), IERC1155Errors.ERC1155MissingApprovalForAll(operator=msg.sender, owner=owner)
     self._safe_transfer_from(owner, to, id, amount, data)
 
 
@@ -243,7 +265,7 @@ def safeBatchTransferFrom(
     """
     assert (
         owner == msg.sender or self.isApprovedForAll[owner][msg.sender]
-    ), "erc1155: caller is not token owner or approved"
+    ), IERC1155Errors.ERC1155MissingApprovalForAll(operator=msg.sender, owner=owner)
     self._safe_batch_transfer_from(owner, to, ids, amounts, data)
 
 
@@ -261,7 +283,9 @@ def balanceOfBatch(
     @return DynArray The 32-byte array of token amounts
             owned by `owners`.
     """
-    assert len(owners) == len(ids), "erc1155: owners and ids length mismatch"
+    assert len(owners) == len(ids), IERC1155Errors.ERC1155InvalidArrayLength(
+        idsLength=len(ids), valuesLength=len(owners)
+    )
     batch_balances: DynArray[uint256, _BATCH_SIZE] = []
     idx: uint256 = empty(uint256)
     for owner: address in owners:
@@ -320,7 +344,7 @@ def set_uri(id: uint256, token_uri: String[432]):
     @param token_uri The maximum 432-character user-readable
            string URI for computing `uri`.
     """
-    assert self.is_minter[msg.sender], "erc1155: access is denied"
+    assert self.is_minter[msg.sender], ERC1155UnauthorizedMinter(account=msg.sender)
     self._set_uri(id, token_uri)
 
 
@@ -351,7 +375,7 @@ def burn(owner: address, id: uint256, amount: uint256):
     """
     assert (
         owner == msg.sender or self.isApprovedForAll[owner][msg.sender]
-    ), "erc1155: caller is not token owner or approved"
+    ), IERC1155Errors.ERC1155MissingApprovalForAll(operator=msg.sender, owner=owner)
     self._burn(owner, id, amount)
 
 
@@ -371,7 +395,7 @@ def burn_batch(owner: address, ids: DynArray[uint256, _BATCH_SIZE], amounts: Dyn
     """
     assert (
         owner == msg.sender or self.isApprovedForAll[owner][msg.sender]
-    ), "erc1155: caller is not token owner or approved"
+    ), IERC1155Errors.ERC1155MissingApprovalForAll(operator=msg.sender, owner=owner)
     self._burn_batch(owner, ids, amounts)
 
 
@@ -391,7 +415,7 @@ def safe_mint(owner: address, id: uint256, amount: uint256, data: Bytes[1_024]):
     @param data The maximum 1,024-byte additional data
            with no specified format.
     """
-    assert self.is_minter[msg.sender], "erc1155: access is denied"
+    assert self.is_minter[msg.sender], ERC1155UnauthorizedMinter(account=msg.sender)
     self._safe_mint(owner, id, amount, data)
 
 
@@ -415,7 +439,7 @@ def safe_mint_batch(
     @param data The maximum 1,024-byte additional data
            with no specified format.
     """
-    assert self.is_minter[msg.sender], "erc1155: access is denied"
+    assert self.is_minter[msg.sender], ERC1155UnauthorizedMinter(account=msg.sender)
     self._safe_mint_batch(owner, ids, amounts, data)
 
 
@@ -432,10 +456,10 @@ def set_minter(minter: address, status: bool):
     @param status The Boolean variable that sets the status.
     """
     ownable._check_owner()
-    assert minter != empty(address), "erc1155: minter is the zero address"
+    assert minter != empty(address), ERC1155InvalidMinter(minter=minter)
     # We ensured in the previous step `ownable._check_owner`
     # that `msg.sender` is the `owner`.
-    assert minter != msg.sender, "erc1155: minter is owner address"
+    assert minter != msg.sender, ERC1155InvalidMinter(minter=minter)
     self.is_minter[minter] = status
     log RoleMinterChanged(minter=minter, status=status)
 
@@ -455,7 +479,7 @@ def transfer_ownership(new_owner: address):
     @param new_owner The 20-byte address of the new owner.
     """
     ownable._check_owner()
-    assert new_owner != empty(address), "erc1155: new owner is the zero address"
+    assert new_owner != empty(address), ownable.OwnableInvalidOwner(owner=new_owner)
 
     self.is_minter[msg.sender] = False
     log RoleMinterChanged(minter=msg.sender, status=False)
@@ -498,7 +522,7 @@ def _set_approval_for_all(owner: address, operator: address, approved: bool):
     @param approved The Boolean variable that sets the
            approval status.
     """
-    assert owner != operator, "erc1155: setting approval status for self"
+    assert owner != operator, IERC1155Errors.ERC1155InvalidOperator(operator=operator)
     self.isApprovedForAll[owner][operator] = approved
     log IERC1155.ApprovalForAll(_owner=owner, _operator=operator, _approved=approved)
 
@@ -529,12 +553,14 @@ def _safe_transfer_from(owner: address, to: address, id: uint256, amount: uint25
     @param data The maximum 1,024-byte additional data
            with no specified format.
     """
-    assert to != empty(address), "erc1155: transfer to the zero address"
+    assert to != empty(address), IERC1155Errors.ERC1155InvalidReceiver(receiver=to)
 
     self._before_token_transfer(owner, to, self._as_singleton_array(id), self._as_singleton_array(amount), data)
 
     owner_balance: uint256 = self.balanceOf[owner][id]
-    assert owner_balance >= amount, "erc1155: insufficient balance for transfer"
+    assert owner_balance >= amount, IERC1155Errors.ERC1155InsufficientBalance(
+        sender=owner, balance=owner_balance, needed=amount, tokenId=id
+    )
     self.balanceOf[owner][id] = unsafe_sub(owner_balance, amount)
     # In the next line, an overflow is not possible
     # due to an arithmetic check of the entire token
@@ -546,7 +572,7 @@ def _safe_transfer_from(owner: address, to: address, id: uint256, amount: uint25
 
     assert self._check_on_erc1155_received(
         owner, to, id, amount, data
-    ), "erc1155: transfer to non-IERC1155Receiver implementer"
+    ), IERC1155Errors.ERC1155InvalidReceiver(receiver=to)
 
 
 @internal
@@ -582,8 +608,10 @@ def _safe_batch_transfer_from(
     @param data The maximum 1,024-byte additional data
            with no specified format.
     """
-    assert len(ids) == len(amounts), "erc1155: ids and amounts length mismatch"
-    assert to != empty(address), "erc1155: transfer to the zero address"
+    assert len(ids) == len(amounts), IERC1155Errors.ERC1155InvalidArrayLength(
+        idsLength=len(ids), valuesLength=len(amounts)
+    )
+    assert to != empty(address), IERC1155Errors.ERC1155InvalidReceiver(receiver=to)
 
     self._before_token_transfer(owner, to, ids, amounts, data)
 
@@ -591,7 +619,9 @@ def _safe_batch_transfer_from(
     for id: uint256 in ids:
         amount: uint256 = amounts[idx]
         owner_balance: uint256 = self.balanceOf[owner][id]
-        assert owner_balance >= amount, "erc1155: insufficient balance for transfer"
+        assert owner_balance >= amount, IERC1155Errors.ERC1155InsufficientBalance(
+            sender=owner, balance=owner_balance, needed=amount, tokenId=id
+        )
         self.balanceOf[owner][id] = unsafe_sub(owner_balance, amount)
         # In the next line, an overflow is not possible
         # due to an arithmetic check of the entire token
@@ -609,7 +639,7 @@ def _safe_batch_transfer_from(
 
     assert self._check_on_erc1155_batch_received(
         owner, to, ids, amounts, data
-    ), "erc1155: transfer to non-IERC1155Receiver implementer"
+    ), IERC1155Errors.ERC1155InvalidReceiver(receiver=to)
 
 
 @internal
@@ -636,7 +666,7 @@ def _safe_mint(owner: address, id: uint256, amount: uint256, data: Bytes[1_024])
     @param data The maximum 1,024-byte additional data
            with no specified format.
     """
-    assert owner != empty(address), "erc1155: mint to the zero address"
+    assert owner != empty(address), IERC1155Errors.ERC1155InvalidReceiver(receiver=owner)
 
     self._before_token_transfer(
         empty(address), owner, self._as_singleton_array(id), self._as_singleton_array(amount), data
@@ -654,7 +684,7 @@ def _safe_mint(owner: address, id: uint256, amount: uint256, data: Bytes[1_024])
 
     assert self._check_on_erc1155_received(
         empty(address), owner, id, amount, data
-    ), "erc1155: mint to non-IERC1155Receiver implementer"
+    ), IERC1155Errors.ERC1155InvalidReceiver(receiver=owner)
 
 
 @internal
@@ -685,8 +715,10 @@ def _safe_mint_batch(
     @param data The maximum 1,024-byte additional data
            with no specified format.
     """
-    assert len(ids) == len(amounts), "erc1155: ids and amounts length mismatch"
-    assert owner != empty(address), "erc1155: mint to the zero address"
+    assert len(ids) == len(amounts), IERC1155Errors.ERC1155InvalidArrayLength(
+        idsLength=len(ids), valuesLength=len(amounts)
+    )
+    assert owner != empty(address), IERC1155Errors.ERC1155InvalidReceiver(receiver=owner)
 
     self._before_token_transfer(empty(address), owner, ids, amounts, data)
 
@@ -708,7 +740,7 @@ def _safe_mint_batch(
 
     assert self._check_on_erc1155_batch_received(
         empty(address), owner, ids, amounts, data
-    ), "erc1155: transfer to non-IERC1155Receiver implementer"
+    ), IERC1155Errors.ERC1155InvalidReceiver(receiver=owner)
 
 
 @internal
@@ -780,14 +812,16 @@ def _burn(owner: address, id: uint256, amount: uint256):
     @param id The 32-byte identifier of the token.
     @param amount The 32-byte token amount to be destroyed.
     """
-    assert owner != empty(address), "erc1155: burn from the zero address"
+    assert owner != empty(address), IERC1155Errors.ERC1155InvalidSender(sender=owner)
 
     self._before_token_transfer(
         owner, empty(address), self._as_singleton_array(id), self._as_singleton_array(amount), b""
     )
 
     owner_balance: uint256 = self.balanceOf[owner][id]
-    assert owner_balance >= amount, "erc1155: burn amount exceeds balance"
+    assert owner_balance >= amount, IERC1155Errors.ERC1155InsufficientBalance(
+        sender=owner, balance=owner_balance, needed=amount, tokenId=id
+    )
     self.balanceOf[owner][id] = unsafe_sub(owner_balance, amount)
     log IERC1155.TransferSingle(_operator=msg.sender, _from=owner, _to=empty(address), _id=id, _value=amount)
 
@@ -810,8 +844,10 @@ def _burn_batch(owner: address, ids: DynArray[uint256, _BATCH_SIZE], amounts: Dy
            being destroyed. Note that the order and length must
            match the 32-byte `ids` array.
     """
-    assert len(ids) == len(amounts), "erc1155: ids and amounts length mismatch"
-    assert owner != empty(address), "erc1155: burn from the zero address"
+    assert len(ids) == len(amounts), IERC1155Errors.ERC1155InvalidArrayLength(
+        idsLength=len(ids), valuesLength=len(amounts)
+    )
+    assert owner != empty(address), IERC1155Errors.ERC1155InvalidSender(sender=owner)
 
     self._before_token_transfer(owner, empty(address), ids, amounts, b"")
 
@@ -819,7 +855,9 @@ def _burn_batch(owner: address, ids: DynArray[uint256, _BATCH_SIZE], amounts: Dy
     for id: uint256 in ids:
         amount: uint256 = amounts[idx]
         owner_balance: uint256 = self.balanceOf[owner][id]
-        assert owner_balance >= amount, "erc1155: burn amount exceeds balance"
+        assert owner_balance >= amount, IERC1155Errors.ERC1155InsufficientBalance(
+            sender=owner, balance=owner_balance, needed=amount, tokenId=id
+        )
         self.balanceOf[owner][id] = unsafe_sub(owner_balance, amount)
         # The following line cannot overflow because we have
         # limited the dynamic array `ids` by the `constant`
@@ -854,7 +892,7 @@ def _check_on_erc1155_received(owner: address, to: address, id: uint256, amount:
         return_value: bytes4 = extcall IERC1155Receiver(to).onERC1155Received(msg.sender, owner, id, amount, data)
         assert return_value == method_id(
             "onERC1155Received(address,address,uint256,uint256,bytes)", output_type=bytes4
-        ), "erc1155: transfer to non-IERC1155Receiver implementer"
+        ), IERC1155Errors.ERC1155InvalidReceiver(receiver=to)
         return True
 
     # EOA case.
@@ -891,7 +929,7 @@ def _check_on_erc1155_batch_received(
         )
         assert return_value == method_id(
             "onERC1155BatchReceived(address,address,uint256[],uint256[],bytes)", output_type=bytes4
-        ), "erc1155: transfer to non-IERC1155Receiver implementer"
+        ), IERC1155Errors.ERC1155InvalidReceiver(receiver=to)
         return True
 
     # EOA case.
@@ -954,7 +992,9 @@ def _before_token_transfer(
         for id: uint256 in ids:
             amount: uint256 = amounts[idx]
             supply: uint256 = self.total_supply[id]
-            assert supply >= amount, "erc1155: burn amount exceeds total_supply"
+            assert supply >= amount, ERC1155InsufficientSupply(
+                supply=supply, needed=amount, tokenId=id
+            )
             self.total_supply[id] = unsafe_sub(supply, amount)
             # The following line cannot overflow because we have
             # limited the dynamic array `ids` by the `constant`
