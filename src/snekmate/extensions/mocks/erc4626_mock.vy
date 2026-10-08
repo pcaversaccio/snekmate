@@ -1,4 +1,4 @@
-# pragma version ~=0.5.0a4
+# pragma version ~=0.5.0b2
 # pragma nonreentrancy off
 """
 @title `erc4626` Module Reference Implementation
