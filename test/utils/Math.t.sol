@@ -648,7 +648,7 @@ contract MathTest is Test {
         assertTrue(result <= (floor + 1) * 10 ** 12);
     }
 
-    function testWadCbrtBranchBehaviour(uint256 x, uint256 boundaryChoice) public view {
+    function testFuzzWadCbrtBranchBehaviour(uint256 x, uint256 boundaryChoice) public view {
         uint256 cutoff1 = type(uint256).max / 10 ** 36;
         uint256 cutoff2 = cutoff1 * 10 ** 18;
 
