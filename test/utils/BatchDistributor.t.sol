@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: WTFPL
-pragma solidity ^0.8.36;
+pragma solidity ^0.8.37;
 
 import {Test} from "forge-std/Test.sol";
 import {VyperDeployer} from "utils/VyperDeployer.sol";
 
-import {IERC20Errors} from "openzeppelin/interfaces/draft-IERC6093.sol";
+import {IERC20Errors} from "openzeppelin/interfaces/IERC6093.sol";
 
 import {ERC20Mock} from "./mocks/ERC20Mock.sol";
 import {DistributeEtherReentrancyMock, DistributeTokenReentrancyMock} from "./mocks/ReentrancyMocks.sol";
