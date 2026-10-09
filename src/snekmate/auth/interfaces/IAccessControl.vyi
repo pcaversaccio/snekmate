@@ -48,6 +48,20 @@ event RoleRevoked:
     sender: indexed(address)
 
 
+# @dev The `account` is missing a role.
+error AccessControlUnauthorizedAccount:
+    account: address
+    neededRole: bytes32
+
+
+# @dev The caller of a function is not the expected
+# one.
+# @notice Do not confuse with the custom error
+# `AccessControlUnauthorizedAccount`.
+error AccessControlBadConfirmation:
+    pass
+
+
 @external
 @view
 def hasRole(role: bytes32, account: address) -> bool:

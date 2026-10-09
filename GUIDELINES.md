@@ -52,6 +52,8 @@ Branch names do not matter, and commit messages within a PR are mostly not impor
 
 - The file names of module and mock contracts use the _snake case_ notation (e.g. `my_module.vy` or `my_module_mock.vy`), whilst the 🐍Vyper interface files `.vyi` use the _Pascal case_ notation prefixed with `I` (e.g. `IMyInterface.vyi`).
 - The names of `constant`, `immutable`, and state variables, functions, and function parameters use the _snake case_ notation (e.g. `my_function`) if no other notation is enforced via an EIP standard. In particular, `constant` and `immutable` variable names use the _screaming snake case_ notation (e.g. `DEFAULT_CONSTANT`) if no other notation is enforced via an EIP standard.
+- Unless otherwise enforced by an EIP standard, `struct`, `event`, and custom `error` names use the _Pascal case_ notation (e.g. `MyStruct`, `MyEvent`, or `MyCustomError`), whilst `struct` members, `event` arguments, and custom `error` arguments use the _snake case_ notation (e.g. `my_struct_member`, `my_event_argument`, or `my_custom_error_argument`).
+- `flag` names use the _Pascal case_ notation (e.g. `MyFlag`), and flag members use the _screaming snake case_ notation (e.g. `MY_FLAG_MEMBER`) unless otherwise enforced by an EIP standard.
 - `internal` `constant`, `immutable`, state variables and functions must have an underscore prefix:
 
 ```vy
@@ -106,6 +108,7 @@ def forward_call(target: address) -> Bytes[1_024]:
   - `public` state variables
   - `internal` state variables
   - `event` declarations
+  - custom `error` declarations
   - `__init__` function
   - `__default__` function
   - `external` functions
