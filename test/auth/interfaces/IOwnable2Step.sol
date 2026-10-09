@@ -6,6 +6,8 @@ interface IOwnable2Step {
 
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
 
+    error OwnableUnauthorizedAccount(address account);
+
     function owner() external view returns (address);
 
     function pending_owner() external view returns (address);
