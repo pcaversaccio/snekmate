@@ -46,7 +46,7 @@ jobs:
           architecture: ${{ matrix.architecture }}
 
       - name: Check formatting with Black
-        uses: psf/black@87928e6d6761a4a6d22250e1fee5601b3998086e # v26.5.1
+        uses: psf/black@4f1883b1f15305a0e83a7c87991f46292bf09f85 # v26.10.0
         with:
           options: "--check --verbose"
           src: "./lib/utils"
