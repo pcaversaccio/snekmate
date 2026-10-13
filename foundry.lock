@@ -32,13 +32,13 @@
   "lib/openzeppelin-contracts": {
     "branch": {
       "name": "master",
-      "rev": "a9b0c8e24106fa144ccdb2fdb893e9bb81430cb0"
+      "rev": "b0c7bd5a09152a635687070648bdb28571812194"
     }
   },
   "lib/prb-test": {
     "branch": {
       "name": "main",
-      "rev": "cd07166bdd12c7c4a899cb53951653b53939a644"
+      "rev": "23be44105934c9e8617c7f9fa772d9f2bac2b735"
     }
   },
   "lib/properties": {
