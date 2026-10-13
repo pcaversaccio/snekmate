@@ -24,7 +24,7 @@ jobs:
         os:
           - ubuntu-latest
         python_version:
-          - 3.14
+          - 3.15
         architecture:
           - x64
         halmos:
@@ -55,7 +55,7 @@ jobs:
           version: nightly
 
       - name: Install `setuptools`
-        run: python -m pip install setuptools==83.0.0
+        run: python -m pip install setuptools==84.0.0
 
       - name: Install Halmos
         run: python -m pip install git+https://github.com/a16z/halmos.git@main
@@ -74,8 +74,8 @@ jobs:
       - name: Install the Bitwuzla SMT solver
         run: |
           set -Eeuo pipefail
-          wget -q https://github.com/bitwuzla/bitwuzla/releases/download/0.8.2/Bitwuzla-Linux-x86_64-static.zip
-          echo "aa09f2b45f96695f9f755e8371c1b362915a870cc0f3bc3585ed7e236e088b7b Bitwuzla-Linux-x86_64-static.zip" | sha256sum -c -
+          wget -q https://github.com/bitwuzla/bitwuzla/releases/download/0.9.1/Bitwuzla-Linux-x86_64-static.zip
+          echo "057f1546ae2068df57beb178f3eeab1678f0e5f0c378787a05b7bb294617c9c6 Bitwuzla-Linux-x86_64-static.zip" | sha256sum -c -
           unzip -q Bitwuzla-Linux-x86_64-static.zip
           sudo mv Bitwuzla-Linux-x86_64-static/bin/* /usr/local/bin/
           rm -rf Bitwuzla-Linux-x86_64-static.zip Bitwuzla-Linux-x86_64-static

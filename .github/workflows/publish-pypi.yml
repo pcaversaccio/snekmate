@@ -18,7 +18,7 @@ jobs:
         os:
           - ubuntu-latest
         python_version:
-          - 3.14
+          - 3.15
         architecture:
           - x64
 
@@ -35,7 +35,7 @@ jobs:
           architecture: ${{ matrix.architecture }}
 
       - name: Install pypa/build
-        run: python -m pip install build==1.5.1
+        run: python -m pip install build==1.6.1
 
       - name: Build a binary wheel and a source tarball
         run: python -m build
