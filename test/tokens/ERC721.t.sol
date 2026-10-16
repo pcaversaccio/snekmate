@@ -84,7 +84,9 @@ contract ERC721Test is Test {
         bytes memory data
     ) internal {
         vm.startPrank(makeAddr("nonOwner"));
-        _expectInsufficientApproval(makeAddr("nonOwner"), tokenId);
+        vm.expectRevert(
+            abi.encodeWithSelector(IERC721Extended.ERC721InsufficientApproval.selector, makeAddr("nonOwner"), tokenId)
+        );
         if (!withData) {
             Address.functionCall(
                 ERC721ExtendedAddr,
@@ -99,7 +101,9 @@ contract ERC721Test is Test {
         vm.stopPrank();
 
         vm.startPrank(owner);
-        _expectIncorrectOwner(receiver, tokenId, owner);
+        vm.expectRevert(
+            abi.encodeWithSelector(IERC721Extended.ERC721IncorrectOwner.selector, receiver, tokenId, owner)
+        );
         if (!withData) {
             Address.functionCall(
                 ERC721ExtendedAddr,
@@ -114,7 +118,7 @@ contract ERC721Test is Test {
         vm.stopPrank();
 
         vm.startPrank(owner);
-        _expectNonexistentToken(tokenId + 2);
+        vm.expectRevert(abi.encodeWithSelector(IERC721Extended.ERC721NonexistentToken.selector, tokenId + 2));
         if (!withData) {
             Address.functionCall(
                 ERC721ExtendedAddr,
@@ -129,7 +133,7 @@ contract ERC721Test is Test {
         vm.stopPrank();
 
         vm.startPrank(owner);
-        _expectInvalidReceiver(zeroAddress);
+        vm.expectRevert(abi.encodeWithSelector(IERC721Extended.ERC721InvalidReceiver.selector, zeroAddress));
         if (!withData) {
             Address.functionCall(
                 ERC721ExtendedAddr,
@@ -338,7 +342,7 @@ contract ERC721Test is Test {
         vm.revertToState(snapshot);
 
         vm.startPrank(owner);
-        _expectNonexistentToken(tokenId + 2);
+        vm.expectRevert(abi.encodeWithSelector(IERC721Extended.ERC721NonexistentToken.selector, tokenId + 2));
         Address.functionCall(
             ERC721ExtendedAddr,
             abi.encodeWithSignature(transferFunction, owner, receiver, tokenId + 2, data)
@@ -428,7 +432,7 @@ contract ERC721Test is Test {
     }
 
     function testBalanceOfZeroAddress() public {
-        _expectInvalidOwner(zeroAddress);
+        vm.expectRevert(abi.encodeWithSelector(IERC721Extended.ERC721InvalidOwner.selector, zeroAddress));
         ERC721Extended.balanceOf(zeroAddress);
     }
 
@@ -442,7 +446,7 @@ contract ERC721Test is Test {
     }
 
     function testOwnerOfInvalidTokenId() public {
-        _expectNonexistentToken(0);
+        vm.expectRevert(abi.encodeWithSelector(IERC721Extended.ERC721NonexistentToken.selector, 0));
         ERC721Extended.ownerOf(0);
     }
 
@@ -561,7 +565,7 @@ contract ERC721Test is Test {
         vm.stopPrank();
 
         vm.startPrank(owner);
-        _expectInvalidReceiver(receiver);
+        vm.expectRevert(abi.encodeWithSelector(IERC721Extended.ERC721InvalidReceiver.selector, receiver));
         ERC721Extended.safeTransferFrom(owner, receiver, 0, new bytes(0));
         vm.stopPrank();
     }
@@ -770,7 +774,7 @@ contract ERC721Test is Test {
         vm.stopPrank();
 
         vm.startPrank(owner);
-        _expectInvalidOperator(owner);
+        vm.expectRevert(abi.encodeWithSelector(IERC721Extended.ERC721InvalidOperator.selector, owner));
         ERC721Extended.approve(owner, tokenId);
         vm.stopPrank();
     }
@@ -784,7 +788,7 @@ contract ERC721Test is Test {
         vm.stopPrank();
 
         vm.startPrank(makeAddr("nonOwner"));
-        _expectInvalidApprover(makeAddr("nonOwner"));
+        vm.expectRevert(abi.encodeWithSelector(IERC721Extended.ERC721InvalidApprover.selector, makeAddr("nonOwner")));
         ERC721Extended.approve(makeAddr("to"), tokenId);
         vm.stopPrank();
     }
@@ -803,7 +807,7 @@ contract ERC721Test is Test {
         vm.stopPrank();
 
         vm.startPrank(spender);
-        _expectInvalidApprover(spender);
+        vm.expectRevert(abi.encodeWithSelector(IERC721Extended.ERC721InvalidApprover.selector, spender));
         ERC721Extended.approve(makeAddr("to"), tokenId);
         vm.stopPrank();
     }
@@ -839,7 +843,7 @@ contract ERC721Test is Test {
         vm.stopPrank();
 
         vm.startPrank(owner);
-        _expectNonexistentToken(tokenId + 1);
+        vm.expectRevert(abi.encodeWithSelector(IERC721Extended.ERC721NonexistentToken.selector, tokenId + 1));
         ERC721Extended.approve(makeAddr("to"), tokenId + 1);
         vm.stopPrank();
     }
@@ -918,13 +922,13 @@ contract ERC721Test is Test {
         vm.stopPrank();
 
         vm.startPrank(owner);
-        _expectInvalidOperator(owner);
+        vm.expectRevert(abi.encodeWithSelector(IERC721Extended.ERC721InvalidOperator.selector, owner));
         ERC721Extended.setApprovalForAll(owner, true);
         vm.stopPrank();
     }
 
     function testGetApprovedInvalidTokenId() public {
-        _expectNonexistentToken(0);
+        vm.expectRevert(abi.encodeWithSelector(IERC721Extended.ERC721NonexistentToken.selector, 0));
         ERC721Extended.getApproved(0);
     }
 
@@ -982,7 +986,7 @@ contract ERC721Test is Test {
     }
 
     function testTokenURIInvalidTokenId() public {
-        _expectNonexistentToken(0);
+        vm.expectRevert(abi.encodeWithSelector(IERC721Extended.ERC721NonexistentToken.selector, 0));
         ERC721Extended.tokenURI(0);
     }
 
@@ -997,7 +1001,7 @@ contract ERC721Test is Test {
         ERC721Extended.burn(0);
         vm.stopPrank();
 
-        _expectNonexistentToken(0);
+        vm.expectRevert(abi.encodeWithSelector(IERC721Extended.ERC721NonexistentToken.selector, 0));
         ERC721Extended.tokenURI(0);
     }
 
@@ -1054,7 +1058,7 @@ contract ERC721Test is Test {
         vm.stopPrank();
         assertEq(ERC721Extended.totalSupply(), 2);
 
-        _expectOutOfBoundsIndex(zeroAddress, 2);
+        vm.expectRevert(abi.encodeWithSelector(IERC721Extended.ERC721OutOfBoundsIndex.selector, zeroAddress, 2));
         ERC721Extended.tokenByIndex(2);
     }
 
@@ -1109,7 +1113,7 @@ contract ERC721Test is Test {
         ERC721Extended.safe_mint(owner, uri3);
         vm.stopPrank();
         assertEq(ERC721Extended.totalSupply(), 3);
-        _expectOutOfBoundsIndex(owner, tokenId + 3);
+        vm.expectRevert(abi.encodeWithSelector(IERC721Extended.ERC721OutOfBoundsIndex.selector, owner, tokenId + 3));
         ERC721Extended.tokenOfOwnerByIndex(owner, tokenId + 3);
 
         vm.startPrank(owner);
@@ -1118,7 +1122,7 @@ contract ERC721Test is Test {
         ERC721Extended.safeTransferFrom(owner, other, tokenId + 2, "");
         vm.stopPrank();
         assertEq(ERC721Extended.totalSupply(), 3);
-        _expectOutOfBoundsIndex(owner, tokenId);
+        vm.expectRevert(abi.encodeWithSelector(IERC721Extended.ERC721OutOfBoundsIndex.selector, owner, tokenId));
         ERC721Extended.tokenOfOwnerByIndex(owner, tokenId);
         assertEq(ERC721Extended.tokenOfOwnerByIndex(other, tokenId), tokenId);
         assertEq(ERC721Extended.tokenOfOwnerByIndex(other, tokenId + 1), tokenId + 1);
@@ -1139,11 +1143,11 @@ contract ERC721Test is Test {
         vm.expectEmit(true, true, true, false);
         emit IERC721.Transfer(owner, zeroAddress, tokenId);
         ERC721Extended.burn(tokenId);
-        _expectNonexistentToken(tokenId);
+        vm.expectRevert(abi.encodeWithSelector(IERC721Extended.ERC721NonexistentToken.selector, tokenId));
         ERC721Extended.burn(tokenId);
         vm.stopPrank();
 
-        _expectNonexistentToken(tokenId);
+        vm.expectRevert(abi.encodeWithSelector(IERC721Extended.ERC721NonexistentToken.selector, tokenId));
         ERC721Extended.ownerOf(tokenId);
         assertEq(ERC721Extended.balanceOf(owner), 1);
     }
@@ -1161,7 +1165,7 @@ contract ERC721Test is Test {
         vm.stopPrank();
 
         vm.startPrank(owner);
-        _expectNonexistentToken(tokenId + 2);
+        vm.expectRevert(abi.encodeWithSelector(IERC721Extended.ERC721NonexistentToken.selector, tokenId + 2));
         ERC721Extended.burn(tokenId + 2);
         ERC721Extended.setApprovalForAll(operator, true);
         ERC721Extended.approve(other, tokenId + 1);
@@ -1180,13 +1184,13 @@ contract ERC721Test is Test {
         vm.stopPrank();
 
         vm.startPrank(owner);
-        _expectNonexistentToken(tokenId);
+        vm.expectRevert(abi.encodeWithSelector(IERC721Extended.ERC721NonexistentToken.selector, tokenId));
         ERC721Extended.burn(tokenId);
         vm.stopPrank();
 
-        _expectNonexistentToken(tokenId);
+        vm.expectRevert(abi.encodeWithSelector(IERC721Extended.ERC721NonexistentToken.selector, tokenId));
         ERC721Extended.ownerOf(tokenId);
-        _expectNonexistentToken(tokenId);
+        vm.expectRevert(abi.encodeWithSelector(IERC721Extended.ERC721NonexistentToken.selector, tokenId));
         ERC721Extended.getApproved(tokenId);
         assertEq(ERC721Extended.balanceOf(owner), 0);
         assertEq(ERC721Extended.balanceOf(operator), 0);
@@ -1259,7 +1263,7 @@ contract ERC721Test is Test {
          * in Vyper, use `vyper -f layout your_filename.vy`.
          */
         vm.store(ERC721ExtendedAddr, bytes32(uint256(18_446_744_073_709_551_627)), bytes32(0));
-        _expectInvalidSender(zeroAddress);
+        vm.expectRevert(abi.encodeWithSelector(IERC721Extended.ERC721InvalidSender.selector, zeroAddress));
         ERC721Extended.safe_mint(owner, "");
         vm.stopPrank();
     }
@@ -1286,7 +1290,7 @@ contract ERC721Test is Test {
         address owner = address(erc721ReceiverMock);
         string memory uri = "my_awesome_nft_uri";
         vm.startPrank(deployer);
-        _expectInvalidReceiver(owner);
+        vm.expectRevert(abi.encodeWithSelector(IERC721Extended.ERC721InvalidReceiver.selector, owner));
         ERC721Extended.safe_mint(owner, uri);
         vm.stopPrank();
     }
@@ -1342,13 +1346,13 @@ contract ERC721Test is Test {
     }
 
     function testSafeMintNonMinter() public {
-        _expectUnauthorizedMinter(self);
+        vm.expectRevert(abi.encodeWithSelector(IERC721Extended.ERC721UnauthorizedMinter.selector, self));
         ERC721Extended.safe_mint(makeAddr("owner"), "my_awesome_nft_uri");
     }
 
     function testSafeMintToZeroAddress() public {
         vm.prank(deployer);
-        _expectInvalidReceiver(zeroAddress);
+        vm.expectRevert(abi.encodeWithSelector(IERC721Extended.ERC721InvalidReceiver.selector, zeroAddress));
         ERC721Extended.safe_mint(zeroAddress, "my_awesome_nft_uri");
     }
 
@@ -1386,13 +1390,13 @@ contract ERC721Test is Test {
 
     function testSetMinterToZeroAddress() public {
         vm.prank(deployer);
-        _expectInvalidMinter(zeroAddress);
+        vm.expectRevert(abi.encodeWithSelector(IERC721Extended.ERC721InvalidMinter.selector, zeroAddress));
         ERC721Extended.set_minter(zeroAddress, true);
     }
 
     function testSetMinterRemoveOwnerAddress() public {
         vm.prank(deployer);
-        _expectInvalidMinter(deployer);
+        vm.expectRevert(abi.encodeWithSelector(IERC721Extended.ERC721InvalidMinter.selector, deployer));
         ERC721Extended.set_minter(deployer, false);
     }
 
@@ -1450,7 +1454,21 @@ contract ERC721Test is Test {
         vm.expectEmit(true, true, true, false);
         emit IERC721.Approval(owner, spender, tokenId);
         ERC721Extended.permit(spender, tokenId, deadline, v, r, s);
-        _expectInvalidSigner(spender, tokenId, deadline, v, r, s);
+        address signer = ecrecover(
+            keccak256(
+                abi.encodePacked(
+                    hex"19_01",
+                    domainSeparator,
+                    keccak256(abi.encode(_PERMIT_TYPE_HASH, spender, tokenId, nonce + 1, deadline))
+                )
+            ),
+            v,
+            r,
+            s
+        );
+        vm.expectRevert(
+            abi.encodeWithSelector(IERC4494.ERC4494InvalidSigner.selector, signer, ERC721Extended.ownerOf(tokenId))
+        );
         ERC721Extended.permit(spender, tokenId, deadline, v, r, s);
     }
 
@@ -1476,7 +1494,13 @@ contract ERC721Test is Test {
                 )
             )
         );
-        _expectInvalidSigner(spender, tokenId, deadline, v, r, s);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                IERC4494.ERC4494InvalidSigner.selector,
+                vm.addr(key + 1),
+                ERC721Extended.ownerOf(tokenId)
+            )
+        );
         ERC721Extended.permit(spender, tokenId, deadline, v, r, s);
     }
 
@@ -1510,7 +1534,21 @@ contract ERC721Test is Test {
                 )
             )
         );
-        _expectInvalidSigner(spender, tokenId, deadline, v, r, s);
+        address signer = ecrecover(
+            keccak256(
+                abi.encodePacked(
+                    hex"19_01",
+                    ERC721Extended.DOMAIN_SEPARATOR(),
+                    keccak256(abi.encode(_PERMIT_TYPE_HASH, spender, tokenId, nonce, deadline))
+                )
+            ),
+            v,
+            r,
+            s
+        );
+        vm.expectRevert(
+            abi.encodeWithSelector(IERC4494.ERC4494InvalidSigner.selector, signer, ERC721Extended.ownerOf(tokenId))
+        );
         ERC721Extended.permit(spender, tokenId, deadline, v, r, s);
     }
 
@@ -1536,7 +1574,21 @@ contract ERC721Test is Test {
                 )
             )
         );
-        _expectInvalidSigner(spender, tokenId, deadline, v, r, s);
+        address signer = ecrecover(
+            keccak256(
+                abi.encodePacked(
+                    hex"19_01",
+                    domainSeparator,
+                    keccak256(abi.encode(_PERMIT_TYPE_HASH, spender, tokenId, 0, deadline))
+                )
+            ),
+            v,
+            r,
+            s
+        );
+        vm.expectRevert(
+            abi.encodeWithSelector(IERC4494.ERC4494InvalidSigner.selector, signer, ERC721Extended.ownerOf(tokenId))
+        );
         ERC721Extended.permit(spender, tokenId, deadline, v, r, s);
     }
 
@@ -1562,7 +1614,7 @@ contract ERC721Test is Test {
                 )
             )
         );
-        _expectExpiredSignature(deadline);
+        vm.expectRevert(abi.encodeWithSelector(IERC4494.ERC4494ExpiredSignature.selector, deadline));
         ERC721Extended.permit(spender, tokenId, deadline, v, r, s);
     }
 
@@ -1636,7 +1688,7 @@ contract ERC721Test is Test {
 
     function testTransferOwnershipToZeroAddress() public {
         vm.prank(deployer);
-        _expectInvalidOwnershipOwner(zeroAddress);
+        vm.expectRevert(abi.encodeWithSelector(IOwnable.OwnableInvalidOwner.selector, zeroAddress));
         ERC721Extended.transfer_ownership(zeroAddress);
     }
 
@@ -1837,7 +1889,7 @@ contract ERC721Test is Test {
         vm.stopPrank();
 
         vm.startPrank(nonOwner);
-        _expectInvalidApprover(nonOwner);
+        vm.expectRevert(abi.encodeWithSelector(IERC721Extended.ERC721InvalidApprover.selector, nonOwner));
         ERC721Extended.approve(makeAddr("to"), tokenId);
         vm.stopPrank();
     }
@@ -1939,11 +1991,11 @@ contract ERC721Test is Test {
         vm.expectEmit(true, true, true, false);
         emit IERC721.Transfer(owner, zeroAddress, tokenId);
         ERC721Extended.burn(tokenId);
-        _expectNonexistentToken(tokenId);
+        vm.expectRevert(abi.encodeWithSelector(IERC721Extended.ERC721NonexistentToken.selector, tokenId));
         ERC721Extended.burn(tokenId);
         vm.stopPrank();
 
-        _expectNonexistentToken(tokenId);
+        vm.expectRevert(abi.encodeWithSelector(IERC721Extended.ERC721NonexistentToken.selector, tokenId));
         ERC721Extended.ownerOf(tokenId);
         assertEq(ERC721Extended.balanceOf(owner), 1);
     }
@@ -1968,7 +2020,7 @@ contract ERC721Test is Test {
 
     function testFuzzSafeMintNonMinter(address nonOwner) public {
         vm.assume(nonOwner != deployer);
-        _expectUnauthorizedMinter(self);
+        vm.expectRevert(abi.encodeWithSelector(IERC721Extended.ERC721UnauthorizedMinter.selector, self));
         ERC721Extended.safe_mint(makeAddr("owner"), "my_awesome_nft_uri");
     }
 
@@ -2047,7 +2099,13 @@ contract ERC721Test is Test {
                 )
             )
         );
-        _expectInvalidSigner(spenderAddr, tokenId, deadline, v, r, s);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                IERC4494.ERC4494InvalidSigner.selector,
+                vm.addr(keyWrong),
+                ERC721Extended.ownerOf(tokenId)
+            )
+        );
         ERC721Extended.permit(spenderAddr, tokenId, deadline, v, r, s);
     }
 
@@ -2165,86 +2223,6 @@ contract ERC721Test is Test {
         vm.prank(nonOwner);
         vm.expectRevert(bytes("ownable: caller is not the owner"));
         ERC721Extended.renounce_ownership();
-    }
-
-    function _expectInsufficientApproval(address operator, uint256 tokenId) private {
-        vm.expectRevert(
-            abi.encodeWithSelector(IERC721Extended.ERC721InsufficientApproval.selector, operator, tokenId)
-        );
-    }
-
-    function _expectIncorrectOwner(address sender, uint256 tokenId, address owner) private {
-        vm.expectRevert(
-            abi.encodeWithSelector(IERC721Extended.ERC721IncorrectOwner.selector, sender, tokenId, owner)
-        );
-    }
-
-    function _expectNonexistentToken(uint256 tokenId) private {
-        vm.expectRevert(abi.encodeWithSelector(IERC721Extended.ERC721NonexistentToken.selector, tokenId));
-    }
-
-    function _expectInvalidReceiver(address receiver) private {
-        vm.expectRevert(abi.encodeWithSelector(IERC721Extended.ERC721InvalidReceiver.selector, receiver));
-    }
-
-    function _expectInvalidOwner(address owner) private {
-        vm.expectRevert(abi.encodeWithSelector(IERC721Extended.ERC721InvalidOwner.selector, owner));
-    }
-
-    function _expectInvalidOperator(address operator) private {
-        vm.expectRevert(abi.encodeWithSelector(IERC721Extended.ERC721InvalidOperator.selector, operator));
-    }
-
-    function _expectInvalidApprover(address approver) private {
-        vm.expectRevert(abi.encodeWithSelector(IERC721Extended.ERC721InvalidApprover.selector, approver));
-    }
-
-    function _expectOutOfBoundsIndex(address owner, uint256 index) private {
-        vm.expectRevert(abi.encodeWithSelector(IERC721Extended.ERC721OutOfBoundsIndex.selector, owner, index));
-    }
-
-    function _expectInvalidSender(address sender) private {
-        vm.expectRevert(abi.encodeWithSelector(IERC721Extended.ERC721InvalidSender.selector, sender));
-    }
-
-    function _expectUnauthorizedMinter(address account) private {
-        vm.expectRevert(abi.encodeWithSelector(IERC721Extended.ERC721UnauthorizedMinter.selector, account));
-    }
-
-    function _expectInvalidMinter(address minter) private {
-        vm.expectRevert(abi.encodeWithSelector(IERC721Extended.ERC721InvalidMinter.selector, minter));
-    }
-
-    function _expectInvalidSigner(
-        address spender,
-        uint256 tokenId,
-        uint256 deadline,
-        uint8 v,
-        bytes32 r,
-        bytes32 s
-    ) private {
-        bytes32 digest = keccak256(
-            abi.encodePacked(
-                hex"19_01",
-                ERC721Extended.DOMAIN_SEPARATOR(),
-                keccak256(abi.encode(_PERMIT_TYPE_HASH, spender, tokenId, ERC721Extended.nonces(tokenId), deadline))
-            )
-        );
-        vm.expectRevert(
-            abi.encodeWithSelector(
-                IERC4494.ERC4494InvalidSigner.selector,
-                ecrecover(digest, v, r, s),
-                ERC721Extended.ownerOf(tokenId)
-            )
-        );
-    }
-
-    function _expectExpiredSignature(uint256 deadline) private {
-        vm.expectRevert(abi.encodeWithSelector(IERC4494.ERC4494ExpiredSignature.selector, deadline));
-    }
-
-    function _expectInvalidOwnershipOwner(address owner) private {
-        vm.expectRevert(abi.encodeWithSelector(IOwnable.OwnableInvalidOwner.selector, owner));
     }
 }
 
