@@ -216,7 +216,9 @@ contract ERC1155Test is Test {
         owners1[0] = makeAddr("firstOwner");
         owners1[1] = makeAddr("secondAddr");
         ids1[0] = 0;
-        _expectInvalidArrayLength(ids1.length, owners1.length);
+        vm.expectRevert(
+            abi.encodeWithSelector(IERC1155Extended.ERC1155InvalidArrayLength.selector, ids1.length, owners1.length)
+        );
         ERC1155Extended.balanceOfBatch(owners1, ids1);
 
         address[] memory owners2 = new address[](1);
@@ -224,7 +226,9 @@ contract ERC1155Test is Test {
         owners2[0] = makeAddr("thirdOwner");
         ids2[0] = 0;
         ids2[1] = 1;
-        _expectInvalidArrayLength(ids2.length, owners2.length);
+        vm.expectRevert(
+            abi.encodeWithSelector(IERC1155Extended.ERC1155InvalidArrayLength.selector, ids2.length, owners2.length)
+        );
         ERC1155Extended.balanceOfBatch(owners2, ids2);
     }
 
@@ -344,7 +348,9 @@ contract ERC1155Test is Test {
         vm.stopPrank();
 
         vm.startPrank(operator);
-        _expectMissingApprovalForAll(operator, owner);
+        vm.expectRevert(
+            abi.encodeWithSelector(IERC1155Extended.ERC1155MissingApprovalForAll.selector, operator, owner)
+        );
         ERC1155Extended.safeTransferFrom(owner, receiver, id1, amount1, data);
         vm.stopPrank();
     }
@@ -483,7 +489,7 @@ contract ERC1155Test is Test {
         vm.stopPrank();
 
         vm.startPrank(owner);
-        _expectInvalidReceiver(receiver);
+        vm.expectRevert(abi.encodeWithSelector(IERC1155Extended.ERC1155InvalidReceiver.selector, receiver));
         ERC1155Extended.safeTransferFrom(owner, receiver, id1, amount1, data);
         vm.stopPrank();
 
@@ -496,7 +502,7 @@ contract ERC1155Test is Test {
         vm.stopPrank();
 
         vm.startPrank(operator);
-        _expectInvalidReceiver(receiver);
+        vm.expectRevert(abi.encodeWithSelector(IERC1155Extended.ERC1155InvalidReceiver.selector, receiver));
         ERC1155Extended.safeTransferFrom(owner, receiver, id2, amount2, data);
         vm.stopPrank();
     }
@@ -582,7 +588,9 @@ contract ERC1155Test is Test {
         vm.stopPrank();
 
         vm.startPrank(owner);
-        _expectInsufficientBalance(owner, amount, amount + 1, id);
+        vm.expectRevert(
+            abi.encodeWithSelector(IERC1155Extended.ERC1155InsufficientBalance.selector, owner, amount, amount + 1, id)
+        );
         ERC1155Extended.safeTransferFrom(owner, makeAddr("to"), id, ++amount, data);
         vm.stopPrank();
     }
@@ -597,7 +605,7 @@ contract ERC1155Test is Test {
         vm.stopPrank();
 
         vm.startPrank(owner);
-        _expectInvalidReceiver(zeroAddress);
+        vm.expectRevert(abi.encodeWithSelector(IERC1155Extended.ERC1155InvalidReceiver.selector, zeroAddress));
         ERC1155Extended.safeTransferFrom(owner, zeroAddress, id, amount, data);
         vm.stopPrank();
     }
@@ -695,7 +703,9 @@ contract ERC1155Test is Test {
         vm.stopPrank();
 
         vm.startPrank(operator);
-        _expectMissingApprovalForAll(operator, owner);
+        vm.expectRevert(
+            abi.encodeWithSelector(IERC1155Extended.ERC1155MissingApprovalForAll.selector, operator, owner)
+        );
         ERC1155Extended.safeBatchTransferFrom(owner, receiver, ids, amounts, data);
         vm.stopPrank();
     }
@@ -811,7 +821,7 @@ contract ERC1155Test is Test {
         vm.stopPrank();
 
         vm.startPrank(owner);
-        _expectInvalidReceiver(receiver);
+        vm.expectRevert(abi.encodeWithSelector(IERC1155Extended.ERC1155InvalidReceiver.selector, receiver));
         ERC1155Extended.safeBatchTransferFrom(owner, receiver, ids, amounts, data);
         vm.stopPrank();
     }
@@ -937,7 +947,15 @@ contract ERC1155Test is Test {
 
         vm.startPrank(owner);
         ++amounts[3];
-        _expectInsufficientBalance(owner, amounts[3] - 1, amounts[3], ids[3]);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                IERC1155Extended.ERC1155InsufficientBalance.selector,
+                owner,
+                amounts[3] - 1,
+                amounts[3],
+                ids[3]
+            )
+        );
         ERC1155Extended.safeBatchTransferFrom(owner, makeAddr("to"), ids, amounts, data);
         vm.stopPrank();
     }
@@ -956,7 +974,7 @@ contract ERC1155Test is Test {
         ERC1155Extended.safe_mint(owner, 7, 5, new bytes(0));
 
         vm.prank(owner);
-        _expectInsufficientBalance(owner, 2, 3, 7);
+        vm.expectRevert(abi.encodeWithSelector(IERC1155Extended.ERC1155InsufficientBalance.selector, owner, 2, 3, 7));
         ERC1155Extended.safeBatchTransferFrom(owner, receiver, ids, amounts, new bytes(0));
 
         assertEq(ERC1155Extended.balanceOf(owner, 7), 5);
@@ -989,9 +1007,13 @@ contract ERC1155Test is Test {
         amounts2[2] = 20;
 
         vm.startPrank(owner);
-        _expectInvalidArrayLength(ids1.length, amounts1.length);
+        vm.expectRevert(
+            abi.encodeWithSelector(IERC1155Extended.ERC1155InvalidArrayLength.selector, ids1.length, amounts1.length)
+        );
         ERC1155Extended.safeBatchTransferFrom(owner, receiver, ids1, amounts1, data);
-        _expectInvalidArrayLength(ids2.length, amounts2.length);
+        vm.expectRevert(
+            abi.encodeWithSelector(IERC1155Extended.ERC1155InvalidArrayLength.selector, ids2.length, amounts2.length)
+        );
         ERC1155Extended.safeBatchTransferFrom(owner, receiver, ids2, amounts2, data);
         vm.stopPrank();
     }
@@ -1016,7 +1038,7 @@ contract ERC1155Test is Test {
         vm.stopPrank();
 
         vm.startPrank(owner);
-        _expectInvalidReceiver(zeroAddress);
+        vm.expectRevert(abi.encodeWithSelector(IERC1155Extended.ERC1155InvalidReceiver.selector, zeroAddress));
         ERC1155Extended.safeBatchTransferFrom(owner, zeroAddress, ids, amounts, data);
         vm.stopPrank();
     }
@@ -1076,7 +1098,9 @@ contract ERC1155Test is Test {
     }
 
     function testSetUriNonMinter() public {
-        _expectUnauthorizedMinter(makeAddr("nonOwner"));
+        vm.expectRevert(
+            abi.encodeWithSelector(IERC1155Extended.ERC1155UnauthorizedMinter.selector, makeAddr("nonOwner"))
+        );
         vm.prank(makeAddr("nonOwner"));
         ERC1155Extended.set_uri(1, "my_awesome_uri");
     }
@@ -1302,7 +1326,9 @@ contract ERC1155Test is Test {
         vm.stopPrank();
 
         vm.startPrank(operator);
-        _expectMissingApprovalForAll(operator, owner);
+        vm.expectRevert(
+            abi.encodeWithSelector(IERC1155Extended.ERC1155MissingApprovalForAll.selector, operator, owner)
+        );
         ERC1155Extended.burn(owner, id1, burnAmount);
         vm.stopPrank();
     }
@@ -1325,7 +1351,9 @@ contract ERC1155Test is Test {
         vm.stopPrank();
 
         vm.startPrank(firstOwner);
-        _expectInsufficientBalance(firstOwner, 15, 16, id);
+        vm.expectRevert(
+            abi.encodeWithSelector(IERC1155Extended.ERC1155InsufficientBalance.selector, firstOwner, 15, 16, id)
+        );
         ERC1155Extended.burn(firstOwner, id, 16);
         vm.stopPrank();
     }
@@ -1333,7 +1361,7 @@ contract ERC1155Test is Test {
     function testBurnNonExistentTokenId() public {
         address firstOwner = makeAddr("firstOwner");
         vm.prank(firstOwner);
-        _expectInsufficientSupply(0, 1, 1);
+        vm.expectRevert(abi.encodeWithSelector(IERC1155Extended.ERC1155InsufficientSupply.selector, 0, 1, 1));
         ERC1155Extended.burn(firstOwner, 1, 1);
     }
 
@@ -1430,7 +1458,9 @@ contract ERC1155Test is Test {
         amounts[3] = 20;
 
         vm.startPrank(operator);
-        _expectMissingApprovalForAll(operator, owner);
+        vm.expectRevert(
+            abi.encodeWithSelector(IERC1155Extended.ERC1155MissingApprovalForAll.selector, operator, owner)
+        );
         ERC1155Extended.burn_batch(owner, ids, amounts);
         vm.stopPrank();
     }
@@ -1458,9 +1488,13 @@ contract ERC1155Test is Test {
         amounts2[2] = 20;
 
         vm.startPrank(owner);
-        _expectInvalidArrayLength(ids1.length, amounts1.length);
+        vm.expectRevert(
+            abi.encodeWithSelector(IERC1155Extended.ERC1155InvalidArrayLength.selector, ids1.length, amounts1.length)
+        );
         ERC1155Extended.burn_batch(owner, ids1, amounts1);
-        _expectInvalidArrayLength(ids2.length, amounts2.length);
+        vm.expectRevert(
+            abi.encodeWithSelector(IERC1155Extended.ERC1155InvalidArrayLength.selector, ids2.length, amounts2.length)
+        );
         ERC1155Extended.burn_batch(owner, ids2, amounts2);
         vm.stopPrank();
     }
@@ -1504,7 +1538,15 @@ contract ERC1155Test is Test {
         vm.stopPrank();
 
         vm.startPrank(nonOwner);
-        _expectInsufficientBalance(nonOwner, 0, amounts[0], ids[0]);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                IERC1155Extended.ERC1155InsufficientBalance.selector,
+                nonOwner,
+                0,
+                amounts[0],
+                ids[0]
+            )
+        );
         ERC1155Extended.burn_batch(nonOwner, ids, amounts);
         vm.stopPrank();
     }
@@ -1524,7 +1566,9 @@ contract ERC1155Test is Test {
         amounts[3] = 20;
 
         vm.prank(owner);
-        _expectInsufficientSupply(0, amounts[0], ids[0]);
+        vm.expectRevert(
+            abi.encodeWithSelector(IERC1155Extended.ERC1155InsufficientSupply.selector, 0, amounts[0], ids[0])
+        );
         ERC1155Extended.burn_batch(owner, ids, amounts);
     }
 
@@ -1541,7 +1585,7 @@ contract ERC1155Test is Test {
         ERC1155Extended.safe_mint(owner, 7, 5, new bytes(0));
 
         vm.prank(owner);
-        _expectInsufficientSupply(2, 3, 7);
+        vm.expectRevert(abi.encodeWithSelector(IERC1155Extended.ERC1155InsufficientSupply.selector, 2, 3, 7));
         ERC1155Extended.burn_batch(owner, ids, amounts);
 
         assertEq(ERC1155Extended.balanceOf(owner, 7), 5);
@@ -1646,10 +1690,10 @@ contract ERC1155Test is Test {
         uint256 amount2 = 15;
         bytes memory data = new bytes(0);
         vm.startPrank(deployer);
-        _expectInvalidReceiver(receiver);
+        vm.expectRevert(abi.encodeWithSelector(IERC1155Extended.ERC1155InvalidReceiver.selector, receiver));
         ERC1155Extended.safe_mint(receiver, id1, amount1, data);
 
-        _expectInvalidReceiver(receiver);
+        vm.expectRevert(abi.encodeWithSelector(IERC1155Extended.ERC1155InvalidReceiver.selector, receiver));
         ERC1155Extended.safe_mint(receiver, id2, amount2, data);
         vm.stopPrank();
     }
@@ -1701,10 +1745,10 @@ contract ERC1155Test is Test {
         uint256 amount2 = 15;
         bytes memory data = new bytes(0);
         vm.startPrank(deployer);
-        _expectInvalidReceiver(receiver);
+        vm.expectRevert(abi.encodeWithSelector(IERC1155Extended.ERC1155InvalidReceiver.selector, receiver));
         ERC1155Extended.safe_mint(receiver, id1, amount1, data);
 
-        _expectInvalidReceiver(receiver);
+        vm.expectRevert(abi.encodeWithSelector(IERC1155Extended.ERC1155InvalidReceiver.selector, receiver));
         ERC1155Extended.safe_mint(receiver, id2, amount2, data);
         vm.stopPrank();
     }
@@ -1717,10 +1761,14 @@ contract ERC1155Test is Test {
         uint256 amount2 = 15;
         bytes memory data = new bytes(0);
         vm.startPrank(makeAddr("nonOwner"));
-        _expectUnauthorizedMinter(makeAddr("nonOwner"));
+        vm.expectRevert(
+            abi.encodeWithSelector(IERC1155Extended.ERC1155UnauthorizedMinter.selector, makeAddr("nonOwner"))
+        );
         ERC1155Extended.safe_mint(receiver, id1, amount1, data);
 
-        _expectUnauthorizedMinter(makeAddr("nonOwner"));
+        vm.expectRevert(
+            abi.encodeWithSelector(IERC1155Extended.ERC1155UnauthorizedMinter.selector, makeAddr("nonOwner"))
+        );
         ERC1155Extended.safe_mint(receiver, id2, amount2, data);
         vm.stopPrank();
     }
@@ -1858,7 +1906,7 @@ contract ERC1155Test is Test {
         amounts[3] = 20;
 
         vm.startPrank(deployer);
-        _expectInvalidReceiver(receiver);
+        vm.expectRevert(abi.encodeWithSelector(IERC1155Extended.ERC1155InvalidReceiver.selector, receiver));
         ERC1155Extended.safe_mint_batch(receiver, ids, amounts, data);
         vm.stopPrank();
     }
@@ -1969,10 +2017,14 @@ contract ERC1155Test is Test {
         amounts2[2] = 10;
 
         vm.startPrank(deployer);
-        _expectInvalidArrayLength(ids1.length, amounts1.length);
+        vm.expectRevert(
+            abi.encodeWithSelector(IERC1155Extended.ERC1155InvalidArrayLength.selector, ids1.length, amounts1.length)
+        );
         ERC1155Extended.safe_mint_batch(deployer, ids1, amounts1, data);
 
-        _expectInvalidArrayLength(ids2.length, amounts2.length);
+        vm.expectRevert(
+            abi.encodeWithSelector(IERC1155Extended.ERC1155InvalidArrayLength.selector, ids2.length, amounts2.length)
+        );
         ERC1155Extended.safe_mint_batch(deployer, ids2, amounts2, data);
         vm.stopPrank();
     }
@@ -1992,7 +2044,7 @@ contract ERC1155Test is Test {
         amounts[3] = 20;
 
         vm.startPrank(deployer);
-        _expectInvalidReceiver(zeroAddress);
+        vm.expectRevert(abi.encodeWithSelector(IERC1155Extended.ERC1155InvalidReceiver.selector, zeroAddress));
         ERC1155Extended.safe_mint_batch(zeroAddress, ids, amounts, data);
         vm.stopPrank();
     }
@@ -2012,7 +2064,9 @@ contract ERC1155Test is Test {
         amounts[3] = 20;
 
         vm.startPrank(makeAddr("nonOwner"));
-        _expectUnauthorizedMinter(makeAddr("nonOwner"));
+        vm.expectRevert(
+            abi.encodeWithSelector(IERC1155Extended.ERC1155UnauthorizedMinter.selector, makeAddr("nonOwner"))
+        );
         ERC1155Extended.safe_mint_batch(makeAddr("owner"), ids, amounts, data);
         vm.stopPrank();
     }
@@ -2367,7 +2421,9 @@ contract ERC1155Test is Test {
         ERC1155Extended.safe_mint(owner, id, balance, new bytes(0));
 
         vm.prank(owner);
-        _expectInsufficientBalance(owner, balance, needed, id);
+        vm.expectRevert(
+            abi.encodeWithSelector(IERC1155Extended.ERC1155InsufficientBalance.selector, owner, balance, needed, id)
+        );
         ERC1155Extended.safeTransferFrom(owner, receiver, id, needed, new bytes(0));
 
         assertEq(ERC1155Extended.balanceOf(owner, id), balance);
@@ -2559,7 +2615,7 @@ contract ERC1155Test is Test {
 
     function testFuzzSetUriNonMinter(address nonOwner) public {
         vm.assume(nonOwner != deployer);
-        _expectUnauthorizedMinter(nonOwner);
+        vm.expectRevert(abi.encodeWithSelector(IERC1155Extended.ERC1155UnauthorizedMinter.selector, nonOwner));
         vm.prank(nonOwner);
         ERC1155Extended.set_uri(1, "my_awesome_uri");
     }
@@ -2699,7 +2755,9 @@ contract ERC1155Test is Test {
         ERC1155Extended.safe_mint(owner, id, supply, new bytes(0));
 
         vm.prank(owner);
-        _expectInsufficientSupply(supply, needed, id);
+        vm.expectRevert(
+            abi.encodeWithSelector(IERC1155Extended.ERC1155InsufficientSupply.selector, supply, needed, id)
+        );
         ERC1155Extended.burn(owner, id, needed);
 
         assertEq(ERC1155Extended.balanceOf(owner, id), supply);
@@ -2807,10 +2865,10 @@ contract ERC1155Test is Test {
         uint256 amount2 = 15;
         bytes memory data = new bytes(0);
         vm.startPrank(nonOwner);
-        _expectUnauthorizedMinter(nonOwner);
+        vm.expectRevert(abi.encodeWithSelector(IERC1155Extended.ERC1155UnauthorizedMinter.selector, nonOwner));
         ERC1155Extended.safe_mint(receiver, id1, amount1, data);
 
-        _expectUnauthorizedMinter(nonOwner);
+        vm.expectRevert(abi.encodeWithSelector(IERC1155Extended.ERC1155UnauthorizedMinter.selector, nonOwner));
         ERC1155Extended.safe_mint(receiver, id2, amount2, data);
         vm.stopPrank();
     }
@@ -2945,7 +3003,7 @@ contract ERC1155Test is Test {
         amounts[3] = 20;
 
         vm.startPrank(nonOwner);
-        _expectUnauthorizedMinter(nonOwner);
+        vm.expectRevert(abi.encodeWithSelector(IERC1155Extended.ERC1155UnauthorizedMinter.selector, nonOwner));
         ERC1155Extended.safe_mint_batch(makeAddr("owner"), ids, amounts, data);
         vm.stopPrank();
     }
@@ -3041,44 +3099,6 @@ contract ERC1155Test is Test {
         vm.prank(nonOwner);
         vm.expectRevert(bytes("ownable: caller is not the owner"));
         ERC1155Extended.renounce_ownership();
-    }
-
-    function _expectMissingApprovalForAll(address operator, address owner) private {
-        vm.expectRevert(
-            abi.encodeWithSelector(IERC1155Extended.ERC1155MissingApprovalForAll.selector, operator, owner)
-        );
-    }
-
-    function _expectInvalidReceiver(address receiver) private {
-        vm.expectRevert(abi.encodeWithSelector(IERC1155Extended.ERC1155InvalidReceiver.selector, receiver));
-    }
-
-    function _expectInvalidArrayLength(uint256 idsLength, uint256 valuesLength) private {
-        vm.expectRevert(
-            abi.encodeWithSelector(IERC1155Extended.ERC1155InvalidArrayLength.selector, idsLength, valuesLength)
-        );
-    }
-
-    function _expectInsufficientBalance(address sender, uint256 balance, uint256 needed, uint256 tokenId) private {
-        vm.expectRevert(
-            abi.encodeWithSelector(
-                IERC1155Extended.ERC1155InsufficientBalance.selector,
-                sender,
-                balance,
-                needed,
-                tokenId
-            )
-        );
-    }
-
-    function _expectInsufficientSupply(uint256 supply, uint256 needed, uint256 tokenId) private {
-        vm.expectRevert(
-            abi.encodeWithSelector(IERC1155Extended.ERC1155InsufficientSupply.selector, supply, needed, tokenId)
-        );
-    }
-
-    function _expectUnauthorizedMinter(address account) private {
-        vm.expectRevert(abi.encodeWithSelector(IERC1155Extended.ERC1155UnauthorizedMinter.selector, account));
     }
 }
 
