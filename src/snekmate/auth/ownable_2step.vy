@@ -1,4 +1,4 @@
-# pragma version ~=0.5.0a4
+# pragma version ~=0.5.0b2
 # pragma nonreentrancy off
 """
 @title 2-Step Ownership Transfer Functions
