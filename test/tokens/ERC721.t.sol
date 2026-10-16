@@ -17,6 +17,7 @@ import {Address} from "openzeppelin/utils/Address.sol";
 import {ERC721ReceiverMock} from "./mocks/ERC721ReceiverMock.sol";
 
 import {IERC721Extended} from "./interfaces/IERC721Extended.sol";
+import {IOwnable} from "../auth/interfaces/IOwnable.sol";
 
 contract ERC721Test is Test {
     string private constant _NAME = "MyNFT";
@@ -41,6 +42,7 @@ contract ERC721Test is Test {
     /* solhint-enable var-name-mixedcase */
 
     address private deployer = address(vyperDeployer);
+    address private self = address(this);
     address private zeroAddress = address(0);
     // solhint-disable-next-line var-name-mixedcase
     address private ERC721ExtendedAddr;
@@ -1378,7 +1380,8 @@ contract ERC721Test is Test {
     }
 
     function testSetMinterNonOwner() public {
-        vm.expectRevert(bytes("ownable: caller is not the owner"));
+        bytes memory expectedErr = abi.encodeWithSelector(IOwnable.OwnableUnauthorizedAccount.selector, self);
+        vm.expectRevert(expectedErr);
         ERC721Extended.set_minter(makeAddr("minter"), true);
     }
 
@@ -1628,7 +1631,8 @@ contract ERC721Test is Test {
     }
 
     function testTransferOwnershipNonOwner() public {
-        vm.expectRevert(bytes("ownable: caller is not the owner"));
+        bytes memory expectedErr = abi.encodeWithSelector(IOwnable.OwnableUnauthorizedAccount.selector, self);
+        vm.expectRevert(expectedErr);
         ERC721Extended.transfer_ownership(makeAddr("newOwner"));
     }
 
@@ -1653,7 +1657,8 @@ contract ERC721Test is Test {
     }
 
     function testRenounceOwnershipNonOwner() public {
-        vm.expectRevert(bytes("ownable: caller is not the owner"));
+        bytes memory expectedErr = abi.encodeWithSelector(IOwnable.OwnableUnauthorizedAccount.selector, self);
+        vm.expectRevert(expectedErr);
         ERC721Extended.renounce_ownership();
     }
 
@@ -1988,7 +1993,8 @@ contract ERC721Test is Test {
 
     function testFuzzSetMinterNonOwner(address msgSender, string calldata minter) public {
         vm.assume(msgSender != deployer);
-        vm.expectRevert(bytes("ownable: caller is not the owner"));
+        bytes memory expectedErr = abi.encodeWithSelector(IOwnable.OwnableUnauthorizedAccount.selector, self);
+        vm.expectRevert(expectedErr);
         ERC721Extended.set_minter(makeAddr(minter), true);
     }
 
@@ -2130,7 +2136,8 @@ contract ERC721Test is Test {
     function testFuzzTransferOwnershipNonOwner(address nonOwner, address newOwner) public {
         vm.assume(nonOwner != deployer);
         vm.prank(nonOwner);
-        vm.expectRevert(bytes("ownable: caller is not the owner"));
+        bytes memory expectedErr = abi.encodeWithSelector(IOwnable.OwnableUnauthorizedAccount.selector, nonOwner);
+        vm.expectRevert(expectedErr);
         ERC721Extended.transfer_ownership(newOwner);
     }
 
@@ -2161,7 +2168,8 @@ contract ERC721Test is Test {
     function testFuzzRenounceOwnershipNonOwner(address nonOwner) public {
         vm.assume(nonOwner != deployer);
         vm.prank(nonOwner);
-        vm.expectRevert(bytes("ownable: caller is not the owner"));
+        bytes memory expectedErr = abi.encodeWithSelector(IOwnable.OwnableUnauthorizedAccount.selector, nonOwner);
+        vm.expectRevert(expectedErr);
         ERC721Extended.renounce_ownership();
     }
 }
