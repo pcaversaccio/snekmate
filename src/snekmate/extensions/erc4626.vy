@@ -158,6 +158,44 @@ _DECIMALS_OFFSET: immutable(uint8)
 _UNDERLYING_DECIMALS: immutable(uint8)
 
 
+# @dev Attempted to deposit more `assets` than the
+# maximum amount for the `receiver`.
+error ERC4626ExceededMaxDeposit:
+    receiver: address
+    assets: uint256
+    max: uint256
+
+
+# @dev Attempted to mint more `shares` than the
+# maximum amount for the `receiver`.
+error ERC4626ExceededMaxMint:
+    receiver: address
+    shares: uint256
+    max: uint256
+
+
+# @dev Attempted to withdraw more `assets` than the
+# maximum amount for the `owner`.
+error ERC4626ExceededMaxWithdraw:
+    owner: address
+    assets: uint256
+    max: uint256
+
+
+# @dev Attempted to redeem more `shares` than the
+# maximum amount for the `owner`.
+error ERC4626ExceededMaxRedeem:
+    owner: address
+    shares: uint256
+    max: uint256
+
+
+# @dev An operation with the underlying asset `token`
+# failed.
+error SafeERC20FailedOperation:
+    token: address
+
+
 @deploy
 @payable
 def __init__(
@@ -296,7 +334,8 @@ def deposit(assets: uint256, receiver: address) -> uint256:
     @param receiver The 20-byte receiver address.
     @return uint256 The 32-byte shares amount to be created.
     """
-    assert assets <= self._max_deposit(receiver), "erc4626: deposit more than maximum"
+    max_assets: uint256 = self._max_deposit(receiver)
+    assert assets <= max_assets, ERC4626ExceededMaxDeposit(receiver=receiver, assets=assets, max=max_assets)
     shares: uint256 = self._preview_deposit(assets)
     self._deposit(msg.sender, receiver, assets, shares)
     return shares
@@ -342,7 +381,8 @@ def mint(shares: uint256, receiver: address) -> uint256:
     @param receiver The 20-byte receiver address.
     @return uint256 The deposited 32-byte assets amount.
     """
-    assert shares <= self._max_mint(receiver), "erc4626: mint more than maximum"
+    max_shares: uint256 = self._max_mint(receiver)
+    assert shares <= max_shares, ERC4626ExceededMaxMint(receiver=receiver, shares=shares, max=max_shares)
     assets: uint256 = self._preview_mint(shares)
     self._deposit(msg.sender, receiver, assets, shares)
     return assets
@@ -390,7 +430,8 @@ def withdraw(assets: uint256, receiver: address, owner: address) -> uint256:
     @param owner The 20-byte owner address.
     @return uint256 The burned 32-byte shares amount.
     """
-    assert assets <= self._max_withdraw(owner), "erc4626: withdraw more than maximum"
+    max_assets: uint256 = self._max_withdraw(owner)
+    assert assets <= max_assets, ERC4626ExceededMaxWithdraw(owner=owner, assets=assets, max=max_assets)
     shares: uint256 = self._preview_withdraw(assets)
     self._withdraw(msg.sender, receiver, owner, assets, shares)
     return shares
@@ -437,7 +478,8 @@ def redeem(shares: uint256, receiver: address, owner: address) -> uint256:
     @param owner The 20-byte owner address.
     @return uint256 The returned 32-byte assets amount.
     """
-    assert shares <= self._max_redeem(owner), "erc4626: redeem more than maximum"
+    max_shares: uint256 = self._max_redeem(owner)
+    assert shares <= max_shares, ERC4626ExceededMaxRedeem(owner=owner, shares=shares, max=max_shares)
     assets: uint256 = self._preview_redeem(shares)
     self._withdraw(msg.sender, receiver, owner, assets, shares)
     return assets
@@ -672,7 +714,7 @@ def _deposit(sender: address, receiver: address, assets: uint256, shares: uint25
     # the target address is an EOA), the call reverts.
     assert extcall self._ASSET.transferFrom(
         sender, self, assets, default_return_value=True
-    ), "erc4626: transferFrom operation did not succeed"
+    ), SafeERC20FailedOperation(token=self.asset)
     erc20._mint(receiver, shares)
     log IERC4626.Deposit(sender=sender, owner=receiver, assets=assets, shares=shares)
 
@@ -714,5 +756,5 @@ def _withdraw(sender: address, receiver: address, owner: address, assets: uint25
     # the target address is an EOA), the call reverts.
     assert extcall self._ASSET.transfer(
         receiver, assets, default_return_value=True
-    ), "erc4626: transfer operation did not succeed"
+    ), SafeERC20FailedOperation(token=self.asset)
     log IERC4626.Withdraw(sender=sender, receiver=receiver, owner=owner, assets=assets, shares=shares)
