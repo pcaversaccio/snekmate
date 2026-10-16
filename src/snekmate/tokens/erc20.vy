@@ -1,4 +1,4 @@
-# pragma version ~=0.4.3
+# pragma version ~=0.5.0b2
 # pragma nonreentrancy off
 """
 @title Modern and Gas-Efficient ERC-20 + EIP-2612 Implementation
@@ -202,9 +202,9 @@ def __init__(
            main version of the signing domain. Signatures
            from different versions are not compatible.
     """
-    name = name_
-    symbol = symbol_
-    decimals = decimals_
+    self.name = name_
+    self.symbol = symbol_
+    self.decimals = decimals_
 
     self.is_minter[msg.sender] = True
     log RoleMinterChanged(minter=msg.sender, status=True)
