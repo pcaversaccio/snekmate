@@ -19,7 +19,7 @@ jobs:
         os:
           - ubuntu-latest
         python_version:
-          - 3.14
+          - 3.15
         architecture:
           - x64
 
@@ -46,7 +46,7 @@ jobs:
           architecture: ${{ matrix.architecture }}
 
       - name: Check formatting with Black
-        uses: psf/black@87928e6d6761a4a6d22250e1fee5601b3998086e # v26.5.1
+        uses: psf/black@4f1883b1f15305a0e83a7c87991f46292bf09f85 # v26.10.0
         with:
           options: "--check --verbose"
           src: "./lib/utils"
@@ -93,7 +93,7 @@ jobs:
           persist-credentials: false
 
       - name: Set up Ruby
-        uses: ruby/setup-ruby@e8944e80fb94b20106697132f8c20c665fab29e9 # v1.325.0
+        uses: ruby/setup-ruby@14594264cd68ce8a2345dd349bc3d138a4ef85c8 # v1.327.0
         with:
           ruby-version: ${{ matrix.ruby_version }}
           bundler-cache: true

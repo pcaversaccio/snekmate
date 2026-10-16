@@ -1,4 +1,4 @@
-# pragma version ~=0.5.0a4
+# pragma version ~=0.5.0b2
 # pragma nonreentrancy off
 """
 @title Merkle Tree Proof Verification Functions
