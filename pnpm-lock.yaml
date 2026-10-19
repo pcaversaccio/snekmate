@@ -188,14 +188,14 @@ importers:
         specifier: 0.6.0
         version: 0.6.0
       prettier:
-        specifier: 3.9.9
-        version: 3.9.9
+        specifier: 3.9.10
+        version: 3.9.10
       prettier-plugin-sh:
         specifier: 0.20.2
-        version: 0.20.2(prettier@3.9.9)
+        version: 0.20.2(prettier@3.9.10)
       prettier-plugin-solidity:
         specifier: 2.4.1
-        version: 2.4.1(prettier@3.9.9)
+        version: 2.4.1(prettier@3.9.10)
       solhint:
         specifier: 6.2.5
         version: 6.2.5
@@ -949,8 +949,8 @@ packages:
     peerDependencies:
       prettier: '>=3.0.0'
 
-  prettier@3.9.9:
-    resolution: {integrity: sha512-Z/CJHIkdujO/OtN7nXUii0Rf3VT5SRuhjBA82Xvu2XhBUgX3nhP67T0LHceBdQLex7OOFGTox+Q5Yg8Jk2Qivg==}
+  prettier@3.9.10:
+    resolution: {integrity: sha512-skGHTH1Yb9QvaTC4hWnRTzEYtCpApF0UMBPz+t/0ZPzP8ihefo/btKd+QA7pUE0fEwA1SbS/NmhyEcstdXOIdA==}
     engines: {node: '>=14'}
     hasBin: true
 
@@ -1835,20 +1835,20 @@ snapshots:
 
   prelude-ls@1.2.1: {}
 
-  prettier-plugin-sh@0.20.2(prettier@3.9.9):
+  prettier-plugin-sh@0.20.2(prettier@3.9.10):
     dependencies:
       '@reteps/dockerfmt': 0.5.4
-      prettier: 3.9.9
+      prettier: 3.9.10
       sh-syntax: 0.7.0
 
-  prettier-plugin-solidity@2.4.1(prettier@3.9.9):
+  prettier-plugin-solidity@2.4.1(prettier@3.9.10):
     dependencies:
       '@nomicfoundation/slang': 1.3.8
       '@solidity-parser/parser': 0.20.2
-      prettier: 3.9.9
+      prettier: 3.9.10
       semver: 7.8.5
 
-  prettier@3.9.9: {}
+  prettier@3.9.10: {}
 
   proto-list@1.2.4: {}
 
@@ -1929,7 +1929,7 @@ snapshots:
       table: 6.9.0
       text-table: 0.2.0
     optionalDependencies:
-      prettier: 3.9.9
+      prettier: 3.9.10
     transitivePeerDependencies:
       - typescript
 
