@@ -24,6 +24,18 @@ interface ITimelockController is IERC721Receiver, IERC1155Receiver, IAccessContr
 
     event MinimumDelayChange(uint256 oldDuration, uint256 newDuration);
 
+    error TimelockControllerUnexpectedOperationState(bytes32 operationId, bytes32 expectedStates);
+
+    error TimelockControllerInsufficientDelay(uint256 delay, uint256 minDelay);
+
+    error TimelockControllerInvalidOperationLength(uint256 targets, uint256 payloads, uint256 amounts);
+
+    error TimelockControllerUnexecutedPredecessor(bytes32 predecessorId);
+
+    error TimelockControllerFailedCall(address target);
+
+    error TimelockControllerUnauthorisedCaller(address caller);
+
     function DEFAULT_ADMIN_ROLE() external pure returns (bytes32);
 
     function PROPOSER_ROLE() external pure returns (bytes32);
