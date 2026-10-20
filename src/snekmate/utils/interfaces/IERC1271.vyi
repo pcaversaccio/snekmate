@@ -18,7 +18,7 @@
 
 @external
 @view
-def isValidSignature(_hash: bytes32, _signature: Bytes[65]) -> bytes4:
+def isValidSignature(_hash: bytes32, _signature: Bytes[...]) -> bytes4:
     """
     @dev Returns the 4-byte magic value `0x16_26_BA_7E` if the
          verification passes.
