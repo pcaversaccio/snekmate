@@ -2,7 +2,7 @@
   "lib/create-util": {
     "branch": {
       "name": "main",
-      "rev": "2809c31721f212997bc0d8277a593441d0d4e96e"
+      "rev": "cd09648a6fe23cfd2ffb9c3df22d5b75733411e5"
     }
   },
   "lib/erc4626-tests": {
@@ -14,7 +14,7 @@
   "lib/forge-std": {
     "branch": {
       "name": "master",
-      "rev": "0258fe875e1d8e207c1eb7175e542ea32356773c"
+      "rev": "b013eff2ac4fce26f34d789e6f5c49021c5ee817"
     }
   },
   "lib/halmos-cheatcodes": {
@@ -32,7 +32,7 @@
   "lib/openzeppelin-contracts": {
     "branch": {
       "name": "master",
-      "rev": "598d3905a6f4ebe68a52c79d461bedb7246fa187"
+      "rev": "ff0dc6b8518e116990441c133c30c6cabc7f351a"
     }
   },
   "lib/prb-test": {
@@ -50,7 +50,7 @@
   "lib/solady": {
     "branch": {
       "name": "main",
-      "rev": "2afba69bf67b78dd4abeadcc696052b3a6f71499"
+      "rev": "258f67cc71e39cff307b726939ade17e9d8bcf5c"
     }
   },
   "lib/solidity-bytes-utils": {
