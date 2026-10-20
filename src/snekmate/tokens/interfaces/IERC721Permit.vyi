@@ -34,6 +34,17 @@ from ethereum.ercs import IERC165
 implements: IERC165
 
 
+# @dev The permit deadline has expired.
+error ERC4494ExpiredSignature:
+  deadline: uint256
+
+
+# @dev The permit signature does not match the owner.
+error ERC4494InvalidSigner:
+  signer: address
+  owner: address
+
+
 @external
 @view
 def supportsInterface(interfaceId: bytes4) -> bool:
