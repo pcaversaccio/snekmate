@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: WTFPL
-pragma solidity ^0.8.37;
+pragma solidity ^0.8.38;
 
 interface IPausable {
     event Paused(address account);
