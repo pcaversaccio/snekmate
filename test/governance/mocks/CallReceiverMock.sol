@@ -12,6 +12,8 @@ contract CallReceiverMock {
     event MockFunctionCalled();
     event MockFunctionCalledWithArgs(uint256 a, uint256 b);
 
+    error CallReceiverMockRevertWithReason(uint256 a);
+
     string private _retValue = "0xba5ed";
 
     /**
@@ -75,8 +77,7 @@ contract CallReceiverMock {
      * @dev Reverts with a non-empty reason.
      */
     function mockFunctionRevertsWithReason() public payable {
-        // solhint-disable-next-line gas-custom-errors
-        revert("CallReceiverMock: reverting");
+        revert CallReceiverMockRevertWithReason(1_337);
     }
 
     /**
