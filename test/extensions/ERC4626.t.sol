@@ -865,7 +865,14 @@ contract ERC4626VaultTest is ERC4626Test {
         underlying.mint(self, type(uint8).max);
         underlying.approve(ERC4626ExtendedDecimalsOffset0Addr, type(uint8).max);
         ERC4626ExtendedDecimalsOffset0.deposit(type(uint8).max, self);
-        vm.expectRevert(bytes("erc4626: withdraw more than maximum"));
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                IERC4626Extended.ERC4626ExceededMaxWithdraw.selector,
+                self,
+                uint256(type(uint8).max) + 1,
+                type(uint8).max
+            )
+        );
         ERC4626ExtendedDecimalsOffset0.withdraw(uint256(type(uint8).max) + 1, self, self);
     }
 
@@ -882,17 +889,28 @@ contract ERC4626VaultTest is ERC4626Test {
         underlying.mint(self, type(uint16).max);
         underlying.approve(ERC4626ExtendedDecimalsOffset0Addr, type(uint8).max);
         ERC4626ExtendedDecimalsOffset0.deposit(type(uint8).max, self);
-        vm.expectRevert(bytes("erc4626: redeem more than maximum"));
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                IERC4626Extended.ERC4626ExceededMaxRedeem.selector,
+                self,
+                uint256(type(uint8).max) + 1,
+                type(uint8).max
+            )
+        );
         ERC4626ExtendedDecimalsOffset0.redeem(uint256(type(uint8).max) + 1, self, self);
     }
 
     function testWithdrawWithNoAssets() public {
-        vm.expectRevert(bytes("erc4626: withdraw more than maximum"));
+        vm.expectRevert(
+            abi.encodeWithSelector(IERC4626Extended.ERC4626ExceededMaxWithdraw.selector, self, type(uint8).max, 0)
+        );
         ERC4626ExtendedDecimalsOffset0.withdraw(type(uint8).max, self, self);
     }
 
     function testRedeemWithNoShares() public {
-        vm.expectRevert(bytes("erc4626: redeem more than maximum"));
+        vm.expectRevert(
+            abi.encodeWithSelector(IERC4626Extended.ERC4626ExceededMaxRedeem.selector, self, type(uint8).max, 0)
+        );
         ERC4626ExtendedDecimalsOffset0.redeem(type(uint8).max, self, self);
     }
 
@@ -991,7 +1009,14 @@ contract ERC4626VaultTest is ERC4626Test {
         assertEq(underlying.balanceOf(bob), amount / 2);
         assertEq(underlying.balanceOf(charles), 0);
 
-        vm.expectRevert(bytes("erc4626: redeem more than maximum"));
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                IERC4626Extended.ERC4626ExceededMaxRedeem.selector,
+                alice,
+                amount / 2 + 1,
+                amount / 2
+            )
+        );
         ERC4626ExtendedDecimalsOffset0.redeem(amount / 2 + 1, charles, alice);
 
         ERC4626ExtendedDecimalsOffset0.redeem(amount / 2, bob, alice);
@@ -1012,7 +1037,14 @@ contract ERC4626VaultTest is ERC4626Test {
         assertEq(underlying.balanceOf(bob), amount);
         assertEq(underlying.balanceOf(charles), 0);
 
-        vm.expectRevert(bytes("erc4626: withdraw more than maximum"));
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                IERC4626Extended.ERC4626ExceededMaxWithdraw.selector,
+                bob,
+                amount / 2 + 1,
+                amount / 2
+            )
+        );
         ERC4626ExtendedDecimalsOffset0.withdraw(amount / 2 + 1, charles, bob);
 
         ERC4626ExtendedDecimalsOffset0.withdraw(amount / 2, alice, bob);
