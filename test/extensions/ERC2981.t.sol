@@ -8,6 +8,7 @@ import {IERC165} from "openzeppelin/utils/introspection/IERC165.sol";
 import {IERC2981} from "openzeppelin/interfaces/IERC2981.sol";
 
 import {IERC2981Extended} from "./interfaces/IERC2981Extended.sol";
+import {IOwnable} from "../auth/interfaces/IOwnable.sol";
 
 contract ERC2981Test is Test {
     VyperDeployer private vyperDeployer = new VyperDeployer();
@@ -18,6 +19,7 @@ contract ERC2981Test is Test {
     /* solhint-enable var-name-mixedcase */
 
     address private deployer = address(vyperDeployer);
+    address private self = address(this);
     address private zeroAddress = address(0);
 
     function setUp() public {
@@ -273,12 +275,14 @@ contract ERC2981Test is Test {
     }
 
     function testSetDefaultRoyaltyNonOwner() public {
-        vm.expectRevert("ownable: caller is not the owner");
+        bytes memory expectedErr = abi.encodeWithSelector(IOwnable.OwnableUnauthorizedAccount.selector, self);
+        vm.expectRevert(expectedErr);
         ERC2981Extended.set_default_royalty(zeroAddress, 10);
     }
 
     function testDeleteDefaultRoyaltyNonOwner() public {
-        vm.expectRevert("ownable: caller is not the owner");
+        bytes memory expectedErr = abi.encodeWithSelector(IOwnable.OwnableUnauthorizedAccount.selector, self);
+        vm.expectRevert(expectedErr);
         ERC2981Extended.delete_default_royalty();
     }
 
@@ -299,12 +303,14 @@ contract ERC2981Test is Test {
     }
 
     function testSetTokenRoyaltyNonOwner() public {
-        vm.expectRevert("ownable: caller is not the owner");
+        bytes memory expectedErr = abi.encodeWithSelector(IOwnable.OwnableUnauthorizedAccount.selector, self);
+        vm.expectRevert(expectedErr);
         ERC2981Extended.set_token_royalty(1, zeroAddress, 10);
     }
 
     function testResetTokenRoyaltyNonOwner() public {
-        vm.expectRevert("ownable: caller is not the owner");
+        bytes memory expectedErr = abi.encodeWithSelector(IOwnable.OwnableUnauthorizedAccount.selector, self);
+        vm.expectRevert(expectedErr);
         ERC2981Extended.reset_token_royalty(1);
     }
 
@@ -324,13 +330,15 @@ contract ERC2981Test is Test {
     }
 
     function testTransferOwnershipNonOwner() public {
-        vm.expectRevert(bytes("ownable: caller is not the owner"));
+        bytes memory expectedErr = abi.encodeWithSelector(IOwnable.OwnableUnauthorizedAccount.selector, self);
+        vm.expectRevert(expectedErr);
         ERC2981Extended.transfer_ownership(makeAddr("newOwner"));
     }
 
     function testTransferOwnershipToZeroAddress() public {
         vm.prank(deployer);
-        vm.expectRevert(bytes("ownable: new owner is the zero address"));
+        bytes memory expectedErr = abi.encodeWithSelector(IOwnable.OwnableInvalidOwner.selector, zeroAddress);
+        vm.expectRevert(expectedErr);
         ERC2981Extended.transfer_ownership(zeroAddress);
     }
 
@@ -346,7 +354,8 @@ contract ERC2981Test is Test {
     }
 
     function testRenounceOwnershipNonOwner() public {
-        vm.expectRevert(bytes("ownable: caller is not the owner"));
+        bytes memory expectedErr = abi.encodeWithSelector(IOwnable.OwnableUnauthorizedAccount.selector, self);
+        vm.expectRevert(expectedErr);
         ERC2981Extended.renounce_ownership();
     }
 
@@ -560,13 +569,15 @@ contract ERC2981Test is Test {
 
     function testFuzzSetDefaultRoyaltyNonOwner(address msgSender) public {
         vm.assume(msgSender != deployer);
-        vm.expectRevert("ownable: caller is not the owner");
+        bytes memory expectedErr = abi.encodeWithSelector(IOwnable.OwnableUnauthorizedAccount.selector, self);
+        vm.expectRevert(expectedErr);
         ERC2981Extended.set_default_royalty(zeroAddress, 10);
     }
 
     function testFuzzDeleteDefaultRoyaltyNonOwner(address msgSender) public {
         vm.assume(msgSender != deployer);
-        vm.expectRevert("ownable: caller is not the owner");
+        bytes memory expectedErr = abi.encodeWithSelector(IOwnable.OwnableUnauthorizedAccount.selector, self);
+        vm.expectRevert(expectedErr);
         ERC2981Extended.delete_default_royalty();
     }
 
@@ -590,13 +601,15 @@ contract ERC2981Test is Test {
 
     function testFuzzSetTokenRoyaltyNonOwner(address msgSender) public {
         vm.assume(msgSender != deployer);
-        vm.expectRevert("ownable: caller is not the owner");
+        bytes memory expectedErr = abi.encodeWithSelector(IOwnable.OwnableUnauthorizedAccount.selector, self);
+        vm.expectRevert(expectedErr);
         ERC2981Extended.set_token_royalty(1, zeroAddress, 10);
     }
 
     function testFuzzResetTokenRoyaltyNonOwner(address msgSender) public {
         vm.assume(msgSender != deployer);
-        vm.expectRevert("ownable: caller is not the owner");
+        bytes memory expectedErr = abi.encodeWithSelector(IOwnable.OwnableUnauthorizedAccount.selector, self);
+        vm.expectRevert(expectedErr);
         ERC2981Extended.reset_token_royalty(1);
     }
 
@@ -621,7 +634,8 @@ contract ERC2981Test is Test {
     function testFuzzTransferOwnershipNonOwner(address nonOwner, address newOwner) public {
         vm.assume(nonOwner != deployer);
         vm.prank(nonOwner);
-        vm.expectRevert(bytes("ownable: caller is not the owner"));
+        bytes memory expectedErr = abi.encodeWithSelector(IOwnable.OwnableUnauthorizedAccount.selector, nonOwner);
+        vm.expectRevert(expectedErr);
         ERC2981Extended.transfer_ownership(newOwner);
     }
 
@@ -647,7 +661,8 @@ contract ERC2981Test is Test {
     function testFuzzRenounceOwnershipNonOwner(address nonOwner) public {
         vm.assume(nonOwner != deployer);
         vm.prank(nonOwner);
-        vm.expectRevert(bytes("ownable: caller is not the owner"));
+        bytes memory expectedErr = abi.encodeWithSelector(IOwnable.OwnableUnauthorizedAccount.selector, nonOwner);
+        vm.expectRevert(expectedErr);
         ERC2981Extended.renounce_ownership();
     }
 }
