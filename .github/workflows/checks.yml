@@ -46,7 +46,7 @@ jobs:
           architecture: ${{ matrix.architecture }}
 
       - name: Check formatting with Black
-        uses: psf/black@4f1883b1f15305a0e83a7c87991f46292bf09f85 # v26.10.0
+        uses: psf/black@258e7dbf348bc23cb70b8cdf693481c04634ebcc # v26.10.1
         with:
           options: "--check --verbose"
           src: "./lib/utils"
@@ -93,7 +93,7 @@ jobs:
           persist-credentials: false
 
       - name: Set up Ruby
-        uses: ruby/setup-ruby@14594264cd68ce8a2345dd349bc3d138a4ef85c8 # v1.327.0
+        uses: ruby/setup-ruby@824c0e29fdfc7d689c191c27acc969d2d04b7dd8 # v1.331.0
         with:
           ruby-version: ${{ matrix.ruby_version }}
           bundler-cache: true
