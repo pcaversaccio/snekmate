@@ -14,7 +14,7 @@
   "lib/forge-std": {
     "branch": {
       "name": "master",
-      "rev": "9964d28dd139cbceb8a7c7c3e182c29cd9888bfd"
+      "rev": "bd8c87087369377df8b451de74fb3a4fa9a7f577"
     }
   },
   "lib/halmos-cheatcodes": {
