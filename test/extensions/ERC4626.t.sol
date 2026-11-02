@@ -873,8 +873,11 @@ contract ERC4626VaultTest is ERC4626Test {
         underlying.mint(self, type(uint8).max);
         underlying.approve(ERC4626ExtendedDecimalsOffset0Addr, type(uint8).max);
         ERC4626ExtendedDecimalsOffset0.deposit(type(uint8).max, self);
-        vm.expectRevert(bytes("erc20: insufficient allowance"));
-        vm.prank(makeAddr("otherAccount"));
+        address otherAccount = makeAddr("otherAccount");
+        vm.expectRevert(
+            abi.encodeWithSelector(IERC20Errors.ERC20InsufficientAllowance.selector, otherAccount, 0, type(uint8).max)
+        );
+        vm.prank(otherAccount);
         ERC4626ExtendedDecimalsOffset0.withdraw(type(uint8).max, self, self);
     }
 
@@ -1069,7 +1072,19 @@ contract ERC4626VaultTest is ERC4626Test {
         vm.expectEmit(true, true, false, true);
         emit IERC20.Approval(owner, spender, amount);
         ERC4626ExtendedDecimalsOffset0.permit(owner, spender, amount, deadline, v, r, s);
-        vm.expectRevert(bytes("erc20: invalid signature"));
+        address signer = ecrecover(
+            keccak256(
+                abi.encodePacked(
+                    hex"19_01",
+                    domainSeparator,
+                    keccak256(abi.encode(_PERMIT_TYPE_HASH, owner, spender, amount, nonce + 1, deadline))
+                )
+            ),
+            v,
+            r,
+            s
+        );
+        vm.expectRevert(abi.encodeWithSelector(IERC4626Extended.ERC2612InvalidSigner.selector, signer, owner));
         ERC4626ExtendedDecimalsOffset0.permit(owner, spender, amount, deadline, v, r, s);
     }
 
@@ -1090,7 +1105,9 @@ contract ERC4626VaultTest is ERC4626Test {
                 )
             )
         );
-        vm.expectRevert(bytes("erc20: invalid signature"));
+        vm.expectRevert(
+            abi.encodeWithSelector(IERC4626Extended.ERC2612InvalidSigner.selector, vm.addr(key + 1), owner)
+        );
         ERC4626ExtendedDecimalsOffset0.permit(owner, spender, amount, deadline, v, r, s);
     }
 
@@ -1119,7 +1136,19 @@ contract ERC4626VaultTest is ERC4626Test {
                 )
             )
         );
-        vm.expectRevert(bytes("erc20: invalid signature"));
+        address signer = ecrecover(
+            keccak256(
+                abi.encodePacked(
+                    hex"19_01",
+                    ERC4626ExtendedDecimalsOffset0.DOMAIN_SEPARATOR(),
+                    keccak256(abi.encode(_PERMIT_TYPE_HASH, owner, spender, amount, nonce, deadline))
+                )
+            ),
+            v,
+            r,
+            s
+        );
+        vm.expectRevert(abi.encodeWithSelector(IERC4626Extended.ERC2612InvalidSigner.selector, signer, owner));
         ERC4626ExtendedDecimalsOffset0.permit(owner, spender, amount, deadline, v, r, s);
     }
 
@@ -1140,7 +1169,19 @@ contract ERC4626VaultTest is ERC4626Test {
                 )
             )
         );
-        vm.expectRevert(bytes("erc20: invalid signature"));
+        address signer = ecrecover(
+            keccak256(
+                abi.encodePacked(
+                    hex"19_01",
+                    domainSeparator,
+                    keccak256(abi.encode(_PERMIT_TYPE_HASH, owner, spender, amount, 0, deadline))
+                )
+            ),
+            v,
+            r,
+            s
+        );
+        vm.expectRevert(abi.encodeWithSelector(IERC4626Extended.ERC2612InvalidSigner.selector, signer, owner));
         ERC4626ExtendedDecimalsOffset0.permit(owner, spender, amount, deadline, v, r, s);
     }
 
@@ -1161,7 +1202,7 @@ contract ERC4626VaultTest is ERC4626Test {
                 )
             )
         );
-        vm.expectRevert(bytes("erc20: expired deadline"));
+        vm.expectRevert(abi.encodeWithSelector(IERC4626Extended.ERC2612ExpiredSignature.selector, deadline));
         ERC4626ExtendedDecimalsOffset0.permit(owner, spender, amount, deadline, v, r, s);
     }
 
@@ -1250,7 +1291,9 @@ contract ERC4626VaultTest is ERC4626Test {
                 )
             )
         );
-        vm.expectRevert(bytes("erc20: invalid signature"));
+        vm.expectRevert(
+            abi.encodeWithSelector(IERC4626Extended.ERC2612InvalidSigner.selector, vm.addr(keyWrong), ownerAddr)
+        );
         ERC4626ExtendedDecimalsOffset0.permit(ownerAddr, spenderAddr, amount, deadline, v, r, s);
     }
 
