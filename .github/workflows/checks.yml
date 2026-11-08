@@ -40,13 +40,13 @@ jobs:
         run: pnpm lint:check
 
       - name: Setup Python
-        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
           python-version: ${{ matrix.python_version }}
           architecture: ${{ matrix.architecture }}
 
       - name: Check formatting with Black
-        uses: psf/black@4f1883b1f15305a0e83a7c87991f46292bf09f85 # v26.10.0
+        uses: psf/black@258e7dbf348bc23cb70b8cdf693481c04634ebcc # v26.10.1
         with:
           options: "--check --verbose"
           src: "./lib/utils"
@@ -68,7 +68,7 @@ jobs:
           persist-credentials: false
 
       - name: Run codespell
-        uses: codespell-project/actions-codespell@8f01853be192eb0f849a5c7d721450e7a467c579 # v2.2.0
+        uses: codespell-project/actions-codespell@e3258cca84ce02b0bb36a3d41f2c18f719a0cc1a # v2.4.3
         with:
           check_filenames: true
           skip: ./.git,pnpm-lock.yaml
@@ -93,7 +93,7 @@ jobs:
           persist-credentials: false
 
       - name: Set up Ruby
-        uses: ruby/setup-ruby@14594264cd68ce8a2345dd349bc3d138a4ef85c8 # v1.327.0
+        uses: ruby/setup-ruby@de492cf36cbab201753d720ce4f4e336cd688c94 # v1.336.0
         with:
           ruby-version: ${{ matrix.ruby_version }}
           bundler-cache: true
