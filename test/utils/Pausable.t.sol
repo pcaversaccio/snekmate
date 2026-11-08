@@ -37,7 +37,7 @@ contract PausableTest is Test {
         pausable.pause();
         assertTrue(pausable.paused());
 
-        vm.expectRevert(bytes("pausable: contract is paused"));
+        vm.expectRevert(IPausable.PausableEnforcedPause.selector);
         pausable.pause();
         assertTrue(pausable.paused());
         vm.stopPrank();
@@ -67,7 +67,7 @@ contract PausableTest is Test {
         pausable.unpause();
         assertTrue(!pausable.paused());
 
-        vm.expectRevert(bytes("pausable: contract is not paused"));
+        vm.expectRevert(IPausable.PausableExpectedPause.selector);
         pausable.unpause();
         assertTrue(!pausable.paused());
         vm.stopPrank();
@@ -89,7 +89,7 @@ contract PausableTest is Test {
         pausable.pause();
         assertTrue(pausable.paused());
 
-        vm.expectRevert(bytes("pausable: contract is paused"));
+        vm.expectRevert(IPausable.PausableEnforcedPause.selector);
         pausable.pause();
         assertTrue(pausable.paused());
         vm.stopPrank();
@@ -119,7 +119,7 @@ contract PausableTest is Test {
         pausable.unpause();
         assertTrue(!pausable.paused());
 
-        vm.expectRevert(bytes("pausable: contract is not paused"));
+        vm.expectRevert(IPausable.PausableExpectedPause.selector);
         pausable.unpause();
         assertTrue(!pausable.paused());
         vm.stopPrank();

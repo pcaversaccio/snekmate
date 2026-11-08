@@ -2,6 +2,10 @@
 pragma solidity ^0.8.38;
 
 interface IPausable {
+    error PausableEnforcedPause();
+
+    error PausableExpectedPause();
+
     event Paused(address account);
 
     event Unpaused(address account);

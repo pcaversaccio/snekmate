@@ -5,6 +5,7 @@
 ### 💥 New Features
 
 - **Utility Functions**
+  - [`pausable`](https://github.com/pcaversaccio/snekmate/blob/v0.1.3/src/snekmate/utils/pausable.vy): Migrate `pausable` to custom `error`s. ([#380](https://github.com/pcaversaccio/snekmate/issues/380))
   - [`eip7702_utils`](https://github.com/pcaversaccio/snekmate/blob/v0.1.3/src/snekmate/utils/eip7702_utils.vy): Add [EIP-7702](https://eips.ethereum.org/EIPS/eip-7702)-based utility functions. ([#335](https://github.com/pcaversaccio/snekmate/pull/335))
 
 ### ♻️ Refactoring

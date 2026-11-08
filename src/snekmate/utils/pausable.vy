@@ -57,6 +57,16 @@ event Unpaused:
     account: address
 
 
+# @dev The operation failed because the contract is paused.
+error PausableEnforcedPause:
+    pass
+
+
+# @dev The operation failed because the contract is not paused.
+error PausableExpectedPause:
+    pass
+
+
 @deploy
 @payable
 def __init__():
@@ -99,7 +109,7 @@ def _require_not_paused():
     """
     @dev Throws if the contract is paused.
     """
-    assert not self.paused, "pausable: contract is paused"
+    assert not self.paused, PausableEnforcedPause()
 
 
 @internal
@@ -107,4 +117,4 @@ def _require_paused():
     """
     @dev Throws if the contract is not paused.
     """
-    assert self.paused, "pausable: contract is not paused"
+    assert self.paused, PausableExpectedPause()
