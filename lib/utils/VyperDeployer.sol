@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: WTFPL
-pragma solidity ^0.8.37;
+pragma solidity ^0.8.38;
 
 import {Create} from "create-util/Create.sol";
 import {console, StdStyle} from "forge-std/Test.sol";
