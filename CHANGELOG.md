@@ -4,6 +4,8 @@
 
 ### 💥 New Features
 
+- **Extensions**
+  - [`erc4626`](https://github.com/pcaversaccio/snekmate/blob/v0.1.3/src/snekmate/extensions/erc4626.vy): Migrate `erc4626` to custom `error`s. ([#422](https://github.com/pcaversaccio/snekmate/pull/422))
 - **Utility Functions**
   - [`eip7702_utils`](https://github.com/pcaversaccio/snekmate/blob/v0.1.3/src/snekmate/utils/eip7702_utils.vy): Add [EIP-7702](https://eips.ethereum.org/EIPS/eip-7702)-based utility functions. ([#335](https://github.com/pcaversaccio/snekmate/pull/335))
 
