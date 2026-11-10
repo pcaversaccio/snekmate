@@ -31,6 +31,18 @@ event OwnershipTransferred:
     new_owner: indexed(address)
 
 
+# @dev The caller account is not authorized to
+# perform an operation.
+error OwnableUnauthorizedAccount:
+    account: address
+
+
+# @dev The owner is not a valid owner account.
+# (eg. `empty(address)`)
+error OwnableInvalidOwner:
+    owner: address
+
+
 @deploy
 @payable
 def __init__():
@@ -55,7 +67,7 @@ def transfer_ownership(new_owner: address):
     @param new_owner The 20-byte address of the new owner.
     """
     self._check_owner()
-    assert new_owner != empty(address), "ownable: new owner is the zero address"
+    assert new_owner != empty(address), OwnableInvalidOwner(owner=new_owner)
     self._transfer_ownership(new_owner)
 
 
@@ -77,7 +89,7 @@ def _check_owner():
     """
     @dev Throws if the sender is not the owner.
     """
-    assert msg.sender == self.owner, "ownable: caller is not the owner"
+    assert msg.sender == self.owner, OwnableUnauthorizedAccount(account=msg.sender)
 
 
 @internal
