@@ -57,12 +57,14 @@ event Unpaused:
     account: address
 
 
-# @dev The operation failed because the contract is paused.
+# @dev The operation failed because the contract
+# is paused.
 error PausableEnforcedPause:
     pass
 
 
-# @dev The operation failed because the contract is not paused.
+# @dev The operation failed because the contract
+# is not paused.
 error PausableExpectedPause:
     pass
 
