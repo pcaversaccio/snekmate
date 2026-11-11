@@ -6,6 +6,10 @@ interface IPausable {
 
     event Unpaused(address account);
 
+    error PausableEnforcedPause();
+
+    error PausableExpectedPause();
+
     function paused() external view returns (bool);
 
     function pause() external;
