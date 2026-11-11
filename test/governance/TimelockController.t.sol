@@ -28,6 +28,11 @@ contract TimelockControllerTest is Test {
     bytes32 private constant EXECUTOR_ROLE = keccak256("EXECUTOR_ROLE");
     bytes32 private constant CANCELLER_ROLE = keccak256("CANCELLER_ROLE");
 
+    // Bitmaps of the `OperationState` flag members, counting from right to left.
+    bytes32 private constant UNSET_STATE = bytes32(uint256(1)); // `1 << 0`.
+    bytes32 private constant READY_STATE = bytes32(uint256(4)); // `1 << 2`.
+    bytes32 private constant WAITING_OR_READY_STATES = bytes32(uint256(6)); // `(1 << 1) | (1 << 2)`.
+
     bytes4 private constant IERC721_TOKENRECEIVER_SELECTOR = ERC721ReceiverMock.onERC721Received.selector;
     bytes4 private constant IERC1155_TOKENRECEIVER_SINGLE_SELECTOR = ERC1155ReceiverMock.onERC1155Received.selector;
     bytes4 private constant IERC1155_TOKENRECEIVER_BATCH_SELECTOR = ERC1155ReceiverMock.onERC1155BatchReceived.selector;
@@ -613,13 +618,23 @@ contract TimelockControllerTest is Test {
         vm.expectEmit(true, true, false, true);
         emit ITimelockController.CallScheduled(operationId, 0, target, amount, payload, NO_PREDECESSOR, MIN_DELAY);
         timelockController.schedule(target, amount, payload, NO_PREDECESSOR, EMPTY_SALT, MIN_DELAY);
-        vm.expectRevert("timelock_controller: operation already scheduled");
+        bytes memory expectedErr = abi.encodeWithSelector(
+            ITimelockController.TimelockControllerUnexpectedOperationState.selector,
+            operationId,
+            UNSET_STATE
+        );
+        vm.expectRevert(expectedErr);
         timelockController.schedule(target, amount, payload, NO_PREDECESSOR, EMPTY_SALT, MIN_DELAY);
         vm.stopPrank();
     }
 
     function testOperationInsufficientDelay() public {
-        vm.expectRevert("timelock_controller: insufficient delay");
+        bytes memory expectedErr = abi.encodeWithSelector(
+            ITimelockController.TimelockControllerInsufficientDelay.selector,
+            MIN_DELAY - 1,
+            timelockController.get_minimum_delay()
+        );
+        vm.expectRevert(expectedErr);
         vm.prank(PROPOSER_ONE);
         timelockController.schedule(target, 0, new bytes(0), NO_PREDECESSOR, EMPTY_SALT, MIN_DELAY - 1);
     }
@@ -731,7 +746,12 @@ contract TimelockControllerTest is Test {
         vm.stopPrank();
 
         vm.warp(vm.getBlockTimestamp() + MIN_DELAY - 2 days);
-        vm.expectRevert("timelock_controller: operation is not ready");
+        bytes memory expectedErr = abi.encodeWithSelector(
+            ITimelockController.TimelockControllerUnexpectedOperationState.selector,
+            operationId,
+            READY_STATE
+        );
+        vm.expectRevert(expectedErr);
         vm.prank(EXECUTOR_ONE);
         timelockController.execute(zeroAddress, amount, payload, NO_PREDECESSOR, EMPTY_SALT);
     }
@@ -754,7 +774,11 @@ contract TimelockControllerTest is Test {
         vm.stopPrank();
 
         vm.warp(vm.getBlockTimestamp() + MIN_DELAY + 2 days);
-        vm.expectRevert("timelock_controller: missing dependency");
+        bytes memory expectedErr = abi.encodeWithSelector(
+            ITimelockController.TimelockControllerUnexecutedPredecessor.selector,
+            operationId1
+        );
+        vm.expectRevert(expectedErr);
         vm.prank(EXECUTOR_ONE);
         timelockController.execute(target, amount, payload, operationId1, SALT);
     }
@@ -774,7 +798,11 @@ contract TimelockControllerTest is Test {
         vm.stopPrank();
 
         vm.warp(vm.getBlockTimestamp() + MIN_DELAY + 2 days);
-        vm.expectRevert("timelock_controller: missing dependency");
+        bytes memory expectedErr = abi.encodeWithSelector(
+            ITimelockController.TimelockControllerUnexecutedPredecessor.selector,
+            operationId1
+        );
+        vm.expectRevert(expectedErr);
         vm.prank(EXECUTOR_ONE);
         timelockController.execute(target, amount, payload, operationId1, SALT);
     }
@@ -800,7 +828,11 @@ contract TimelockControllerTest is Test {
         vm.stopPrank();
 
         vm.warp(vm.getBlockTimestamp() + MIN_DELAY + 2 days);
-        vm.expectRevert("timelock_controller: missing dependency");
+        bytes memory expectedErr = abi.encodeWithSelector(
+            ITimelockController.TimelockControllerUnexecutedPredecessor.selector,
+            invalidPredecessor
+        );
+        vm.expectRevert(expectedErr);
         vm.prank(EXECUTOR_ONE);
         timelockController.execute(target, amount, payload, invalidPredecessor, EMPTY_SALT);
     }
@@ -822,10 +854,18 @@ contract TimelockControllerTest is Test {
         vm.stopPrank();
 
         vm.warp(vm.getBlockTimestamp() + MIN_DELAY + 2 days);
-        vm.expectRevert("CallReceiverMock: reverting");
+        bytes memory expectedErr1 = abi.encodeWithSelector(
+            CallReceiverMock.CallReceiverMockRevertWithReason.selector,
+            1_337
+        );
+        vm.expectRevert(expectedErr1);
         vm.startPrank(EXECUTOR_ONE);
         timelockController.execute(target, amount, payload1, NO_PREDECESSOR, EMPTY_SALT);
-        vm.expectRevert("timelock_controller: underlying transaction reverted");
+        bytes memory expectedErr2 = abi.encodeWithSelector(
+            ITimelockController.TimelockControllerFailedCall.selector,
+            target
+        );
+        vm.expectRevert(expectedErr2);
         timelockController.execute(target, amount, payload2, NO_PREDECESSOR, SALT);
         vm.stopPrank();
     }
@@ -849,7 +889,11 @@ contract TimelockControllerTest is Test {
         vm.stopPrank();
 
         vm.warp(vm.getBlockTimestamp() + MIN_DELAY + 2 days);
-        vm.expectRevert("timelock_controller: missing dependency");
+        bytes memory expectedErr = abi.encodeWithSelector(
+            ITimelockController.TimelockControllerUnexecutedPredecessor.selector,
+            operationId
+        );
+        vm.expectRevert(expectedErr);
         vm.prank(EXECUTOR_ONE);
         timelockController.execute(target, amount, payload, operationId, EMPTY_SALT);
     }
@@ -875,7 +919,12 @@ contract TimelockControllerTest is Test {
         vm.stopPrank();
 
         vm.prank(PROPOSER_ONE);
-        vm.expectRevert("timelock_controller: operation cannot be cancelled");
+        bytes memory expectedErr = abi.encodeWithSelector(
+            ITimelockController.TimelockControllerUnexpectedOperationState.selector,
+            operationId,
+            WAITING_OR_READY_STATES
+        );
+        vm.expectRevert(expectedErr);
         timelockController.cancel(operationId);
     }
 
@@ -1170,6 +1219,80 @@ contract TimelockControllerTest is Test {
         vm.stopPrank();
     }
 
+    function testBatchScheduleInvalidLength() public {
+        address[] memory targets1 = new address[](1);
+        targets1[0] = target;
+        uint256[] memory amounts1 = new uint256[](2);
+        amounts1[0] = 0;
+        amounts1[1] = 1;
+        bytes[] memory payloads1 = new bytes[](1);
+
+        bytes memory expectedErr1 = abi.encodeWithSelector(
+            ITimelockController.TimelockControllerInvalidOperationLength.selector,
+            targets1.length,
+            payloads1.length,
+            amounts1.length
+        );
+        vm.expectRevert(expectedErr1);
+        vm.prank(PROPOSER_ONE);
+        timelockController.schedule_batch(targets1, amounts1, payloads1, NO_PREDECESSOR, SALT, MIN_DELAY);
+
+        address[] memory targets2 = new address[](2);
+        targets2[0] = target;
+        targets2[1] = target;
+        uint256[] memory amounts2 = new uint256[](2);
+        amounts2[0] = 0;
+        amounts2[1] = 1;
+        bytes[] memory payloads2 = new bytes[](1);
+
+        bytes memory expectedErr2 = abi.encodeWithSelector(
+            ITimelockController.TimelockControllerInvalidOperationLength.selector,
+            targets2.length,
+            payloads2.length,
+            amounts2.length
+        );
+        vm.expectRevert(expectedErr2);
+        vm.prank(PROPOSER_ONE);
+        timelockController.schedule_batch(targets2, amounts2, payloads2, NO_PREDECESSOR, SALT, MIN_DELAY);
+    }
+
+    function testBatchExecuteInvalidLength() public {
+        address[] memory targets1 = new address[](1);
+        targets1[0] = target;
+        uint256[] memory amounts1 = new uint256[](2);
+        amounts1[0] = 0;
+        amounts1[1] = 1;
+        bytes[] memory payloads1 = new bytes[](1);
+
+        bytes memory expectedErr1 = abi.encodeWithSelector(
+            ITimelockController.TimelockControllerInvalidOperationLength.selector,
+            targets1.length,
+            payloads1.length,
+            amounts1.length
+        );
+        vm.expectRevert(expectedErr1);
+        vm.prank(EXECUTOR_ONE);
+        timelockController.execute_batch(targets1, amounts1, payloads1, NO_PREDECESSOR, SALT);
+
+        address[] memory targets2 = new address[](2);
+        targets2[0] = target;
+        targets2[1] = target;
+        uint256[] memory amounts2 = new uint256[](2);
+        amounts2[0] = 0;
+        amounts2[1] = 1;
+        bytes[] memory payloads2 = new bytes[](1);
+
+        bytes memory expectedErr2 = abi.encodeWithSelector(
+            ITimelockController.TimelockControllerInvalidOperationLength.selector,
+            targets2.length,
+            payloads2.length,
+            amounts2.length
+        );
+        vm.expectRevert(expectedErr2);
+        vm.prank(EXECUTOR_ONE);
+        timelockController.execute_batch(targets2, amounts2, payloads2, NO_PREDECESSOR, SALT);
+    }
+
     function testBatchOperationAlreadyScheduled() public {
         address[] memory targets = new address[](1);
         targets[0] = target;
@@ -1201,7 +1324,12 @@ contract TimelockControllerTest is Test {
             );
         }
         timelockController.schedule_batch(targets, amounts, payloads, NO_PREDECESSOR, EMPTY_SALT, MIN_DELAY);
-        vm.expectRevert("timelock_controller: operation already scheduled");
+        bytes memory expectedErr = abi.encodeWithSelector(
+            ITimelockController.TimelockControllerUnexpectedOperationState.selector,
+            batchedOperationId,
+            UNSET_STATE
+        );
+        vm.expectRevert(expectedErr);
         timelockController.schedule_batch(targets, amounts, payloads, NO_PREDECESSOR, EMPTY_SALT, MIN_DELAY);
         vm.stopPrank();
     }
@@ -1215,7 +1343,12 @@ contract TimelockControllerTest is Test {
         bytes32 value = bytes32(uint256(6_699));
         bytes[] memory payloads = new bytes[](1);
         payloads[0] = abi.encodeWithSelector(callReceiverMock.mockFunctionWritesStorage.selector, slot, value);
-        vm.expectRevert("timelock_controller: insufficient delay");
+        bytes memory expectedErr = abi.encodeWithSelector(
+            ITimelockController.TimelockControllerInsufficientDelay.selector,
+            MIN_DELAY - 1,
+            timelockController.get_minimum_delay()
+        );
+        vm.expectRevert(expectedErr);
         vm.prank(PROPOSER_ONE);
         timelockController.schedule_batch(targets, amounts, payloads, NO_PREDECESSOR, EMPTY_SALT, MIN_DELAY - 1);
     }
@@ -1349,7 +1482,12 @@ contract TimelockControllerTest is Test {
         vm.stopPrank();
 
         vm.warp(vm.getBlockTimestamp() + MIN_DELAY - 2 days);
-        vm.expectRevert("timelock_controller: operation is not ready");
+        bytes memory expectedErr = abi.encodeWithSelector(
+            ITimelockController.TimelockControllerUnexpectedOperationState.selector,
+            batchedOperationId,
+            READY_STATE
+        );
+        vm.expectRevert(expectedErr);
         vm.prank(EXECUTOR_ONE);
         timelockController.execute_batch(targets, amounts, payloads, NO_PREDECESSOR, EMPTY_SALT);
     }
@@ -1408,7 +1546,11 @@ contract TimelockControllerTest is Test {
         vm.stopPrank();
 
         vm.warp(vm.getBlockTimestamp() + MIN_DELAY + 2 days);
-        vm.expectRevert("timelock_controller: missing dependency");
+        bytes memory expectedErr = abi.encodeWithSelector(
+            ITimelockController.TimelockControllerUnexecutedPredecessor.selector,
+            batchedOperationId1
+        );
+        vm.expectRevert(expectedErr);
         vm.prank(EXECUTOR_ONE);
         timelockController.execute_batch(targets, amounts, payloads, batchedOperationId1, SALT);
     }
@@ -1454,7 +1596,11 @@ contract TimelockControllerTest is Test {
         vm.stopPrank();
 
         vm.warp(vm.getBlockTimestamp() + MIN_DELAY + 2 days);
-        vm.expectRevert("timelock_controller: missing dependency");
+        bytes memory expectedErr = abi.encodeWithSelector(
+            ITimelockController.TimelockControllerUnexecutedPredecessor.selector,
+            batchedOperationId1
+        );
+        vm.expectRevert(expectedErr);
         vm.prank(EXECUTOR_ONE);
         timelockController.execute_batch(targets, amounts, payloads, batchedOperationId1, SALT);
     }
@@ -1494,7 +1640,11 @@ contract TimelockControllerTest is Test {
         vm.stopPrank();
 
         vm.warp(vm.getBlockTimestamp() + MIN_DELAY + 2 days);
-        vm.expectRevert("timelock_controller: missing dependency");
+        bytes memory expectedErr = abi.encodeWithSelector(
+            ITimelockController.TimelockControllerUnexecutedPredecessor.selector,
+            invalidPredecessor
+        );
+        vm.expectRevert(expectedErr);
         vm.prank(EXECUTOR_ONE);
         timelockController.execute_batch(targets, amounts, payloads, invalidPredecessor, EMPTY_SALT);
     }
@@ -1553,10 +1703,18 @@ contract TimelockControllerTest is Test {
         vm.stopPrank();
 
         vm.warp(vm.getBlockTimestamp() + MIN_DELAY + 2 days);
-        vm.expectRevert("CallReceiverMock: reverting");
+        bytes memory expectedErr1 = abi.encodeWithSelector(
+            CallReceiverMock.CallReceiverMockRevertWithReason.selector,
+            1_337
+        );
+        vm.expectRevert(expectedErr1);
         vm.startPrank(EXECUTOR_ONE);
         timelockController.execute_batch(targets, amounts, payloads1, NO_PREDECESSOR, EMPTY_SALT);
-        vm.expectRevert("timelock_controller: underlying transaction reverted");
+        bytes memory expectedErr2 = abi.encodeWithSelector(
+            ITimelockController.TimelockControllerFailedCall.selector,
+            targets[0]
+        );
+        vm.expectRevert(expectedErr2);
         timelockController.execute_batch(targets, amounts, payloads2, NO_PREDECESSOR, SALT);
         vm.stopPrank();
     }
@@ -1599,7 +1757,11 @@ contract TimelockControllerTest is Test {
         vm.stopPrank();
 
         vm.warp(vm.getBlockTimestamp() + MIN_DELAY + 2 days);
-        vm.expectRevert("timelock_controller: missing dependency");
+        bytes memory expectedErr = abi.encodeWithSelector(
+            ITimelockController.TimelockControllerUnexecutedPredecessor.selector,
+            batchedOperationId
+        );
+        vm.expectRevert(expectedErr);
         vm.prank(EXECUTOR_ONE);
         timelockController.execute_batch(targets, amounts, payloads, batchedOperationId, EMPTY_SALT);
     }
@@ -1647,7 +1809,12 @@ contract TimelockControllerTest is Test {
         vm.stopPrank();
 
         vm.prank(PROPOSER_ONE);
-        vm.expectRevert("timelock_controller: operation cannot be cancelled");
+        bytes memory expectedErr = abi.encodeWithSelector(
+            ITimelockController.TimelockControllerUnexpectedOperationState.selector,
+            batchedOperationId,
+            WAITING_OR_READY_STATES
+        );
+        vm.expectRevert(expectedErr);
         timelockController.cancel(batchedOperationId);
     }
 
@@ -2013,7 +2180,11 @@ contract TimelockControllerTest is Test {
     }
 
     function testRevertWhenNotTimelock() public {
-        vm.expectRevert("timelock_controller: caller must be timelock");
+        bytes memory expectedErr = abi.encodeWithSelector(
+            ITimelockController.TimelockControllerUnauthorisedCaller.selector,
+            STRANGER
+        );
+        vm.expectRevert(expectedErr);
         vm.prank(STRANGER);
         timelockController.update_delay(3 days);
     }
@@ -2022,13 +2193,23 @@ contract TimelockControllerTest is Test {
         address[] memory targets = new address[](0);
         uint256[] memory amounts = new uint256[](0);
         bytes[] memory payloads = new bytes[](0);
-        vm.expectRevert("access_control: account is missing role");
+        bytes memory expectedErr = abi.encodeWithSelector(
+            IAccessControl.AccessControlUnauthorizedAccount.selector,
+            self,
+            PROPOSER_ROLE
+        );
+        vm.expectRevert(expectedErr);
         vm.prank(self);
         timelockController.schedule_batch(targets, amounts, payloads, NO_PREDECESSOR, EMPTY_SALT, MIN_DELAY);
     }
 
     function testAdminCannotSchedule() public {
-        vm.expectRevert("access_control: account is missing role");
+        bytes memory expectedErr = abi.encodeWithSelector(
+            IAccessControl.AccessControlUnauthorizedAccount.selector,
+            self,
+            PROPOSER_ROLE
+        );
+        vm.expectRevert(expectedErr);
         vm.prank(self);
         timelockController.schedule(zeroAddress, 0, new bytes(0), NO_PREDECESSOR, EMPTY_SALT, MIN_DELAY);
     }
@@ -2038,19 +2219,34 @@ contract TimelockControllerTest is Test {
         uint256[] memory amounts = new uint256[](0);
         bytes[] memory payloads = new bytes[](0);
 
-        vm.expectRevert("access_control: account is missing role");
+        bytes memory expectedErr = abi.encodeWithSelector(
+            IAccessControl.AccessControlUnauthorizedAccount.selector,
+            self,
+            EXECUTOR_ROLE
+        );
+        vm.expectRevert(expectedErr);
         vm.prank(self);
         timelockController.execute_batch(targets, amounts, payloads, NO_PREDECESSOR, EMPTY_SALT);
     }
 
     function testAdminCannotExecute() public {
-        vm.expectRevert("access_control: account is missing role");
+        bytes memory expectedErr = abi.encodeWithSelector(
+            IAccessControl.AccessControlUnauthorizedAccount.selector,
+            self,
+            EXECUTOR_ROLE
+        );
+        vm.expectRevert(expectedErr);
         vm.prank(self);
         timelockController.execute(zeroAddress, 0, new bytes(0), NO_PREDECESSOR, EMPTY_SALT);
     }
 
     function testAdminCannotCancel() public {
-        vm.expectRevert("access_control: account is missing role");
+        bytes memory expectedErr = abi.encodeWithSelector(
+            IAccessControl.AccessControlUnauthorizedAccount.selector,
+            self,
+            CANCELLER_ROLE
+        );
+        vm.expectRevert(expectedErr);
         vm.prank(self);
         timelockController.cancel(EMPTY_SALT);
     }
@@ -2083,31 +2279,56 @@ contract TimelockControllerTest is Test {
         uint256[] memory amounts = new uint256[](0);
         bytes[] memory payloads = new bytes[](0);
 
-        vm.expectRevert("access_control: account is missing role");
+        bytes memory expectedErr1 = abi.encodeWithSelector(
+            IAccessControl.AccessControlUnauthorizedAccount.selector,
+            PROPOSER_ONE,
+            EXECUTOR_ROLE
+        );
+        vm.expectRevert(expectedErr1);
         vm.prank(PROPOSER_ONE);
         timelockController.execute_batch(targets, amounts, payloads, NO_PREDECESSOR, EMPTY_SALT);
 
-        vm.expectRevert("access_control: account is missing role");
+        bytes memory expectedErr2 = abi.encodeWithSelector(
+            IAccessControl.AccessControlUnauthorizedAccount.selector,
+            PROPOSER_TWO,
+            EXECUTOR_ROLE
+        );
+        vm.expectRevert(expectedErr2);
         vm.prank(PROPOSER_TWO);
         timelockController.execute_batch(targets, amounts, payloads, NO_PREDECESSOR, SALT);
     }
 
     function testProposerCannotExecute() public {
-        vm.expectRevert("access_control: account is missing role");
+        bytes memory expectedErr1 = abi.encodeWithSelector(
+            IAccessControl.AccessControlUnauthorizedAccount.selector,
+            PROPOSER_ONE,
+            EXECUTOR_ROLE
+        );
+        vm.expectRevert(expectedErr1);
         vm.prank(PROPOSER_ONE);
         timelockController.execute(zeroAddress, 0, new bytes(0), NO_PREDECESSOR, EMPTY_SALT);
 
-        vm.expectRevert("access_control: account is missing role");
+        bytes memory expectedErr2 = abi.encodeWithSelector(
+            IAccessControl.AccessControlUnauthorizedAccount.selector,
+            PROPOSER_TWO,
+            EXECUTOR_ROLE
+        );
+        vm.expectRevert(expectedErr2);
         vm.prank(PROPOSER_TWO);
         timelockController.execute(zeroAddress, 0, new bytes(0), NO_PREDECESSOR, SALT);
     }
 
     function testProposerCanCancel() public {
-        vm.expectRevert("timelock_controller: operation cannot be cancelled");
+        bytes memory expectedErr = abi.encodeWithSelector(
+            ITimelockController.TimelockControllerUnexpectedOperationState.selector,
+            EMPTY_SALT,
+            WAITING_OR_READY_STATES
+        );
+        vm.expectRevert(expectedErr);
         vm.prank(PROPOSER_ONE);
         timelockController.cancel(EMPTY_SALT);
 
-        vm.expectRevert("timelock_controller: operation cannot be cancelled");
+        vm.expectRevert(expectedErr);
         vm.prank(PROPOSER_TWO);
         timelockController.cancel(EMPTY_SALT);
     }
@@ -2117,21 +2338,41 @@ contract TimelockControllerTest is Test {
         uint256[] memory amounts = new uint256[](0);
         bytes[] memory payloads = new bytes[](0);
 
-        vm.expectRevert("access_control: account is missing role");
+        bytes memory expectedErr1 = abi.encodeWithSelector(
+            IAccessControl.AccessControlUnauthorizedAccount.selector,
+            EXECUTOR_ONE,
+            PROPOSER_ROLE
+        );
+        vm.expectRevert(expectedErr1);
         vm.prank(EXECUTOR_ONE);
         timelockController.schedule_batch(targets, amounts, payloads, NO_PREDECESSOR, EMPTY_SALT, MIN_DELAY);
 
-        vm.expectRevert("access_control: account is missing role");
+        bytes memory expectedErr2 = abi.encodeWithSelector(
+            IAccessControl.AccessControlUnauthorizedAccount.selector,
+            EXECUTOR_TWO,
+            PROPOSER_ROLE
+        );
+        vm.expectRevert(expectedErr2);
         vm.prank(EXECUTOR_TWO);
         timelockController.schedule_batch(targets, amounts, payloads, NO_PREDECESSOR, SALT, MIN_DELAY);
     }
 
     function testExecutorCannotSchedule() public {
-        vm.expectRevert("access_control: account is missing role");
+        bytes memory expectedErr1 = abi.encodeWithSelector(
+            IAccessControl.AccessControlUnauthorizedAccount.selector,
+            EXECUTOR_ONE,
+            PROPOSER_ROLE
+        );
+        vm.expectRevert(expectedErr1);
         vm.prank(EXECUTOR_ONE);
         timelockController.schedule(zeroAddress, 0, new bytes(0), NO_PREDECESSOR, EMPTY_SALT, MIN_DELAY);
 
-        vm.expectRevert("access_control: account is missing role");
+        bytes memory expectedErr2 = abi.encodeWithSelector(
+            IAccessControl.AccessControlUnauthorizedAccount.selector,
+            EXECUTOR_TWO,
+            PROPOSER_ROLE
+        );
+        vm.expectRevert(expectedErr2);
         vm.prank(EXECUTOR_TWO);
         timelockController.schedule(zeroAddress, 0, new bytes(0), NO_PREDECESSOR, SALT, MIN_DELAY);
     }
@@ -2140,32 +2381,85 @@ contract TimelockControllerTest is Test {
         address[] memory targets = new address[](0);
         uint256[] memory amounts = new uint256[](0);
         bytes[] memory payloads = new bytes[](0);
+        bytes32 batchedOperationId1 = timelockController.hash_operation_batch(
+            targets,
+            amounts,
+            payloads,
+            NO_PREDECESSOR,
+            EMPTY_SALT
+        );
+        bytes32 batchedOperationId2 = timelockController.hash_operation_batch(
+            targets,
+            amounts,
+            payloads,
+            NO_PREDECESSOR,
+            SALT
+        );
 
-        vm.expectRevert("timelock_controller: operation is not ready");
+        bytes memory expectedErr1 = abi.encodeWithSelector(
+            ITimelockController.TimelockControllerUnexpectedOperationState.selector,
+            batchedOperationId1,
+            READY_STATE
+        );
+        vm.expectRevert(expectedErr1);
         vm.prank(EXECUTOR_ONE);
         timelockController.execute_batch(targets, amounts, payloads, NO_PREDECESSOR, EMPTY_SALT);
 
-        vm.expectRevert("timelock_controller: operation is not ready");
+        bytes memory expectedErr2 = abi.encodeWithSelector(
+            ITimelockController.TimelockControllerUnexpectedOperationState.selector,
+            batchedOperationId2,
+            READY_STATE
+        );
+        vm.expectRevert(expectedErr2);
         vm.prank(EXECUTOR_TWO);
         timelockController.execute_batch(targets, amounts, payloads, NO_PREDECESSOR, SALT);
     }
 
     function testExecutorCanExecute() public {
-        vm.expectRevert("timelock_controller: operation is not ready");
+        bytes32 operationId1 = timelockController.hash_operation(
+            zeroAddress,
+            0,
+            new bytes(0),
+            NO_PREDECESSOR,
+            EMPTY_SALT
+        );
+        bytes32 operationId2 = timelockController.hash_operation(zeroAddress, 0, new bytes(0), NO_PREDECESSOR, SALT);
+
+        bytes memory expectedErr1 = abi.encodeWithSelector(
+            ITimelockController.TimelockControllerUnexpectedOperationState.selector,
+            operationId1,
+            READY_STATE
+        );
+        vm.expectRevert(expectedErr1);
         vm.prank(EXECUTOR_ONE);
         timelockController.execute(zeroAddress, 0, new bytes(0), NO_PREDECESSOR, EMPTY_SALT);
 
-        vm.expectRevert("timelock_controller: operation is not ready");
+        bytes memory expectedErr2 = abi.encodeWithSelector(
+            ITimelockController.TimelockControllerUnexpectedOperationState.selector,
+            operationId2,
+            READY_STATE
+        );
+        vm.expectRevert(expectedErr2);
         vm.prank(EXECUTOR_TWO);
         timelockController.execute(zeroAddress, 0, new bytes(0), NO_PREDECESSOR, SALT);
     }
 
     function testExecutorCannotCancel() public {
-        vm.expectRevert("access_control: account is missing role");
+        bytes memory expectedErr1 = abi.encodeWithSelector(
+            IAccessControl.AccessControlUnauthorizedAccount.selector,
+            EXECUTOR_ONE,
+            CANCELLER_ROLE
+        );
+        vm.expectRevert(expectedErr1);
         vm.prank(EXECUTOR_ONE);
         timelockController.cancel(EMPTY_SALT);
 
-        vm.expectRevert("access_control: account is missing role");
+        bytes memory expectedErr2 = abi.encodeWithSelector(
+            IAccessControl.AccessControlUnauthorizedAccount.selector,
+            EXECUTOR_TWO,
+            CANCELLER_ROLE
+        );
+        vm.expectRevert(expectedErr2);
         vm.prank(EXECUTOR_TWO);
         timelockController.cancel(EMPTY_SALT);
     }
@@ -2175,13 +2469,23 @@ contract TimelockControllerTest is Test {
         uint256[] memory amounts = new uint256[](0);
         bytes[] memory payloads = new bytes[](0);
 
-        vm.expectRevert("access_control: account is missing role");
+        bytes memory expectedErr = abi.encodeWithSelector(
+            IAccessControl.AccessControlUnauthorizedAccount.selector,
+            STRANGER,
+            PROPOSER_ROLE
+        );
+        vm.expectRevert(expectedErr);
         vm.prank(STRANGER);
         timelockController.schedule_batch(targets, amounts, payloads, NO_PREDECESSOR, EMPTY_SALT, MIN_DELAY);
     }
 
     function testStrangerCannotSchedule() public {
-        vm.expectRevert("access_control: account is missing role");
+        bytes memory expectedErr = abi.encodeWithSelector(
+            IAccessControl.AccessControlUnauthorizedAccount.selector,
+            STRANGER,
+            PROPOSER_ROLE
+        );
+        vm.expectRevert(expectedErr);
         vm.prank(STRANGER);
         timelockController.schedule(zeroAddress, 0, new bytes(0), NO_PREDECESSOR, EMPTY_SALT, MIN_DELAY);
     }
@@ -2191,19 +2495,34 @@ contract TimelockControllerTest is Test {
         uint256[] memory amounts = new uint256[](0);
         bytes[] memory payloads = new bytes[](0);
 
-        vm.expectRevert("access_control: account is missing role");
+        bytes memory expectedErr = abi.encodeWithSelector(
+            IAccessControl.AccessControlUnauthorizedAccount.selector,
+            STRANGER,
+            EXECUTOR_ROLE
+        );
+        vm.expectRevert(expectedErr);
         vm.prank(STRANGER);
         timelockController.execute_batch(targets, amounts, payloads, NO_PREDECESSOR, EMPTY_SALT);
     }
 
     function testStrangerCannotExecute() public {
-        vm.expectRevert("access_control: account is missing role");
+        bytes memory expectedErr = abi.encodeWithSelector(
+            IAccessControl.AccessControlUnauthorizedAccount.selector,
+            STRANGER,
+            EXECUTOR_ROLE
+        );
+        vm.expectRevert(expectedErr);
         vm.prank(STRANGER);
         timelockController.execute(zeroAddress, 0, new bytes(0), NO_PREDECESSOR, EMPTY_SALT);
     }
 
     function testStrangerCannotCancel() public {
-        vm.expectRevert("access_control: account is missing role");
+        bytes memory expectedErr = abi.encodeWithSelector(
+            IAccessControl.AccessControlUnauthorizedAccount.selector,
+            STRANGER,
+            CANCELLER_ROLE
+        );
+        vm.expectRevert(expectedErr);
         vm.prank(STRANGER);
         timelockController.cancel(EMPTY_SALT);
     }
@@ -2545,6 +2864,10 @@ contract TimelockControllerTest is Test {
 }
 
 contract TimelockControllerInvariants is Test {
+    // Bitmaps of the `OperationState` flag members, counting from right to left.
+    bytes32 private constant READY_STATE = bytes32(uint256(4)); // `1 << 2`.
+    bytes32 private constant WAITING_OR_READY_STATES = bytes32(uint256(6)); // `(1 << 1) | (1 << 2)`.
+
     VyperDeployer private vyperDeployer = new VyperDeployer();
 
     ITimelockController private timelockController;
@@ -2607,7 +2930,19 @@ contract TimelockControllerInvariants is Test {
             /**
              * @dev Ensure that the executed proposal cannot be executed again.
              */
-            vm.expectRevert("timelock_controller: operation is not ready");
+            bytes32 operationId = timelockController.hash_operation(
+                timelockControllerHandlerAddr,
+                0,
+                abi.encodeWithSelector(TimelockControllerHandler.increment.selector),
+                bytes32(""),
+                bytes32(executed[i])
+            );
+            bytes memory expectedErr = abi.encodeWithSelector(
+                ITimelockController.TimelockControllerUnexpectedOperationState.selector,
+                operationId,
+                READY_STATE
+            );
+            vm.expectRevert(expectedErr);
             timelockController.execute(
                 timelockControllerHandlerAddr,
                 0,
@@ -2646,7 +2981,12 @@ contract TimelockControllerInvariants is Test {
             /**
              * @dev Ensure that the executed proposal cannot be cancelled.
              */
-            vm.expectRevert("timelock_controller: operation cannot be cancelled");
+            bytes memory expectedErr = abi.encodeWithSelector(
+                ITimelockController.TimelockControllerUnexpectedOperationState.selector,
+                operationId,
+                WAITING_OR_READY_STATES
+            );
+            vm.expectRevert(expectedErr);
             timelockController.cancel(operationId);
         }
     }
@@ -2672,7 +3012,19 @@ contract TimelockControllerInvariants is Test {
                 /**
                  * @dev Ensure that the cancelled proposal cannot be executed.
                  */
-                vm.expectRevert("timelock_controller: operation is not ready");
+                bytes32 operationId = timelockController.hash_operation(
+                    timelockControllerHandlerAddr,
+                    0,
+                    abi.encodeWithSelector(TimelockControllerHandler.increment.selector),
+                    bytes32(""),
+                    bytes32(cancelled[i])
+                );
+                bytes memory expectedErr = abi.encodeWithSelector(
+                    ITimelockController.TimelockControllerUnexpectedOperationState.selector,
+                    operationId,
+                    READY_STATE
+                );
+                vm.expectRevert(expectedErr);
                 timelockController.execute(
                     timelockControllerHandlerAddr,
                     0,
@@ -2695,7 +3047,19 @@ contract TimelockControllerInvariants is Test {
             /**
              * @dev Ensure that the pending proposal cannot be executed.
              */
-            vm.expectRevert("timelock_controller: operation is not ready");
+            bytes32 operationId = timelockController.hash_operation(
+                timelockControllerHandlerAddr,
+                0,
+                abi.encodeWithSelector(TimelockControllerHandler.increment.selector),
+                bytes32(""),
+                bytes32(pending[i])
+            );
+            bytes memory expectedErr = abi.encodeWithSelector(
+                ITimelockController.TimelockControllerUnexpectedOperationState.selector,
+                operationId,
+                READY_STATE
+            );
+            vm.expectRevert(expectedErr);
             timelockController.execute(
                 timelockControllerHandlerAddr,
                 0,
