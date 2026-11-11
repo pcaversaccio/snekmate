@@ -28,6 +28,11 @@ contract TimelockControllerTest is Test {
     bytes32 private constant EXECUTOR_ROLE = keccak256("EXECUTOR_ROLE");
     bytes32 private constant CANCELLER_ROLE = keccak256("CANCELLER_ROLE");
 
+    // Bitmaps of the `OperationState` flag members, counting from right to left.
+    bytes32 private constant UNSET_STATE = bytes32(uint256(1)); // `1 << 0`.
+    bytes32 private constant READY_STATE = bytes32(uint256(4)); // `1 << 2`.
+    bytes32 private constant WAITING_OR_READY_STATES = bytes32(uint256(6)); // `(1 << 1) | (1 << 2)`.
+
     bytes4 private constant IERC721_TOKENRECEIVER_SELECTOR = ERC721ReceiverMock.onERC721Received.selector;
     bytes4 private constant IERC1155_TOKENRECEIVER_SINGLE_SELECTOR = ERC1155ReceiverMock.onERC1155Received.selector;
     bytes4 private constant IERC1155_TOKENRECEIVER_BATCH_SELECTOR = ERC1155ReceiverMock.onERC1155BatchReceived.selector;
@@ -616,7 +621,7 @@ contract TimelockControllerTest is Test {
         bytes memory expectedErr = abi.encodeWithSelector(
             ITimelockController.TimelockControllerUnexpectedOperationState.selector,
             operationId,
-            bytes32(uint256(1))
+            UNSET_STATE
         );
         vm.expectRevert(expectedErr);
         timelockController.schedule(target, amount, payload, NO_PREDECESSOR, EMPTY_SALT, MIN_DELAY);
@@ -744,7 +749,7 @@ contract TimelockControllerTest is Test {
         bytes memory expectedErr = abi.encodeWithSelector(
             ITimelockController.TimelockControllerUnexpectedOperationState.selector,
             operationId,
-            bytes32(uint256(4))
+            READY_STATE
         );
         vm.expectRevert(expectedErr);
         vm.prank(EXECUTOR_ONE);
@@ -917,7 +922,7 @@ contract TimelockControllerTest is Test {
         bytes memory expectedErr = abi.encodeWithSelector(
             ITimelockController.TimelockControllerUnexpectedOperationState.selector,
             operationId,
-            bytes32(uint256(6))
+            WAITING_OR_READY_STATES
         );
         vm.expectRevert(expectedErr);
         timelockController.cancel(operationId);
@@ -1234,10 +1239,10 @@ contract TimelockControllerTest is Test {
 
         address[] memory targets2 = new address[](2);
         targets2[0] = target;
-        targets2[0] = target;
+        targets2[1] = target;
         uint256[] memory amounts2 = new uint256[](2);
         amounts2[0] = 0;
-        amounts2[0] = 1;
+        amounts2[1] = 1;
         bytes[] memory payloads2 = new bytes[](1);
 
         bytes memory expectedErr2 = abi.encodeWithSelector(
@@ -1271,10 +1276,10 @@ contract TimelockControllerTest is Test {
 
         address[] memory targets2 = new address[](2);
         targets2[0] = target;
-        targets2[0] = target;
+        targets2[1] = target;
         uint256[] memory amounts2 = new uint256[](2);
         amounts2[0] = 0;
-        amounts2[0] = 1;
+        amounts2[1] = 1;
         bytes[] memory payloads2 = new bytes[](1);
 
         bytes memory expectedErr2 = abi.encodeWithSelector(
@@ -1322,7 +1327,7 @@ contract TimelockControllerTest is Test {
         bytes memory expectedErr = abi.encodeWithSelector(
             ITimelockController.TimelockControllerUnexpectedOperationState.selector,
             batchedOperationId,
-            bytes32(uint256(1))
+            UNSET_STATE
         );
         vm.expectRevert(expectedErr);
         timelockController.schedule_batch(targets, amounts, payloads, NO_PREDECESSOR, EMPTY_SALT, MIN_DELAY);
@@ -1480,7 +1485,7 @@ contract TimelockControllerTest is Test {
         bytes memory expectedErr = abi.encodeWithSelector(
             ITimelockController.TimelockControllerUnexpectedOperationState.selector,
             batchedOperationId,
-            bytes32(uint256(4))
+            READY_STATE
         );
         vm.expectRevert(expectedErr);
         vm.prank(EXECUTOR_ONE);
@@ -1807,7 +1812,7 @@ contract TimelockControllerTest is Test {
         bytes memory expectedErr = abi.encodeWithSelector(
             ITimelockController.TimelockControllerUnexpectedOperationState.selector,
             batchedOperationId,
-            bytes32(uint256(6))
+            WAITING_OR_READY_STATES
         );
         vm.expectRevert(expectedErr);
         timelockController.cancel(batchedOperationId);
@@ -2317,7 +2322,7 @@ contract TimelockControllerTest is Test {
         bytes memory expectedErr = abi.encodeWithSelector(
             ITimelockController.TimelockControllerUnexpectedOperationState.selector,
             EMPTY_SALT,
-            bytes32(uint256(6))
+            WAITING_OR_READY_STATES
         );
         vm.expectRevert(expectedErr);
         vm.prank(PROPOSER_ONE);
@@ -2394,7 +2399,7 @@ contract TimelockControllerTest is Test {
         bytes memory expectedErr1 = abi.encodeWithSelector(
             ITimelockController.TimelockControllerUnexpectedOperationState.selector,
             batchedOperationId1,
-            bytes32(uint256(4))
+            READY_STATE
         );
         vm.expectRevert(expectedErr1);
         vm.prank(EXECUTOR_ONE);
@@ -2403,7 +2408,7 @@ contract TimelockControllerTest is Test {
         bytes memory expectedErr2 = abi.encodeWithSelector(
             ITimelockController.TimelockControllerUnexpectedOperationState.selector,
             batchedOperationId2,
-            bytes32(uint256(4))
+            READY_STATE
         );
         vm.expectRevert(expectedErr2);
         vm.prank(EXECUTOR_TWO);
@@ -2423,7 +2428,7 @@ contract TimelockControllerTest is Test {
         bytes memory expectedErr1 = abi.encodeWithSelector(
             ITimelockController.TimelockControllerUnexpectedOperationState.selector,
             operationId1,
-            bytes32(uint256(4))
+            READY_STATE
         );
         vm.expectRevert(expectedErr1);
         vm.prank(EXECUTOR_ONE);
@@ -2432,7 +2437,7 @@ contract TimelockControllerTest is Test {
         bytes memory expectedErr2 = abi.encodeWithSelector(
             ITimelockController.TimelockControllerUnexpectedOperationState.selector,
             operationId2,
-            bytes32(uint256(4))
+            READY_STATE
         );
         vm.expectRevert(expectedErr2);
         vm.prank(EXECUTOR_TWO);
@@ -2859,6 +2864,10 @@ contract TimelockControllerTest is Test {
 }
 
 contract TimelockControllerInvariants is Test {
+    // Bitmaps of the `OperationState` flag members, counting from right to left.
+    bytes32 private constant READY_STATE = bytes32(uint256(4)); // `1 << 2`.
+    bytes32 private constant WAITING_OR_READY_STATES = bytes32(uint256(6)); // `(1 << 1) | (1 << 2)`.
+
     VyperDeployer private vyperDeployer = new VyperDeployer();
 
     ITimelockController private timelockController;
@@ -2931,7 +2940,7 @@ contract TimelockControllerInvariants is Test {
             bytes memory expectedErr = abi.encodeWithSelector(
                 ITimelockController.TimelockControllerUnexpectedOperationState.selector,
                 operationId,
-                bytes32(uint256(4))
+                READY_STATE
             );
             vm.expectRevert(expectedErr);
             timelockController.execute(
@@ -2975,7 +2984,7 @@ contract TimelockControllerInvariants is Test {
             bytes memory expectedErr = abi.encodeWithSelector(
                 ITimelockController.TimelockControllerUnexpectedOperationState.selector,
                 operationId,
-                bytes32(uint256(6))
+                WAITING_OR_READY_STATES
             );
             vm.expectRevert(expectedErr);
             timelockController.cancel(operationId);
@@ -3013,7 +3022,7 @@ contract TimelockControllerInvariants is Test {
                 bytes memory expectedErr = abi.encodeWithSelector(
                     ITimelockController.TimelockControllerUnexpectedOperationState.selector,
                     operationId,
-                    bytes32(uint256(4))
+                    READY_STATE
                 );
                 vm.expectRevert(expectedErr);
                 timelockController.execute(
@@ -3048,7 +3057,7 @@ contract TimelockControllerInvariants is Test {
             bytes memory expectedErr = abi.encodeWithSelector(
                 ITimelockController.TimelockControllerUnexpectedOperationState.selector,
                 operationId,
-                bytes32(uint256(4))
+                READY_STATE
             );
             vm.expectRevert(expectedErr);
             timelockController.execute(
