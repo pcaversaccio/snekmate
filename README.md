@@ -127,7 +127,7 @@ You can install 🐍 snekmate from [PyPI](https://pypi.org/project/snekmate) wit
 pip install snekmate
 ```
 
-> When using the 🐍Vyper CLI, the search path [defaults](https://docs.vyperlang.org/en/latest/structure-of-a-contract.html#searching-for-imports) to the current working directory and the Python [`sys.path`](https://docs.python.org/3.14/library/sys.html#sys.path). As a result, all imported 🐍 snekmate contracts (e.g. `from snekmate.tokens import erc20`) are seamlessly located during compilation.
+> When using the 🐍Vyper CLI, the search path [defaults](https://docs.vyperlang.org/en/latest/structure-of-a-contract.html#searching-for-imports) to the current working directory and the Python [`sys.path`](https://docs.python.org/3.15/library/sys.html#sys.path). As a result, all imported 🐍 snekmate contracts (e.g. `from snekmate.tokens import erc20`) are seamlessly located during compilation.
 
 ### 2️⃣ Foundry
 
