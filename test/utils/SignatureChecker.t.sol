@@ -71,7 +71,7 @@ contract SignatureCheckerTest is Test {
         assertTrue(!signatureChecker.is_valid_ERC1271_signature_now(alice, hash, signatureInvalid));
     }
 
-    function testZeroAddressWithInvalidSignature() public {
+    function testZeroAddressWithInvalidSignature() public view {
         address zeroAddress = address(0);
         bytes32 hash = keccak256("WAGMI");
         bytes memory signature = new bytes(0);
