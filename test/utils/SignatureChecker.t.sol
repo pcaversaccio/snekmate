@@ -71,6 +71,14 @@ contract SignatureCheckerTest is Test {
         assertTrue(!signatureChecker.is_valid_ERC1271_signature_now(alice, hash, signatureInvalid));
     }
 
+    function testZeroAddressWithInvalidSignature() public {
+        address zeroAddress = address(0);
+        bytes32 hash = keccak256("WAGMI");
+        bytes memory signature = new bytes(0);
+        assertTrue(!signatureChecker.is_valid_signature_now(zeroAddress, hash, signature));
+        assertTrue(!signatureChecker.is_valid_ERC1271_signature_now(zeroAddress, hash, signature));
+    }
+
     function testEOAWithTooHighSValue() public {
         (address alice, uint256 key) = makeAddrAndKey("alice");
         bytes32 hash = keccak256("WAGMI");
@@ -161,6 +169,10 @@ contract SignatureCheckerTest is Test {
         bytes32 hash = keccak256(abi.encode(message));
         assertTrue(!signatureChecker.is_valid_signature_now(alice, hash, signature));
         assertTrue(!signatureChecker.is_valid_ERC1271_signature_now(alice, hash, signature));
+
+        address zeroAddress = address(0);
+        assertTrue(!signatureChecker.is_valid_signature_now(zeroAddress, hash, signature));
+        assertTrue(!signatureChecker.is_valid_ERC1271_signature_now(zeroAddress, hash, signature));
     }
 
     function testFuzzEIP1271WithValidSignature(string calldata message) public {

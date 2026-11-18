@@ -28,6 +28,7 @@
 - Harden GitHub Actions workflows. ([#388](https://github.com/pcaversaccio/snekmate/pull/388))
 - **Utility Functions**
   - [`math`](https://github.com/pcaversaccio/snekmate/blob/v0.1.3/src/snekmate/utils/math.vy): Fix precision bug in `_cbrt` for large inputs and optimise gas usage. ([#381](https://github.com/pcaversaccio/snekmate/pull/381))
+  - [`signature_checker`](https://github.com/pcaversaccio/snekmate/blob/v0.1.3/src/snekmate/utils/signature_checker.vy): Return `False` for zero address signer in `_is_valid_signature_now`. ([#432](https://github.com/pcaversaccio/snekmate/pull/432))
 
 ### 🐛 Bug Fixes
 

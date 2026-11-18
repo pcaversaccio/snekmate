@@ -72,11 +72,15 @@ def _is_valid_signature_now(signer: address, hash: bytes32, signature: Bytes[65]
                      it is safe if EIP-7377 (https://eips.ethereum.org/EIPS/eip-7377)
                      should be deployed one day.
     """
-    # First check: ECDSA case.
+    # First check: if `signer` is the zero address, return `False`.
+    if signer == empty(address):
+        return False
+
+    # Second check: ECDSA case.
     if not signer.is_contract:
         return ecdsa._recover_sig(hash, signature) == signer
 
-    # Second check: EIP-1271 case.
+    # Third check: EIP-1271 case.
     return self._is_valid_ERC1271_signature_now(signer, hash, signature)
 
 
