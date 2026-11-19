@@ -74,7 +74,8 @@ def _recover_sig(hash: bytes32, signature: Bytes[65]) -> address:
         vs: uint256 = extract32(signature, 32, output_type=uint256)
         return self._try_recover_r_vs(hash, r, vs)
 
-    # Invalid length case: return the zero address, mirroring the `ecrecover` failure semantics.
+    # Invalid length case: return the zero address, mirroring the
+    # `ecrecover` failure semantics.
     return empty(address)
 
 
