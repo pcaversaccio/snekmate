@@ -74,7 +74,7 @@ def _is_valid_signature_now(signer: address, hash: bytes32, signature: Bytes[65]
     """
     # First check: ECDSA case.
     if not signer.is_contract:
-        return ecdsa._recover_sig(hash, signature) == signer
+        return signer != empty(address) and ecdsa._recover_sig(hash, signature) == signer
 
     # Second check: EIP-1271 case.
     return self._is_valid_ERC1271_signature_now(signer, hash, signature)
